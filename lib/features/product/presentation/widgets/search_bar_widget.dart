@@ -1,20 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:systego/core/constants/app_colors.dart';
+import 'package:systego/core/utils/responsive_ui.dart';
 //import 'package:systego/core/constants/app_colors.dart';
 //import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/custom_text_faild_widget.dart';
+import 'package:systego/core/widgets/custom_text_field_widget.dart';
 
-class SearchBar extends StatefulWidget {
-  const SearchBar({super.key});
+class SearchBarWidget extends StatefulWidget {
+  const SearchBarWidget({super.key});
 
   @override
-  State<SearchBar> createState() => _SearchBarState();
+  State<SearchBarWidget> createState() => _SearchBarWidgetState();
 }
 
-class _SearchBarState extends State<SearchBar> {
+class _SearchBarWidgetState extends State<SearchBarWidget> {
   TextEditingController controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    return CustomTextField(controller: controller, labelText: 'Search');
+    return Padding(
+      padding:  EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 16)),
+      child: CustomTextField(
+        controller: controller,
+        labelText: 'Search',
+        prefixIcon: Icons.search,
+        prefixIconColor: AppColors.black,
+        backgroundColor: AppColors.white,
+        borderColor: AppColors.white,
+      ),
+    );
     // return Container(
     //   margin: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
     //   padding: EdgeInsets.symmetric(

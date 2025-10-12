@@ -30,10 +30,7 @@ void main() async {
 class MainApp extends StatelessWidget {
   final bool isLoggedIn;
 
-  const MainApp({
-    super.key,
-    required this.isLoggedIn,
-  });
+  const MainApp({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +39,7 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
+
       // Auto login: if user has token, go to home, else go to login
       home: isLoggedIn ? const HomeScreen() : const LoginScreen(),
     );

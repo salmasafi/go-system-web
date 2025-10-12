@@ -3,13 +3,15 @@ import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/features/product/presentation/widgets/product_list.dart';
 
+import '../widgets/search_bar_widget.dart';
+
 class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.shadowGray[50],
+      backgroundColor: AppColors.lightBlueBackground,
       appBar: AppBar(
         backgroundColor: AppColors.white,
         elevation: 0,
@@ -37,7 +39,7 @@ class ProductsScreen extends StatelessWidget {
           ),
           child: Column(
             children: [
-              SearchBar(),
+              SearchBarWidget(),
               Expanded(child: ProductsList()),
             ],
           ),

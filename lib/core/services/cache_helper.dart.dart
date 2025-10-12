@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CacheHelper {
@@ -54,7 +55,7 @@ class CacheHelper {
       return fromJson(jsonMap);
     } catch (e) {
       // Log the error and clear invalid cache
-      print('Cache deserialization error for key $key: $e');
+      log('Cache deserialization error for key $key: $e');
       sharedPreferences!.remove(key);
       return null;
     }

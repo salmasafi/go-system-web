@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
-import '../../../../../../core/utils/responsive_ui.dart';
 import '../../../../../../core/widgets/custom_floating_action_button.dart';
-import '../../../../../../core/widgets/custom_text_faild_widget.dart';
+import '../../../../../../core/widgets/custom_text_field_widget.dart';
 
 class BrandsScreen extends StatefulWidget {
   const BrandsScreen({super.key});

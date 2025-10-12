@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:systego/core/constants/app_colors.dart';
-import '../../../../../../core/widgets/custom_text_faild_widget.dart';
+import '../../../../../../core/widgets/custom_text_field_widget.dart';
 import '../logic/cubit/categories_cubit.dart';
 import '../logic/cubit/categories_states.dart';
 

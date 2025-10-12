@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/features/home/presentation/screens/home_screen.dart';
-
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/custom_button_widget.dart';
-import '../../../../core/widgets/custom_text_faild_widget.dart';
+import '../../../../core/widgets/custom_text_field_widget.dart';
 import '../../../../core/widgets/simple_fadein_animation_widget.dart';
 import '../../cubit/login_cubit.dart';
 import '../../cubit/login_state.dart';
-import '../widgets/custom_text_faild_widget.dart' hide CustomTextField;
 import '../widgets/login_title_widget.dart';
 import '../widgets/logo_and_title_widget.dart';
 
