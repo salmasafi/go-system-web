@@ -83,7 +83,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                         Column(
                           children: [
                             IconButton(icon: Icon(Icons.edit, color: AppColors.primaryBlue, size: 20), onPressed: () {}),
-                            IconButton(icon: Icon(Icons.delete, color: AppColors.red, size: 20), onPressed: () {}),
+                            IconButton(icon: Icon(Icons.delete, color: Colors.red, size: 20), onPressed: () {}),
                           ],
                         )
                       ],
