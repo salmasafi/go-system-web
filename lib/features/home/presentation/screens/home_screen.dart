@@ -1,130 +1,65 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/utils/responsive_ui.dart';
+import '../widgets/custom_bottom_app_bar_widget.dart';
+import '../widgets/custom_grid_card_widget.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _currentIndex = 0;
+
+  final cardItems = [
+    {'icon': Icons.grid_view_rounded, 'label': 'Categories'},
+    {'icon': Icons.inventory_2_rounded, 'label': 'Products'},
+    {'icon': Icons.local_offer_rounded, 'label': 'Brands'},
+    {'icon': Icons.warehouse_rounded, 'label': 'Warehouses'},
+  ];
+
+  void _navigateToPage(String label) {
+    // Simulate navigation
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Navigating to $label')),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: const Center(
-        child: Text('Home Screen Content'), // Placeholder for body content
+      resizeToAvoidBottomInset: false, // This prevents the bottom bar from moving up/down with keyboard
+      backgroundColor: Colors.grey[50],
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 40),
+        child: GridView.builder(
+          itemCount: cardItems.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 16,
+            childAspectRatio: 1.2,
+          ),
+          itemBuilder: (context, index) {
+            final item = cardItems[index];
+            return CustomGridCard(
+              icon: item['icon'] as IconData,
+              label: item['label'] as String,
+              onTap: () => _navigateToPage(item['label'] as String),
+              delay: Duration(milliseconds: 200 + (index * 150)), // Staggered animation
+            );
+          },
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Handle print action
+      bottomNavigationBar: CustomBottomAppBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
         },
-        backgroundColor: Colors.purple,
-        child: Icon(
-          Icons.print,
-          color: Colors.white,
-          size: ResponsiveUI.iconSize(context),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: Container(
-        height: ResponsiveUI.bottomNavHeight(context),
-        color: Colors.blue[50],
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            // Dashboard
-            Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.dashboard,
-                      color: Colors.blue,
-                      size: ResponsiveUI.iconSize(context),
-                    ),
-                    onPressed: () {
-                      // Handle dashboard tap
-                    },
-                  ),
-                  Text(
-                    'Dashboard',
-                    style: TextStyle(fontSize: ResponsiveUI.fontSize(context)),
-                  ),
-                ],
-              ),
-            ),
-            // Product
-            Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.category,
-                      color: Colors.blue,
-                      size: ResponsiveUI.iconSize(context),
-                    ),
-                    onPressed: () {
-                      // Handle product tap
-                    },
-                  ),
-                  Text(
-                    'Product',
-                    style: TextStyle(fontSize: ResponsiveUI.fontSize(context)),
-                  ),
-                ],
-              ),
-            ),
-            // Spacer for FAB (responsive)
-            SizedBox(width: ResponsiveUI.fabNotchSpacer(context)),
-            // Reports
-            Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.bar_chart,
-                      color: Colors.purple,
-                      size: ResponsiveUI.iconSize(context),
-                    ),
-                    onPressed: () {
-                      // Handle reports tap
-                    },
-                  ),
-                  Text(
-                    'Reports',
-                    style: TextStyle(fontSize: ResponsiveUI.fontSize(context)),
-                  ),
-                ],
-              ),
-            ),
-            // More
-            Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.more_horiz,
-                      color: Colors.blue,
-                      size: ResponsiveUI.iconSize(context),
-                    ),
-                    onPressed: () {
-                      // Handle more tap
-                    },
-                  ),
-                  Text(
-                    'More',
-                    style: TextStyle(fontSize: ResponsiveUI.fontSize(context)),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

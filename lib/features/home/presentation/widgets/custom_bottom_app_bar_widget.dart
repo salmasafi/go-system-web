@@ -1,0 +1,52 @@
+import 'package:flutter/material.dart';
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
+
+class CustomBottomAppBar extends StatelessWidget {
+  final int currentIndex;
+  final Function(int) onTap;
+
+  const CustomBottomAppBar({
+    super.key,
+    required this.currentIndex,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ConvexAppBar(
+      style: TabStyle.fixedCircle,
+      backgroundColor: Colors.white,
+      activeColor: Colors.blue,
+      color: Colors.grey[600],
+      height: 60,
+      top: -25,
+      curveSize: 90,
+      elevation: 8,
+      shadowColor: Colors.black26,
+      items: const [
+        TabItem(
+          icon: Icons.dashboard_rounded,
+          title: 'Dashboard',
+        ),
+        TabItem(
+          icon: Icons.category_rounded,
+          title: 'Product',
+        ),
+        TabItem(
+          icon: Icons.print_rounded,
+          title: 'Print',
+        ),
+        TabItem(
+          icon: Icons.bar_chart_rounded,
+          title: 'Reports',
+        ),
+        TabItem(
+          icon: Icons.more_horiz_rounded,
+          title: 'More',
+        ),
+      ],
+      initialActiveIndex: currentIndex,
+      onTap: onTap,
+    );
+  }
+}

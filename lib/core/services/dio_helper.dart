@@ -8,7 +8,7 @@ class DioHelper {
   static void init() {
     dio = Dio(
       BaseOptions(
-        baseUrl: 'https://bcknd.food2go.online/',
+        baseUrl: 'https://Bcknd.systego.net',
         receiveDataWhenStatusError: true,
         connectTimeout: const Duration(seconds: 80),
         receiveTimeout: const Duration(seconds: 80),
