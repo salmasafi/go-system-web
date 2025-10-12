@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:systego/features/home/presentation/screens/products_screen/view/products_screen.dart';
+import 'package:systego/features/home/presentation/screens/warehouses/view/warehouses_screen.dart';
 
 import '../widgets/custom_bottom_app_bar_widget.dart';
 import '../widgets/custom_grid_card_widget.dart';
+import 'brands_screen/view/brands_screen.dart';
+import 'categories_screen/view/categories_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,13 +23,29 @@ class _HomeScreenState extends State<HomeScreen> {
     {'icon': Icons.local_offer_rounded, 'label': 'Brands'},
     {'icon': Icons.warehouse_rounded, 'label': 'Warehouses'},
   ];
-
   void _navigateToPage(String label) {
-    // Simulate navigation
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Navigating to $label')),
-    );
+    final screenName = '${label}Screen';
+
+    switch (screenName) {
+      case 'CategoriesScreen':
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const CategoriesScreen()));
+        break;
+      case 'ProductsScreen':
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const ProductsScreen()));
+        break;
+      case 'BrandsScreen':
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const BrandsScreen()));
+        break;
+      case 'WarehousesScreen':
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const WarehousesScreen()));
+        break;
+      default:
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No screen found for $label')),
+        );
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
