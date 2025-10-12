@@ -64,3 +64,43 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
+class NavBarItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onPressed;
+
+  const NavBarItem({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IconButton(
+          icon: Icon(
+            icon,
+            color: color,
+            size: ResponsiveUI.iconSize(context, 24),
+          ),
+          onPressed: onPressed,
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: ResponsiveUI.fontSize(context, 12),
+            color: Colors.black87,
+          ),
+        ),
+      ],
+    );
+  }
+}
