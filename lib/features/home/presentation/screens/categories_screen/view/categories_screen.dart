@@ -1,10 +1,11 @@
+// categories_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/widgets/custom_floating_action_button.dart';
-import '../../../../../../core/utils/responsive_ui.dart';
 import '../../../../../../core/widgets/custom_text_faild_widget.dart';
 import '../logic/cubit/categories_cubit.dart';
+import '../logic/cubit/categories_states.dart';
 import 'create_category_screen.dart';
 
 class CategoriesScreen extends StatefulWidget {
@@ -17,17 +18,16 @@ class CategoriesScreen extends StatefulWidget {
 class _CategoriesScreenState extends State<CategoriesScreen> {
   final _controller = TextEditingController();
 
-  final List<Map<String, dynamic>> categories = [
-    {'name': 'Toy', 'type': 'Electronic', 'count': 8, 'image': '🦁', 'color': Colors.yellow[100]},
-    {'name': 'T-Shirt', 'type': 'Electronic', 'count': 12, 'image': '👕', 'color': Colors.grey[100]},
-    {'name': 'Fruits', 'type': 'Electronic', 'count': 25, 'image': '🍎', 'color': Colors.red[100]},
-    {'name': 'Computer', 'type': 'Electronic', 'count': 9, 'image': '💻', 'color': Colors.grey[200]},
-  ];
+  @override
+  void initState() {
+    super.initState();
+    CategoriesCubit.get(context).getCategories();
+  }
 
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
-    var height =  MediaQuery.of(context).size.height;
+    var height = MediaQuery.of(context).size.height;
 
     return Scaffold(
       body: Padding(
@@ -49,49 +49,85 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 hasBoxDecoration: false,
                 hasBorder: true,
                 prefixIconColor: AppColors.darkGray,
-
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.symmetric(horizontal: width * 0.02),
-                itemCount: categories.length,
-                itemBuilder: (context, index) {
-                  var cat = categories[index];
-                  return Container(
-                    margin: EdgeInsets.only(bottom: height * 0.01),
-                    padding: EdgeInsets.all(width * 0.01),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))],
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: width * 0.08,
-                          height: width * 0.08,
-                          decoration: BoxDecoration(color: cat['color'], borderRadius: BorderRadius.circular(8)),
-                          child: Center(child: Text(cat['image'], style: TextStyle(fontSize: 24))),
-                        ),
-                        SizedBox(width: width * 0.02),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+              child: BlocBuilder<CategoriesCubit, CategoriesState>(
+                builder: (context, state) {
+                  if (state is GetCategoriesLoading) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+
+                  final cubit = CategoriesCubit.get(context);
+                  if (cubit.allCategories.isEmpty) {
+                    return Center(child: Text('No categories found'));
+                  }
+
+                  return RefreshIndicator(
+                    onRefresh: () => cubit.getCategories(),
+                    child: ListView.builder(
+                      padding: EdgeInsets.symmetric(horizontal: width * 0.02),
+                      itemCount: cubit.allCategories.length,
+                      itemBuilder: (context, index) {
+                        var cat = cubit.allCategories[index];
+                        return Container(
+                          margin: EdgeInsets.only(bottom: height * 0.01),
+                          padding: EdgeInsets.all(width * 0.02),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))],
+                          ),
+                          child: Row(
                             children: [
-                              Text(cat['name'], style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                              Text('${cat['type']}', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                              Text('${cat['count']} Products', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                              Container(
+                                width: width * 0.15,
+                                height: width * 0.15,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[200],
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.network(
+                                    cat.image ?? '',
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => Icon(Icons.category, color: Colors.grey),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: width * 0.03),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(cat.name ?? '', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                                    if (cat.parentId != null)
+                                      Text('Parent: ${cat.parentId!.name}', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                                    Text('${cat.productQuantity ?? 0} Products', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                                  ],
+                                ),
+                              ),
+                              Column(
+                                children: [
+                                  IconButton(
+                                    icon: Icon(Icons.edit, color: AppColors.primaryBlue, size: 20),
+                                    onPressed: () {
+                                      // يمكن تفتحي صفحة edit وتستخدمي getCategoryById
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.delete, color: Colors.red, size: 20),
+                                    onPressed: () {
+                                      // Delete functionality
+                                    },
+                                  ),
+                                ],
+                              )
                             ],
                           ),
-                        ),
-                        Column(
-                          children: [
-                            IconButton(icon: Icon(Icons.edit, color: AppColors.primaryBlue, size: 20), onPressed: () {}),
-                            IconButton(icon: Icon(Icons.delete, color: Colors.red, size: 20), onPressed: () {}),
-                          ],
-                        )
-                      ],
+                        );
+                      },
                     ),
                   );
                 },
@@ -100,20 +136,11 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           ],
         ),
       ),
-        // Update categories_screen.dart floatingActionButton:
-        floatingActionButton: CustomFloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => BlocProvider.value(
-                  value: CategoriesCubit.get(context),
-                  child: AddCategoryScreen(),
-                ),
-              ),
-            );
-          },
-        )
+      floatingActionButton: CustomFloatingActionButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => AddCategoryScreen()));
+        },
+      ),
     );
   }
 }

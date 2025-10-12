@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'core/services/cache_helper.dart.dart';
 import 'core/services/dio_helper.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
+import 'features/home/presentation/screens/categories_screen/logic/cubit/categories_cubit.dart';
 import 'features/home/presentation/screens/home_screen.dart';
 
 void main() async {
@@ -37,13 +39,18 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Product Details',
-      debugShowCheckedModeBanner: false,
-      locale: DevicePreview.locale(context),
-      builder: DevicePreview.appBuilder,
-      // Auto login: if user has token, go to home, else go to login
-      home: isLoggedIn ? const HomeScreen() : const LoginScreen(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => CategoriesCubit()),
+      ],
+      child: MaterialApp(
+        title: 'Product Details',
+        debugShowCheckedModeBanner: false,
+        locale: DevicePreview.locale(context),
+        builder: DevicePreview.appBuilder,
+        // Auto login: if user has token, go to home, else go to login
+        home: isLoggedIn ? const HomeScreen() : const LoginScreen(),
+      ),
     );
   }
 }

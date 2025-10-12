@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/features/home/presentation/screens/products_screen/view/products_screen.dart';
 import 'package:systego/features/home/presentation/screens/warehouses/view/warehouses_screen.dart';
 
 import '../widgets/custom_bottom_app_bar_widget.dart';
 import '../widgets/custom_grid_card_widget.dart';
 import 'brands_screen/view/brands_screen.dart';
+import 'categories_screen/logic/cubit/categories_cubit.dart';
 import 'categories_screen/view/categories_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,12 +26,21 @@ class _HomeScreenState extends State<HomeScreen> {
     {'icon': Icons.local_offer_rounded, 'label': 'Brands'},
     {'icon': Icons.warehouse_rounded, 'label': 'Warehouses'},
   ];
+
   void _navigateToPage(String label) {
     final screenName = '${label}Screen';
 
     switch (screenName) {
       case 'CategoriesScreen':
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const CategoriesScreen()));
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => BlocProvider(
+              create: (_) => CategoriesCubit(),
+              child: const CategoriesScreen(),
+            ),
+          ),
+        );
         break;
       case 'ProductsScreen':
         Navigator.push(context, MaterialPageRoute(builder: (_) => const ProductsScreen()));
@@ -46,20 +58,22 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false, // This prevents the bottom bar from moving up/down with keyboard
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey[50],
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 40),
+        padding: EdgeInsets.symmetric(
+          horizontal: ResponsiveUI.horizontalPadding(context),
+          vertical: ResponsiveUI.padding(context, 40),
+        ),
         child: GridView.builder(
           itemCount: cardItems.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 16,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: ResponsiveUI.gridColumns(context),
+            mainAxisSpacing: ResponsiveUI.spacing(context, 16),
+            crossAxisSpacing: ResponsiveUI.spacing(context, 16),
             childAspectRatio: 1.2,
           ),
           itemBuilder: (context, index) {
@@ -68,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: item['icon'] as IconData,
               label: item['label'] as String,
               onTap: () => _navigateToPage(item['label'] as String),
-              delay: Duration(milliseconds: 200 + (index * 150)), // Staggered animation
+              delay: Duration(milliseconds: 200 + (index * 150)),
             );
           },
         ),

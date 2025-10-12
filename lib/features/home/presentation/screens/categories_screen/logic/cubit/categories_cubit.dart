@@ -1,15 +1,14 @@
-// categories_cubit.dart
-import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
-import 'package:dio/dio.dart';
+import 'dart:convert';
+import 'package:dio/dio.dart' as dio;
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../../../../../core/services/cache_helper.dart.dart';
 import '../../../../../../../core/services/dio_helper.dart';
 import '../../../../../../../core/services/end_point.dart';
 import '../../../../../../../core/utils/error_handler.dart';
 import '../model/create_category_model.dart';
+import '../model/get_categories_model.dart';
+import '../model/get_category_by_id_model.dart';
 import 'categories_states.dart';
 
 class CategoriesCubit extends Cubit<CategoriesState> {
@@ -18,55 +17,98 @@ class CategoriesCubit extends Cubit<CategoriesState> {
   static CategoriesCubit get(context) => BlocProvider.of(context);
 
   CreateCategoryModel? categoryModel;
+  List<CategoryItem> allCategories = [];
+  List<CategoryItem> parentCategories = [];
+  CategoryDetail? selectedCategory;
+
+  Future<void> getCategories() async {
+    emit(GetCategoriesLoading());
+    try {
+      final token = CacheHelper.getData(key: 'token') as String?;
+      final response = await DioHelper.getData(url: EndPoint.getCategories, token: token);
+
+      if (response.statusCode == 200) {
+        final model = GetCategoriesModel.fromJson(response.data);
+        if (model.success == true && model.data != null) {
+          allCategories = model.data!.categories ?? [];
+          parentCategories = model.data!.parentCategories ?? [];
+          emit(GetCategoriesSuccess(allCategories));
+        } else {
+          emit(GetCategoriesError('Failed to fetch categories'));
+        }
+      } else {
+        emit(GetCategoriesError(ErrorHandler.handleError(response)));
+      }
+    } catch (e) {
+      emit(GetCategoriesError(ErrorHandler.handleError(e)));
+    }
+  }
+
+  Future<void> getCategoryById(String categoryId) async {
+    emit(GetCategoryByIdLoading());
+    try {
+      final token = CacheHelper.getData(key: 'token') as String?;
+      final response = await DioHelper.getData(url: EndPoint.getCategoryById(categoryId), token: token);
+
+      if (response.statusCode == 200) {
+        final model = GetCategoryByIdModel.fromJson(response.data);
+        if (model.success == true && model.data?.category != null) {
+          selectedCategory = model.data!.category!;
+          emit(GetCategoryByIdSuccess(selectedCategory!));
+        } else {
+          emit(GetCategoryByIdError('Failed to fetch category'));
+        }
+      } else {
+        emit(GetCategoryByIdError(ErrorHandler.handleError(response)));
+      }
+    } catch (e) {
+      emit(GetCategoryByIdError(ErrorHandler.handleError(e)));
+    }
+  }
 
   Future<void> createCategory({
     required String name,
     required File imageFile,
+    String? parentId,
   }) async {
     emit(CreateCategoryLoading());
-
     try {
-      log('Starting create category request...');
+      if (await imageFile.length() > 5 * 1024 * 1024) {
+        emit(CreateCategoryError('Image exceeds 5MB'));
+        return;
+      }
 
       final token = CacheHelper.getData(key: 'token') as String?;
 
-      // Convert image to base64
+      // تحويل الصورة لـ Base64
       final bytes = await imageFile.readAsBytes();
       final base64Image = base64Encode(bytes);
 
+      final data = {
+        'name': name,
+        'image': base64Image,
+        if (parentId != null && parentId.isNotEmpty) 'parentId': parentId,
+      };
+
       final response = await DioHelper.postData(
         url: EndPoint.createCategory,
-        data: {
-          'name': name,
-          'image': base64Image,
-        },
+        data: data,
         token: token,
       );
 
-      log('Response received: ${response.statusCode}');
-      DioHelper.printResponse(response);
-
       if (response.statusCode == 200 || response.statusCode == 201) {
         categoryModel = CreateCategoryModel.fromJson(response.data);
-
         if (categoryModel?.success == true) {
-          final message = categoryModel?.data?.message ?? 'Category created successfully';
-          log('Category created: $message');
-          emit(CreateCategorySuccess(message));
+          await getCategories();
+          emit(CreateCategorySuccess(categoryModel?.data?.message ?? 'Category created successfully'));
         } else {
-          final errorMessage = categoryModel?.data?.message ?? 'Failed to create category';
-          log('Creation failed: $errorMessage');
-          emit(CreateCategoryError(errorMessage));
+          emit(CreateCategoryError(categoryModel?.data?.message ?? 'Failed to create category'));
         }
       } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        log('Response error: $errorMessage');
-        emit(CreateCategoryError(errorMessage));
+        emit(CreateCategoryError(ErrorHandler.handleError(response)));
       }
-    } catch (error) {
-      log('Create category error: $error');
-      final errorMessage = ErrorHandler.handleError(error);
-      emit(CreateCategoryError(errorMessage));
+    } catch (e) {
+      emit(CreateCategoryError(ErrorHandler.handleError(e)));
     }
   }
 }
