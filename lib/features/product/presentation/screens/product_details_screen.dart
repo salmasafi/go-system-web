@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/features/product/presentation/widgets/product_image_card.dart';
+import 'package:systego/features/product/presentation/widgets/product_info_grid.dart';
+import 'package:systego/features/product/presentation/widgets/product_info_item.dart';
+import 'package:systego/features/product/presentation/widgets/product_title.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
   const ProductDetailsScreen({super.key});
@@ -87,157 +91,6 @@ class ProductDetailsScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class ProductImageCard extends StatelessWidget {
-  final String imageUrl;
-
-  const ProductImageCard({super.key, required this.imageUrl});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: ResponsiveUI.imageHeight(context),
-      decoration: BoxDecoration(
-        color: AppColors.shadowGray[100],
-        borderRadius: BorderRadius.circular(
-          ResponsiveUI.borderRadius(context, 12),
-        ),
-        border: Border.all(color: AppColors.shadowGray[200]!),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(
-          ResponsiveUI.borderRadius(context, 12),
-        ),
-        child: Image.network(
-          imageUrl,
-          fit: BoxFit.contain,
-          errorBuilder: (context, error, stackTrace) {
-            return Center(
-              child: Icon(
-                Icons.phone_iphone,
-                size: ResponsiveUI.iconSize(context, 80),
-                color: AppColors.shadowGray,
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class ProductTitle extends StatelessWidget {
-  final String title;
-  final String subtitle;
-
-  const ProductTitle({super.key, required this.title, required this.subtitle});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: ResponsiveUI.fontSize(context, 20),
-            fontWeight: FontWeight.w700,
-            color: Colors.black87,
-            height: 1.3,
-          ),
-        ),
-        SizedBox(height: ResponsiveUI.spacing(context, 8)),
-        Text(
-          subtitle,
-          style: TextStyle(
-            fontSize: ResponsiveUI.fontSize(context, 14),
-            color: AppColors.shadowGray[600],
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class ProductInfoGrid extends StatelessWidget {
-  final List<ProductInfoItem> items;
-
-  const ProductInfoGrid({super.key, required this.items});
-
-  @override
-  Widget build(BuildContext context) {
-    final columns = ResponsiveUI.gridColumns(context);
-
-    return Container(
-      padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-      decoration: BoxDecoration(
-        color: AppColors.shadowGray[50],
-        borderRadius: BorderRadius.circular(
-          ResponsiveUI.borderRadius(context, 12),
-        ),
-        border: Border.all(color: AppColors.shadowGray[200]!),
-      ),
-      child: Column(
-        children: List.generate((items.length / columns).ceil(), (index) {
-          final leftIndex = index * columns;
-          final rightIndex = leftIndex + 1;
-          return Padding(
-            padding: EdgeInsets.only(
-              bottom: index < (items.length / columns).ceil() - 1
-                  ? ResponsiveUI.spacing(context, 16)
-                  : 0,
-            ),
-            child: Row(
-              children: [
-                Expanded(child: items[leftIndex]),
-                if (rightIndex < items.length) ...[
-                  SizedBox(width: ResponsiveUI.spacing(context, 16)),
-                  Expanded(child: items[rightIndex]),
-                ] else
-                  const Expanded(child: SizedBox()),
-              ],
-            ),
-          );
-        }),
-      ),
-    );
-  }
-}
-
-class ProductInfoItem extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const ProductInfoItem({super.key, required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: ResponsiveUI.fontSize(context, 12),
-            color: AppColors.shadowGray[600],
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        SizedBox(height: ResponsiveUI.spacing(context, 6)),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: ResponsiveUI.fontSize(context, 15),
-            color: Colors.black87,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
     );
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:systego/features/home/presentation/screens/products_screen/view/products_screen.dart';
+import 'package:systego/features/product/presentation/screens/products_screen.dart';
 import 'package:systego/features/home/presentation/screens/warehouses/view/warehouses_screen.dart';
 
 import '../widgets/custom_bottom_app_bar_widget.dart';
