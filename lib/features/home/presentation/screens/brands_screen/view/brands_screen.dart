@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import '../../../../../../core/utils/responsive_ui.dart';
+import '../../../../../../core/widgets/custom_floating_action_button.dart';
 import '../../../../../../core/widgets/custom_text_faild_widget.dart';
 
 class BrandsScreen extends StatefulWidget {
@@ -40,7 +41,7 @@ class _BrandsScreenState extends State<BrandsScreen> {
               ],
             ),
             Container(
-              margin: EdgeInsets.symmetric(horizontal: width * 0.02, vertical: height * 0.03),
+              margin: EdgeInsets.symmetric(horizontal: width * 0.03, vertical: height * 0.03),
               child: CustomTextField(
                 controller: _controller,
                 labelText: 'Search',
@@ -93,12 +94,8 @@ class _BrandsScreenState extends State<BrandsScreen> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: AppColors.primaryBlue,
-        child: Icon(Icons.add, color: Colors.white),
-        shape: const CircleBorder(),
-      ),
+        floatingActionButton: CustomFloatingActionButton(onPressed: (){})
+
     );
   }
 }

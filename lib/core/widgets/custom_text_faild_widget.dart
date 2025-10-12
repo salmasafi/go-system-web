@@ -101,8 +101,27 @@ class _CustomTextFieldState extends State<CustomTextField> {
           )
               : InputBorder.none,
 
+          enabledBorder: widget.hasBorder
+              ? OutlineInputBorder(
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            borderSide: BorderSide(
+              color: widget.borderColor ?? AppColors.lightGray,
+            ),
+          )
+              : InputBorder.none,
+
+          focusedBorder: widget.hasBorder
+              ? OutlineInputBorder(
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            borderSide: BorderSide(
+              color: (widget.borderColor ?? AppColors.lightGray).withOpacity(0.8),
+              width: 1.5,
+            ),
+          )
+              : InputBorder.none,
+
           prefixIcon: widget.prefixIcon != null
-              ? Icon(widget.prefixIcon, color: widget.prefixIconColor?? AppColors.linkBlue)
+              ? Icon(widget.prefixIcon, color: widget.prefixIconColor ?? AppColors.linkBlue)
               : null,
 
           suffixIcon: widget.isPassword
