@@ -36,4 +36,4 @@ class AppColors {
 
   // Purple for categories or secondary accents
   static const Color categoryPurple = Color(0xFF9C27B0);
-}
+  static const Color red = Color(0xFFF44336);}
