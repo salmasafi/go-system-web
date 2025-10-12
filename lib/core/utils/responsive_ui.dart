@@ -2,47 +2,87 @@ import 'package:flutter/material.dart';
 
 class ResponsiveUI {
   // Screen dimensions
-  static double screenWidth(BuildContext context) => MediaQuery.of(context).size.width;
-  static double screenHeight(BuildContext context) => MediaQuery.of(context).size.height;
+  static double screenWidth(BuildContext context) =>
+      MediaQuery.of(context).size.width;
+  static double screenHeight(BuildContext context) =>
+      MediaQuery.of(context).size.height;
 
-  // Device type detection
+  // Device type detection with better breakpoints
   static bool isMobile(BuildContext context) => screenWidth(context) < 600;
-  static bool isTablet(BuildContext context) => screenWidth(context) >= 600 && screenWidth(context) < 1200;
-  static bool isDesktop(BuildContext context) => screenWidth(context) >= 1200;
+  static bool isTablet(BuildContext context) =>
+      screenWidth(context) >= 600 && screenWidth(context) < 1024;
+  static bool isDesktop(BuildContext context) => screenWidth(context) >= 1024;
 
-  // Responsive font size
-  static double fontSize(BuildContext context, {double mobile = 12.0, double tablet = 14.0, double desktop = 16.0}) {
-    if (isDesktop(context)) return desktop;
-    if (isTablet(context)) return tablet;
-    return mobile;
-  }
+  // Additional helper for large desktop screens
+  static bool isLargeDesktop(BuildContext context) =>
+      screenWidth(context) >= 1440;
 
-  // Responsive padding
-  static double padding(BuildContext context, {double mobile = 8.0, double tablet = 12.0, double desktop = 16.0}) {
-    if (isDesktop(context)) return desktop;
-    if (isTablet(context)) return tablet;
-    return mobile;
-  }
-
-  // Responsive icon size
-  static double iconSize(BuildContext context, {double mobile = 24.0, double tablet = 28.0, double desktop = 32.0}) {
-    if (isDesktop(context)) return desktop;
-    if (isTablet(context)) return tablet;
-    return mobile;
-  }
-
-  // Responsive spacer for FAB notch in BottomAppBar (approximate based on screen width)
-  static double fabNotchSpacer(BuildContext context) {
+  // Scale factor based on screen width for more fluid scaling
+  static double scaleFactor(BuildContext context) {
     final width = screenWidth(context);
-    if (isMobile(context)) return 60.0;
-    if (isTablet(context)) return 80.0;
-    return 100.0;
+    if (width < 360) return 0.85; // Small mobile
+    if (width < 600) return 1.0; // Normal mobile
+    if (width < 1024) return 1.15; // Tablet
+    if (width < 1440) return 1.3; // Desktop
+    return 1.5; // Large desktop
   }
 
-  // Responsive bottom nav height
-  static double bottomNavHeight(BuildContext context, {double mobile = 80.0, double tablet = 100.0, double desktop = 120.0}) {
-    if (isDesktop(context)) return desktop;
-    if (isTablet(context)) return tablet;
-    return mobile;
+  // Base responsive value calculator - أدخل قيمة الموبايل فقط
+  static double value(BuildContext context, double mobileValue) {
+    return mobileValue * scaleFactor(context);
+  }
+
+  // اختصارات للاستخدام - كلها تعتمد على قيمة الموبايل
+  static double fontSize(BuildContext context, double mobileSize) {
+    return value(context, mobileSize);
+  }
+
+  static double padding(BuildContext context, double mobilePadding) {
+    return value(context, mobilePadding);
+  }
+
+  static double spacing(BuildContext context, double mobileSpacing) {
+    return value(context, mobileSpacing);
+  }
+
+  static double iconSize(BuildContext context, double mobileSize) {
+    return value(context, mobileSize);
+  }
+
+  static double borderRadius(BuildContext context, double mobileRadius) {
+    return value(context, mobileRadius);
+  }
+
+  // Get optimal content width based on screen size
+  static double contentMaxWidth(BuildContext context) {
+    final width = screenWidth(context);
+    if (isMobile(context)) return width;
+    if (isTablet(context)) return 600.0;
+    if (isLargeDesktop(context)) return 900.0;
+    return 750.0;
+  }
+
+  // Get grid columns based on screen size
+  static int gridColumns(BuildContext context) {
+    if (isDesktop(context)) return 2;
+    if (isTablet(context)) return 2;
+    return 2;
+  }
+
+  // Responsive image aspect ratio
+  static double imageHeight(BuildContext context) {
+    if (isMobile(context)) return screenHeight(context) * 0.35;
+    if (isTablet(context)) return 400.0;
+    return 450.0;
+  }
+
+  // Horizontal padding for screen edges
+  static double horizontalPadding(BuildContext context) {
+    return value(context, 16.0);
+  }
+
+  // Vertical spacing multiplier
+  static double verticalSpacing(BuildContext context, double multiplier) {
+    return value(context, 8.0 * multiplier);
   }
 }
