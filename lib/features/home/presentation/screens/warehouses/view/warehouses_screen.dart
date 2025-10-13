@@ -10,9 +10,7 @@ import '../../../../../../core/widgets/custom_loading/custom_loading_state_with_
 import '../../../../../../core/widgets/custom_warehouse_details_sheet.dart';
 import '../cubit/warehouse_cubit.dart';
 import '../cubit/warehouse_state.dart';
-import 'package:intl/intl.dart';
 import '../data/model/ware_house_model.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
 class WarehousesScreen extends StatefulWidget {
