@@ -8,12 +8,16 @@ import 'features/home/presentation/screens/home_screen.dart';
 import 'features/home/presentation/screens/warehouses/cubit/warehouse_cubit.dart';
 
 void main() async {
+  // Ensure Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize DioHelper for API calls
   DioHelper.init();
 
+  // Initialize CacheHelper for local storage
   await CacheHelper.init();
 
+  // Check if user is logged in
   final token = CacheHelper.getData(key: 'token');
   final isLoggedIn = token != null && token.toString().isNotEmpty;
 
@@ -28,10 +32,7 @@ void main() async {
 class MainApp extends StatelessWidget {
   final bool isLoggedIn;
 
-  const MainApp({
-    super.key,
-    required this.isLoggedIn,
-  });
+  const MainApp({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +49,6 @@ class MainApp extends StatelessWidget {
         builder: DevicePreview.appBuilder,
         home: isLoggedIn ? const HomeScreen() : const LoginScreen(),
       ),
-    );
+
   }
 }

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/features/home/presentation/screens/home_screen.dart';
-
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/custom_button_widget.dart';
+import '../../../../core/widgets/custom_text_field_widget.dart';
 import '../../../../core/widgets/simple_fadein_animation_widget.dart';
 import '../../cubit/login_cubit.dart';
 import '../../cubit/login_state.dart';
-import '../widgets/custom_text_faild_widget.dart';
 import '../widgets/login_title_widget.dart';
 import '../widgets/logo_and_title_widget.dart';
 
@@ -83,6 +82,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       FadeInAnimation(
                         delay: const Duration(milliseconds: 600),
                         child: CustomTextField(
+                          hasBorder: false,
+                          hasBoxDecoration: true,
                           controller: _emailController,
                           labelText: "Email",
                           hintText: "admin@example.com",
@@ -95,6 +96,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       FadeInAnimation(
                         delay: const Duration(milliseconds: 800),
                         child: CustomTextField(
+                          hasBorder: false,
+                          hasBoxDecoration: true,
                           controller: _passwordController,
                           labelText: "Password",
                           isPassword: true,

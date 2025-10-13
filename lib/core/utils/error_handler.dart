@@ -49,8 +49,7 @@ class ErrorHandler {
         return 'Security certificate error';
 
       case DioExceptionType.unknown:
-      default:
-        log('Unknown DioException');
+      log('Unknown DioException');
         return 'Network error occurred. Please try again';
     }
   }
