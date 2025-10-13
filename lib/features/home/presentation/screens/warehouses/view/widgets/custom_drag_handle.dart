@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../constants/app_colors.dart';
+import '../../../../../../../core/constants/app_colors.dart';
 
 class CustomDragHandle extends StatelessWidget {
   final double? width;

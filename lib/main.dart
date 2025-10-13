@@ -49,6 +49,6 @@ class MainApp extends StatelessWidget {
         builder: DevicePreview.appBuilder,
         home: isLoggedIn ? const HomeScreen() : const LoginScreen(),
       ),
-
+    );
   }
 }

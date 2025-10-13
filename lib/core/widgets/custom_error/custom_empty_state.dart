@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../constants/app_colors.dart';
+import '../../constants/app_colors.dart';
 
 class CustomEmptyState extends StatelessWidget {
   final IconData icon;

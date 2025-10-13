@@ -4,9 +4,9 @@ import 'package:systego/features/home/presentation/screens/warehouses/view/widge
 import 'package:systego/features/home/presentation/screens/warehouses/view/widgets/custom_delete_dialog.dart';
 import '../../../../../../core/constants/app_colors.dart';
 import '../../../../../../core/widgets/app_bar_widgets.dart';
-import '../../../../../../core/widgets/custom_empty_state.dart';
+import '../../../../../../core/widgets/custom_error/custom_empty_state.dart';
 import '../../../../../../core/widgets/custom_gradient_FAB.dart';
-import '../../../../../../core/widgets/custom_loading_state_with_shimmer.dart';
+import '../../../../../../core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
 import '../../../../../../core/widgets/custom_warehouse_details_sheet.dart';
 import '../cubit/warehouse_cubit.dart';
 import '../cubit/warehouse_state.dart';
@@ -33,15 +33,10 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.lightBlueBackground,
-      appBar: CustomGradientAppBar(
-        title: 'Warehouses',
-        onBackPressed: () => Navigator.pop(context),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.search, color: Colors.white),
-          ),
-        ],
+      appBar: appBarWithActions(
+        context,
+        'Warehouses',
+        () => Navigator.pushNamed(context, '/add-warehouse-screen'),
       ),
       body: BlocConsumer<WareHouseCubit, WarehousesState>(
         listener: (context, state) {
@@ -84,11 +79,6 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
             ),
           );
         },
-      ),
-      floatingActionButton: CustomGradientFAB(
-        onPressed: () {},
-        icon: Icons.add,
-        label: 'Add Warehouse',
       ),
     );
   }

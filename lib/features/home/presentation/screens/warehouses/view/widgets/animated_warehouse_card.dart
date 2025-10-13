@@ -4,7 +4,7 @@ import '../../../../../../../core/constants/app_colors.dart';
 import '../../../../../../../core/widgets/custom_gradient_divider.dart';
 import '../../../../../../../core/widgets/custom_icon_container.dart';
 import '../../../../../../../core/widgets/custom_popup_menu.dart';
-import '../../../../../../../core/widgets/custom_stat_chip.dart';
+import 'custom_stat_chip.dart';
 import '../../data/model/ware_house_model.dart';
 
 class AnimatedWarehouseCard extends StatefulWidget {

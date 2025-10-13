@@ -5,7 +5,7 @@ import '../../features/home/presentation/screens/warehouses/data/model/ware_hous
 import '../../features/home/presentation/screens/warehouses/view/widgets/custom_detail_tile.dart';
 import '../constants/app_colors.dart';
 import 'custom_detail_section.dart';
-import 'custom_drag_handle.dart';
+import '../../features/home/presentation/screens/warehouses/view/widgets/custom_drag_handle.dart';
 import 'custom_gradient_divider.dart';
 import 'custom_icon_container.dart';
 

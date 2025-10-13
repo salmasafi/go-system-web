@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:systego/features/home/presentation/screens/products_screen/view/products_screen.dart';
+import 'package:systego/features/home/presentation/screens/purchase_screen/purchase_screen.dart';
 import 'package:systego/features/home/presentation/screens/warehouses/view/warehouses_screen.dart';
 
+import '../../../product/presentation/screens/products_screen.dart';
 import '../widgets/custom_bottom_app_bar_widget.dart';
 import '../widgets/custom_grid_card_widget.dart';
 import 'brands_screen/view/brands_screen.dart';
@@ -44,7 +45,6 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
       case 'PurchaseScreen':
         Navigator.push(context, MaterialPageRoute(builder: (_) => const PurchaseScreen()));
-        break;
         break;
       default:
         ScaffoldMessenger.of(context).showSnackBar(

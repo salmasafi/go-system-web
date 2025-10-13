@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../constants/app_colors.dart';
+import '../../constants/app_colors.dart';
 
 class CustomLoadingShimmer extends StatelessWidget {
   final int? itemCount;
