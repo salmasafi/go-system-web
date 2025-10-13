@@ -6,23 +6,35 @@ import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_text_field_widget.dart';
 
 class SearchBarWidget extends StatefulWidget {
-  const SearchBarWidget({super.key});
+  final void Function(String)? onChanged;
+  final TextEditingController controller;
+
+  const SearchBarWidget({
+    super.key,
+    required this.onChanged,
+    required this.controller,
+  });
 
   @override
   State<SearchBarWidget> createState() => _SearchBarWidgetState();
 }
 
 class _SearchBarWidgetState extends State<SearchBarWidget> {
-  TextEditingController controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:  EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 16)),
+      padding: EdgeInsets.symmetric(
+        horizontal: ResponsiveUI.padding(context, 16),
+        vertical: ResponsiveUI.padding(context, 12),
+      ),
       child: CustomTextField(
-        controller: controller,
+        controller: widget.controller,
+        onChanged: widget.onChanged,
         labelText: 'Search',
         prefixIcon: Icons.search,
         prefixIconColor: AppColors.black,
+        verticalPadding: ResponsiveUI.padding(context, 10),
+        hasBoxDecoration: true,
         backgroundColor: AppColors.white,
         borderColor: AppColors.white,
       ),

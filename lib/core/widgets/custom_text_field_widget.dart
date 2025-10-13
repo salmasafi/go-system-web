@@ -11,8 +11,8 @@ class CustomTextField extends StatefulWidget {
   final IconData? prefixIcon;
   final bool isPassword;
   final String? Function(String?)? validator;
+  final void Function(String)? onChanged;
   final Color? prefixIconColor;
-
   final bool hasBoxDecoration;
   final bool hasBorder;
   final Color? borderColor;
@@ -33,7 +33,7 @@ class CustomTextField extends StatefulWidget {
     this.prefixIcon,
     this.isPassword = false,
     this.validator,
-
+    this.onChanged,
     this.hasBoxDecoration = false,
     this.hasBorder = false,
     this.borderColor,
@@ -42,7 +42,7 @@ class CustomTextField extends StatefulWidget {
     this.verticalPadding = 18,
     this.horizontalPadding = 16,
     this.elevation = 0,
-    this.prefixIconColor
+    this.prefixIconColor,
   });
 
   @override
@@ -65,18 +65,18 @@ class _CustomTextFieldState extends State<CustomTextField> {
       curve: Curves.easeInOut,
       decoration: widget.hasBoxDecoration
           ? BoxDecoration(
-        color: widget.backgroundColor ?? AppColors.lightBlueBackground,
-        borderRadius: BorderRadius.circular(widget.borderRadius),
-        boxShadow: widget.elevation > 0
-            ? [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: widget.elevation,
-            offset: const Offset(0, 2),
-          ),
-        ]
-            : [],
-      )
+              color: widget.backgroundColor ?? AppColors.lightBlueBackground,
+              borderRadius: BorderRadius.circular(widget.borderRadius),
+              boxShadow: widget.elevation > 0
+                  ? [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.08),
+                        blurRadius: widget.elevation,
+                        offset: const Offset(0, 2),
+                      ),
+                    ]
+                  : [],
+            )
           : null,
 
       child: TextFormField(
@@ -84,6 +84,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         keyboardType: widget.keyboardType,
         obscureText: widget.isPassword ? _obscure : false,
         validator: widget.validator,
+        onChanged: widget.onChanged,
         decoration: InputDecoration(
           labelText: widget.labelText,
           hintText: widget.hintText,
@@ -94,51 +95,55 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
           border: widget.hasBorder
               ? OutlineInputBorder(
-            borderRadius: BorderRadius.circular(widget.borderRadius),
-            borderSide: BorderSide(
-              color: widget.borderColor ?? AppColors.lightGray,
-            ),
-          )
+                  borderRadius: BorderRadius.circular(widget.borderRadius),
+                  borderSide: BorderSide(
+                    color: widget.borderColor ?? AppColors.lightGray,
+                  ),
+                )
               : InputBorder.none,
 
           enabledBorder: widget.hasBorder
               ? OutlineInputBorder(
-            borderRadius: BorderRadius.circular(widget.borderRadius),
-            borderSide: BorderSide(
-              color: widget.borderColor ?? AppColors.lightGray,
-            ),
-          )
+                  borderRadius: BorderRadius.circular(widget.borderRadius),
+                  borderSide: BorderSide(
+                    color: widget.borderColor ?? AppColors.lightGray,
+                  ),
+                )
               : InputBorder.none,
 
           focusedBorder: widget.hasBorder
               ? OutlineInputBorder(
-            borderRadius: BorderRadius.circular(widget.borderRadius),
-            borderSide: BorderSide(
-              color: (widget.borderColor ?? AppColors.lightGray).withOpacity(0.8),
-              width: 1.5,
-            ),
-          )
+                  borderRadius: BorderRadius.circular(widget.borderRadius),
+                  borderSide: BorderSide(
+                    color: (widget.borderColor ?? AppColors.lightGray)
+                        .withOpacity(0.8),
+                    width: 1.5,
+                  ),
+                )
               : InputBorder.none,
 
           prefixIcon: widget.prefixIcon != null
-              ? Icon(widget.prefixIcon, color: widget.prefixIconColor ?? AppColors.linkBlue)
+              ? Icon(
+                  widget.prefixIcon,
+                  color: widget.prefixIconColor ?? AppColors.linkBlue,
+                )
               : null,
 
           suffixIcon: widget.isPassword
               ? IconButton(
-            icon: Icon(
-              _obscure
-                  ? Icons.visibility_off_outlined
-                  : Icons.visibility_outlined,
-              color: AppColors.linkBlue,
-            ),
-            onPressed: () {
-              setState(() {
-                _obscure = !_obscure;
-              });
-              widget.onObscureChanged?.call(_obscure);
-            },
-          )
+                  icon: Icon(
+                    _obscure
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    color: AppColors.linkBlue,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscure = !_obscure;
+                    });
+                    widget.onObscureChanged?.call(_obscure);
+                  },
+                )
               : null,
 
           contentPadding: EdgeInsets.symmetric(

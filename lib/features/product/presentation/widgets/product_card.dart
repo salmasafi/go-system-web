@@ -1,31 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/features/product/data/models/product_model.dart';
 import 'package:systego/features/product/presentation/widgets/product_image.dart';
 import 'package:systego/features/product/presentation/widgets/product_info.dart';
 import 'package:systego/features/product/presentation/widgets/product_menu.dart';
 
 class ProductCard extends StatelessWidget {
-  final String brand;
-  final String title;
-  final String category;
-  final String code;
-  final String quantity;
-  final String price;
-  final String unit;
-  final String imageUrl;
+  final Product product;
 
-  const ProductCard({
-    super.key,
-    required this.brand,
-    required this.title,
-    required this.category,
-    required this.code,
-    required this.quantity,
-    required this.price,
-    required this.unit,
-    required this.imageUrl,
-  });
+  const ProductCard({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -47,17 +31,18 @@ class ProductCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          ProductImage(imageUrl: imageUrl),
+          ProductImage(imageUrl: product.image),
           SizedBox(width: ResponsiveUI.spacing(context, 12)),
           Expanded(
             child: ProductInfo(
-              brand: brand,
-              title: title,
-              category: category,
-              code: code,
-              quantity: quantity,
-              price: price,
-              unit: unit,
+              product: product,
+              // brand: brand,
+              // title: title,
+              // category: category,
+              // code: code,
+              // quantity: quantity,
+              // price: price,
+              // unit: unit,
             ),
           ),
           ProductMenu(),
@@ -66,4 +51,3 @@ class ProductCard extends StatelessWidget {
     );
   }
 }
-

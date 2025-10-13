@@ -5,7 +5,6 @@ import 'package:systego/features/home/presentation/screens/warehouses/view/widge
 import '../../../../../../core/constants/app_colors.dart';
 import '../../../../../../core/widgets/app_bar_widgets.dart';
 import '../../../../../../core/widgets/custom_error/custom_empty_state.dart';
-import '../../../../../../core/widgets/custom_gradient_FAB.dart';
 import '../../../../../../core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
 import '../../../../../../core/widgets/custom_warehouse_details_sheet.dart';
 import '../cubit/warehouse_cubit.dart';
@@ -54,6 +53,8 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
               icon: Icons.warehouse_outlined,
               title: 'No Warehouses Found',
               message: 'Add your first warehouse to get started',
+              onRefresh: () async =>
+                  await context.read<WareHouseCubit>().getWarehouses(),
             );
           }
 
@@ -69,9 +70,11 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
                 return AnimatedWarehouseCard(
                   warehouse: warehouses[index],
                   index: index,
-                  onTap: () => _showWarehouseDetails(context, warehouses[index]),
+                  onTap: () =>
+                      _showWarehouseDetails(context, warehouses[index]),
                   onEdit: () {},
-                  onDelete: () => _showDeleteDialog(context, warehouses[index].id ?? ''),
+                  onDelete: () =>
+                      _showDeleteDialog(context, warehouses[index].id ?? ''),
                 );
               },
             ),
@@ -114,7 +117,8 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
       context: context,
       builder: (dialogContext) => CustomDeleteDialog(
         title: 'Delete Warehouse',
-        message: 'Are you sure you want to delete this warehouse? This action cannot be undone.',
+        message:
+            'Are you sure you want to delete this warehouse? This action cannot be undone.',
         onDelete: () {
           Navigator.pop(dialogContext);
           // Simulate delete success
