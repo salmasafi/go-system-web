@@ -1,26 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/features/product/data/models/product_model.dart';
 import 'package:systego/features/product/presentation/widgets/info_label.dart';
 
 class ProductInfo extends StatelessWidget {
-  final String brand;
-  final String title;
-  final String category;
-  final String code;
-  final String quantity;
-  final String price;
-  final String unit;
+  final Product product;
 
   const ProductInfo({
     super.key,
-    required this.brand,
-    required this.title,
-    required this.category,
-    required this.code,
-    required this.quantity,
-    required this.price,
-    required this.unit,
+    required this.product,
   });
 
   @override
@@ -29,7 +18,7 @@ class ProductInfo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          brand,
+          product.brandId.name,
           style: TextStyle(
             color: AppColors.primaryBlue,
             fontSize: ResponsiveUI.fontSize(context, 11),
@@ -38,7 +27,7 @@ class ProductInfo extends StatelessWidget {
         ),
         SizedBox(height: ResponsiveUI.spacing(context, 4)),
         Text(
-          title,
+          product.name,
           style: TextStyle(
             color: Colors.black87,
             fontSize: ResponsiveUI.fontSize(context, 14),
@@ -48,18 +37,12 @@ class ProductInfo extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
         SizedBox(height: ResponsiveUI.spacing(context, 6)),
-        Row(
-          children: [
-            InfoLabel(label: category),
-            SizedBox(width: ResponsiveUI.spacing(context, 8)),
-            InfoLabel(label: code),
-          ],
-        ),
+        InfoLabel(label: product.categoryId[0].name),
         SizedBox(height: ResponsiveUI.spacing(context, 6)),
         Row(
           children: [
             Text(
-              quantity,
+              product.quantity.toString(),
               style: TextStyle(
                 color: AppColors.shadowGray[600],
                 fontSize: ResponsiveUI.fontSize(context, 12),
@@ -67,7 +50,7 @@ class ProductInfo extends StatelessWidget {
             ),
             SizedBox(width: ResponsiveUI.spacing(context, 16)),
             Text(
-              price,
+              product.price.toString(),
               style: TextStyle(
                 color: AppColors.primaryBlue,
                 fontSize: ResponsiveUI.fontSize(context, 13),
@@ -76,7 +59,7 @@ class ProductInfo extends StatelessWidget {
             ),
             SizedBox(width: ResponsiveUI.spacing(context, 4)),
             Text(
-              '• $unit',
+              '• ${product.unit}',
               style: TextStyle(
                 color: AppColors.shadowGray[500],
                 fontSize: ResponsiveUI.fontSize(context, 11),
