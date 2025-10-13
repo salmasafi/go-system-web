@@ -1,4 +1,3 @@
-// get_categories_model.dart
 class GetCategoriesModel {
   GetCategoriesModel({this.success, this.data});
 
@@ -12,9 +11,7 @@ class GetCategoriesModel {
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['success'] = success;
-    if (data != null) {
-      map['data'] = data?.toJson();
-    }
+    if (data != null) map['data'] = data?.toJson();
     return map;
   }
 }
@@ -26,15 +23,11 @@ class CategoriesData {
     message = json['message'];
     if (json['categories'] != null) {
       categories = [];
-      json['categories'].forEach((v) {
-        categories?.add(CategoryItem.fromJson(v));
-      });
+      json['categories'].forEach((v) => categories?.add(CategoryItem.fromJson(v)));
     }
     if (json['ParentCategories'] != null) {
       parentCategories = [];
-      json['ParentCategories'].forEach((v) {
-        parentCategories?.add(CategoryItem.fromJson(v));
-      });
+      json['ParentCategories'].forEach((v) => parentCategories?.add(CategoryItem.fromJson(v)));
     }
   }
   String? message;
@@ -44,12 +37,8 @@ class CategoriesData {
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['message'] = message;
-    if (categories != null) {
-      map['categories'] = categories?.map((v) => v.toJson()).toList();
-    }
-    if (parentCategories != null) {
-      map['ParentCategories'] = parentCategories?.map((v) => v.toJson()).toList();
-    }
+    if (categories != null) map['categories'] = categories?.map((v) => v.toJson()).toList();
+    if (parentCategories != null) map['ParentCategories'] = parentCategories?.map((v) => v.toJson()).toList();
     return map;
   }
 }
@@ -91,16 +80,22 @@ class CategoryItem {
     map['name'] = name;
     map['image'] = image;
     map['product_quantity'] = productQuantity;
-    if (parentId != null) {
-      map['parentId'] = parentId?.toJson();
-    }
+    if (parentId != null) map['parentId'] = parentId?.toJson();
     map['createdAt'] = createdAt;
     map['updatedAt'] = updatedAt;
     map['__v'] = v;
     return map;
   }
-}
 
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is CategoryItem && other.id == id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
+}
 class ParentIdInfo {
   ParentIdInfo({this.id, this.name});
 

@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:convert';
-import 'package:dio/dio.dart' as dio;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../../core/services/cache_helper.dart.dart';
 import '../../../../../../../core/services/dio_helper.dart';
@@ -27,19 +26,37 @@ class CategoriesCubit extends Cubit<CategoriesState> {
       final token = CacheHelper.getData(key: 'token') as String?;
       final response = await DioHelper.getData(url: EndPoint.getCategories, token: token);
 
+      print('📥 API Response: ${response.data}'); // Log the raw response
+
       if (response.statusCode == 200) {
         final model = GetCategoriesModel.fromJson(response.data);
         if (model.success == true && model.data != null) {
           allCategories = model.data!.categories ?? [];
+          // Remove duplicates from parentCategories based on id
           parentCategories = model.data!.parentCategories ?? [];
+          parentCategories = parentCategories
+              .asMap()
+              .entries
+              .fold<List<CategoryItem>>([], (uniqueList, entry) {
+            if (!uniqueList.any((item) => item.id == entry.value.id)) {
+              uniqueList.add(entry.value);
+            }
+            return uniqueList;
+          });
+          print('✅ Categories loaded: ${allCategories.length}');
+          print('✅ Parent Categories loaded: ${parentCategories.length}');
+          print('📋 Parent Categories: ${parentCategories.map((c) => c.id).toList()}'); // Log IDs
           emit(GetCategoriesSuccess(allCategories));
         } else {
+          print('❌ Failed to fetch categories: ${model.data?.message}');
           emit(GetCategoriesError('Failed to fetch categories'));
         }
       } else {
+        print('❌ HTTP Error: ${response.statusCode}');
         emit(GetCategoriesError(ErrorHandler.handleError(response)));
       }
     } catch (e) {
+      print('❌ Error in getCategories: $e');
       emit(GetCategoriesError(ErrorHandler.handleError(e)));
     }
   }
@@ -79,8 +96,6 @@ class CategoriesCubit extends Cubit<CategoriesState> {
       }
 
       final token = CacheHelper.getData(key: 'token') as String?;
-
-      // تحويل الصورة لـ Base64
       final bytes = await imageFile.readAsBytes();
       final base64Image = base64Encode(bytes);
 
@@ -90,16 +105,15 @@ class CategoriesCubit extends Cubit<CategoriesState> {
         if (parentId != null && parentId.isNotEmpty) 'parentId': parentId,
       };
 
-      final response = await DioHelper.postData(
-        url: EndPoint.createCategory,
-        data: data,
-        token: token,
-      );
+      print('📤 Sending data: $data');
+
+      final response = await DioHelper.postData(url: EndPoint.createCategory, data: data, token: token);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         categoryModel = CreateCategoryModel.fromJson(response.data);
         if (categoryModel?.success == true) {
-          await getCategories();
+          print('✅ Category created successfully!');
+          await getCategories(); // Reload categories
           emit(CreateCategorySuccess(categoryModel?.data?.message ?? 'Category created successfully'));
         } else {
           emit(CreateCategoryError(categoryModel?.data?.message ?? 'Failed to create category'));
@@ -108,6 +122,7 @@ class CategoriesCubit extends Cubit<CategoriesState> {
         emit(CreateCategoryError(ErrorHandler.handleError(response)));
       }
     } catch (e) {
+      print('❌ Error in createCategory: $e');
       emit(CreateCategoryError(ErrorHandler.handleError(e)));
     }
   }

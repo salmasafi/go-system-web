@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:systego/core/constants/app_colors.dart';
+import '../../../../../../core/utils/responsive_ui.dart';
 import '../../../../../../core/widgets/custom_text_faild_widget.dart';
 import '../logic/cubit/categories_cubit.dart';
 import '../logic/cubit/categories_states.dart';
@@ -34,8 +35,8 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
-    var height = MediaQuery.of(context).size.height;
+    var width = ResponsiveUI.screenWidth(context);
+    var height = ResponsiveUI.screenHeight(context);
 
     return BlocConsumer<CategoriesCubit, CategoriesState>(
       listener: (context, state) {
@@ -43,7 +44,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.message), backgroundColor: Colors.green),
           );
-          Navigator.pop(context);
+          Navigator.pop(context, true);
         } else if (state is CreateCategoryError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.error), backgroundColor: Colors.red),
@@ -62,7 +63,8 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                   child: Row(
                     children: [
                       IconButton(onPressed: () => Navigator.pop(context), icon: Icon(Icons.arrow_back)),
-                      Expanded(child: Text("New Category", style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600))),
+                      Expanded(child: Text("New Category", style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600,
+                          color: AppColors.darkGray))),
                     ],
                   ),
                 ),
@@ -72,16 +74,15 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Category Name*', style: TextStyle(fontSize: 14, color: Colors.grey[600], fontWeight: FontWeight.w500)),
+                        // Text('Category Name', style: TextStyle(fontSize: 14, color:AppColors.darkGray, fontWeight: FontWeight.w500)),
                         SizedBox(height: 8),
                         CustomTextField(
                           controller: _nameController,
-                          labelText: 'Enter category name',
+                          labelText: 'Enter Category Name',
                           hasBoxDecoration: false,
                           hasBorder: true,
                         ),
                         SizedBox(height: 20),
-
                         CheckboxListTile(
                           value: _makeParentCategory,
                           onChanged: (value) {
@@ -95,25 +96,23 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                           contentPadding: EdgeInsets.zero,
                           activeColor: AppColors.primaryBlue,
                         ),
-
                         if (!_makeParentCategory) ...[
                           SizedBox(height: 15),
-                          Text('Parent Category*', style: TextStyle(fontSize: 14, color: Colors.grey[600], fontWeight: FontWeight.w500)),
+                          Text('Parent Category', style: TextStyle(fontSize: 14, color:AppColors.darkGray, fontWeight: FontWeight.w500)),
                           SizedBox(height: 8),
-
                           if (state is GetCategoriesLoading)
                             Center(child: Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator()))
                           else if (cubit.parentCategories.isEmpty)
                             Container(
                               padding: EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Colors.orange[50],
+                                color:AppColors.warningOrange,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(color: Colors.orange.shade200),
                               ),
                               child: Row(
                                 children: [
-                                  Icon(Icons.info_outline, color: Colors.orange, size: 20),
+                                  Icon(Icons.info_outline, color:AppColors.warningOrange, size: 20),
                                   SizedBox(width: 8),
                                   Expanded(child: Text('No parent categories available. Create a parent category first.', style: TextStyle(fontSize: 12, color: Colors.orange[900]))),
                                 ],
@@ -122,7 +121,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                           else
                             Container(
                               decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey.shade300),
+                                border: Border.all(color:AppColors.lightGray),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: DropdownButtonHideUnderline(
@@ -132,7 +131,8 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                                   hint: Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('Select parent category')),
                                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                   icon: Icon(Icons.arrow_drop_down, color: AppColors.darkGray),
-                                  items: cubit.parentCategories.map((category) {
+                                  items: cubit.parentCategories.asMap().entries.map((entry) {
+                                    final category = entry.value;
                                     return DropdownMenuItem<CategoryItem>(
                                       value: category,
                                       child: Row(
@@ -143,11 +143,15 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                                             decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), color: Colors.grey[200]),
                                             child: ClipRRect(
                                               borderRadius: BorderRadius.circular(6),
-                                              child: Image.network(category.image ?? '', fit: BoxFit.cover, errorBuilder: (_, __, ___) => Icon(Icons.category, size: 16)),
+                                              child: Image.network(
+                                                category.image ?? '',
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (_, __, ___) => Icon(Icons.category, size: 16),
+                                              ),
                                             ),
                                           ),
                                           SizedBox(width: 8),
-                                          Text(category.name ?? ''),
+                                          Expanded(child: Text(category.name ?? '', overflow: TextOverflow.ellipsis)),
                                         ],
                                       ),
                                     );
@@ -157,31 +161,29 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                               ),
                             ),
                         ],
-
                         SizedBox(height: 25),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Category Image*', style: TextStyle(fontSize: 14, color: Colors.grey[600], fontWeight: FontWeight.w500)),
+                            Text('Category Image*', style: TextStyle(fontSize: 14, color: AppColors.darkGray, fontWeight: FontWeight.w500)),
                             if (_selectedImage != null)
                               TextButton.icon(
-                                icon: Icon(Icons.delete, color: Colors.red, size: 18),
-                                label: Text('Remove', style: TextStyle(color: Colors.red, fontSize: 12)),
+                                icon: Icon(Icons.delete, color: AppColors.red, size: 18),
+                                label: Text('Remove', style: TextStyle(color: AppColors.red, fontSize: 12)),
                                 onPressed: () => setState(() => _selectedImage = null),
                               ),
                           ],
                         ),
                         SizedBox(height: 10),
-
                         GestureDetector(
                           onTap: _pickImage,
                           child: Container(
                             width: width * 0.35,
                             height: width * 0.35,
                             decoration: BoxDecoration(
-                              color: Colors.grey[100],
+                              color: AppColors.white,
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.grey.shade300, width: 2),
+                              border: Border.all(color: AppColors.lightGray, width: 2),
                             ),
                             child: _selectedImage != null
                                 ? ClipRRect(
@@ -191,14 +193,13 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                                 : Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.add_photo_alternate_outlined, size: 45, color: Colors.grey[400]),
+                                Icon(Icons.add_photo_alternate_outlined, size: 45, color: AppColors.primaryBlue),
                                 SizedBox(height: 8),
-                                Text('Tap to upload', style: TextStyle(color: Colors.grey[500], fontSize: 13)),
+                                Text('Tap to upload', style: TextStyle(color: AppColors.darkGray, fontSize: 13)),
                               ],
                             ),
                           ),
                         ),
-
                         SizedBox(height: 30),
                         SizedBox(
                           width: double.infinity,
@@ -219,7 +220,6 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please select a parent category')));
                                 return;
                               }
-
                               cubit.createCategory(
                                 name: _nameController.text.trim(),
                                 imageFile: _selectedImage!,
@@ -232,8 +232,8 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                               elevation: 2,
                             ),
                             child: state is CreateCategoryLoading
-                                ? SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
-                                : Text('Save Category', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
+                                ? SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: AppColors.white, strokeWidth: 2.5))
+                                : Text('Save Category', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.white)),
                           ),
                         ),
                         SizedBox(height: 20),

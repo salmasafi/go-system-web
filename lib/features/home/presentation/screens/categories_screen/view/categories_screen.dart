@@ -1,7 +1,7 @@
-// categories_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_floating_action_button.dart';
 import '../../../../../../core/widgets/custom_text_faild_widget.dart';
 import '../logic/cubit/categories_cubit.dart';
@@ -17,17 +17,43 @@ class CategoriesScreen extends StatefulWidget {
 
 class _CategoriesScreenState extends State<CategoriesScreen> {
   final _controller = TextEditingController();
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
     CategoriesCubit.get(context).getCategories();
+
+    // Add listener to search field
+    _controller.addListener(() {
+      setState(() {
+        _searchQuery = _controller.text.toLowerCase().trim();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  // Filter categories based on search query
+  List<dynamic> _getFilteredCategories(List<dynamic> categories) {
+    if (_searchQuery.isEmpty) {
+      return categories;
+    }
+
+    return categories.where((cat) {
+      final name = (cat.name ?? '').toLowerCase();
+      return name.contains(_searchQuery);
+    }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
-    var height = MediaQuery.of(context).size.height;
+    var width = ResponsiveUI.screenWidth(context);
+    var height = ResponsiveUI.screenHeight(context);
 
     return Scaffold(
       body: Padding(
@@ -36,15 +62,31 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           children: [
             Row(
               children: [
-                IconButton(onPressed: () => Navigator.pop(context), icon: Icon(Icons.arrow_back)),
-                Expanded(child: Text("Categories", style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600))),
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: Icon(Icons.arrow_back),
+                ),
+                Expanded(
+                  child: Text(
+                    "Categories",
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.darkGray,
+                    ),
+                  ),
+                ),
               ],
             ),
             Container(
-              margin: EdgeInsets.symmetric(horizontal: width * 0.03, vertical: height * 0.03),
+              margin: EdgeInsets.symmetric(
+                horizontal: width * 0.03,
+                vertical: height * 0.03,
+              ),
               child: CustomTextField(
                 controller: _controller,
                 labelText: 'Search',
+                hintText: 'Search by category name',
                 prefixIcon: Icons.search,
                 hasBoxDecoration: false,
                 hasBorder: true,
@@ -59,24 +101,55 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   }
 
                   final cubit = CategoriesCubit.get(context);
+                  final filteredCategories = _getFilteredCategories(cubit.allCategories);
+
                   if (cubit.allCategories.isEmpty) {
                     return Center(child: Text('No categories found'));
+                  }
+
+                  if (filteredCategories.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.search_off,
+                            size: 64,
+                            color: Colors.grey[400],
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            'No results found for "$_searchQuery"',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
                   }
 
                   return RefreshIndicator(
                     onRefresh: () => cubit.getCategories(),
                     child: ListView.builder(
                       padding: EdgeInsets.symmetric(horizontal: width * 0.02),
-                      itemCount: cubit.allCategories.length,
+                      itemCount: filteredCategories.length,
                       itemBuilder: (context, index) {
-                        var cat = cubit.allCategories[index];
+                        var cat = filteredCategories[index];
                         return Container(
                           margin: EdgeInsets.only(bottom: height * 0.01),
                           padding: EdgeInsets.all(width * 0.02),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
-                            boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))],
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 4,
+                                offset: Offset(0, 2),
+                              )
+                            ],
                           ),
                           child: Row(
                             children: [
@@ -92,7 +165,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                   child: Image.network(
                                     cat.image ?? '',
                                     fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => Icon(Icons.category, color: Colors.grey),
+                                    errorBuilder: (_, __, ___) => Icon(
+                                      Icons.category,
+                                      color: Colors.grey,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -101,23 +177,49 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(cat.name ?? '', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                                    Text(
+                                      cat.name ?? '',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                     if (cat.parentId != null)
-                                      Text('Parent: ${cat.parentId!.name}', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                                    Text('${cat.productQuantity ?? 0} Products', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                                      Text(
+                                        'Parent: ${cat.parentId!.name}',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    Text(
+                                      '${cat.productQuantity ?? 0} Products',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
                               Column(
                                 children: [
                                   IconButton(
-                                    icon: Icon(Icons.edit, color: AppColors.primaryBlue, size: 20),
+                                    icon: Icon(
+                                      Icons.edit,
+                                      color: AppColors.primaryBlue,
+                                      size: 20,
+                                    ),
                                     onPressed: () {
-                                      // يمكن تفتحي صفحة edit وتستخدمي getCategoryById
+                                      // Edit functionality
                                     },
                                   ),
                                   IconButton(
-                                    icon: Icon(Icons.delete, color: Colors.red, size: 20),
+                                    icon: Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                      size: 20,
+                                    ),
                                     onPressed: () {
                                       // Delete functionality
                                     },
@@ -137,8 +239,15 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         ),
       ),
       floatingActionButton: CustomFloatingActionButton(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => AddCategoryScreen()));
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => AddCategoryScreen()),
+          );
+
+          if (result == true && mounted) {
+            CategoriesCubit.get(context).getCategories();
+          }
         },
       ),
     );
