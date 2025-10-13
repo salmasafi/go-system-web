@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import '../../../../../../core/utils/responsive_ui.dart';
-import '../../../../../../core/widgets/custom_text_faild_widget.dart';
+import '../../../../../../core/widgets/custom_text_field_widget.dart';
 import '../logic/cubit/categories_cubit.dart';
 import '../logic/cubit/categories_states.dart';
 import '../logic/model/get_categories_model.dart';

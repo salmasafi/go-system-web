@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/home/presentation/screens/products_screen/view/products_screen.dart';
+import 'package:systego/features/home/presentation/screens/purchase_screen/purchase_screen.dart';
 import 'package:systego/features/home/presentation/screens/warehouses/view/warehouses_screen.dart';
-
+import '../../../product/presentation/screens/products_screen.dart';
 import '../widgets/custom_bottom_app_bar_widget.dart';
 import '../widgets/custom_grid_card_widget.dart';
 import 'brands_screen/view/brands_screen.dart';
@@ -25,6 +25,8 @@ class _HomeScreenState extends State<HomeScreen> {
     {'icon': Icons.inventory_2_rounded, 'label': 'Products'},
     {'icon': Icons.local_offer_rounded, 'label': 'Brands'},
     {'icon': Icons.warehouse_rounded, 'label': 'Warehouses'},
+    {'icon': Icons.shopping_cart_rounded, 'label': 'Purchase'},
+    {'icon': Icons.where_to_vote_rounded, 'label': 'Warehouses'},
   ];
 
   void _navigateToPage(String label) {
@@ -50,6 +52,9 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
       case 'WarehousesScreen':
         Navigator.push(context, MaterialPageRoute(builder: (_) => const WarehousesScreen()));
+        break;
+      case 'PurchaseScreen':
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const PurchaseScreen()));
         break;
       default:
         ScaffoldMessenger.of(context).showSnackBar(

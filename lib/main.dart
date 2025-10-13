@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
+import 'package:systego/features/home/presentation/screens/categories_screen/logic/cubit/categories_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'core/services/cache_helper.dart.dart';
 import 'core/services/dio_helper.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
 import 'features/home/presentation/screens/categories_screen/logic/cubit/categories_cubit.dart';
 import 'features/home/presentation/screens/home_screen.dart';
+import 'features/home/presentation/screens/warehouses/cubit/warehouse_cubit.dart';
 
 void main() async {
   // Ensure Flutter bindings are initialized
@@ -32,23 +34,23 @@ void main() async {
 class MainApp extends StatelessWidget {
   final bool isLoggedIn;
 
-  const MainApp({
-    super.key,
-    required this.isLoggedIn,
-  });
+  const MainApp({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => CategoriesCubit()),
+        BlocProvider<WareHouseCubit>(
+          create: (context) => WareHouseCubit(),
+        ),BlocProvider<CategoriesCubit>(
+          create: (context) => CategoriesCubit(),
+        ),
       ],
       child: MaterialApp(
         title: 'Product Details',
         debugShowCheckedModeBanner: false,
         locale: DevicePreview.locale(context),
         builder: DevicePreview.appBuilder,
-        // Auto login: if user has token, go to home, else go to login
         home: isLoggedIn ? const HomeScreen() : const LoginScreen(),
       ),
     );
