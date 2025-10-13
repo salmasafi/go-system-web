@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:systego/features/home/presentation/screens/products_screen/view/products_screen.dart';
+import 'package:systego/features/home/presentation/screens/purchase_screen/purchase_screen.dart';
 import 'package:systego/features/home/presentation/screens/warehouses/view/warehouses_screen.dart';
 
 import '../widgets/custom_bottom_app_bar_widget.dart';
@@ -22,7 +23,10 @@ class _HomeScreenState extends State<HomeScreen> {
     {'icon': Icons.inventory_2_rounded, 'label': 'Products'},
     {'icon': Icons.local_offer_rounded, 'label': 'Brands'},
     {'icon': Icons.warehouse_rounded, 'label': 'Warehouses'},
+    {'icon': Icons.shopping_cart_rounded, 'label': 'Purchase'},
+    {'icon': Icons.where_to_vote_rounded, 'label': 'Warehouses'},
   ];
+
   void _navigateToPage(String label) {
     final screenName = '${label}Screen';
 
@@ -39,6 +43,10 @@ class _HomeScreenState extends State<HomeScreen> {
       case 'WarehousesScreen':
         Navigator.push(context, MaterialPageRoute(builder: (_) => const WarehousesScreen()));
         break;
+      case 'PurchaseScreen':
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const PurchaseScreen()));
+        break;
+        break;
       default:
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('No screen found for $label')),
@@ -46,11 +54,10 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false, // This prevents the bottom bar from moving up/down with keyboard
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey[50],
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 40),
@@ -68,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: item['icon'] as IconData,
               label: item['label'] as String,
               onTap: () => _navigateToPage(item['label'] as String),
-              delay: Duration(milliseconds: 200 + (index * 150)), // Staggered animation
+              delay: Duration(milliseconds: 200 + (index * 150)),
             );
           },
         ),
