@@ -26,7 +26,6 @@ class _HomeScreenState extends State<HomeScreen> {
     {'icon': Icons.local_offer_rounded, 'label': 'Brands'},
     {'icon': Icons.warehouse_rounded, 'label': 'Warehouses'},
     {'icon': Icons.shopping_cart_rounded, 'label': 'Purchase'},
-    {'icon': Icons.where_to_vote_rounded, 'label': 'Warehouses'},
   ];
 
   void _navigateToPage(String label) {

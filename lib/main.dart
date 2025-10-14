@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
+import 'package:systego/features/home/presentation/screens/brands_screen/logic/cubit/brand_cubit.dart';
 import 'package:systego/features/home/presentation/screens/categories_screen/logic/cubit/categories_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'core/services/cache_helper.dart.dart';
@@ -44,6 +45,8 @@ class MainApp extends StatelessWidget {
           create: (context) => WareHouseCubit(),
         ),BlocProvider<CategoriesCubit>(
           create: (context) => CategoriesCubit(),
+        ),BlocProvider<BrandsCubit>(
+          create: (context) => BrandsCubit(),
         ),
       ],
       child: MaterialApp(

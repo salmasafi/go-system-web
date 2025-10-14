@@ -6,8 +6,8 @@ import '../../../../../../../core/services/dio_helper.dart';
 import '../../../../../../../core/services/end_point.dart';
 import '../../../../../../../core/utils/error_handler.dart';
 import '../model/create_category_model.dart';
+import '../model/delete_category_model.dart';
 import '../model/get_categories_model.dart';
-import '../model/get_category_by_id_model.dart';
 import 'categories_states.dart';
 
 class CategoriesCubit extends Cubit<CategoriesState> {
@@ -18,46 +18,40 @@ class CategoriesCubit extends Cubit<CategoriesState> {
   CreateCategoryModel? categoryModel;
   List<CategoryItem> allCategories = [];
   List<CategoryItem> parentCategories = [];
-  CategoryDetail? selectedCategory;
+  CategoryItem? selectedCategory;
 
   Future<void> getCategories() async {
     emit(GetCategoriesLoading());
     try {
       final token = CacheHelper.getData(key: 'token') as String?;
-      final response = await DioHelper.getData(url: EndPoint.getCategories, token: token);
-
-      print('📥 API Response: ${response.data}'); // Log the raw response
+      final response = await DioHelper.getData(
+        url: EndPoint.getCategories,
+        token: token,
+      );
 
       if (response.statusCode == 200) {
-        final model = GetCategoriesModel.fromJson(response.data);
+        final model = CategoryResponse.fromJson(response.data);
         if (model.success == true && model.data != null) {
-          allCategories = model.data!.categories ?? [];
-          // Remove duplicates from parentCategories based on id
-          parentCategories = model.data!.parentCategories ?? [];
-          parentCategories = parentCategories
-              .asMap()
-              .entries
-              .fold<List<CategoryItem>>([], (uniqueList, entry) {
-            if (!uniqueList.any((item) => item.id == entry.value.id)) {
-              uniqueList.add(entry.value);
-            }
-            return uniqueList;
-          });
-          print('✅ Categories loaded: ${allCategories.length}');
-          print('✅ Parent Categories loaded: ${parentCategories.length}');
-          print('📋 Parent Categories: ${parentCategories.map((c) => c.id).toList()}'); // Log IDs
+          allCategories = model.data.categories;
+          // Ensure unique parent categories by filtering duplicates based on id
+          final uniqueParentsMap = <String, CategoryItem>{};
+          for (var category in model.data.parentCategories) {
+            uniqueParentsMap[category.id] = category;
+          }
+          parentCategories = uniqueParentsMap.values.toList();
+
           emit(GetCategoriesSuccess(allCategories));
         } else {
-          print('❌ Failed to fetch categories: ${model.data?.message}');
-          emit(GetCategoriesError('Failed to fetch categories'));
+          final errorMessage = ErrorHandler.handleError(response);
+          emit(GetCategoriesError(errorMessage));
         }
       } else {
-        print('❌ HTTP Error: ${response.statusCode}');
-        emit(GetCategoriesError(ErrorHandler.handleError(response)));
+        final errorMessage = ErrorHandler.handleError(response);
+        emit(GetCategoriesError(errorMessage));
       }
     } catch (e) {
-      print('❌ Error in getCategories: $e');
-      emit(GetCategoriesError(ErrorHandler.handleError(e)));
+      final errorMessage = ErrorHandler.handleError(e);
+      emit(GetCategoriesError(errorMessage));
     }
   }
 
@@ -65,21 +59,27 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     emit(GetCategoryByIdLoading());
     try {
       final token = CacheHelper.getData(key: 'token') as String?;
-      final response = await DioHelper.getData(url: EndPoint.getCategoryById(categoryId), token: token);
+      final response = await DioHelper.getData(
+        url: EndPoint.getCategoryById(categoryId),
+        token: token,
+      );
 
       if (response.statusCode == 200) {
-        final model = GetCategoryByIdModel.fromJson(response.data);
-        if (model.success == true && model.data?.category != null) {
-          selectedCategory = model.data!.category!;
+        final json = response.data;
+        if (json['success'] == true && json['data']?['category'] != null) {
+          selectedCategory = CategoryItem.fromJson(json['data']['category']);
           emit(GetCategoryByIdSuccess(selectedCategory!));
         } else {
-          emit(GetCategoryByIdError('Failed to fetch category'));
+          final errorMessage = ErrorHandler.handleError(response);
+          emit(GetCategoryByIdError(errorMessage));
         }
       } else {
-        emit(GetCategoryByIdError(ErrorHandler.handleError(response)));
+        final errorMessage = ErrorHandler.handleError(response);
+        emit(GetCategoryByIdError(errorMessage));
       }
     } catch (e) {
-      emit(GetCategoryByIdError(ErrorHandler.handleError(e)));
+      final errorMessage = ErrorHandler.handleError(e);
+      emit(GetCategoryByIdError(errorMessage));
     }
   }
 
@@ -105,25 +105,121 @@ class CategoriesCubit extends Cubit<CategoriesState> {
         if (parentId != null && parentId.isNotEmpty) 'parentId': parentId,
       };
 
-      print('📤 Sending data: $data');
-
-      final response = await DioHelper.postData(url: EndPoint.createCategory, data: data, token: token);
+      final response = await DioHelper.postData(
+        url: EndPoint.createCategory,
+        data: data,
+        token: token,
+      );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         categoryModel = CreateCategoryModel.fromJson(response.data);
         if (categoryModel?.success == true) {
-          print('✅ Category created successfully!');
-          await getCategories(); // Reload categories
-          emit(CreateCategorySuccess(categoryModel?.data?.message ?? 'Category created successfully'));
+          await getCategories();
+          emit(CreateCategorySuccess(
+            categoryModel?.data?.message ?? 'Category created successfully',
+          ));
         } else {
-          emit(CreateCategoryError(categoryModel?.data?.message ?? 'Failed to create category'));
+          final errorMessage = ErrorHandler.handleError(response);
+          emit(CreateCategoryError(errorMessage));
         }
       } else {
-        emit(CreateCategoryError(ErrorHandler.handleError(response)));
+        final errorMessage = ErrorHandler.handleError(response);
+        emit(CreateCategoryError(errorMessage));
       }
     } catch (e) {
-      print('❌ Error in createCategory: $e');
-      emit(CreateCategoryError(ErrorHandler.handleError(e)));
+      final errorMessage = ErrorHandler.handleError(e);
+      emit(CreateCategoryError(errorMessage));
+    }
+  }
+
+  Future<void> updateCategory({
+    required String categoryId,
+    required String name,
+    File? imageFile,
+    String? parentId,
+  }) async {
+    emit(UpdateCategoryLoading());
+    try {
+      final token = CacheHelper.getData(key: 'token') as String?;
+
+      final data = <String, dynamic>{'name': name};
+
+      if (imageFile != null) {
+        if (await imageFile.length() > 5 * 1024 * 1024) {
+          emit(UpdateCategoryError('Image exceeds 5MB'));
+          return;
+        }
+        final bytes = await imageFile.readAsBytes();
+        data['image'] = base64Encode(bytes);
+      }
+
+      if (parentId != null && parentId.isNotEmpty) {
+        data['parentId'] = parentId;
+      } else {
+        data['parentId'] = null;
+      }
+
+      final response = await DioHelper.putData(
+        url: EndPoint.getCategoryById(categoryId),
+        data: data,
+        token: token,
+      );
+
+      if (response.statusCode == 200) {
+        final model = CreateCategoryModel.fromJson(response.data);
+        if (model.success == true) {
+          await getCategories();
+          emit(UpdateCategorySuccess(
+            model.data?.message ?? 'Category updated successfully',
+          ));
+        } else {
+          final errorMessage = ErrorHandler.handleError(response);
+          emit(UpdateCategoryError(errorMessage));
+        }
+      } else {
+        final errorMessage = ErrorHandler.handleError(response);
+        emit(UpdateCategoryError(errorMessage));
+      }
+    } catch (e) {
+      final errorMessage = ErrorHandler.handleError(e);
+      emit(UpdateCategoryError(errorMessage));
+    }
+  }
+
+  Future<void> deleteCategory(String categoryId) async {
+    emit(DeleteCategoryLoading());
+    try {
+      final token = CacheHelper.getData(key: 'token') as String?;
+
+      final response = await DioHelper.deleteData(
+        url: EndPoint.getCategoryById(categoryId),
+        token: token,
+      );
+
+      if (response.statusCode == 200) {
+        final model = DeleteCategoryModel.fromJson(response.data);
+        if (model.success == true) {
+          allCategories.removeWhere((category) => category.id == categoryId);
+          parentCategories.removeWhere((category) => category.id == categoryId);
+
+          if (selectedCategory?.id == categoryId) {
+            selectedCategory = null;
+          }
+
+          emit(DeleteCategorySuccess(
+            model.data?.message ?? 'Category deleted successfully',
+          ));
+        } else {
+          final errorMessage = ErrorHandler.handleError(response);
+          emit(DeleteCategoryError(errorMessage));
+        }
+      } else {
+        final errorMessage = ErrorHandler.handleError(response);
+        emit(DeleteCategoryError(errorMessage));
+      }
+    } catch (e) {
+      final errorMessage = ErrorHandler.handleError(e);
+      emit(DeleteCategoryError(errorMessage));
     }
   }
 }

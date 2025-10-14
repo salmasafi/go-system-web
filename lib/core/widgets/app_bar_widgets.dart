@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-
 import '../constants/app_colors.dart';
 
 AppBar appBarWithActions(
     BuildContext context,
     String title,
     void Function() onPressed,
+    {bool showActions = false}
     ) {
   return AppBar(
     scrolledUnderElevation: 0,
@@ -37,6 +37,24 @@ AppBar appBarWithActions(
         padding: EdgeInsets.zero,
       ),
     ),
+    actions: showActions ? [
+      Container(
+        margin: const EdgeInsets.only(right: 8, top: 8, bottom: 8),
+        decoration: BoxDecoration(
+          color: AppColors.lightBlueBackground,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: IconButton(
+          onPressed: onPressed,
+          icon: const Icon(
+            Icons.add,
+            color: AppColors.primaryBlue,
+            size: 20,
+          ),
+          padding: EdgeInsets.zero,
+        ),
+      ),
+    ] : null,
     bottom: PreferredSize(
       preferredSize: const Size.fromHeight(1),
       child: Container(

@@ -1,115 +1,129 @@
-class GetCategoriesModel {
-  GetCategoriesModel({this.success, this.data});
+class CategoryResponse {
+  final bool success;
+  final CategoryData data;
 
-  GetCategoriesModel.fromJson(dynamic json) {
-    success = json['success'];
-    data = json['data'] != null ? CategoriesData.fromJson(json['data']) : null;
+  CategoryResponse({
+    required this.success,
+    required this.data,
+  });
+
+  factory CategoryResponse.fromJson(Map<String, dynamic> json) {
+    return CategoryResponse(
+      success: json['success'] as bool,
+      data: CategoryData.fromJson(json['data'] as Map<String, dynamic>),
+    );
   }
-  bool? success;
-  CategoriesData? data;
 
   Map<String, dynamic> toJson() {
-    final map = <String, dynamic>{};
-    map['success'] = success;
-    if (data != null) map['data'] = data?.toJson();
-    return map;
+    return {
+      'success': success,
+      'data': data.toJson(),
+    };
   }
 }
 
-class CategoriesData {
-  CategoriesData({this.message, this.categories, this.parentCategories});
+class CategoryData {
+  final String message;
+  final List<CategoryItem> categories;
+  final List<CategoryItem> parentCategories;
 
-  CategoriesData.fromJson(dynamic json) {
-    message = json['message'];
-    if (json['categories'] != null) {
-      categories = [];
-      json['categories'].forEach((v) => categories?.add(CategoryItem.fromJson(v)));
-    }
-    if (json['ParentCategories'] != null) {
-      parentCategories = [];
-      json['ParentCategories'].forEach((v) => parentCategories?.add(CategoryItem.fromJson(v)));
-    }
+  CategoryData({
+    required this.message,
+    required this.categories,
+    required this.parentCategories,
+  });
+
+  factory CategoryData.fromJson(Map<String, dynamic> json) {
+    return CategoryData(
+      message: json['message'] as String,
+      categories: (json['categories'] as List<dynamic>)
+          .map((item) => CategoryItem.fromJson(item as Map<String, dynamic>))
+          .toList(),
+      parentCategories: (json['ParentCategories'] as List<dynamic>)
+          .map((item) => CategoryItem.fromJson(item as Map<String, dynamic>))
+          .toList(),
+    );
   }
-  String? message;
-  List<CategoryItem>? categories;
-  List<CategoryItem>? parentCategories;
 
   Map<String, dynamic> toJson() {
-    final map = <String, dynamic>{};
-    map['message'] = message;
-    if (categories != null) map['categories'] = categories?.map((v) => v.toJson()).toList();
-    if (parentCategories != null) map['ParentCategories'] = parentCategories?.map((v) => v.toJson()).toList();
-    return map;
+    return {
+      'message': message,
+      'categories': categories.map((item) => item.toJson()).toList(),
+      'ParentCategories': parentCategories.map((item) => item.toJson()).toList(),
+    };
   }
 }
 
 class CategoryItem {
+  final String id;
+  final String name;
+  final String image;
+  final int productQuantity;
+  final String createdAt;
+  final String updatedAt;
+  final int version;
+  final ParentCategory? parentId;
+
   CategoryItem({
-    this.id,
-    this.name,
-    this.image,
-    this.productQuantity,
+    required this.id,
+    required this.name,
+    required this.image,
+    required this.productQuantity,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.version,
     this.parentId,
-    this.createdAt,
-    this.updatedAt,
-    this.v,
   });
 
-  CategoryItem.fromJson(dynamic json) {
-    id = json['_id'];
-    name = json['name'];
-    image = json['image'];
-    productQuantity = json['product_quantity'];
-    parentId = json['parentId'] != null ? ParentIdInfo.fromJson(json['parentId']) : null;
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
-    v = json['__v'];
+  factory CategoryItem.fromJson(Map<String, dynamic> json) {
+    return CategoryItem(
+      id: json['_id'] as String,
+      name: json['name'] as String,
+      image: json['image'] as String,
+      productQuantity: json['product_quantity'] as int,
+      createdAt: json['createdAt'] as String,
+      updatedAt: json['updatedAt'] as String,
+      version: json['__v'] as int,
+      parentId: json['parentId'] != null
+          ? ParentCategory.fromJson(json['parentId'] as Map<String, dynamic>)
+          : null,
+    );
   }
-  String? id;
-  String? name;
-  String? image;
-  int? productQuantity;
-  ParentIdInfo? parentId;
-  String? createdAt;
-  String? updatedAt;
-  int? v;
 
   Map<String, dynamic> toJson() {
-    final map = <String, dynamic>{};
-    map['_id'] = id;
-    map['name'] = name;
-    map['image'] = image;
-    map['product_quantity'] = productQuantity;
-    if (parentId != null) map['parentId'] = parentId?.toJson();
-    map['createdAt'] = createdAt;
-    map['updatedAt'] = updatedAt;
-    map['__v'] = v;
-    return map;
+    return {
+      '_id': id,
+      'name': name,
+      'image': image,
+      'product_quantity': productQuantity,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
+      '__v': version,
+      'parentId': parentId?.toJson(),
+    };
   }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return other is CategoryItem && other.id == id;
-  }
-
-  @override
-  int get hashCode => id.hashCode;
 }
-class ParentIdInfo {
-  ParentIdInfo({this.id, this.name});
 
-  ParentIdInfo.fromJson(dynamic json) {
-    id = json['_id'];
-    name = json['name'];
+class ParentCategory {
+  final String id;
+  final String name;
+
+  ParentCategory({
+    required this.id,
+    required this.name,
+  });
+
+  factory ParentCategory.fromJson(Map<String, dynamic> json) {
+    return ParentCategory(
+      id: json['_id'] as String,
+      name: json['name'] as String,
+    );
   }
-  String? id;
-  String? name;
 
   Map<String, dynamic> toJson() {
-    final map = <String, dynamic>{};
-    map['_id'] = id;
-    map['name'] = name;
-    return map;
+    return {
+      '_id': id,
+      'name': name,
+    };
   }
 }

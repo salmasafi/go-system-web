@@ -2,11 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/custom_floating_action_button.dart';
-import '../../../../../../core/widgets/custom_text_field_widget.dart';
+import 'package:systego/core/widgets/app_bar_widgets.dart';
+import 'package:systego/core/widgets/custom_text_field_widget.dart';
+import 'package:systego/features/home/presentation/screens/categories_screen/view/widgets/category_card_widget.dart';
+import 'package:systego/features/home/presentation/screens/categories_screen/view/widgets/delete_category_dialog.dart';
+import '../../../../../../core/widgets/custom_error/custom_empty_state.dart';
+import '../../../../../../core/widgets/custom_error/custom_error_state.dart';
+import '../../../../../../core/widgets/custom_loading/custom_loading_state.dart';
 import '../logic/cubit/categories_cubit.dart';
 import '../logic/cubit/categories_states.dart';
+import '../logic/model/get_categories_model.dart';
 import 'create_category_screen.dart';
+import 'edit_category_screen.dart';
 
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});
@@ -23,12 +30,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   void initState() {
     super.initState();
     CategoriesCubit.get(context).getCategories();
-
-    // Add listener to search field
     _controller.addListener(() {
-      setState(() {
-        _searchQuery = _controller.text.toLowerCase().trim();
-      });
+      setState(() => _searchQuery = _controller.text.toLowerCase().trim());
     });
   }
 
@@ -38,217 +41,193 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     super.dispose();
   }
 
-  // Filter categories based on search query
-  List<dynamic> _getFilteredCategories(List<dynamic> categories) {
-    if (_searchQuery.isEmpty) {
-      return categories;
-    }
-
-    return categories.where((cat) {
-      final name = (cat.name ?? '').toLowerCase();
-      return name.contains(_searchQuery);
-    }).toList();
+  List<CategoryItem> _getFilteredCategories(List<CategoryItem> categories) {
+    if (_searchQuery.isEmpty) return categories;
+    return categories
+        .where((cat) => cat.name.toLowerCase().contains(_searchQuery))
+        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    var width = ResponsiveUI.screenWidth(context);
-    var height = ResponsiveUI.screenHeight(context);
-
-    return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.symmetric(vertical: 0.05 * height),
-        child: Column(
-          children: [
-            Row(
+    return BlocListener<CategoriesCubit, CategoriesState>(
+      listener: (context, state) {
+        if (state is DeleteCategorySuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
+              ),
+              margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
+            ),
+          );
+          CategoriesCubit.get(context).getCategories();
+        } else if (state is DeleteCategoryError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.error),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
+              ),
+              margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
+            ),
+          );
+        }
+      },
+      child: Scaffold(
+        appBar: appBarWithActions(
+          context,
+          "Categories",
+              () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => AddCategoryScreen()),
+            );
+            if (result == true && mounted) {
+              CategoriesCubit.get(context).getCategories();
+            }
+          },
+          showActions: true,
+        ),
+        backgroundColor: Colors.grey[100],
+        body: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: ResponsiveUI.contentMaxWidth(context)),
+            child: Column(
               children: [
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: Icon(Icons.arrow_back),
+                Container(
+                  margin: EdgeInsets.symmetric(
+                    horizontal: ResponsiveUI.horizontalPadding(context),
+                    vertical: ResponsiveUI.spacing(context, 12),
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: ResponsiveUI.borderRadius(context, 8),
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: CustomTextField(
+                    controller: _controller,
+                    labelText: '',
+                    hintText: 'Search categories...',
+                    prefixIcon: Icons.search,
+                    hasBoxDecoration: false,
+                    hasBorder: false,
+                    prefixIconColor: AppColors.darkGray.withOpacity(0.7),
+                  ),
                 ),
                 Expanded(
-                  child: Text(
-                    "Categories",
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.darkGray,
-                    ),
+                  child: BlocBuilder<CategoriesCubit, CategoriesState>(
+                    builder: (context, state) {
+                      if (state is GetCategoriesLoading) {
+                        return Center(
+                          child: CustomLoadingState(
+                            size: ResponsiveUI.iconSize(context, 60),
+                          ),
+                        );
+                      }
+
+                      if (state is GetCategoriesError) {
+                        return CustomErrorState(
+                          message: state.error,
+                          onRetry: () => CategoriesCubit.get(context).getCategories(),
+                        );
+                      }
+
+                      final cubit = CategoriesCubit.get(context);
+                      final filteredCategories = _getFilteredCategories(cubit.allCategories);
+
+                      if (filteredCategories.isEmpty) {
+                        return CustomEmptyState(
+                          icon: _searchQuery.isEmpty ? Icons.category : Icons.search_off,
+                          title: _searchQuery.isEmpty ? 'No Categories Available' : 'No Results Found',
+                          message: _searchQuery.isEmpty
+                              ? 'Add a new category to get started'
+                              : 'No categories match "$_searchQuery"',
+                          actionLabel: _searchQuery.isEmpty ? 'Add a Category' : null,
+                          onAction: _searchQuery.isEmpty
+                              ? () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => AddCategoryScreen()),
+                          ).then((result) {
+                            if (result == true && mounted) {
+                              CategoriesCubit.get(context).getCategories();
+                            }
+                          })
+                              : null,
+                        );
+                      }
+
+                      return RefreshIndicator(
+                        color: AppColors.primaryBlue,
+                        backgroundColor: Colors.white,
+                        onRefresh: () => cubit.getCategories(),
+                        child: ListView.builder(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: ResponsiveUI.horizontalPadding(context),
+                            vertical: ResponsiveUI.spacing(context, 8),
+                          ),
+                          itemCount: filteredCategories.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: EdgeInsets.only(bottom: ResponsiveUI.spacing(context, 8)),
+                              child: CategoryCardWidget(
+                                category: filteredCategories[index],
+                                onEdit: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    backgroundColor: Colors.transparent,
+                                    builder: (context) => Padding(
+                                      padding: EdgeInsets.only(
+                                        bottom: MediaQuery.of(context).viewInsets.bottom,
+                                      ),
+                                      child: EditCategoryBottomSheet(
+                                        category: filteredCategories[index],
+                                      ),
+                                    ),
+                                  ).then((result) {
+                                    if (result == true && mounted) {
+                                      CategoriesCubit.get(context).getCategories();
+                                    }
+                                  });
+                                },
+                                onDelete: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (dialogContext) => DeleteCategoryDialog(
+                                      categoryName: filteredCategories[index].name,
+                                      onDelete: () {
+                                        Navigator.pop(dialogContext);
+                                        CategoriesCubit.get(context).deleteCategory(
+                                          filteredCategories[index].id,
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],
             ),
-            Container(
-              margin: EdgeInsets.symmetric(
-                horizontal: width * 0.03,
-                vertical: height * 0.03,
-              ),
-              child: CustomTextField(
-                controller: _controller,
-                labelText: 'Search',
-                hintText: 'Search by category name',
-                prefixIcon: Icons.search,
-                hasBoxDecoration: false,
-                hasBorder: true,
-                prefixIconColor: AppColors.darkGray,
-              ),
-            ),
-            Expanded(
-              child: BlocBuilder<CategoriesCubit, CategoriesState>(
-                builder: (context, state) {
-                  if (state is GetCategoriesLoading) {
-                    return Center(child: CircularProgressIndicator());
-                  }
-
-                  final cubit = CategoriesCubit.get(context);
-                  final filteredCategories = _getFilteredCategories(cubit.allCategories);
-
-                  if (cubit.allCategories.isEmpty) {
-                    return Center(child: Text('No categories found'));
-                  }
-
-                  if (filteredCategories.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.search_off,
-                            size: 64,
-                            color: Colors.grey[400],
-                          ),
-                          SizedBox(height: 16),
-                          Text(
-                            'No results found for "$_searchQuery"',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-
-                  return RefreshIndicator(
-                    onRefresh: () => cubit.getCategories(),
-                    child: ListView.builder(
-                      padding: EdgeInsets.symmetric(horizontal: width * 0.02),
-                      itemCount: filteredCategories.length,
-                      itemBuilder: (context, index) {
-                        var cat = filteredCategories[index];
-                        return Container(
-                          margin: EdgeInsets.only(bottom: height * 0.01),
-                          padding: EdgeInsets.all(width * 0.02),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 4,
-                                offset: Offset(0, 2),
-                              )
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: width * 0.15,
-                                height: width * 0.15,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[200],
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    cat.image ?? '',
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => Icon(
-                                      Icons.category,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: width * 0.03),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      cat.name ?? '',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    if (cat.parentId != null)
-                                      Text(
-                                        'Parent: ${cat.parentId!.name}',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    Text(
-                                      '${cat.productQuantity ?? 0} Products',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Column(
-                                children: [
-                                  IconButton(
-                                    icon: Icon(
-                                      Icons.edit,
-                                      color: AppColors.primaryBlue,
-                                      size: 20,
-                                    ),
-                                    onPressed: () {
-                                      // Edit functionality
-                                    },
-                                  ),
-                                  IconButton(
-                                    icon: Icon(
-                                      Icons.delete,
-                                      color: Colors.red,
-                                      size: 20,
-                                    ),
-                                    onPressed: () {
-                                      // Delete functionality
-                                    },
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
-      floatingActionButton: CustomFloatingActionButton(
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => AddCategoryScreen()),
-          );
-
-          if (result == true && mounted) {
-            CategoriesCubit.get(context).getCategories();
-          }
-        },
       ),
     );
   }

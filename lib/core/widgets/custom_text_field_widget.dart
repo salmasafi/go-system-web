@@ -85,7 +85,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         obscureText: widget.isPassword ? _obscure : false,
         validator: widget.validator,
         decoration: InputDecoration(
-          labelText: widget.labelText,
+          labelText: widget.labelText.isNotEmpty?widget.labelText:null,
           hintText: widget.hintText,
           labelStyle: const TextStyle(
             fontWeight: FontWeight.w600,
