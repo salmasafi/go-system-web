@@ -155,9 +155,8 @@ class CategoriesCubit extends Cubit<CategoriesState> {
 
       if (parentId != null && parentId.isNotEmpty) {
         data['parentId'] = parentId;
-      } else {
-        data['parentId'] = null;
       }
+      // Remove the else clause to avoid sending parentId: null
 
       final response = await DioHelper.putData(
         url: EndPoint.getCategoryById(categoryId),

@@ -136,7 +136,7 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
       },
       child: Container(
         constraints: BoxConstraints(maxWidth: maxWidth),
-        margin: EdgeInsets.symmetric(horizontal: isDesktop ? 20 : 0),
+        margin: EdgeInsets.symmetric(horizontal: isDesktop ? ResponsiveUI.padding(context, 20) : 0),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(ResponsiveUI.borderRadius(context, 24))),
@@ -147,7 +147,7 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
             height: ResponsiveUI.value(context, 300),
             padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
             child: const Center(
-              child: CustomLoadingState(),
+              child: CustomLoadingState(size: 60),
             ),
           )
               : SingleChildScrollView(
@@ -159,10 +159,10 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
                 Center(
                   child: Container(
                     width: ResponsiveUI.value(context, 40),
-                    height: 4,
+                    height: ResponsiveUI.value(context, 4),
                     decoration: BoxDecoration(
                       color: Colors.grey[300],
-                      borderRadius: const BorderRadius.all(Radius.circular(2)),
+                      borderRadius: BorderRadius.all(Radius.circular(ResponsiveUI.borderRadius(context, 2))),
                     ),
                   ),
                 ),
@@ -198,7 +198,7 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
                 GestureDetector(
                   onTap: _isLoading ? null : _pickImage,
                   child: Container(
-                    height: ResponsiveUI.value(context, 160),
+                    height: ResponsiveUI.value(context, 300),
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey[300]!, width: 1),
                       borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
@@ -212,13 +212,13 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
                         ),
                         if (_selectedImage != null || (_brand?.logo?.isNotEmpty ?? false))
                           Positioned(
-                            top: 8,
-                            right: 8,
+                            top: ResponsiveUI.padding(context, 8),
+                            right: ResponsiveUI.padding(context, 8),
                             child: Container(
-                              padding: const EdgeInsets.all(6),
+                              padding: EdgeInsets.all(ResponsiveUI.padding(context, 6)),
                               decoration: BoxDecoration(
                                 color: Colors.black54,
-                                borderRadius: BorderRadius.circular(6),
+                                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 6)),
                               ),
                               child: Icon(
                                 Icons.edit,
@@ -274,8 +274,8 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
                   ),
                   child: _isLoading
                       ? SizedBox(
-                    height: ResponsiveUI.value(context, 20),
-                    width: ResponsiveUI.value(context, 20),
+                    height: ResponsiveUI.iconSize(context, 20),
+                    width: ResponsiveUI.iconSize(context, 20),
                     child: const CircularProgressIndicator(
                       strokeWidth: 2,
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),

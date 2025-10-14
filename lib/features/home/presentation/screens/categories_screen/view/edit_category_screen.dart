@@ -33,7 +33,6 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
     _nameController = TextEditingController(text: widget.category.name);
     _selectedParentId = widget.category.parentId?.id;
     CategoriesCubit.get(context).getCategories(); // Ensure parentCategories is populated
-    Future.microtask(() => setState(() => _isLoading = false));
   }
 
   @override
@@ -67,12 +66,23 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
       );
       return;
     }
-    CategoriesCubit.get(context).updateCategory(
-      categoryId: widget.category.id,
-      name: _nameController.text.trim(),
-      imageFile: _selectedImage,
-      parentId: _selectedParentId,
-    );
+
+    // Only send parentId if it's not null (i.e., user selected a parent category)
+    if (_selectedParentId != null) {
+      CategoriesCubit.get(context).updateCategory(
+        categoryId: widget.category.id,
+        name: _nameController.text.trim(),
+        imageFile: _selectedImage,
+        parentId: _selectedParentId,
+      );
+    } else {
+      // Don't send parentId at all if none selected
+      CategoriesCubit.get(context).updateCategory(
+        categoryId: widget.category.id,
+        name: _nameController.text.trim(),
+        imageFile: _selectedImage,
+      );
+    }
   }
 
   @override
@@ -88,8 +98,10 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
 
     return BlocListener<CategoriesCubit, CategoriesState>(
       listener: (context, state) {
-        if (state is UpdateCategoryLoading) {
+        if (state is GetCategoriesLoading || state is UpdateCategoryLoading) {
           setState(() => _isLoading = true);
+        } else if (state is GetCategoriesSuccess || state is GetCategoriesError) {
+          setState(() => _isLoading = false);
         } else if (state is UpdateCategorySuccess) {
           setState(() => _isLoading = false);
           ScaffoldMessenger.of(context).showSnackBar(
@@ -275,7 +287,7 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                 GestureDetector(
                   onTap: _isLoading ? null : _pickImage,
                   child: Container(
-                    height: ResponsiveUI.value(context, 160),
+                    height: ResponsiveUI.value(context, 300),
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey[300]!, width: 1),
                       borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
@@ -319,7 +331,8 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                   ),
                   textAlign: TextAlign.center,
                 )
-                    : Row(
+                    : _selectedImage != null
+                    ? Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
@@ -337,7 +350,8 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                       ),
                     ),
                   ],
-                ),
+                )
+                    : const SizedBox.shrink(),
                 SizedBox(height: ResponsiveUI.spacing(context, 16)),
                 ElevatedButton(
                   onPressed: _isLoading ? null : _submitUpdate,
