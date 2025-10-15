@@ -20,6 +20,7 @@ dependencies:
   shimmer: ^3.0.0
   shimmer_animation: ^2.2.2
   dropdown_search: ^5.0.6
+  simple_barcode_scanner: ^0.3.0
 
 
 dev_dependencies:
