@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
-import '../../../../../../../core/constants/app_colors.dart';
+import 'package:systego/core/constants/app_colors.dart';
+import 'package:systego/core/utils/responsive_ui.dart';
 import '../../../../../../../core/widgets/custom_gradient_divider.dart';
 import '../../../../../../../core/widgets/custom_icon_container.dart';
 import '../../../../../../../core/widgets/custom_popup_menu.dart';
@@ -75,6 +75,10 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
 
   @override
   Widget build(BuildContext context) {
+    final paddingValue = ResponsiveUI.padding(context, 18);
+    final borderRadiusValue = ResponsiveUI.borderRadius(context, 20);
+    final marginBottom = ResponsiveUI.padding(context, 16);
+
     return SlideTransition(
       position: _slideAnimation,
       child: FadeTransition(
@@ -82,7 +86,7 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
         child: ScaleTransition(
           scale: _scaleAnimation,
           child: Container(
-            margin: const EdgeInsets.only(bottom: 16),
+            margin: EdgeInsets.only(bottom: marginBottom),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
@@ -92,12 +96,12 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(borderRadiusValue),
               boxShadow: [
                 BoxShadow(
                   color: AppColors.primaryBlue.withOpacity(0.15),
-                  blurRadius: 15,
-                  offset: const Offset(0, 5),
+                  blurRadius: ResponsiveUI.value(context, 15),
+                  offset: Offset(0, ResponsiveUI.value(context, 5)),
                 ),
               ],
             ),
@@ -105,18 +109,18 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
               color: Colors.transparent,
               child: InkWell(
                 onTap: widget.onTap,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(borderRadiusValue),
                 child: Padding(
-                  padding: const EdgeInsets.all(18),
+                  padding: EdgeInsets.all(paddingValue),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildCardHeader(),
-                      const SizedBox(height: 16),
+                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
                       CustomGradientDivider(),
-                      const SizedBox(height: 16),
+                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
                       _buildStatsRow(),
-                      const SizedBox(height: 12),
+                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
                       _buildContactRow(),
                     ],
                   ),
@@ -130,16 +134,25 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
   }
 
   Widget _buildCardHeader() {
+    final iconSize = ResponsiveUI.iconSize(context, 30);
+    final fontSizeName = ResponsiveUI.fontSize(context, 19);
+    final fontSizeAddress = ResponsiveUI.fontSize(context, 14);
+    final spacing12 = ResponsiveUI.spacing(context, 12);
+    final spacing6 = ResponsiveUI.spacing(context, 6);
+    final spacing4 = ResponsiveUI.spacing(context, 4);
+    final spacing14 = ResponsiveUI.spacing(context, 14);
+    final iconSizeLocation = ResponsiveUI.iconSize(context, 15);
+
     return Row(
       children: [
         CustomIconContainer(
           icon: Icons.warehouse,
-          size: 30,
+          size: iconSize,
           gradient: LinearGradient(
             colors: [AppColors.primaryBlue, AppColors.darkBlue],
           ),
         ),
-        const SizedBox(width: 14),
+        SizedBox(width: spacing14),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,25 +160,25 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
               Text(
                 widget.warehouse.name ?? 'Warehouse',
                 style: TextStyle(
-                  fontSize: 19,
+                  fontSize: fontSizeName,
                   fontWeight: FontWeight.bold,
                   color: AppColors.darkGray,
                 ),
               ),
-              const SizedBox(height: 6),
+              SizedBox(height: spacing6),
               Row(
                 children: [
                   Icon(
                     Icons.location_on,
-                    size: 15,
+                    size: iconSizeLocation,
                     color: AppColors.red,
                   ),
-                  const SizedBox(width: 4),
+                  SizedBox(width: spacing4),
                   Expanded(
                     child: Text(
                       widget.warehouse.address ?? 'No address',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: fontSizeAddress,
                         color: AppColors.darkGray.withOpacity(0.6),
                       ),
                       maxLines: 1,
@@ -187,6 +200,8 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
   }
 
   Widget _buildStatsRow() {
+    final spacing10 = ResponsiveUI.spacing(context, 10);
+
     return Row(
       children: [
         Expanded(
@@ -196,7 +211,7 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
             color: AppColors.successGreen,
           ),
         ),
-        const SizedBox(width: 10),
+        SizedBox(width: spacing10),
         Expanded(
           child: CustomStatChip(
             icon: Icons.storage,
@@ -209,29 +224,34 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
   }
 
   Widget _buildContactRow() {
+    final iconSize16 = ResponsiveUI.iconSize(context, 16);
+    final fontSize13 = ResponsiveUI.fontSize(context, 13);
+    final spacing6 = ResponsiveUI.spacing(context, 6);
+    final spacing12 = ResponsiveUI.spacing(context, 12);
+
     return Row(
       children: [
-        Icon(Icons.phone, size: 16, color: AppColors.categoryPurple),
-        const SizedBox(width: 6),
+        Icon(Icons.phone, size: iconSize16, color: AppColors.categoryPurple),
+        SizedBox(width: spacing6),
         Expanded(
           child: Text(
             widget.warehouse.phone ?? 'No phone',
             style: TextStyle(
-              fontSize: 13,
+              fontSize: fontSize13,
               color: AppColors.darkGray.withOpacity(0.7),
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ),
-        const SizedBox(width: 12),
-        Icon(Icons.email, size: 16, color: AppColors.warningOrange),
-        const SizedBox(width: 6),
+        SizedBox(width: spacing12),
+        Icon(Icons.email, size: iconSize16, color: AppColors.warningOrange),
+        SizedBox(width: spacing6),
         Expanded(
           child: Text(
             widget.warehouse.email ?? 'No email',
             style: TextStyle(
-              fontSize: 13,
+              fontSize: fontSize13,
               color: AppColors.darkGray.withOpacity(0.7),
             ),
             maxLines: 1,

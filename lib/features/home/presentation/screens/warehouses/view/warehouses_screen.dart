@@ -4,6 +4,7 @@ import 'package:systego/features/home/presentation/screens/warehouses/view/wareh
 import 'package:systego/features/home/presentation/screens/warehouses/view/widgets/animated_warehouse_card.dart';
 import 'package:systego/features/home/presentation/screens/warehouses/view/widgets/custom_delete_dialog.dart';
 import '../../../../../../core/constants/app_colors.dart';
+import '../../../../../../core/utils/responsive_ui.dart';
 import '../../../../../../core/widgets/app_bar_widgets.dart';
 import '../../../../../../core/widgets/custom_error/custom_empty_state.dart';
 import '../../../../../../core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
@@ -139,7 +140,7 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
                       },
                       color: AppColors.primaryBlue,
                       child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
                         itemCount: _filteredWarehouses.length,
                         itemBuilder: (context, index) {
                           return AnimatedWarehouseCard(
@@ -170,9 +171,10 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
           );
         },
         backgroundColor: AppColors.primaryBlue,
-        child: const Icon(
+        child: Icon(
           Icons.add,
           color: Colors.white,
+          size: ResponsiveUI.iconSize(context, 24),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -253,3 +255,4 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
       ..showSnackBar(snackBar);
   }
 }
+

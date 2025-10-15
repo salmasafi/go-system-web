@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
-import '../../../../../../../core/constants/app_colors.dart';
+import 'package:systego/core/constants/app_colors.dart';
+import 'package:systego/core/utils/responsive_ui.dart';
 
 class CustomDeleteDialog extends StatelessWidget {
   final String title;
@@ -24,19 +24,26 @@ class CustomDeleteDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final paddingValue = ResponsiveUI.padding(context, 24);
+    final iconSize = ResponsiveUI.iconSize(context, 50);
+    final fontSizeTitle = ResponsiveUI.fontSize(context, 22);
+    final fontSizeMessage = ResponsiveUI.fontSize(context, 14);
+    final buttonPadding = ResponsiveUI.padding(context, 14);
+    final borderRadius = ResponsiveUI.borderRadius(context, 24);
+
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(paddingValue),
         decoration: BoxDecoration(
           color: AppColors.white,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(borderRadius),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
               decoration: BoxDecoration(
                 color: (iconColor ?? AppColors.red).withOpacity(0.1),
                 shape: BoxShape.circle,
@@ -44,49 +51,49 @@ class CustomDeleteDialog extends StatelessWidget {
               child: Icon(
                 icon ?? Icons.warning_amber_rounded,
                 color: iconColor ?? AppColors.red,
-                size: 50,
+                size: iconSize,
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: ResponsiveUI.spacing(context, 20)),
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 22,
+              style: TextStyle(
+                fontSize: fontSizeTitle,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: ResponsiveUI.spacing(context, 12)),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14),
+              style: TextStyle(fontSize: fontSizeMessage),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: ResponsiveUI.spacing(context, 24)),
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () => Navigator.pop(context),
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: EdgeInsets.symmetric(vertical: buttonPadding),
                       side: BorderSide(color: AppColors.lightGray),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                       ),
                     ),
                     child: Text(cancelText ?? 'Cancel'),
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: ResponsiveUI.spacing(context, 12)),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: onDelete,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: iconColor ?? AppColors.red,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: EdgeInsets.symmetric(vertical: buttonPadding),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                       ),
                     ),
                     child: Text(deleteText ?? 'Delete'),

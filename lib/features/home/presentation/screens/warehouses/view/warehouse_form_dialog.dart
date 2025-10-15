@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/features/home/presentation/screens/warehouses/view/widgets/wisgets_add_edit/warehouse_dialog_buttons.dart';
 import 'package:systego/features/home/presentation/screens/warehouses/view/widgets/wisgets_add_edit/warehouse_dialog_form.dart';
 import 'package:systego/features/home/presentation/screens/warehouses/view/widgets/wisgets_add_edit/warehouse_dialog_header.dart';
@@ -71,6 +72,11 @@ class _WarehouseFormDialogState extends State<WarehouseFormDialog>
 
   @override
   Widget build(BuildContext context) {
+    final maxWidth = ResponsiveUI.isMobile(context)
+        ? ResponsiveUI.screenWidth(context) * 0.95
+        : ResponsiveUI.contentMaxWidth(context);
+    final maxHeight = ResponsiveUI.screenHeight(context) * 0.85;
+
     return ScaleTransition(
       scale: _scaleAnimation,
       child: Dialog(
@@ -83,7 +89,10 @@ class _WarehouseFormDialogState extends State<WarehouseFormDialog>
                 state is WarehouseUpdating;
 
             return Container(
-              constraints: const BoxConstraints(maxWidth: 500, maxHeight: 650),
+              constraints: BoxConstraints(
+                  maxWidth: maxWidth,
+                  maxHeight: maxHeight
+              ),
               decoration: _buildDialogDecoration(),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -120,12 +129,12 @@ class _WarehouseFormDialogState extends State<WarehouseFormDialog>
   BoxDecoration _buildDialogDecoration() {
     return BoxDecoration(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 24)),
       boxShadow: [
         BoxShadow(
           color: Colors.black.withOpacity(0.2),
-          blurRadius: 30,
-          offset: const Offset(0, 10),
+          blurRadius: ResponsiveUI.value(context, 30),
+          offset: Offset(0, ResponsiveUI.value(context, 10)),
         ),
       ],
     );
@@ -141,15 +150,17 @@ class _WarehouseFormDialogState extends State<WarehouseFormDialog>
         SnackBar(
           content: Row(
             children: [
-              const Icon(Icons.error_outline, color: Colors.white),
-              const SizedBox(width: 12),
+              Icon(Icons.error_outline,
+                  color: Colors.white,
+                  size: ResponsiveUI.iconSize(context, 20)),
+              SizedBox(width: ResponsiveUI.spacing(context, 12)),
               Expanded(child: Text(state.message)),
             ],
           ),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 10)),
           ),
         ),
       );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
+import 'package:systego/core/utils/responsive_ui.dart';
 
 class WarehouseDialogButtons extends StatelessWidget {
   final bool isEditMode;
@@ -17,13 +18,26 @@ class WarehouseDialogButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final padding24 = ResponsiveUI.padding(context, 24);
+    final borderRadius24 = ResponsiveUI.borderRadius(context, 24);
+    final borderRadius12 = ResponsiveUI.borderRadius(context, 12);
+    final padding16 = ResponsiveUI.padding(context, 16);
+    final value1_5 = ResponsiveUI.value(context, 1.5);
+    final fontSize16 = ResponsiveUI.fontSize(context, 16);
+    final padding12 = ResponsiveUI.padding(context, 12);
+    final value14 = ResponsiveUI.fontSize(context, 14);
+    final iconSize20 = ResponsiveUI.iconSize(context, 20);
+    final spacing8 = ResponsiveUI.spacing(context, 8);
+    final spacing16 = ResponsiveUI.spacing(context, 16);
+    final value3 = ResponsiveUI.value(context, 300);
+
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(padding24),
       decoration: BoxDecoration(
         color: Colors.grey[50],
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(24),
-          bottomRight: Radius.circular(24),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(borderRadius24),
+          bottomRight: Radius.circular(borderRadius24),
         ),
       ),
       child: Row(
@@ -32,26 +46,26 @@ class WarehouseDialogButtons extends StatelessWidget {
             child: OutlinedButton(
               onPressed: isLoading ? null : onCancel,
               style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.symmetric(vertical: padding16),
                 side: BorderSide(
                   color: Colors.grey[300]!,
-                  width: 1.5,
+                  width: value1_5,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(borderRadius12),
                 ),
               ),
               child: Text(
                 'Cancel',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: fontSize16,
                   fontWeight: FontWeight.w600,
                   color: Colors.grey[700],
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: spacing16),
           Expanded(
             flex: 2,
             child: ElevatedButton(
@@ -59,9 +73,9 @@ class WarehouseDialogButtons extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryBlue,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                padding: EdgeInsets.symmetric(vertical: padding16, horizontal: padding12),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(borderRadius12),
                 ),
                 elevation: 0,
               ),
@@ -71,14 +85,14 @@ class WarehouseDialogButtons extends StatelessWidget {
                 children: [
                   Icon(
                     isEditMode ? Icons.check_circle_outline : Icons.add_circle_outline,
-                    size: 20,
+                    size: iconSize20,
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: spacing8),
                   Flexible(
                     child: Text(
                       isEditMode ? 'Update Warehouse' : 'Create Warehouse',
-                      style: const TextStyle(
-                        fontSize: 14,
+                      style: TextStyle(
+                        fontSize: value14,
                         fontWeight: FontWeight.bold,
                       ),
                       overflow: TextOverflow.ellipsis,

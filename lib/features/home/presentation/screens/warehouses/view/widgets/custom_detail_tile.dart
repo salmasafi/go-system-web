@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
-import '../../../../../../../core/constants/app_colors.dart';
+import 'package:systego/core/constants/app_colors.dart';
+import 'package:systego/core/utils/responsive_ui.dart';
 
 class CustomDetailTile extends StatelessWidget {
   final String label;
@@ -21,15 +21,15 @@ class CustomDetailTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 8)),
       child: Row(
         children: [
           Icon(
             icon,
-            size: 20,
+            size: ResponsiveUI.iconSize(context, 20),
             color: iconColor ?? AppColors.primaryBlue,
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: ResponsiveUI.spacing(context, 12)),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,15 +37,15 @@ class CustomDetailTile extends StatelessWidget {
                 Text(
                   label,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: ResponsiveUI.fontSize(context, 12),
                     color: AppColors.darkGray.withOpacity(0.6),
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: ResponsiveUI.spacing(context, 4)),
                 Text(
                   value,
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: ResponsiveUI.fontSize(context, 15),
                     fontWeight: FontWeight.w600,
                     color: valueColor ?? AppColors.darkGray,
                   ),

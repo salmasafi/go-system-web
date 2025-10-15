@@ -27,12 +27,11 @@ class ResponsiveUI {
     return 1.5; // Large desktop
   }
 
-  // Base responsive value calculator - أدخل قيمة الموبايل فقط
+  // Base responsive value calculator
   static double value(BuildContext context, double mobileValue) {
     return mobileValue * scaleFactor(context);
   }
-
-  // اختصارات للاستخدام - كلها تعتمد على قيمة الموبايل
+  // Get responsive values
   static double fontSize(BuildContext context, double mobileSize) {
     return value(context, mobileSize);
   }
@@ -64,9 +63,9 @@ class ResponsiveUI {
 
   // Get grid columns based on screen size
   static int gridColumns(BuildContext context) {
-    if (isDesktop(context)) return 2;
+    if (isDesktop(context)) return 3;
     if (isTablet(context)) return 2;
-    return 2;
+    return 1;
   }
 
   // Responsive image aspect ratio

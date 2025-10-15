@@ -51,7 +51,7 @@ class WareHouseCubit extends Cubit<WarehousesState> {
     }
   }
 
-  // Create Warehouse
+  /// Create Warehouse
   Future<void> createWarehouse({
     required String name,
     required String address,
@@ -95,7 +95,7 @@ class WareHouseCubit extends Cubit<WarehousesState> {
     }
   }
 
-  // Update Warehouse
+  /// Update Warehouse
   Future<void> updateWarehouse({
     required String warehouseId,
     required String name,
@@ -140,7 +140,7 @@ class WareHouseCubit extends Cubit<WarehousesState> {
     }
   }
 
-  // Delete Warehouse
+  /// Delete Warehouse
   Future<void> deleteWarehouse({required String warehouseId}) async {
     emit(WarehouseDeleting());
 
@@ -160,12 +160,12 @@ class WareHouseCubit extends Cubit<WarehousesState> {
       if (response.statusCode == 200) {
         log(' Warehouse deleted successfully');
 
-        // Remove from local list
+        /// Remove from local list
         warehouses.removeWhere((warehouse) => warehouse.id == warehouseId);
 
         emit(WarehouseDeleted());
 
-        // Refresh warehouses list
+        /// Refresh warehouses list
         await getWarehouses();
       } else {
         log(' Failed to delete warehouse: ${response.statusCode}');

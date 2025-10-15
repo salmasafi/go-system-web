@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:systego/core/utils/responsive_ui.dart';
 
 class CustomStatChip extends StatelessWidget {
   final IconData icon;
@@ -19,24 +20,29 @@ class CustomStatChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: EdgeInsets.symmetric(
+          horizontal: ResponsiveUI.padding(context, 12),
+          vertical: ResponsiveUI.padding(context, 10)
+      ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [color.withOpacity(0.15), color.withOpacity(0.05)],
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
         border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: iconSize ?? 18, color: color),
-          const SizedBox(width: 6),
+          Icon(icon,
+              size: ResponsiveUI.iconSize(context, iconSize ?? 18),
+              color: color),
+          SizedBox(width: ResponsiveUI.spacing(context, 6)),
           Flexible(
             child: Text(
               label,
               style: TextStyle(
-                fontSize: fontSize ?? 12,
+                fontSize: ResponsiveUI.fontSize(context, fontSize ?? 12),
                 fontWeight: FontWeight.w600,
                 color: color,
               ),

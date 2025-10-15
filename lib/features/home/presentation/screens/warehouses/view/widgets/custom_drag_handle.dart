@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
-import '../../../../../../../core/constants/app_colors.dart';
+import 'package:systego/core/constants/app_colors.dart';
+import 'package:systego/core/utils/responsive_ui.dart';
 
 class CustomDragHandle extends StatelessWidget {
   final double? width;
@@ -18,11 +18,11 @@ class CustomDragHandle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        width: width ?? 50,
-        height: height ?? 5,
+        width: ResponsiveUI.value(context, width ?? 50),
+        height: ResponsiveUI.value(context, height ?? 5),
         decoration: BoxDecoration(
           color: color ?? AppColors.lightGray,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 10)),
         ),
       ),
     );
