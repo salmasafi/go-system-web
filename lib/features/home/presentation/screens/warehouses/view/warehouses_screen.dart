@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:systego/core/constants/app_colors.dart';
+import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/core/widgets/app_bar_widgets.dart';
+import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
+import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
+import 'package:systego/core/widgets/custom_warehouse_details_sheet.dart';
 import 'package:systego/features/home/presentation/screens/warehouses/view/widgets/animated_warehouse_card.dart';
 import 'package:systego/features/home/presentation/screens/warehouses/view/widgets/custom_delete_dialog.dart';
-import '../../../../../../core/constants/app_colors.dart';
-import '../../../../../../core/widgets/app_bar_widgets.dart';
-import '../../../../../../core/widgets/custom_error/custom_empty_state.dart';
-import '../../../../../../core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
-import '../../../../../../core/widgets/custom_warehouse_details_sheet.dart';
 import '../cubit/warehouse_cubit.dart';
 import '../cubit/warehouse_state.dart';
 import '../data/model/ware_house_model.dart';
@@ -33,53 +34,58 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
       appBar: appBarWithActions(
         context,
         'Warehouses',
-        () => Navigator.pushNamed(context, '/add-warehouse-screen'),
+            () => Navigator.pushNamed(context, '/add-warehouse-screen'),
       ),
-      body: BlocConsumer<WareHouseCubit, WarehousesState>(
-        listener: (context, state) {
-          if (state is WarehousesError) {
-            _showErrorSnackbar(context, state.message);
-          }
-        },
-        builder: (context, state) {
-          if (state is WarehousesLoading) {
-            return const CustomLoadingShimmer();
-          }
-
-          final warehouses = context.read<WareHouseCubit>().warehouses;
-
-          if (warehouses.isEmpty) {
-            return CustomEmptyState(
-              icon: Icons.warehouse_outlined,
-              title: 'No Warehouses Found',
-              message: 'Add your first warehouse to get started',
-              onRefresh: () async =>
-                  await context.read<WareHouseCubit>().getWarehouses(),
-            );
-          }
-
-          return RefreshIndicator(
-            onRefresh: () async {
-              await context.read<WareHouseCubit>().getWarehouses();
+      body: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: ResponsiveUI.contentMaxWidth(context)),
+          child: BlocConsumer<WareHouseCubit, WarehousesState>(
+            listener: (context, state) {
+              if (state is WarehousesError) {
+                _showErrorSnackbar(context, state.message);
+              }
             },
-            color: AppColors.primaryBlue,
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: warehouses.length,
-              itemBuilder: (context, index) {
-                return AnimatedWarehouseCard(
-                  warehouse: warehouses[index],
-                  index: index,
-                  onTap: () =>
-                      _showWarehouseDetails(context, warehouses[index]),
-                  onEdit: () {},
-                  onDelete: () =>
-                      _showDeleteDialog(context, warehouses[index].id ?? ''),
+            builder: (context, state) {
+              if (state is WarehousesLoading) {
+                return CustomLoadingShimmer(
                 );
-              },
-            ),
-          );
-        },
+              }
+
+              final warehouses = context.read<WareHouseCubit>().warehouses;
+
+              if (warehouses.isEmpty) {
+                return CustomEmptyState(
+                  icon: Icons.warehouse_outlined,
+                  title: 'No Warehouses Found',
+                  message: 'Add your first warehouse to get started',
+                );
+              }
+
+              return RefreshIndicator(
+                onRefresh: () async {
+                  await context.read<WareHouseCubit>().getWarehouses();
+                },
+                color: AppColors.primaryBlue,
+                child: ListView.builder(
+                  padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+                  itemCount: warehouses.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: EdgeInsets.only(bottom: ResponsiveUI.spacing(context, 8)),
+                      child: AnimatedWarehouseCard(
+                        warehouse: warehouses[index],
+                        index: index,
+                        onTap: () => _showWarehouseDetails(context, warehouses[index]),
+                        onEdit: () {},
+                        onDelete: () => _showDeleteDialog(context, warehouses[index].id ?? ''),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        ),
       ),
     );
   }
@@ -93,6 +99,11 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
         title: 'Error!',
         message: message,
         contentType: ContentType.failure,
+
+      ),
+      margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
       ),
     );
 
@@ -106,7 +117,9 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
       backgroundColor: Colors.transparent,
       context: context,
       isScrollControlled: true,
-      builder: (context) => CustomWarehouseDetailsSheet(warehouse: warehouse),
+      builder: (context) => CustomWarehouseDetailsSheet(
+        warehouse: warehouse,
+      ),
     );
   }
 
@@ -117,11 +130,9 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
       context: context,
       builder: (dialogContext) => CustomDeleteDialog(
         title: 'Delete Warehouse',
-        message:
-            'Are you sure you want to delete this warehouse? This action cannot be undone.',
+        message: 'Are you sure you want to delete this warehouse? This action cannot be undone.',
         onDelete: () {
           Navigator.pop(dialogContext);
-          // Simulate delete success
           _showSuccessSnackbar(context, 'Warehouse deleted successfully!');
         },
       ),
@@ -137,6 +148,11 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
         title: 'Success!',
         message: message,
         contentType: ContentType.success,
+
+      ),
+      margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
       ),
     );
 
