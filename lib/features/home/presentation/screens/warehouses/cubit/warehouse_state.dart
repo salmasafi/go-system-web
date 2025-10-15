@@ -13,3 +13,14 @@ class WarehousesLoading extends WarehousesState {}
 
 class WarehousesSuccess extends WarehousesState {}
 
+// Create States
+class WarehouseCreating extends WarehousesState {}
+class WarehouseCreated extends WarehousesState {}
+
+// Update States
+class WarehouseUpdating extends WarehousesState {}
+class WarehouseUpdated extends WarehousesState {}
+
+// Delete States
+class WarehouseDeleting extends WarehousesState {}
+class WarehouseDeleted extends WarehousesState {}

@@ -20,36 +20,108 @@ class CustomPopupMenu extends StatelessWidget {
       decoration: BoxDecoration(
         color: backgroundColor ?? AppColors.lightBlueBackground,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: PopupMenuButton(
-        icon: Icon(Icons.more_vert, color: AppColors.darkGray),
+        icon: Icon(
+          Icons.more_vert,
+          color: AppColors.darkGray,
+          size: 24,
+        ),
+        offset: const Offset(0, 45),
+        elevation: 8,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        itemBuilder: (context) => [
-          if (onEdit != null)
-            PopupMenuItem(
-              onTap: onEdit,
-              child: Row(
-                children: [
-                  Icon(Icons.edit, color: AppColors.primaryBlue, size: 20),
-                  const SizedBox(width: 12),
-                  const Text('Edit', style: TextStyle(fontWeight: FontWeight.w500)),
-                ],
+        color: Colors.white,
+        itemBuilder: (context) {
+          List<PopupMenuEntry<dynamic>> items = [];
+
+          if (onEdit != null) {
+            items.add(
+              PopupMenuItem(
+                onTap: onEdit,
+                height: 50,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryBlue.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.edit_outlined,
+                          color: AppColors.primaryBlue,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'Edit',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          if (onDelete != null)
-            PopupMenuItem(
-              onTap: onDelete,
-              child: Row(
-                children: [
-                  Icon(Icons.delete, color: AppColors.red, size: 20),
-                  const SizedBox(width: 12),
-                  const Text('Delete', style: TextStyle(fontWeight: FontWeight.w500)),
-                ],
+            );
+          }
+
+          if (onEdit != null && onDelete != null) {
+            items.add(const PopupMenuDivider(height: 1));
+          }
+
+          if (onDelete != null) {
+            items.add(
+              PopupMenuItem(
+                onTap: onDelete,
+                height: 50,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.red.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.delete_outline,
+                          color: AppColors.red,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Delete',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          color: AppColors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
-        ],
+            );
+          }
+
+          return items;
+        },
       ),
     );
   }

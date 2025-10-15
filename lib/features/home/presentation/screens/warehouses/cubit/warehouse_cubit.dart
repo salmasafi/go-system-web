@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/features/home/presentation/screens/warehouses/cubit/warehouse_state.dart';
 
@@ -13,97 +15,165 @@ class WareHouseCubit extends Cubit<WarehousesState> {
   WareHouseModel? warehouseModel;
   List<Warehouses> warehouses = [];
 
-  // Method لجلب الـ warehouses
   Future<void> getWarehouses() async {
     emit(WarehousesLoading());
 
     try {
-      // جلب الـ token من الـ cache
       final token = CacheHelper.getData(key: 'token');
 
-      print('🔑 Token: $token');
+      log(' Token: $token');
 
-      // عمل request للـ API
       final response = await DioHelper.getData(
         url: EndPoint.warehouses,
         token: token,
       );
 
-      print('📊 Response Status Code: ${response.statusCode}');
-      print('📦 Response Data: ${response.data}');
+      log(' Response Status Code: ${response.statusCode}');
+      log(' Response Data: ${response.data}');
 
-      // التحقق من نجاح الـ request
       if (response.statusCode == 200) {
-        // تحويل الـ response لـ Model
         warehouseModel = WareHouseModel.fromJson(response.data);
 
-        // جلب الـ warehouses من الـ Model (already converted to Warehouses objects)
         warehouses = warehouseModel?.data?.warehouses ?? [];
 
-        print('✅ Warehouses loaded successfully: ${warehouses.length} items');
-        print('📋 Message: ${warehouseModel?.data?.message}');
-        print('📦 First warehouse type: ${warehouses.isNotEmpty ? warehouses.first.runtimeType : "empty"}');
+        log(' Warehouses loaded successfully: ${warehouses.length} items');
+        log(' Message: ${warehouseModel?.data?.message}');
+        log(' First warehouse type: ${warehouses.isNotEmpty ? warehouses.first.runtimeType : "empty"}');
 
         emit(WarehousesSuccess());
       } else {
-        print('❌ Failed with status: ${response.statusCode}');
+        log(' Failed with status: ${response.statusCode}');
         emit(WarehousesError('Failed to load warehouses: ${response.statusCode}'));
       }
     } catch (error) {
-      print('❌ Error: $error');
+      log(' Error: $error');
       emit(WarehousesError(error.toString()));
     }
   }
 
-  // Method إضافية لتحديث warehouse معين
-  // Future<void> updateWarehouse({
-  //   required String id,
-  //   required Map<String, dynamic> data,
-  // }) async {
-  //   emit(WarehousesLoading());
-  //
-  //   try {
-  //     final token = CacheHelper.getData(key: 'token');
-  //
-  //     final response = await DioHelper.patchData(
-  //       url: '${EndPoints.warehouses}/$id',
-  //       data: data,
-  //       token: token,
-  //     );
-  //
-  //     if (response.statusCode == 200) {
-  //       // تحديث القائمة المحلية
-  //       await getWarehouses();
-  //       emit(WarehousesSuccess());
-  //     } else {
-  //       emit(WarehousesError('Failed to update warehouse'));
-  //     }
-  //   } catch (error) {
-  //     emit(WarehousesError(error.toString()));
-  //   }
-  // }
+  // Create Warehouse
+  Future<void> createWarehouse({
+    required String name,
+    required String address,
+    required String phone,
+    required String email,
+  }) async {
+    emit(WarehouseCreating());
 
-  // Method لحذف warehouse
-  // Future<void> deleteWarehouse(String id) async {
-  //   emit(WarehousesLoading());
-  //
-  //   try {
-  //     final token = CacheHelper.getData(key: 'token');
-  //
-  //     final response = await DioHelper.deleteData(
-  //       url: '${EndPoints.warehouses}/$id',
-  //       token: token,
-  //     );
-  //
-  //     if (response.statusCode == 200) {
-  //       // تحديث القائمة بعد الحذف
-  //       await getWarehouses();
-  //       emit(WarehousesSuccess());
-  //     } else {
-  //       emit(WarehousesError('Failed to delete warehouse'));
-  //     }
-  //   } catch (error) {
-  //     emit(WarehousesError(error.toString()));
-  //   }
-  // }
+    try {
+      final token = CacheHelper.getData(key: 'token');
+
+      log(' Creating warehouse with name: $name');
+
+      final response = await DioHelper.postData(
+        url: EndPoint.createWarehouse,
+        token: token,
+        data: {
+          'name': name,
+          'address': address,
+          'phone': phone,
+          'email': email,
+        },
+      );
+
+      log(' Create Response Status Code: ${response.statusCode}');
+      log(' Create Response Data: ${response.data}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        log(' Warehouse created successfully');
+        emit(WarehouseCreated());
+
+        // Refresh warehouses list
+        await getWarehouses();
+      } else {
+        log(' Failed to create warehouse: ${response.statusCode}');
+        emit(WarehousesError('Failed to create warehouse: ${response.statusCode}'));
+      }
+    } catch (error) {
+      log(' Create Error: $error');
+      emit(WarehousesError(error.toString()));
+    }
+  }
+
+  // Update Warehouse
+  Future<void> updateWarehouse({
+    required String warehouseId,
+    required String name,
+    required String address,
+    required String phone,
+    required String email,
+  }) async {
+    emit(WarehouseUpdating());
+
+    try {
+      final token = CacheHelper.getData(key: 'token');
+
+      log(' Updating warehouse ID: $warehouseId');
+
+      final response = await DioHelper.putData(
+        url: '${EndPoint.updateWarehouse}/$warehouseId',
+        token: token,
+        data: {
+          'name': name,
+          'address': address,
+          'phone': phone,
+          'email': email,
+        },
+      );
+
+      log(' Update Response Status Code: ${response.statusCode}');
+      log(' Update Response Data: ${response.data}');
+
+      if (response.statusCode == 200) {
+        log(' Warehouse updated successfully');
+        emit(WarehouseUpdated());
+
+        // Refresh warehouses list
+        await getWarehouses();
+      } else {
+        log(' Failed to update warehouse: ${response.statusCode}');
+        emit(WarehousesError('Failed to update warehouse: ${response.statusCode}'));
+      }
+    } catch (error) {
+      log(' Update Error: $error');
+      emit(WarehousesError(error.toString()));
+    }
+  }
+
+  // Delete Warehouse
+  Future<void> deleteWarehouse({required String warehouseId}) async {
+    emit(WarehouseDeleting());
+
+    try {
+      final token = CacheHelper.getData(key: 'token');
+
+      log(' Deleting warehouse ID: $warehouseId');
+
+      final response = await DioHelper.deleteData(
+        url: '${EndPoint.deleteWarehouse}/$warehouseId',
+        token: token,
+      );
+
+      log(' Delete Response Status Code: ${response.statusCode}');
+      log(' Delete Response Data: ${response.data}');
+
+      if (response.statusCode == 200) {
+        log(' Warehouse deleted successfully');
+
+        // Remove from local list
+        warehouses.removeWhere((warehouse) => warehouse.id == warehouseId);
+
+        emit(WarehouseDeleted());
+
+        // Refresh warehouses list
+        await getWarehouses();
+      } else {
+        log(' Failed to delete warehouse: ${response.statusCode}');
+        emit(WarehousesError('Failed to delete warehouse: ${response.statusCode}'));
+      }
+    } catch (error) {
+      log(' Delete Error: $error');
+      emit(WarehousesError(error.toString()));
+    }
+  }
 }
