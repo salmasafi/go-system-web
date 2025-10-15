@@ -16,7 +16,6 @@ import '../create_brand.dart';
 import '../edit_brand_screen.dart';
 import 'delete_brand_widget.dart';
 
-
 class BrandCardWidget extends StatelessWidget {
   final Brands brand;
   final VoidCallback onEdit;
@@ -36,13 +35,11 @@ class BrandCardWidget extends StatelessWidget {
       padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+        borderRadius: BorderRadius.circular(
+          ResponsiveUI.borderRadius(context, 12),
+        ),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
+          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
         ],
       ),
       child: Row(
@@ -54,7 +51,7 @@ class BrandCardWidget extends StatelessWidget {
             onEdit: onEdit,
             onDelete: onDelete,
             backgroundColor: AppColors.white,
-            backgroundColorMenu: AppColors.white,          ),
+          ),
         ],
       ),
     );
@@ -66,25 +63,29 @@ class BrandCardWidget extends StatelessWidget {
       height: ResponsiveUI.value(context, 60),
       decoration: BoxDecoration(
         color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
+        borderRadius: BorderRadius.circular(
+          ResponsiveUI.borderRadius(context, 8),
+        ),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
+        borderRadius: BorderRadius.circular(
+          ResponsiveUI.borderRadius(context, 8),
+        ),
         child: brand.logo != null && brand.logo!.isNotEmpty
             ? Image.network(
-          brand.logo!,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => Icon(
-            Icons.branding_watermark,
-            color: Colors.grey,
-            size: ResponsiveUI.iconSize(context, 24),
-          ),
-        )
+                brand.logo!,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Icon(
+                  Icons.branding_watermark,
+                  color: Colors.grey,
+                  size: ResponsiveUI.iconSize(context, 24),
+                ),
+              )
             : Icon(
-          Icons.branding_watermark,
-          color: Colors.grey,
-          size: ResponsiveUI.iconSize(context, 24),
-        ),
+                Icons.branding_watermark,
+                color: Colors.grey,
+                size: ResponsiveUI.iconSize(context, 24),
+              ),
       ),
     );
   }
@@ -152,7 +153,9 @@ class _BrandsScreenState extends State<BrandsScreen> {
   List<Brands> _getFilteredBrands(List<Brands> brands) {
     if (_searchQuery.isEmpty) return brands;
     return brands
-        .where((brand) => (brand.name ?? '').toLowerCase().contains(_searchQuery))
+        .where(
+          (brand) => (brand.name ?? '').toLowerCase().contains(_searchQuery),
+        )
         .toList();
   }
 
@@ -188,24 +191,21 @@ class _BrandsScreenState extends State<BrandsScreen> {
         }
       },
       child: Scaffold(
-        appBar: appBarWithActions(
-          context,
-          "Brands",
-              () async {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => AddBrandScreen()),
-            );
-            if (result == true && mounted) {
-              BrandsCubit.get(context).getBrands();
-            }
-          },
-          showActions: true,
-        ),
+        appBar: appBarWithActions(context, "Brands", () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => AddBrandScreen()),
+          );
+          if (result == true && mounted) {
+            BrandsCubit.get(context).getBrands();
+          }
+        }, showActions: true),
         backgroundColor: Colors.grey[100],
         body: Center(
           child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: ResponsiveUI.contentMaxWidth(context)),
+            constraints: BoxConstraints(
+              maxWidth: ResponsiveUI.contentMaxWidth(context),
+            ),
             child: Column(
               children: [
                 Container(
@@ -215,7 +215,9 @@ class _BrandsScreenState extends State<BrandsScreen> {
                   ),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+                    borderRadius: BorderRadius.circular(
+                      ResponsiveUI.borderRadius(context, 12),
+                    ),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.05),
@@ -249,25 +251,36 @@ class _BrandsScreenState extends State<BrandsScreen> {
                       }
 
                       final cubit = BrandsCubit.get(context);
-                      final filteredBrands = _getFilteredBrands(cubit.allBrands);
+                      final filteredBrands = _getFilteredBrands(
+                        cubit.allBrands,
+                      );
 
                       if (filteredBrands.isEmpty) {
                         return CustomEmptyState(
-                          icon: _searchQuery.isEmpty ? Icons.branding_watermark : Icons.search_off,
-                          title: _searchQuery.isEmpty ? 'No Brands Available' : 'No Results Found',
+                          icon: _searchQuery.isEmpty
+                              ? Icons.branding_watermark
+                              : Icons.search_off,
+                          title: _searchQuery.isEmpty
+                              ? 'No Brands Available'
+                              : 'No Results Found',
                           message: _searchQuery.isEmpty
                               ? 'Add a new brand to get started'
                               : 'No brands match "$_searchQuery"',
-                          actionLabel: _searchQuery.isEmpty ? 'Add a Brand' : null,
+                          actionLabel: _searchQuery.isEmpty
+                              ? 'Add a Brand'
+                              : null,
                           onAction: _searchQuery.isEmpty
-                              ? () => Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => AddBrandScreen()),
-                          ).then((result) {
-                            if (result == true && mounted) {
-                              BrandsCubit.get(context).getBrands();
-                            }
-                          })
+                              ? () =>
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => AddBrandScreen(),
+                                      ),
+                                    ).then((result) {
+                                      if (result == true && mounted) {
+                                        BrandsCubit.get(context).getBrands();
+                                      }
+                                    })
                               : null,
                         );
                       }
@@ -292,7 +305,9 @@ class _BrandsScreenState extends State<BrandsScreen> {
                                   backgroundColor: Colors.transparent,
                                   builder: (context) => Padding(
                                     padding: EdgeInsets.only(
-                                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                                      bottom: MediaQuery.of(
+                                        context,
+                                      ).viewInsets.bottom,
                                     ),
                                     child: EditBrandBottomSheet(
                                       brandId: filteredBrands[index].id ?? '',

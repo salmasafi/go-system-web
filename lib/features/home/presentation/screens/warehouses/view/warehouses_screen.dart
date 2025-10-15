@@ -160,26 +160,6 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
             },
           ),
 
-          // Loading overlay when deleting
-          if (_isDeleting)
-            Container(
-              color: Colors.black38,
-              child: const Center(
-                child: Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(20.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircularProgressIndicator(),
-                        SizedBox(height: 16),
-                        Text('Deleting warehouse...'),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
       floatingActionButton: FloatingActionButton(

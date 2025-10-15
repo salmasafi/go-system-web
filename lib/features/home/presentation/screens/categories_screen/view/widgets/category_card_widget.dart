@@ -53,7 +53,6 @@ class CategoryCardWidget extends StatelessWidget {
             onEdit: onEdit,
             onDelete: onDelete,
             backgroundColor: AppColors.white,
-            backgroundColorMenu: AppColors.white,
           ),
         ],
       ),
