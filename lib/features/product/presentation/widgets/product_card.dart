@@ -4,6 +4,7 @@ import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
 import 'package:systego/core/widgets/custom_popup_menu.dart';
 import 'package:systego/features/product/data/models/product_model.dart';
+import 'package:systego/features/product/presentation/widgets/animated_image_card.dart';
 import '../../../home/presentation/screens/warehouses/view/widgets/custom_stat_chip.dart';
 //import 'package:systego/features/product/presentation/widgets/product_image.dart';
 //import 'package:systego/features/product/presentation/widgets/product_info.dart';
@@ -174,7 +175,7 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
     return Row(
       children: [
         CustomImageContainer(
-          size: 30,
+          size: ResponsiveUI.iconSize(context, 30),
           gradient: LinearGradient(
             colors: [AppColors.primaryBlue, AppColors.darkBlue],
           ),
@@ -223,7 +224,7 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
                   SizedBox(width: ResponsiveUI.spacing(context, 4)),
                   Expanded(
                     child: Text(
-                      widget.product.brandId.name ?? 'No Brand',
+                      widget.product.brandId.name,
                       style: TextStyle(
                         fontSize: 14,
                         color: AppColors.darkGray.withOpacity(0.6),
@@ -284,69 +285,4 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
   //     ],
   //   );
   // }
-}
-
-class CustomImageContainer extends StatelessWidget {
-  final String? image;
-  final IconData? icon;
-  final double? size;
-  final Gradient? gradient;
-  final Color? backgroundColor;
-  final Color? iconColor;
-  final double? padding;
-  final BorderRadius? borderRadius;
-
-  const CustomImageContainer({
-    super.key,
-    required this.image,
-    this.icon,
-    this.size,
-    this.gradient,
-    this.backgroundColor,
-    this.iconColor,
-    this.padding,
-    this.borderRadius,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(padding ?? 14),
-      decoration: BoxDecoration(
-        gradient: gradient,
-        color: backgroundColor,
-        borderRadius: borderRadius ?? BorderRadius.circular(16),
-        boxShadow: gradient != null
-            ? [
-                BoxShadow(
-                  color: AppColors.primaryBlue.withOpacity(0.3),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ]
-            : null,
-      ),
-      child: (image != null)
-          ? SizedBox(
-              height: ResponsiveUI.value(context, 60),
-              width: ResponsiveUI.value(context, 60),
-              child: Image.network(
-                image!,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Icon(
-                    icon ?? Icons.inventory_2,
-                    color: AppColors.white,
-                    size: ResponsiveUI.iconSize(context, 30),
-                  );
-                },
-              ),
-            )
-          : Icon(
-              icon ?? Icons.inventory_2,
-              color: iconColor ?? Colors.white,
-              size: size ?? 30,
-            ),
-    );
-  }
 }

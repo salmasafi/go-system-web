@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/features/home/presentation/screens/purchase_screen/purchase_screen.dart';
 import 'package:systego/features/home/presentation/screens/warehouses/view/warehouses_screen.dart';
@@ -44,21 +45,33 @@ class _HomeScreenState extends State<HomeScreen> {
         );
         break;
       case 'ProductsScreen':
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const ProductsScreen()));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ProductsScreen()),
+        );
         break;
       case 'BrandsScreen':
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const BrandsScreen()));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const BrandsScreen()),
+        );
         break;
       case 'WarehousesScreen':
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const WarehousesScreen()));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const WarehousesScreen()),
+        );
         break;
       case 'PurchaseScreen':
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const PurchaseScreen()));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const PurchaseScreen()),
+        );
         break;
       default:
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No screen found for $label')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('No screen found for $label')));
     }
   }
 
@@ -66,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.shadowGray[50],
       body: Padding(
         padding: EdgeInsets.symmetric(
           horizontal: ResponsiveUI.horizontalPadding(context),
@@ -75,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: GridView.builder(
           itemCount: cardItems.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: ResponsiveUI.gridColumns(context),
+            crossAxisCount: 2,
             mainAxisSpacing: ResponsiveUI.spacing(context, 16),
             crossAxisSpacing: ResponsiveUI.spacing(context, 16),
             childAspectRatio: 1.2,

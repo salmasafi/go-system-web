@@ -160,7 +160,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         setState(() {
                           _searchQuery = query;
                         });
-                      },
+                      }, text: 'products by name or code',
                     ),
                   ),
                   AnimatedElement(

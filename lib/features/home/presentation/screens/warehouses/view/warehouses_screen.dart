@@ -120,6 +120,7 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
               return Column(
                 children: [
                   SearchBarWidget(
+                    text: 'warehouses',
                     controller: _searchController,
                     onChanged: (value) => _filterWarehouses(value, warehouses),
                   ),

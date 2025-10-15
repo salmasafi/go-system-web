@@ -8,7 +8,6 @@ import 'package:systego/features/product/cubit/product_cubit.dart';
 import 'core/services/cache_helper.dart.dart';
 import 'core/services/dio_helper.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
-import 'features/home/presentation/screens/categories_screen/logic/cubit/categories_cubit.dart';
 import 'features/home/presentation/screens/home_screen.dart';
 import 'features/home/presentation/screens/warehouses/cubit/warehouse_cubit.dart';
 

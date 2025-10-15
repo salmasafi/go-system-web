@@ -3,7 +3,7 @@ import '../../../../core/constants/app_colors.dart';
 
 class CustomTextField extends StatefulWidget {
   final TextEditingController controller;
-  final String labelText;
+  final String? labelText;
   final String? hintText;
   final TextInputType keyboardType;
   final bool obscureText;
@@ -25,7 +25,7 @@ class CustomTextField extends StatefulWidget {
   const CustomTextField({
     super.key,
     required this.controller,
-    required this.labelText,
+    this.labelText,
     this.hintText,
     this.keyboardType = TextInputType.text,
     this.obscureText = false,
@@ -86,7 +86,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         validator: widget.validator,
         onChanged: widget.onChanged,
         decoration: InputDecoration(
-          labelText: widget.labelText.isNotEmpty?widget.labelText:null,
+          labelText: widget.labelText,
           hintText: widget.hintText,
           labelStyle: const TextStyle(
             fontWeight: FontWeight.w600,
