@@ -23,7 +23,7 @@ class ProductInfo extends StatelessWidget {
           ),
         ),
         SizedBox(height: ResponsiveUI.spacing(context, 4)),
-        Text(
+        Text(//////
           product.name,
           style: TextStyle(
             color: Colors.black87,
