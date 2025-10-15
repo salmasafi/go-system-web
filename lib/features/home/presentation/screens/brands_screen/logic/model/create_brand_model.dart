@@ -1,8 +1,9 @@
-// create_category_model.dart (نفس المودل، مش محتاج تعديل)
-class CreateCategoryModel {
-  CreateCategoryModel({this.success, this.data});
+class CreateBrandModel {
+  CreateBrandModel({
+      this.success, 
+      this.data,});
 
-  CreateCategoryModel.fromJson(dynamic json) {
+  CreateBrandModel.fromJson(dynamic json) {
     success = json['success'];
     data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
@@ -17,55 +18,52 @@ class CreateCategoryModel {
     }
     return map;
   }
+
 }
 
 class Data {
-  Data({this.message, this.category});
+  Data({
+      this.message, 
+      this.brand,});
 
   Data.fromJson(dynamic json) {
     message = json['message'];
-    category = json['category'] != null ? Category.fromJson(json['category']) : null;
+    brand = json['brand'] != null ? Brand.fromJson(json['brand']) : null;
   }
   String? message;
-  Category? category;
+  Brand? brand;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['message'] = message;
-    if (category != null) {
-      map['category'] = category?.toJson();
+    if (brand != null) {
+      map['brand'] = brand?.toJson();
     }
     return map;
   }
+
 }
 
-class Category {
-  Category({
-    this.name,
-    this.image,
-    this.productQuantity,
-    this.id,
-    this.parentId,
-    this.createdAt,
-    this.updatedAt,
-    this.v,
-  });
+class Brand {
+  Brand({
+      this.name, 
+      this.logo, 
+      this.id, 
+      this.createdAt, 
+      this.updatedAt, 
+      this.v,});
 
-  Category.fromJson(dynamic json) {
+  Brand.fromJson(dynamic json) {
     name = json['name'];
-    image = json['image'];
-    productQuantity = json['product_quantity'];
+    logo = json['logo'];
     id = json['_id'];
-    parentId = json['parent_id'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     v = json['__v'];
   }
   String? name;
-  String? image;
-  int? productQuantity;
+  String? logo;
   String? id;
-  String? parentId;
   String? createdAt;
   String? updatedAt;
   int? v;
@@ -73,13 +71,12 @@ class Category {
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['name'] = name;
-    map['image'] = image;
-    map['product_quantity'] = productQuantity;
+    map['logo'] = logo;
     map['_id'] = id;
-    if (parentId != null) map['parent_id'] = parentId;
     map['createdAt'] = createdAt;
     map['updatedAt'] = updatedAt;
     map['__v'] = v;
     return map;
   }
+
 }

@@ -6,12 +6,14 @@ class CustomPopupMenu extends StatelessWidget {
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
   final Color? backgroundColor;
+  final Color? backgroundColorMenu;
 
   const CustomPopupMenu({
     super.key,
     this.onEdit,
     this.onDelete,
     this.backgroundColor,
+    this.backgroundColorMenu
   });
 
   @override
@@ -22,6 +24,7 @@ class CustomPopupMenu extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: PopupMenuButton(
+        color: backgroundColorMenu,
         icon: Icon(Icons.more_vert, color: AppColors.darkGray),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
