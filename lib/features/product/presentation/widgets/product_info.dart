@@ -7,10 +7,7 @@ import 'package:systego/features/product/presentation/widgets/info_label.dart';
 class ProductInfo extends StatelessWidget {
   final Product product;
 
-  const ProductInfo({
-    super.key,
-    required this.product,
-  });
+  const ProductInfo({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +23,7 @@ class ProductInfo extends StatelessWidget {
           ),
         ),
         SizedBox(height: ResponsiveUI.spacing(context, 4)),
-        Text(
+        Text(//////
           product.name,
           style: TextStyle(
             color: Colors.black87,
@@ -37,7 +34,11 @@ class ProductInfo extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
         SizedBox(height: ResponsiveUI.spacing(context, 6)),
-        InfoLabel(label: product.categoryId[0].name),
+        InfoLabel(
+          label: product.categoryId.isNotEmpty
+              ? product.categoryId[0].name
+              : '',
+        ),
         SizedBox(height: ResponsiveUI.spacing(context, 6)),
         Row(
           children: [
