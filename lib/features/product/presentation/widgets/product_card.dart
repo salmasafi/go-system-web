@@ -175,7 +175,7 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
     return Row(
       children: [
         CustomImageContainer(
-          size: ResponsiveUI.iconSize(context, 30),
+          size: ResponsiveUI.iconSize(context, 70),
           gradient: LinearGradient(
             colors: [AppColors.primaryBlue, AppColors.darkBlue],
           ),
@@ -258,7 +258,7 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
         Expanded(
           child: CustomStatChip(
             icon: Icons.attach_money,
-            label: '\$${widget.product.price.toStringAsFixed(2)}',
+            label: widget.product.price.toStringAsFixed(2),
             color: AppColors.linkBlue,
           ),
         ),

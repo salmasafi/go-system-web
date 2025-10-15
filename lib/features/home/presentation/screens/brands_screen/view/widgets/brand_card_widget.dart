@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
-import 'package:systego/core/widgets/custom_icon_container.dart';
 import 'package:systego/core/widgets/custom_popup_menu.dart';
+import 'package:systego/features/product/presentation/widgets/animated_image_card.dart';
 import '../../../warehouses/view/widgets/custom_stat_chip.dart';
 import '../../logic/model/get_brands_model.dart';
 
@@ -46,20 +46,23 @@ class _AnimatedBrandCardState extends State<AnimatedBrandCard>
       vsync: this,
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0.3, 0),
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
-    final delay = widget.animationDelay ??
+    final delay =
+        widget.animationDelay ??
         Duration(milliseconds: (widget.index ?? 0) * 100);
 
     Future.delayed(delay, () {
@@ -85,10 +88,7 @@ class _AnimatedBrandCardState extends State<AnimatedBrandCard>
             margin: EdgeInsets.only(bottom: ResponsiveUI.spacing(context, 16)),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [
-                  AppColors.white,
-                  AppColors.lightBlueBackground,
-                ],
+                colors: [AppColors.white, AppColors.lightBlueBackground],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -120,8 +120,8 @@ class _AnimatedBrandCardState extends State<AnimatedBrandCard>
                       const CustomGradientDivider(),
                       SizedBox(height: ResponsiveUI.spacing(context, 16)),
                       _buildStatsRow(),
-                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                      _buildLogoRow(),
+                      //SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                      //_buildLogoRow(),
                     ],
                   ),
                 ),
@@ -136,12 +136,13 @@ class _AnimatedBrandCardState extends State<AnimatedBrandCard>
   Widget _buildCardHeader() {
     return Row(
       children: [
-        CustomIconContainer(
+        CustomImageContainer(
           icon: Icons.branding_watermark,
-          size: 30,
+          size: ResponsiveUI.iconSize(context, 70),
           gradient: LinearGradient(
             colors: [AppColors.primaryBlue, AppColors.darkBlue],
           ),
+          image: widget.brand.logo,
         ),
         SizedBox(width: ResponsiveUI.spacing(context, 14)),
         Expanded(
@@ -182,10 +183,7 @@ class _AnimatedBrandCardState extends State<AnimatedBrandCard>
           ),
         ),
         if (widget.onEdit != null || widget.onDelete != null)
-          CustomPopupMenu(
-            onEdit: widget.onEdit,
-            onDelete: widget.onDelete,
-          ),
+          CustomPopupMenu(onEdit: widget.onEdit, onDelete: widget.onDelete),
       ],
     );
   }
@@ -196,7 +194,7 @@ class _AnimatedBrandCardState extends State<AnimatedBrandCard>
         Expanded(
           child: CustomStatChip(
             icon: Icons.branding_watermark,
-            label: 'Brand ID: ${widget.brand.id}',
+            label: 'Created: ${widget.brand.createdAt}',
             color: AppColors.successGreen,
           ),
         ),
@@ -212,25 +210,25 @@ class _AnimatedBrandCardState extends State<AnimatedBrandCard>
     );
   }
 
-  Widget _buildLogoRow() {
-    return Row(
-      children: [
-        Icon(Icons.image, size: 16, color: AppColors.categoryPurple),
-        SizedBox(width: ResponsiveUI.spacing(context, 6)),
-        Expanded(
-          child: Text(
-            widget.brand.logo ?? 'No logo',
-            style: TextStyle(
-              fontSize: 13,
-              color: AppColors.darkGray.withOpacity(0.7),
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget _buildLogoRow() {
+  //   return Row(
+  //     children: [
+  //       Icon(Icons.image, size: 16, color: AppColors.categoryPurple),
+  //       SizedBox(width: ResponsiveUI.spacing(context, 6)),
+  //       Expanded(
+  //         child: Text(
+  //           widget.brand.logo ?? 'No logo',
+  //           style: TextStyle(
+  //             fontSize: 13,
+  //             color: AppColors.darkGray.withOpacity(0.7),
+  //           ),
+  //           maxLines: 1,
+  //           overflow: TextOverflow.ellipsis,
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   String _formatDate(String? date) {
     if (date == null) return 'N/A';
@@ -242,4 +240,3 @@ class _AnimatedBrandCardState extends State<AnimatedBrandCard>
     }
   }
 }
-

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
-import 'package:systego/core/widgets/custom_icon_container.dart';
 import 'package:systego/core/widgets/custom_popup_menu.dart';
+import '../../../../../../product/presentation/widgets/animated_image_card.dart';
 import '../../../warehouses/view/widgets/custom_stat_chip.dart';
 import '../../logic/model/get_categories_model.dart';
 
@@ -120,8 +120,8 @@ class _AnimatedCategoryCardState extends State<AnimatedCategoryCard>
                       const CustomGradientDivider(),
                       SizedBox(height: ResponsiveUI.spacing(context, 16)),
                       _buildStatsRow(),
-                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                      _buildParentRow(),
+                      // SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                      // _buildParentRow(),
                     ],
                   ),
                 ),
@@ -136,9 +136,10 @@ class _AnimatedCategoryCardState extends State<AnimatedCategoryCard>
   Widget _buildCardHeader() {
     return Row(
       children: [
-        CustomIconContainer(
+        CustomImageContainer(
+          image: widget.category.image,
           icon: Icons.category,
-          size: 30,
+          size: ResponsiveUI.iconSize(context, 70),
           gradient: LinearGradient(
             colors: [AppColors.primaryBlue, AppColors.darkBlue],
           ),
@@ -194,37 +195,39 @@ class _AnimatedCategoryCardState extends State<AnimatedCategoryCard>
           ),
         ),
         SizedBox(width: ResponsiveUI.spacing(context, 10)),
-        Expanded(
-          child: CustomStatChip(
-            icon: Icons.folder,
-            label: 'Category ID: ${widget.category.id}',
-            color: AppColors.linkBlue,
-          ),
-        ),
+        widget.category.parentId != null
+            ? Expanded(
+                child: CustomStatChip(
+                  icon: Icons.folder,
+                  label: 'Parent: ${widget.category.parentId!.name}',
+                  color: AppColors.linkBlue,
+                ),
+              )
+            : SizedBox(),
       ],
     );
   }
 
-  Widget _buildParentRow() {
-    if (widget.category.parentId == null) return const SizedBox.shrink();
-    return Row(
-      children: [
-        Icon(Icons.folder, size: 16, color: AppColors.categoryPurple),
-        SizedBox(width: ResponsiveUI.spacing(context, 6)),
-        Expanded(
-          child: Text(
-            'Parent: ${widget.category.parentId?.name ?? 'No parent'}',
-            style: TextStyle(
-              fontSize: 13,
-              color: AppColors.darkGray.withOpacity(0.7),
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget _buildParentRow() {
+  //   if (widget.category.parentId == null) return const SizedBox.shrink();
+  //   return Row(
+  //     children: [
+  //       Icon(Icons.folder, size: 16, color: AppColors.categoryPurple),
+  //       SizedBox(width: ResponsiveUI.spacing(context, 6)),
+  //       Expanded(
+  //         child: Text(
+  //           'Parent: ${widget.category.parentId?.name ?? 'No parent'}',
+  //           style: TextStyle(
+  //             fontSize: 13,
+  //             color: AppColors.darkGray.withOpacity(0.7),
+  //           ),
+  //           maxLines: 1,
+  //           overflow: TextOverflow.ellipsis,
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 }
 
 // class CategoryCardWidget extends StatelessWidget {
@@ -335,5 +338,3 @@ class _AnimatedCategoryCardState extends State<AnimatedCategoryCard>
 //     );
 //   }
 // }
-
-
