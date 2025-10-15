@@ -36,6 +36,3 @@ flutter:
     - family: Rubik
       fonts:
         - asset: assets/fonts/Rubik/Rubik-Regular.ttf
-    - family: Cairo
-      fonts:
-        - asset: assets/fonts/Cairo/Cairo-Regular.ttf
