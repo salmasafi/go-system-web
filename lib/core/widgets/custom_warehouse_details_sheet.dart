@@ -1,13 +1,12 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
-
+import 'package:systego/core/widgets/custom_image_card.dart';
 import '../../features/home/presentation/screens/warehouses/data/model/ware_house_model.dart';
 import '../../features/home/presentation/screens/warehouses/view/widgets/custom_detail_tile.dart';
 import '../constants/app_colors.dart';
 import 'custom_detail_section.dart';
 import '../../features/home/presentation/screens/warehouses/view/widgets/custom_drag_handle.dart';
 import 'custom_gradient_divider.dart';
-import 'custom_icon_container.dart';
 
 class CustomWarehouseDetailsSheet extends StatelessWidget {
   final Warehouses warehouse;
@@ -102,13 +101,13 @@ class CustomWarehouseDetailsSheet extends StatelessWidget {
   Widget _buildDetailHeader() {
     return Row(
       children: [
-        CustomIconContainer(
+        CustomImageContainer(
           icon: Icons.warehouse,
           size: 36,
           gradient: LinearGradient(
             colors: [AppColors.primaryBlue, AppColors.darkBlue],
           ),
-          padding: 16,
+          padding: 16, image: null,
         ),
         const SizedBox(width: 16),
         Expanded(

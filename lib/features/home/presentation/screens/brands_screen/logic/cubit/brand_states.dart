@@ -1,7 +1,5 @@
 import 'package:systego/features/home/presentation/screens/brands_screen/logic/model/get_brand_by_id_model.dart';
 
-import '../model/create_brand_model.dart';
-
 abstract class BrandsState {}
 
 class BrandsInitial extends BrandsState {}

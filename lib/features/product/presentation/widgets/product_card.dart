@@ -4,7 +4,7 @@ import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
 import 'package:systego/core/widgets/custom_popup_menu.dart';
 import 'package:systego/features/product/data/models/product_model.dart';
-import 'package:systego/features/product/presentation/widgets/animated_image_card.dart';
+import 'package:systego/core/widgets/custom_image_card.dart';
 import '../../../home/presentation/screens/warehouses/view/widgets/custom_stat_chip.dart';
 //import 'package:systego/features/product/presentation/widgets/product_image.dart';
 //import 'package:systego/features/product/presentation/widgets/product_info.dart';

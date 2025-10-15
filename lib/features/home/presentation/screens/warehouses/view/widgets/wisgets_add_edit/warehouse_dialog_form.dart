@@ -160,7 +160,7 @@ class WarehouseDialogForm extends StatelessWidget {
     final borderRadius24 = ResponsiveUI.borderRadius(context, 24);
     final borderRadius20 = ResponsiveUI.borderRadius(context, 20);
     final padding30 = ResponsiveUI.padding(context, 30);
-    final value20 = ResponsiveUI.value(context, 20);
+    //final value20 = ResponsiveUI.value(context, 20);
     final strokeWidth3 = ResponsiveUI.value(context, 3);
     final spacing20 = ResponsiveUI.spacing(context, 20);
     final fontSize16 = ResponsiveUI.fontSize(context, 16);

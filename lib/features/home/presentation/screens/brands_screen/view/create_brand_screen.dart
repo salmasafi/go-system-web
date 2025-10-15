@@ -34,7 +34,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
   @override
   Widget build(BuildContext context) {
     final width = ResponsiveUI.screenWidth(context);
-    final height = ResponsiveUI.screenHeight(context);
+    //final height = ResponsiveUI.screenHeight(context);
 
     return BlocConsumer<BrandsCubit, BrandsState>(
       listener: (context, state) {

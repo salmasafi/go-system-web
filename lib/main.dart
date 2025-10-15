@@ -58,6 +58,7 @@ class MainApp extends StatelessWidget {
         locale: DevicePreview.locale(context),
         builder: DevicePreview.appBuilder,
         theme: ThemeData(
+          fontFamily: 'Rubik',
           scaffoldBackgroundColor: AppColors.lightBlueBackground,
         ),
         home: isLoggedIn ? const HomeScreen() : const LoginScreen(),

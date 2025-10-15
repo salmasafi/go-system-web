@@ -3,7 +3,7 @@ import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
 import 'package:systego/core/widgets/custom_popup_menu.dart';
-import '../../../../../../product/presentation/widgets/animated_image_card.dart';
+import '../../../../../../../core/widgets/custom_image_card.dart';
 import '../../../warehouses/view/widgets/custom_stat_chip.dart';
 import '../../logic/model/get_categories_model.dart';
 
@@ -157,24 +157,24 @@ class _AnimatedCategoryCardState extends State<AnimatedCategoryCard>
                   color: AppColors.darkGray,
                 ),
               ),
-              SizedBox(height: ResponsiveUI.spacing(context, 6)),
-              Row(
-                children: [
-                  Icon(Icons.image, size: 15, color: AppColors.successGreen),
-                  SizedBox(width: ResponsiveUI.spacing(context, 4)),
-                  Expanded(
-                    child: Text(
-                      widget.category.image,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.darkGray.withOpacity(0.6),
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
+            //   SizedBox(height: ResponsiveUI.spacing(context, 6)),
+            //   Row(
+            //     children: [
+            //       Icon(Icons.image, size: 15, color: AppColors.successGreen),
+            //       SizedBox(width: ResponsiveUI.spacing(context, 4)),
+            //       Expanded(
+            //         child: Text(
+            //           widget.category.image,
+            //           style: TextStyle(
+            //             fontSize: 14,
+            //             color: AppColors.darkGray.withOpacity(0.6),
+            //           ),
+            //           maxLines: 1,
+            //           overflow: TextOverflow.ellipsis,
+            //         ),
+            //       ),
+            //     ],
+            //   ),
             ],
           ),
         ),

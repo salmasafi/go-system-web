@@ -31,7 +31,7 @@ class CategoriesCubit extends Cubit<CategoriesState> {
 
       if (response.statusCode == 200) {
         final model = CategoryResponse.fromJson(response.data);
-        if (model.success == true && model.data != null) {
+        if (model.success == true && model.data.categories.isNotEmpty) {
           allCategories = model.data.categories;
           // Ensure unique parent categories by filtering duplicates based on id
           final uniqueParentsMap = <String, CategoryItem>{};

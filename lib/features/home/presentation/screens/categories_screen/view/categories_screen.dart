@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/core/widgets/animated_element.dart';
 import 'package:systego/core/widgets/app_bar_widgets.dart';
 import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
@@ -9,7 +10,6 @@ import 'package:systego/features/home/presentation/screens/categories_screen/vie
 import 'package:systego/features/home/presentation/screens/categories_screen/view/widgets/delete_category_dialog.dart';
 import 'package:systego/features/home/presentation/screens/categories_screen/view/create_category_screen.dart';
 import 'package:systego/features/home/presentation/screens/categories_screen/view/edit_category_screen.dart';
-import '../../../../../product/presentation/widgets/filter_by_category_brand_widgets.dart' hide CategoryItem;
 import '../../../../../product/presentation/widgets/search_bar_widget.dart';
 import '../logic/cubit/categories_cubit.dart';
 import '../logic/cubit/categories_states.dart';

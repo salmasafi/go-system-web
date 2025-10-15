@@ -2,14 +2,13 @@ import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/core/widgets/animated_element.dart';
 import 'package:systego/core/widgets/app_bar_widgets.dart';
 import 'package:systego/features/home/presentation/screens/brands_screen/view/create_brand_screen.dart';
 import 'package:systego/features/product/presentation/widgets/search_bar_widget.dart';
-
 import '../../../../../../core/constants/app_colors.dart';
 import '../../../../../../core/widgets/custom_error/custom_empty_state.dart';
 import '../../../../../../core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
-import '../../../../../product/presentation/widgets/filter_by_category_brand_widgets.dart';
 import '../logic/cubit/brand_cubit.dart';
 import '../logic/cubit/brand_states.dart';
 import '../logic/model/get_brands_model.dart';

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-
 import '../../../../../core/constants/app_colors.dart';
-import '../../../../../core/widgets/app_bar_widgets.dart';
 
 class PurchaseScreen extends StatelessWidget {
   const PurchaseScreen({super.key});
