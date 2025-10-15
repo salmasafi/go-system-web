@@ -39,8 +39,8 @@ class CacheHelper {
   }
 
   // Get primitive data
-  static dynamic getData({required String key}) {
-    return sharedPreferences!.get(key);
+  static String? getData({required String key}) {
+    return sharedPreferences!.get(key).toString();
   }
 
   // Get model from JSON

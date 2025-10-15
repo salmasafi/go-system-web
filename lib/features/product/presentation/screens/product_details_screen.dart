@@ -5,6 +5,7 @@ import 'package:systego/features/product/presentation/widgets/product_image_card
 import 'package:systego/features/product/presentation/widgets/product_info_grid.dart';
 import 'package:systego/features/product/presentation/widgets/product_info_item.dart';
 import 'package:systego/features/product/presentation/widgets/product_title.dart';
+import '../../../../core/widgets/app_bar_widgets.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
   const ProductDetailsScreen({super.key});
@@ -13,36 +14,7 @@ class ProductDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        elevation: 0,
-        title: Text(
-          'Product Details',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: ResponsiveUI.fontSize(context, 18),
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-            size: ResponsiveUI.iconSize(context, 24),
-          ),
-          onPressed: () {},
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.close,
-              color: Colors.black,
-              size: ResponsiveUI.iconSize(context, 24),
-            ),
-            onPressed: () {},
-          ),
-        ],
-      ),
+      appBar: appBarWithActions(context, 'Product Details', (){}),
       body: Center(
         child: ConstrainedBox(
           constraints: BoxConstraints(

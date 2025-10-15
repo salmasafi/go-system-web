@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../../../../core/services/cache_helper.dart.dart';
+//import '../../../../../../../core/services/cache_helper.dart.dart';
 import '../../../../../../../core/services/dio_helper.dart';
 import '../../../../../../../core/services/end_point.dart';
 import '../../../../../../../core/utils/error_handler.dart';
@@ -23,10 +23,10 @@ class CategoriesCubit extends Cubit<CategoriesState> {
   Future<void> getCategories() async {
     emit(GetCategoriesLoading());
     try {
-      final token = CacheHelper.getData(key: 'token') as String?;
+      //final token = CacheHelper.getData(key: 'token') as String?;
       final response = await DioHelper.getData(
         url: EndPoint.getCategories,
-        token: token,
+        //token: token,
       );
 
       if (response.statusCode == 200) {
@@ -58,10 +58,10 @@ class CategoriesCubit extends Cubit<CategoriesState> {
   Future<void> getCategoryById(String categoryId) async {
     emit(GetCategoryByIdLoading());
     try {
-      final token = CacheHelper.getData(key: 'token') as String?;
+     // final token = CacheHelper.getData(key: 'token') as String?;
       final response = await DioHelper.getData(
         url: EndPoint.getCategoryById(categoryId),
-        token: token,
+       // token: token,
       );
 
       if (response.statusCode == 200) {
@@ -95,7 +95,7 @@ class CategoriesCubit extends Cubit<CategoriesState> {
         return;
       }
 
-      final token = CacheHelper.getData(key: 'token') as String?;
+     // final token = CacheHelper.getData(key: 'token') as String?;
       final bytes = await imageFile.readAsBytes();
       final base64Image = base64Encode(bytes);
 
@@ -108,7 +108,7 @@ class CategoriesCubit extends Cubit<CategoriesState> {
       final response = await DioHelper.postData(
         url: EndPoint.createCategory,
         data: data,
-        token: token,
+        //token: token,
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -140,7 +140,7 @@ class CategoriesCubit extends Cubit<CategoriesState> {
   }) async {
     emit(UpdateCategoryLoading());
     try {
-      final token = CacheHelper.getData(key: 'token') as String?;
+   //   final token = CacheHelper.getData(key: 'token') as String?;
 
       final data = <String, dynamic>{'name': name};
 
@@ -161,7 +161,7 @@ class CategoriesCubit extends Cubit<CategoriesState> {
       final response = await DioHelper.putData(
         url: EndPoint.getCategoryById(categoryId),
         data: data,
-        token: token,
+        //token: token,
       );
 
       if (response.statusCode == 200) {
@@ -188,11 +188,11 @@ class CategoriesCubit extends Cubit<CategoriesState> {
   Future<void> deleteCategory(String categoryId) async {
     emit(DeleteCategoryLoading());
     try {
-      final token = CacheHelper.getData(key: 'token') as String?;
+     // final token = CacheHelper.getData(key: 'token') as String?;
 
       final response = await DioHelper.deleteData(
         url: EndPoint.getCategoryById(categoryId),
-        token: token,
+       // token: token,
       );
 
       if (response.statusCode == 200) {

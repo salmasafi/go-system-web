@@ -6,6 +6,7 @@ import 'package:systego/core/widgets/custom_popup_menu.dart';
 import 'package:systego/features/product/data/models/product_model.dart';
 import 'package:systego/core/widgets/custom_image_card.dart';
 import '../../../home/presentation/screens/warehouses/view/widgets/custom_stat_chip.dart';
+import '../screens/product_details_screen.dart';
 //import 'package:systego/features/product/presentation/widgets/product_image.dart';
 //import 'package:systego/features/product/presentation/widgets/product_info.dart';
 //import 'package:systego/features/product/presentation/widgets/product_menu.dart';
@@ -48,7 +49,7 @@ import '../../../home/presentation/screens/warehouses/view/widgets/custom_stat_c
 class AnimatedProductCard extends StatefulWidget {
   final Product product;
   final int? index;
-  final VoidCallback? onTap;
+  //final VoidCallback? onTap;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
   final Duration? animationDuration;
@@ -58,7 +59,7 @@ class AnimatedProductCard extends StatefulWidget {
     super.key,
     required this.product,
     this.index,
-    this.onTap,
+    //this.onTap,
     this.onEdit,
     this.onDelete,
     this.animationDuration,
@@ -144,7 +145,14 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: widget.onTap,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductDetailsScreen(),
+                    ),
+                  );
+                }, //widget.onTap,
                 borderRadius: BorderRadius.circular(
                   ResponsiveUI.borderRadius(context, 20),
                 ),

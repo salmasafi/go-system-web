@@ -15,16 +15,17 @@ void main() async {
   // Ensure Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize DioHelper for API calls
-  DioHelper.init();
+
 
   // Initialize CacheHelper for local storage
   await CacheHelper.init();
 
   // Check if user is logged in
-  final token = CacheHelper.getData(key: 'token');
+  final String? token = CacheHelper.getData(key: 'token');
   final isLoggedIn = token != null && token.toString().isNotEmpty;
 
+  // Initialize DioHelper for API calls
+  DioHelper.init(token);
   runApp(
     DevicePreview(
       enabled: true,
@@ -44,16 +45,11 @@ class MainApp extends StatelessWidget {
       providers: [
         BlocProvider<WareHouseCubit>(create: (context) => WareHouseCubit()),
         BlocProvider<ProductsCubit>(create: (context) => ProductsCubit()),
-        BlocProvider<WareHouseCubit>(
-          create: (context) => WareHouseCubit(),
-        ),BlocProvider<CategoriesCubit>(
-          create: (context) => CategoriesCubit(),
-        ),BlocProvider<BrandsCubit>(
-          create: (context) => BrandsCubit(),
-        ),
+        BlocProvider<WareHouseCubit>(create: (context) => WareHouseCubit()),
+        BlocProvider<CategoriesCubit>(create: (context) => CategoriesCubit()),
+        BlocProvider<BrandsCubit>(create: (context) => BrandsCubit()),
       ],
       child: MaterialApp(
-        title: 'Product Details',
         debugShowCheckedModeBanner: false,
         locale: DevicePreview.locale(context),
         builder: DevicePreview.appBuilder,

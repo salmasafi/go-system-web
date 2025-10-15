@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/features/home/presentation/screens/brands_screen/logic/model/get_brand_by_id_model.dart';
-import '../../../../../../../core/services/cache_helper.dart.dart';
+//import '../../../../../../../core/services/cache_helper.dart.dart';
 import '../../../../../../../core/services/dio_helper.dart';
 import '../../../../../../../core/services/end_point.dart';
 import '../../../../../../../core/utils/error_handler.dart';
@@ -23,10 +23,10 @@ class BrandsCubit extends Cubit<BrandsState> {
   Future<void> getBrands() async {
     emit(GetBrandsLoading());
     try {
-      final token = CacheHelper.getData(key: 'token') as String?;
+    //  final token = CacheHelper.getData(key: 'token') as String?;
       final response = await DioHelper.getData(
         url: EndPoint.getBrands,
-        token: token,
+       // token: token,
       );
 
       if (response.statusCode == 200) {
@@ -51,10 +51,10 @@ class BrandsCubit extends Cubit<BrandsState> {
   Future<void> getBrandById(String brandId) async {
     emit(GetBrandByIdLoading());
     try {
-      final token = CacheHelper.getData(key: 'token') as String?;
+    //  final token = CacheHelper.getData(key: 'token') as String?;
       final response = await DioHelper.getData(
         url: EndPoint.getBrandById(brandId),
-        token: token,
+        //token: token,
       );
 
       if (response.statusCode == 200) {
@@ -87,7 +87,7 @@ class BrandsCubit extends Cubit<BrandsState> {
         return;
       }
 
-      final token = CacheHelper.getData(key: 'token') as String?;
+  //    final token = CacheHelper.getData(key: 'token') as String?;
       final bytes = await logoFile.readAsBytes();
       final base64Logo = base64Encode(bytes);
 
@@ -99,7 +99,7 @@ class BrandsCubit extends Cubit<BrandsState> {
       final response = await DioHelper.postData(
         url: EndPoint.createBrand,
         data: data,
-        token: token,
+     //   token: token,
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -130,7 +130,7 @@ class BrandsCubit extends Cubit<BrandsState> {
   }) async {
     emit(UpdateBrandLoading());
     try {
-      final token = CacheHelper.getData(key: 'token') as String?;
+   //   final token = CacheHelper.getData(key: 'token') as String?;
       final data = <String, dynamic>{'name': name};
 
       if (logoFile != null) {
@@ -145,7 +145,7 @@ class BrandsCubit extends Cubit<BrandsState> {
       final response = await DioHelper.putData(
         url: EndPoint.getBrandById(brandId),
         data: data,
-        token: token,
+    //    token: token,
       );
 
       if (response.statusCode == 200) {
@@ -172,10 +172,10 @@ class BrandsCubit extends Cubit<BrandsState> {
   Future<void> deleteBrand(String brandId) async {
     emit(DeleteBrandLoading());
     try {
-      final token = CacheHelper.getData(key: 'token') as String?;
+      //final token = CacheHelper.getData(key: 'token') as String?;
       final response = await DioHelper.deleteData(
         url: EndPoint.getBrandById(brandId),
-        token: token,
+       // token: token,
       );
 
       if (response.statusCode == 200) {

@@ -20,9 +20,10 @@ class FilterButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: ResponsiveUI.padding(context, 16),
-        vertical: ResponsiveUI.padding(context, 8),
+      padding: EdgeInsets.only(
+        left: ResponsiveUI.padding(context, 16),
+        right: ResponsiveUI.padding(context, 16),
+        bottom: ResponsiveUI.padding(context, 12),
       ),
       child: Row(
         children: [

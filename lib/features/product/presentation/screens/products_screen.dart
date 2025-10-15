@@ -9,6 +9,7 @@ import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_sh
 import 'package:systego/features/product/cubit/product_cubit.dart';
 import 'package:systego/features/product/cubit/product_state.dart';
 import 'package:systego/features/product/data/models/product_model.dart';
+import 'package:systego/features/product/presentation/screens/product_details_screen.dart';
 import 'package:systego/features/product/presentation/widgets/filter_by_category_brand_widgets.dart';
 import 'package:systego/features/product/presentation/widgets/product_list.dart';
 import '../widgets/search_bar_widget.dart';
@@ -137,8 +138,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return Scaffold(
       backgroundColor: AppColors.lightBlueBackground,
       appBar: appBarWithActions(context, 'Products', () {
-        Navigator.pop(context);
-      }),
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetailsScreen(),));
+      }, showActions: true),
       body: BlocConsumer<ProductsCubit, ProductsState>(
         listener: (context, state) {
           if (state is ProductsError) {
@@ -161,7 +162,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         setState(() {
                           _searchQuery = query;
                         });
-                      }, text: 'products by name or code',
+                      },
+                      text: 'products by name or code',
                     ),
                   ),
                   AnimatedElement(

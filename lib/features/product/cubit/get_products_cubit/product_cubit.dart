@@ -19,11 +19,11 @@ class ProductsCubit extends Cubit<ProductsState> {
     try {
       log('Starting products request...');
 
-      String? token = CacheHelper.getData(key: 'token') as String?;
+     // String? token = CacheHelper.getData(key: 'token') as String?;
 
       final response = await DioHelper.getData(
         url: EndPoint.getProducts, 
-        token: token,
+        //token: token,
       );
 
       log('Response received: ${response.statusCode}');

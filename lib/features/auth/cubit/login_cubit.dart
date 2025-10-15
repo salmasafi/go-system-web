@@ -79,7 +79,7 @@ class LoginCubit extends Cubit<LoginState> {
 
   // Get saved token
   String? getSavedToken() {
-    return CacheHelper.getData(key: 'token') as String?;
+    return CacheHelper.getData(key: 'token');
   }
 
   // Get saved user
