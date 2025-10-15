@@ -86,7 +86,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         validator: widget.validator,
         onChanged: widget.onChanged,
         decoration: InputDecoration(
-          labelText: widget.labelText,
+          labelText: widget.labelText.isNotEmpty?widget.labelText:null,
           hintText: widget.hintText,
           labelStyle: const TextStyle(
             fontWeight: FontWeight.w600,
