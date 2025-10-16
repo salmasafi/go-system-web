@@ -1,6 +1,7 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/animated_element.dart';
 import 'package:systego/core/widgets/app_bar_widgets.dart';
@@ -25,7 +26,7 @@ class BrandsScreen extends StatefulWidget {
 
 class _BrandsScreenState extends State<BrandsScreen> {
   String _searchQuery = '';
-    TextEditingController controller = TextEditingController();
+  TextEditingController controller = TextEditingController();
 
   @override
   void initState() {
@@ -67,10 +68,9 @@ class _BrandsScreenState extends State<BrandsScreen> {
 
     List<Brands> filteredBrands = brands
         .where(
-          (brand) =>
-              (brand.name ?? '').toLowerCase().contains(
-                _searchQuery.toLowerCase(),
-              ),
+          (brand) => (brand.name ?? '').toLowerCase().contains(
+            _searchQuery.toLowerCase(),
+          ),
         )
         .toList();
 
@@ -125,9 +125,9 @@ class _BrandsScreenState extends State<BrandsScreen> {
                   brandName: filteredBrands[index].name ?? '',
                   onDelete: () {
                     Navigator.pop(dialogContext);
-                    BrandsCubit.get(context).deleteBrand(
-                      filteredBrands[index].id ?? '',
-                    );
+                    BrandsCubit.get(
+                      context,
+                    ).deleteBrand(filteredBrands[index].id ?? '');
                   },
                 ),
               );
@@ -142,29 +142,24 @@ class _BrandsScreenState extends State<BrandsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.lightBlueBackground,
-      appBar: appBarWithActions(
-        context,
-        "Brands",
-        () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const AddBrandScreen()),
-          );
-          if (result == true && mounted) {
-            BrandsCubit.get(context).getBrands();
-          }
-        },
-        showActions: true,
-      ),
+      appBar: appBarWithActions(context, "Brands", () async {
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const AddBrandScreen()),
+        );
+        if (result == true && mounted) {
+          BrandsCubit.get(context).getBrands();
+        }
+      }, showActions: true),
       body: BlocConsumer<BrandsCubit, BrandsState>(
         listener: (context, state) {
           if (state is DeleteBrandSuccess) {
             _showSuccessSnackbar(context, state.message);
             BrandsCubit.get(context).getBrands();
           } else if (state is DeleteBrandError) {
-            _showErrorSnackbar(context, state.error);
+            showErrorSnackbar(context, state.error);
           } else if (state is GetBrandsError) {
-            _showErrorSnackbar(context, state.error);
+            showErrorSnackbar(context, state.error);
           }
         },
         builder: (context, state) {
@@ -182,7 +177,9 @@ class _BrandsScreenState extends State<BrandsScreen> {
                         setState(() {
                           _searchQuery = query.toLowerCase().trim();
                         });
-                      }, controller: controller, text: 'brands',
+                      },
+                      controller: controller,
+                      text: 'brands',
                     ),
                   ),
                   Expanded(
@@ -198,23 +195,6 @@ class _BrandsScreenState extends State<BrandsScreen> {
         },
       ),
     );
-  }
-
-  void _showErrorSnackbar(BuildContext context, String message) {
-    final snackBar = SnackBar(
-      elevation: 0,
-      behavior: SnackBarBehavior.floating,
-      backgroundColor: Colors.transparent,
-      content: AwesomeSnackbarContent(
-        title: 'Error!',
-        message: message,
-        contentType: ContentType.failure,
-      ),
-    );
-
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(snackBar);
   }
 
   void _showSuccessSnackbar(BuildContext context, String message) {
@@ -234,4 +214,3 @@ class _BrandsScreenState extends State<BrandsScreen> {
       ..showSnackBar(snackBar);
   }
 }
-

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
+import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/animated_element.dart';
 import 'package:systego/core/widgets/app_bar_widgets.dart';
@@ -14,7 +15,6 @@ import '../../../../../product/presentation/widgets/search_bar_widget.dart';
 import '../logic/cubit/categories_cubit.dart';
 import '../logic/cubit/categories_states.dart';
 import '../logic/model/get_categories_model.dart';
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});
@@ -157,12 +157,12 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       body: BlocConsumer<CategoriesCubit, CategoriesState>(
         listener: (context, state) {
           if (state is DeleteCategorySuccess) {
-            _showSuccessSnackbar(context, state.message);
+            showSuccessSnackbar(context, state.message);
             CategoriesCubit.get(context).getCategories();
           } else if (state is DeleteCategoryError) {
-            _showErrorSnackbar(context, state.error);
+            showErrorSnackbar(context, state.error);
           } else if (state is GetCategoriesError) {
-            _showErrorSnackbar(context, state.error);
+            showErrorSnackbar(context, state.error);
           }
         },
         builder: (context, state) {
@@ -199,39 +199,4 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       ),
     );
   }
-
-  void _showErrorSnackbar(BuildContext context, String message) {
-    final snackBar = SnackBar(
-      elevation: 0,
-      behavior: SnackBarBehavior.floating,
-      backgroundColor: Colors.transparent,
-      content: AwesomeSnackbarContent(
-        title: 'Error!',
-        message: message,
-        contentType: ContentType.failure,
-      ),
-    );
-
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(snackBar);
-  }
-
-  void _showSuccessSnackbar(BuildContext context, String message) {
-    final snackBar = SnackBar(
-      elevation: 0,
-      behavior: SnackBarBehavior.floating,
-      backgroundColor: Colors.transparent,
-      content: AwesomeSnackbarContent(
-        title: 'Success!',
-        message: message,
-        contentType: ContentType.success,
-      ),
-    );
-
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(snackBar);
-  }
 }
-

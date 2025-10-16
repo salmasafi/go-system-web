@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
+import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/animated_element.dart';
 import 'package:systego/core/widgets/app_bar_widgets.dart';
@@ -13,7 +14,6 @@ import 'package:systego/features/product/presentation/screens/product_details_sc
 import 'package:systego/features/product/presentation/widgets/filter_by_category_brand_widgets.dart';
 import 'package:systego/features/product/presentation/widgets/product_list.dart';
 import '../widgets/search_bar_widget.dart';
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
@@ -138,12 +138,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return Scaffold(
       backgroundColor: AppColors.lightBlueBackground,
       appBar: appBarWithActions(context, 'Products', () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetailsScreen(),));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ProductDetailsScreen()),
+        );
       }, showActions: true),
       body: BlocConsumer<ProductsCubit, ProductsState>(
         listener: (context, state) {
           if (state is ProductsError) {
-            _showErrorSnackbar(context, state.message);
+            showErrorSnackbar(context, state.message);
           }
         },
         builder: (context, state) {
@@ -234,22 +237,5 @@ class _ProductsScreenState extends State<ProductsScreen> {
         },
       ),
     );
-  }
-
-  void _showErrorSnackbar(BuildContext context, String message) {
-    final snackBar = SnackBar(
-      elevation: 0,
-      behavior: SnackBarBehavior.floating,
-      backgroundColor: Colors.transparent,
-      content: AwesomeSnackbarContent(
-        title: 'Error!',
-        message: message,
-        contentType: ContentType.failure,
-      ),
-    );
-
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(snackBar);
   }
 }
