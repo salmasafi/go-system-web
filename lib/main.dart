@@ -4,7 +4,7 @@ import 'package:systego/features/home/presentation/screens/brands_screen/logic/c
 import 'package:systego/features/home/presentation/screens/categories_screen/logic/cubit/categories_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/features/product/cubit/product_cubit.dart';
+import 'package:systego/features/product/cubit/get_products_cubit/product_cubit.dart';
 import 'core/services/cache_helper.dart.dart';
 import 'core/services/dio_helper.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
