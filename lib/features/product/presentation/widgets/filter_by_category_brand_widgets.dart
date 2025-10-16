@@ -1,48 +1,88 @@
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/core/widgets/animated_element.dart';
 import 'package:systego/features/product/data/models/product_model.dart';
 
 class FilterButtons extends StatelessWidget {
   final bool showCategories;
   final bool showBrands;
+  final bool showWarehouses;
+  final bool showVariations;
+
   final VoidCallback onCategoriesToggle;
   final VoidCallback onBrandsToggle;
+  final VoidCallback onWarehousesToggle;
+  final VoidCallback onVariationsToggle;
 
   const FilterButtons({
     super.key,
     required this.showCategories,
     required this.showBrands,
+    required this.showWarehouses,
+    required this.showVariations,
+
     required this.onCategoriesToggle,
     required this.onBrandsToggle,
+    required this.onWarehousesToggle,
+    required this.onVariationsToggle,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        left: ResponsiveUI.padding(context, 16),
-        right: ResponsiveUI.padding(context, 16),
-        bottom: ResponsiveUI.padding(context, 12),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: FilterButton(
-              label: 'Categories',
-              isActive: showCategories,
-              onTap: onCategoriesToggle,
+    return AnimatedElement(
+      delay: const Duration(milliseconds: 200),
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: ResponsiveUI.padding(context, 16),
+          right: ResponsiveUI.padding(context, 16),
+          bottom: ResponsiveUI.padding(context, 12),
+        ),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: FilterButton(
+                    label: 'Categories',
+                    isActive: showCategories,
+                    onTap: onCategoriesToggle,
+                  ),
+                ),
+                SizedBox(width: ResponsiveUI.spacing(context, 12)),
+                Expanded(
+                  child: FilterButton(
+                    label: 'Brands',
+                    isActive: showBrands,
+                    onTap: onBrandsToggle,
+                  ),
+                ),
+              ],
             ),
-          ),
-          SizedBox(width: ResponsiveUI.spacing(context, 12)),
-          Expanded(
-            child: FilterButton(
-              label: 'Brands',
-              isActive: showBrands,
-              onTap: onBrandsToggle,
+            SizedBox(height: ResponsiveUI.spacing(context, 12)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: FilterButton(
+                    label: 'Warehouses',
+                    isActive: showWarehouses,
+                    onTap: onWarehousesToggle,
+                  ),
+                ),
+                SizedBox(width: ResponsiveUI.spacing(context, 12)),
+                Expanded(
+                  child: FilterButton(
+                    label: 'Variations',
+                    isActive: showVariations,
+                    onTap: onVariationsToggle,
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -519,4 +559,3 @@ class BrandInfo {
 
   BrandInfo({required this.brand, required this.productCount});
 }
-

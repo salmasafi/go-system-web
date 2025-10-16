@@ -21,7 +21,7 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
       log('Fetching product details for ID: $productId');
 
       final response = await DioHelper.getData(
-        url: '${EndPoint.getProductById}$productId',
+        url: '${EndPoint.getProductById}/$productId',
       );
 
       log('Response Status Code: ${response.statusCode}');

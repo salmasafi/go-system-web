@@ -1,121 +1,154 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/core/widgets/app_bar_widgets.dart';
+import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
+import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
 import 'package:systego/features/product/presentation/widgets/product_image_card.dart';
 import 'package:systego/features/product/presentation/widgets/product_info_grid.dart';
 import 'package:systego/features/product/presentation/widgets/product_info_item.dart';
 import 'package:systego/features/product/presentation/widgets/product_title.dart';
-import '../../../../core/widgets/app_bar_widgets.dart';
+import '../../cubit/product_details_cubit/product_details_cubit.dart';
+import '../../cubit/product_details_cubit/product_details_state.dart';
 
-class ProductDetailsScreen extends StatelessWidget {
-  const ProductDetailsScreen({super.key});
+class ProductDetailsScreen extends StatefulWidget {
+  final String productId;
+
+  const ProductDetailsScreen({super.key, required this.productId});
+
+  @override
+  State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
+}
+
+class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<ProductDetailsCubit>().getProductDetails(widget.productId);
+  }
+
+  Future<void> _refresh() async {
+    context.read<ProductDetailsCubit>().getProductDetails(widget.productId);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: appBarWithActions(context, 'Product Details', (){}),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: ResponsiveUI.contentMaxWidth(context),
-          ),
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: ResponsiveUI.horizontalPadding(context),
-                vertical: ResponsiveUI.padding(context, 16),
+      appBar: appBarWithActions(context, 'Product Details', () {}),
+      body: BlocBuilder<ProductDetailsCubit, ProductDetailsState>(
+        builder: (context, state) {
+          if (state is ProductDetailsLoading) {
+            return const CustomLoadingShimmer();
+          }
+
+          if (state is ProductDetailsError) {
+            return CustomEmptyState(
+              icon: Icons.error_outline,
+              title: 'Error',
+              message: state.message,
+              onRefresh: _refresh,
+              actionLabel: 'Retry',
+              onAction: _refresh,
+            );
+          }
+
+          if (state is ProductDetailsSuccess) {
+            final product = state.productDetails.data?.product;
+            if (product == null) {
+              return CustomEmptyState(
+                icon: Icons.inventory_2_outlined,
+                title: 'No Product Found',
+                message: 'Product details not available',
+                actionLabel: 'Retry',
+                onAction: _refresh,
+                onRefresh: _refresh,
+              );
+            }
+
+            return Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: ResponsiveUI.contentMaxWidth(context),
+                ),
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ResponsiveUI.horizontalPadding(context),
+                      vertical: ResponsiveUI.padding(context, 16),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ProductImageCard(imageUrl: product.image),
+                        SizedBox(
+                          height: ResponsiveUI.verticalSpacing(context, 3),
+                        ),
+                        ProductTitle(
+                          title: product.name,
+                          subtitle: product.description,
+                        ),
+                        SizedBox(
+                          height: ResponsiveUI.verticalSpacing(context, 3),
+                        ),
+                        ProductInfoGrid(
+                          items: [
+                            ProductInfoItem(
+                              label: 'Product Type',
+                              value: 'Standard',
+                            ),
+                            ProductInfoItem(
+                              label: 'Product Code',
+                              value: product.id,
+                            ),
+                            ProductInfoItem(
+                              label: 'Brand',
+                              value: product.brandId.name,
+                            ),
+                            ProductInfoItem(
+                              label: 'Category',
+                              value: product.categoryId.isNotEmpty
+                                  ? product.categoryId.first.name
+                                  : 'No Category',
+                            ),
+                            ProductInfoItem(label: 'Unit', value: product.unit),
+                            ProductInfoItem(
+                              label: 'Quantity',
+                              value: '${product.quantity}',
+                            ),
+                            ProductInfoItem(
+                              label: 'Alert Quantity',
+                              value: '${product.lowStock}',
+                            ),
+                            ProductInfoItem(
+                              label: 'Purchase Cost',
+                              value:
+                                  '\$${product.wholePrice.toStringAsFixed(2)}',
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: ResponsiveUI.verticalSpacing(context, 3),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const ProductImageCard(
-                    imageUrl:
-                        'https://images.unsplash.com/photo-1632661674596-df8be070a5c5?w=400',
-                  ),
-                  SizedBox(height: ResponsiveUI.verticalSpacing(context, 3)),
-                  const ProductTitle(
-                    title: 'iPhone 12 64GB Blue (Singapore Unofficial)',
-                    subtitle: 'Super Retina XDR Display with OLED',
-                  ),
-                  SizedBox(height: ResponsiveUI.verticalSpacing(context, 3)),
-                  const ProductInfoGrid(
-                    items: [
-                      ProductInfoItem(label: 'Product Type', value: 'Standard'),
-                      ProductInfoItem(label: 'Product Code', value: '12345678'),
-                      ProductInfoItem(label: 'Brand', value: 'Apple'),
-                      ProductInfoItem(label: 'Category', value: 'Smart Phone'),
-                      ProductInfoItem(label: 'Unit', value: 'Piece'),
-                      ProductInfoItem(label: 'Quantity', value: '154'),
-                      ProductInfoItem(label: 'Alert Quantity', value: '10'),
-                      ProductInfoItem(
-                        label: 'Purchase Cost',
-                        value: '\$700.00',
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: ResponsiveUI.verticalSpacing(context, 3)),
-                  //const PriceCard(price: '\$750.00'),
-                  //SizedBox(height: ResponsiveUI.verticalSpacing(context, 2)),
-                ],
-              ),
-            ),
-          ),
-        ),
+            );
+          }
+
+          return CustomEmptyState(
+            icon: Icons.inventory_2_outlined,
+            title: 'No Product Found',
+            message: 'Pull to refresh or check your connection',
+            onAction: _refresh,
+            onRefresh: _refresh,
+            actionLabel: 'Retry',
+          );
+        },
       ),
     );
   }
 }
-
-// class PriceCard extends StatelessWidget {
-//   final String price;
-
-//   const PriceCard({super.key, required this.price});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       width: double.infinity,
-//       padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
-//       decoration: BoxDecoration(
-//         gradient: LinearGradient(
-//           colors: [AppColors.linkBlue[600]!, Colors.blue[400]!],
-//           begin: Alignment.topLeft,
-//           end: Alignment.bottomRight,
-//         ),
-//         borderRadius: BorderRadius.circular(
-//           ResponsiveUI.borderRadius(context, 12),
-//         ),
-//         boxShadow: [
-//           BoxShadow(
-//             color: Colors.blue.withOpacity(0.3),
-//             blurRadius: ResponsiveUI.padding(context, 12),
-//             offset: const Offset(0, 4),
-//           ),
-//         ],
-//       ),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Text(
-//             'Selling Price',
-//             style: TextStyle(
-//               fontSize: ResponsiveUI.fontSize(context, 13),
-//               color: Colors.white70,
-//               fontWeight: FontWeight.w500,
-//             ),
-//           ),
-//           SizedBox(height: ResponsiveUI.spacing(context, 8)),
-//           Text(
-//             price,
-//             style: TextStyle(
-//               fontSize: ResponsiveUI.fontSize(context, 32),
-//               color: Colors.white,
-//               fontWeight: FontWeight.bold,
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }

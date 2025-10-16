@@ -50,15 +50,11 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     }
 
     if (state is GetCategoriesError) {
-      return RefreshIndicator(
+      return CustomEmptyState(
+        icon: Icons.category,
+        title: 'Error Occurred',
+        message: state.error,
         onRefresh: _refresh,
-        color: AppColors.primaryBlue,
-        child: CustomEmptyState(
-          icon: Icons.category,
-          title: 'Error Occurred',
-          message: state.error,
-          onRefresh: null,
-        ),
       );
     }
 

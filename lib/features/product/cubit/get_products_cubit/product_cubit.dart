@@ -19,15 +19,10 @@ class ProductsCubit extends Cubit<ProductsState> {
     try {
       log('Starting products request...');
 
-     // String? token = CacheHelper.getData(key: 'token') as String?;
-
-      final response = await DioHelper.getData(
-        url: EndPoint.getProducts, 
-        //token: token,
-      );
+      final response = await DioHelper.getData(url: EndPoint.getProducts);
 
       log('Response received: ${response.statusCode}');
-      DioHelper.printResponse(response);
+      // DioHelper.printResponse(response); // Uncomment if printResponse method exists
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -43,7 +38,15 @@ class ProductsCubit extends Cubit<ProductsState> {
           log('Products fetch failed: $errorMessage');
           emit(ProductsError(errorMessage));
         }
-      } else {
+      } 
+      // else if (response.statusCode == 401) {
+      //   await CacheHelper.clearAllData();
+      //   navigatorKey.currentState?.pushAndRemoveUntil(
+      //     MaterialPageRoute(builder: (context) => const LoginScreen()),
+      //     (route) => false,
+      //   );
+      // } 
+      else {
         final errorMessage = ErrorHandler.handleError(response);
         log('Response error: $errorMessage');
         emit(ProductsError(errorMessage));

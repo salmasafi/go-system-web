@@ -7,7 +7,6 @@ import '../../../core/utils/error_handler.dart';
 import '../data/models/user_model.dart';
 import 'login_state.dart';
 
-
 class LoginCubit extends Cubit<LoginState> {
   LoginCubit() : super(LoginInitial());
 
@@ -26,14 +25,12 @@ class LoginCubit extends Cubit<LoginState> {
 
       final response = await DioHelper.postData(
         url: EndPoint.login,
-        data: {
-          'email': email,
-          'password': password,
-        },
+        data: {'email': email, 'password': password},
       );
 
       log('Response received: ${response.statusCode}');
       DioHelper.printResponse(response);
+      log(response.data.toString());
 
       if (response.statusCode == 200) {
         userModel = UserModel.fromJson(response.data);
@@ -47,16 +44,15 @@ class LoginCubit extends Cubit<LoginState> {
             );
             log('Token saved successfully');
           }
-
-          // Save user data
-          if (userModel!.data!.user != null) {
-            await CacheHelper.saveModel<User>(
-              key: 'user',
-              model: userModel!.data!.user!,
-              toJson: (user) => user.toJson(),
-            );
-            log('User data saved successfully');
-          }
+          // // Save user data
+          // if (userModel!.data!.user != null) {
+          //   await CacheHelper.saveModel<User>(
+          //     key: 'user',
+          //     model: userModel!.data!.user!,
+          //     toJson: (user) => user.toJson(),
+          //   );
+          //   log('User data saved successfully');
+          // }
 
           log('Login successful');
           emit(LoginSuccess());

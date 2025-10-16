@@ -19,23 +19,24 @@ class ProductImageCard extends StatelessWidget {
         ),
         border: Border.all(color: AppColors.shadowGray[200]!),
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(
-          ResponsiveUI.borderRadius(context, 12),
-        ),
-        child: Image.network(
-          imageUrl,
-          fit: BoxFit.contain,
-          errorBuilder: (context, error, stackTrace) {
-            return Center(
-              child: Icon(
-                Icons.phone_iphone,
-                size: ResponsiveUI.iconSize(context, 80),
-                color: AppColors.shadowGray,
-              ),
-            );
-          },
-        ),
+      clipBehavior: Clip.antiAlias,
+      // child: ClipRRect(
+      //   borderRadius: BorderRadius.circular(
+      //     ResponsiveUI.borderRadius(context, 12),
+      //   ),
+      child: Image.network(
+        imageUrl,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Center(
+            child: Icon(
+              Icons.phone_iphone,
+              size: ResponsiveUI.iconSize(context, 80),
+              color: AppColors.shadowGray,
+            ),
+          );
+        },
+        //     ),
       ),
     );
   }

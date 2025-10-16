@@ -10,7 +10,6 @@ import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_sh
 import 'package:systego/features/product/cubit/get_products_cubit/product_cubit.dart';
 import 'package:systego/features/product/cubit/get_products_cubit/product_state.dart';
 import 'package:systego/features/product/data/models/product_model.dart';
-import 'package:systego/features/product/presentation/screens/product_details_screen.dart';
 import 'package:systego/features/product/presentation/widgets/filter_by_category_brand_widgets.dart';
 import 'package:systego/features/product/presentation/widgets/product_list.dart';
 import '../widgets/search_bar_widget.dart';
@@ -29,6 +28,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
   String? _selectedBrandId;
   bool _showCategoriesFilter = false;
   bool _showBrandsFilter = false;
+  bool _showWarhousesFilter = false;
+  bool _showVariationsFilter = false;
 
   @override
   void initState() {
@@ -98,6 +99,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
           title: title,
           message: message,
           onRefresh: _refresh,
+          actionLabel: 'Retry',
+          onAction: _refresh,
         );
       }
 
@@ -109,27 +112,23 @@ class _ProductsScreenState extends State<ProductsScreen> {
     }
 
     if (state is ProductsError) {
-      return RefreshIndicator(
+      return CustomEmptyState(
+        icon: Icons.inventory_2_outlined,
+        title: 'Error Occurred',
+        message: state.message,
         onRefresh: _refresh,
-        color: AppColors.primaryBlue,
-        child: CustomEmptyState(
-          icon: Icons.inventory_2_outlined,
-          title: 'Error Occurred',
-          message: state.message,
-          onRefresh: null,
-        ),
+        actionLabel: 'Retry',
+        onAction: _refresh,
       );
     }
 
-    return RefreshIndicator(
+    return CustomEmptyState(
+      icon: Icons.inventory_2_outlined,
+      title: 'No Products Found',
+      message: 'Pull to refresh or check your connection',
       onRefresh: _refresh,
-      color: AppColors.primaryBlue,
-      child: CustomEmptyState(
-        icon: Icons.inventory_2_outlined,
-        title: 'No Products Found',
-        message: 'Pull to refresh or check your connection',
-        onRefresh: null,
-      ),
+      actionLabel: 'Retry',
+      onAction: _refresh,
     );
   }
 
@@ -138,10 +137,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return Scaffold(
       backgroundColor: AppColors.lightBlueBackground,
       appBar: appBarWithActions(context, 'Products', () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ProductDetailsScreen()),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => ProductDetailsScreen()),
+        // );
       }, showActions: true),
       body: BlocConsumer<ProductsCubit, ProductsState>(
         listener: (context, state) {
@@ -169,25 +168,52 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       text: 'products by name or code',
                     ),
                   ),
-                  AnimatedElement(
-                    delay: const Duration(milliseconds: 100),
-                    child: FilterButtons(
-                      showCategories: _showCategoriesFilter,
-                      showBrands: _showBrandsFilter,
-                      onCategoriesToggle: () {
-                        setState(() {
-                          _showCategoriesFilter = !_showCategoriesFilter;
-                          if (_showCategoriesFilter) _showBrandsFilter = false;
-                        });
-                      },
-                      onBrandsToggle: () {
-                        setState(() {
-                          _showBrandsFilter = !_showBrandsFilter;
-                          if (_showBrandsFilter) _showCategoriesFilter = false;
-                        });
-                      },
-                    ),
+                  FilterButtons(
+                    showCategories: _showCategoriesFilter,
+                    showBrands: _showBrandsFilter,
+                    showVariations: _showVariationsFilter,
+                    showWarehouses: _showWarhousesFilter,
+                    onCategoriesToggle: () {
+                      setState(() {
+                        // navigatorKey.currentState?.pushAndRemoveUntil(
+                        //   MaterialPageRoute(
+                        //     builder: (context) => const LoginScreen(),
+                        //   ),
+                        //   (route) => false,
+                        // );
+                        _showCategoriesFilter = !_showCategoriesFilter;
+                        if (_showCategoriesFilter) _showBrandsFilter = false;
+                        if (_showCategoriesFilter) _showWarhousesFilter = false;
+                        if (_showCategoriesFilter)_showVariationsFilter = false;
+                      });
+                    },
+                    onBrandsToggle: () {
+                      setState(() {
+                        _showBrandsFilter = !_showBrandsFilter;
+                        if (_showBrandsFilter) _showCategoriesFilter = false;
+                        if (_showBrandsFilter) _showWarhousesFilter = false;
+                        if (_showBrandsFilter) _showVariationsFilter = false;
+                      });
+                    },
+                    onVariationsToggle: () {
+                      setState(() {
+                        _showVariationsFilter = !_showVariationsFilter;
+                        if (_showVariationsFilter)
+                          _showCategoriesFilter = false;
+                        if (_showVariationsFilter) _showWarhousesFilter = false;
+                        if (_showVariationsFilter) _showBrandsFilter = false;
+                      });
+                    },
+                    onWarehousesToggle: () {
+                      setState(() {
+                        _showWarhousesFilter = !_showWarhousesFilter;
+                        if (_showWarhousesFilter) _showCategoriesFilter = false;
+                        if (_showWarhousesFilter) _showBrandsFilter = false;
+                        if (_showWarhousesFilter) _showVariationsFilter = false;
+                      });
+                    },
                   ),
+
                   if (_showCategoriesFilter && state is ProductsSuccess)
                     AnimatedElement(
                       delay: Duration.zero,

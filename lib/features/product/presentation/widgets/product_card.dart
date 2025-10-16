@@ -149,7 +149,8 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ProductDetailsScreen(),
+                      builder: (context) =>
+                          ProductDetailsScreen(productId: widget.product.id),
                     ),
                   );
                 }, //widget.onTap,

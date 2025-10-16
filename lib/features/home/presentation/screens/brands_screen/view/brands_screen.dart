@@ -51,15 +51,13 @@ class _BrandsScreenState extends State<BrandsScreen> {
     }
 
     if (state is GetBrandsError) {
-      return RefreshIndicator(
+      return CustomEmptyState(
+        icon: Icons.branding_watermark,
+        title: 'Error Occurred',
+        message: state.error,
         onRefresh: _refresh,
-        color: AppColors.primaryBlue,
-        child: CustomEmptyState(
-          icon: Icons.branding_watermark,
-          title: 'Error Occurred',
-          message: state.error,
-          onRefresh: null,
-        ),
+        actionLabel: 'Retry',
+        onAction: _refresh,
       );
     }
 
@@ -86,6 +84,8 @@ class _BrandsScreenState extends State<BrandsScreen> {
         title: title,
         message: message,
         onRefresh: _refresh,
+        actionLabel: 'Retry',
+        onAction: _refresh,
       );
     }
 

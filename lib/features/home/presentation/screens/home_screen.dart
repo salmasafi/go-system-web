@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
+import 'package:systego/core/services/cache_helper.dart.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/features/home/presentation/screens/purchase_screen/purchase_screen.dart';
 import 'package:systego/features/home/presentation/screens/warehouses/view/warehouses_screen.dart';
+import 'package:systego/main.dart';
+import '../../../auth/presentation/screens/login_screen.dart';
 import '../../../product/presentation/screens/products_screen.dart';
 import '../widgets/custom_bottom_app_bar_widget.dart';
 import '../widgets/custom_grid_card_widget.dart';
 import 'brands_screen/view/brands_screen.dart';
-import 'categories_screen/logic/cubit/categories_cubit.dart';
-import 'categories_screen/view/categories_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -34,15 +34,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
     switch (screenName) {
       case 'CategoriesScreen':
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => BlocProvider(
-              create: (_) => CategoriesCubit(),
-              child: const CategoriesScreen(),
-            ),
-          ),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (_) => BlocProvider(
+        //       create: (_) => CategoriesCubit(),
+        //       child: const CategoriesScreen(),
+        //     ),
+        //   ),
+        // );
         break;
       case 'ProductsScreen':
         Navigator.push(
@@ -106,7 +106,14 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: CustomBottomAppBar(
         currentIndex: _currentIndex,
-        onTap: (index) {
+        onTap: (index) async {
+          if (index == 2) {
+            await CacheHelper.clearAllData();
+            navigatorKey.currentState?.pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
+              (route) => false,
+            );
+          }
           setState(() {
             _currentIndex = index;
           });

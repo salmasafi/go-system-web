@@ -1,20 +1,32 @@
 import 'dart:developer';
-
 import 'package:dio/dio.dart';
+import 'package:systego/core/services/session_helper.dart';
+import 'cache_helper.dart.dart';
 
 class DioHelper {
-  static String? _token;
   static late Dio dio;
 
-  static void init(String? token) {
-    _token = token;
+  static void init() {
     dio = Dio(
       BaseOptions(
         baseUrl: 'https://Bcknd.systego.net',
         receiveDataWhenStatusError: true,
-        connectTimeout: const Duration(seconds: 80),
-        receiveTimeout: const Duration(seconds: 80),
+        connectTimeout: const Duration(seconds: 20),
+        receiveTimeout: const Duration(seconds: 20),
         headers: {'Content-Type': 'application/json'},
+      ),
+    );
+
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onError: (DioException e, handler) async {
+          if (e.response?.statusCode == 401) {
+            print('🚨 Unauthorized — broadcasting sessionExpired');
+            await CacheHelper.clearAllData();
+            SessionManager.notifySessionExpired();
+          }
+          return handler.next(e);
+        },
       ),
     );
   }
@@ -25,9 +37,11 @@ class DioHelper {
     String? lang = 'en',
     //String? token,
   }) async {
+    final String? token = CacheHelper.getData(key: 'token');
+
     dio.options.headers = {
       'Content-Type': 'application/json',
-      if (_token != null) 'Authorization': 'Bearer $_token',
+      if (token != null) 'Authorization': 'Bearer $token',
     };
 
     final uri = Uri.parse(
@@ -44,11 +58,13 @@ class DioHelper {
     Map<String, dynamic>? query,
     // String? token,
   }) async {
+    final String? token = CacheHelper.getData(key: 'token');
+
     dio.options.headers = {
       'Content-Type': data is FormData
           ? 'multipart/form-data'
           : 'application/json',
-      if (_token != null) 'Authorization': 'Bearer $_token',
+      if (token != null) 'Authorization': 'Bearer $token',
     };
 
     final uri = Uri.parse(
@@ -67,12 +83,14 @@ class DioHelper {
     String lang = 'en',
     bool isFormData = false,
   }) async {
+    final String? token = CacheHelper.getData(key: 'token');
+
     dio.options.headers = {
       'Content-Type': isFormData
           ? 'application/x-www-form-urlencoded'
           : 'application/json',
       'lang': lang,
-      if (_token != null) 'Authorization': 'Bearer $_token',
+      if (token != null) 'Authorization': 'Bearer $token',
     };
 
     return await dio.put(
@@ -88,9 +106,11 @@ class DioHelper {
     Map<String, dynamic>? data,
     // String? token,
   }) async {
+    final String? token = CacheHelper.getData(key: 'token');
+
     dio.options.headers = {
       'Content-Type': 'application/json',
-      if (_token != null) 'Authorization': 'Bearer $_token',
+      if (token != null) 'Authorization': 'Bearer $token',
     };
 
     final uri = Uri.parse(
@@ -106,9 +126,11 @@ class DioHelper {
     Map<String, dynamic>? query,
     //String? token,
   }) async {
+    final String? token = CacheHelper.getData(key: 'token');
+
     dio.options.headers = {
       'Content-Type': 'application/json',
-      if (_token != null) 'Authorization': 'Bearer $_token',
+      if (token != null) 'Authorization': 'Bearer $token',
     };
 
     final uri = Uri.parse(
