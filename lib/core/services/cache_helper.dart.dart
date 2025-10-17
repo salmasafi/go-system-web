@@ -40,7 +40,8 @@ class CacheHelper {
 
   // Get primitive data
   static String? getData({required String key}) {
-    return sharedPreferences!.get(key).toString();
+    final value = sharedPreferences!.get(key);
+    return value != null ? value.toString() : null;
   }
 
   // Get model from JSON

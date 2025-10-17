@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/services/cache_helper.dart.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
@@ -11,6 +12,8 @@ import '../../../product/presentation/screens/products_screen.dart';
 import '../widgets/custom_bottom_app_bar_widget.dart';
 import '../widgets/custom_grid_card_widget.dart';
 import 'brands_screen/view/brands_screen.dart';
+import 'categories_screen/logic/cubit/categories_cubit.dart';
+import 'categories_screen/view/categories_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -32,19 +35,6 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   void _navigateToPage(String label) {
-    final screenName = '${label}Screen';
-
-    switch (screenName) {
-      case 'CategoriesScreen':
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (_) => BlocProvider(
-        //       create: (_) => CategoriesCubit(),
-        //       child: const CategoriesScreen(),
-        //     ),
-        //   ),
-        // );
     switch (label) {
       case 'Categories':
         Navigator.push(
@@ -59,8 +49,6 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
 
       case 'Products':
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const ProductsScreen()));
-      case 'ProductsScreen':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const ProductsScreen()),
@@ -68,8 +56,6 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
 
       case 'Brands':
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const BrandsScreen()));
-      case 'BrandsScreen':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const BrandsScreen()),
@@ -77,8 +63,6 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
 
       case 'Warehouses':
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const WarehousesScreen()));
-      case 'WarehousesScreen':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const WarehousesScreen()),
@@ -86,8 +70,6 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
 
       case 'Purchase':
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const PurchaseScreen()));
-      case 'PurchaseScreen':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const PurchaseScreen()),
@@ -95,13 +77,17 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
 
       case 'Suppliers':
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const SupplierScreen()));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const SupplierScreen()),
+        );
         break;
 
       default:
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('No screen found for $label')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No screen found for $label')),
+        );
+        break;
     }
   }
 
@@ -141,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
             await CacheHelper.clearAllData();
             navigatorKey.currentState?.pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => const LoginScreen()),
-              (route) => false,
+                  (route) => false,
             );
           }
           setState(() {

@@ -35,7 +35,7 @@ class DioHelper {
     required String url,
     Map<String, dynamic>? query,
     String? lang = 'en',
-    //String? token,
+    String? token,
   }) async {
     final String? token = CacheHelper.getData(key: 'token');
 
@@ -56,7 +56,7 @@ class DioHelper {
     required dynamic data,
     required String url,
     Map<String, dynamic>? query,
-    // String? token,
+    String? token,
   }) async {
     final String? token = CacheHelper.getData(key: 'token');
 
@@ -79,7 +79,7 @@ class DioHelper {
     required String url,
     Map<String, dynamic>? data,
     Map<String, dynamic>? query,
-    // String? token,
+    String? token,
     String lang = 'en',
     bool isFormData = false,
   }) async {
@@ -104,7 +104,7 @@ class DioHelper {
     Map<String, dynamic>? query,
     required String url,
     Map<String, dynamic>? data,
-    // String? token,
+    String? token,
   }) async {
     final String? token = CacheHelper.getData(key: 'token');
 
@@ -124,7 +124,7 @@ class DioHelper {
   static Future<Response> deleteData({
     required String url,
     Map<String, dynamic>? query,
-    //String? token,
+    String? token,
   }) async {
     final String? token = CacheHelper.getData(key: 'token');
 

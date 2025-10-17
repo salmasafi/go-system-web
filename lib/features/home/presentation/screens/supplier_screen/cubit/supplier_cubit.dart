@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/services/end_point.dart';
 import 'package:systego/features/home/presentation/screens/supplier_screen/cubit/supplier_state.dart';
@@ -6,9 +8,9 @@ import '../../../../../../core/services/cache_helper.dart.dart';
 import '../../../../../../core/services/dio_helper.dart';
 import '../../../../../../core/utils/error_handler.dart';
 import '../model/supplier_model.dart' as supplier_list;
-import '../model/supplier_model.dart' hide City, Country;
 import '../model/supplier_whis_id_model.dart' as supplier_details;
 import '../model/supplier_whis_id_model.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SupplierCubit extends Cubit<SupplierStates> {
   SupplierCubit() : super(SupplierInitial());
@@ -94,6 +96,18 @@ class SupplierCubit extends Cubit<SupplierStates> {
     }
   }
 
+  // Convert image file to base64
+  Future<String?> convertImageToBase64(XFile imageFile) async {
+    try {
+      final bytes = await imageFile.readAsBytes();
+      final base64Image = 'data:image/png;base64,${base64Encode(bytes)}';
+      return base64Image;
+    } catch (e) {
+      log('Error converting image: $e');
+      return null;
+    }
+  }
+
   Future<void> createSupplier({
     required String username,
     required String email,
@@ -102,12 +116,15 @@ class SupplierCubit extends Cubit<SupplierStates> {
     required String cityId,
     required String countryId,
     required String companyName,
-    String? image,
+    XFile? imageFile,
   }) async {
-    emit(SupplierLoading());
-
     try {
       final token = getToken();
+
+      String? base64Image;
+      if (imageFile != null) {
+        base64Image = await convertImageToBase64(imageFile);
+      }
 
       final data = {
         'username': username,
@@ -117,7 +134,7 @@ class SupplierCubit extends Cubit<SupplierStates> {
         'cityId': cityId,
         'countryId': countryId,
         'company_name': companyName,
-        if (image != null) 'image': image,
+        if (base64Image != null) 'image': base64Image,
       };
 
       final response = await DioHelper.postData(
@@ -131,7 +148,6 @@ class SupplierCubit extends Cubit<SupplierStates> {
       if (response.statusCode == 200 || response.statusCode == 201) {
         log('Supplier created successfully');
         await getSuppliers();
-        emit(SupplierSuccess());
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         log('Error: $errorMessage');
@@ -153,12 +169,15 @@ class SupplierCubit extends Cubit<SupplierStates> {
     String? cityId,
     String? countryId,
     String? companyName,
-    String? image,
+    XFile? imageFile,
   }) async {
-    emit(SupplierLoading());
-
     try {
       final token = getToken();
+
+      String? base64Image;
+      if (imageFile != null) {
+        base64Image = await convertImageToBase64(imageFile);
+      }
 
       final data = {
         if (username != null) 'username': username,
@@ -168,7 +187,7 @@ class SupplierCubit extends Cubit<SupplierStates> {
         if (cityId != null) 'cityId': cityId,
         if (countryId != null) 'countryId': countryId,
         if (companyName != null) 'company_name': companyName,
-        if (image != null) 'image': image,
+        if (base64Image != null) 'image': base64Image,
       };
 
       final response = await DioHelper.putData(
@@ -181,8 +200,8 @@ class SupplierCubit extends Cubit<SupplierStates> {
 
       if (response.statusCode == 200) {
         log('Supplier updated successfully');
+        // أعد تحميل البيانات فوراً
         await getSuppliers();
-        emit(SupplierSuccess());
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         log('Error: $errorMessage');
@@ -196,8 +215,6 @@ class SupplierCubit extends Cubit<SupplierStates> {
   }
 
   Future<void> deleteSupplier(String id) async {
-    emit(SupplierLoading());
-
     try {
       final token = getToken();
 
@@ -210,8 +227,8 @@ class SupplierCubit extends Cubit<SupplierStates> {
 
       if (response.statusCode == 200) {
         log('Supplier deleted successfully');
-        suppliers?.removeWhere((supplier) => supplier.id == id);
-        emit(SupplierSuccess());
+        // أعد تحميل البيانات فوراً
+        await getSuppliers();
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         log('Error: $errorMessage');
@@ -255,6 +272,11 @@ class SupplierCubit extends Cubit<SupplierStates> {
 
   List<Country>? getCountriesFromSupplierDetails() {
     return supplierWhisIdModel?.data?.country;
+  }
+
+  List<supplier_list.City> getCitiesByCountry(String countryId) {
+    if (cities == null) return [];
+    return cities!.where((city) => city.country == countryId).toList();
   }
 
   void clearCurrentSupplier() {

@@ -69,7 +69,6 @@ class _MainAppState extends State<MainApp> {
       providers: [
         BlocProvider<WareHouseCubit>(create: (context) => WareHouseCubit()),
         BlocProvider<ProductsCubit>(create: (context) => ProductsCubit()),
-        BlocProvider<WareHouseCubit>(create: (context) => WareHouseCubit(),),
         BlocProvider<CategoriesCubit>(create: (context) => CategoriesCubit(),),
         BlocProvider<BrandsCubit>(create: (context) => BrandsCubit(),),
         BlocProvider<SupplierCubit>(create: (context) => SupplierCubit(),),
