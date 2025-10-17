@@ -15,7 +15,7 @@ class ProductsList extends StatelessWidget {
       ),
       itemCount: products.length,
       itemBuilder: (context, index) {
-        return ProductCard(product: products[index]);
+        return AnimatedProductCard(product: products[index]);
       },
     );
   }

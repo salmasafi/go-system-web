@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/features/home/presentation/screens/warehouses/view/warehouse_form_dialog.dart';
 import 'package:systego/features/home/presentation/screens/warehouses/view/widgets/animated_warehouse_card.dart';
 import 'package:systego/features/home/presentation/screens/warehouses/view/widgets/custom_delete_dialog.dart';
@@ -68,6 +69,7 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
           BlocConsumer<WareHouseCubit, WarehousesState>(
             listener: (context, state) {
               if (state is WarehousesError) {
+                showErrorSnackbar(context, state.message);
                 CustomSnackbar.showError(context, state.message);
                 setState(() => _isDeleting = false);
               }
@@ -84,15 +86,27 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
 
               if (state is WarehouseDeleted) {
                 CustomSnackbar.showSuccess(context, 'Warehouse deleted successfully!');
+                showSuccessSnackbar(
+                  context,
+                  'Warehouse deleted successfully!',
+                );
                 setState(() => _isDeleting = false);
               }
 
               if (state is WarehouseCreated) {
                 CustomSnackbar.showSuccess(context, 'Warehouse created successfully!');
+                showSuccessSnackbar(
+                  context,
+                  'Warehouse created successfully!',
+                );
               }
 
               if (state is WarehouseUpdated) {
                 CustomSnackbar.showSuccess(context, 'Warehouse updated successfully!');
+                showSuccessSnackbar(
+                  context,
+                  'Warehouse updated successfully!',
+                );
               }
             },
             builder: (context, state) {
@@ -103,7 +117,8 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
               final warehouses = context.read<WareHouseCubit>().warehouses;
 
               // Initialize filtered list if empty
-              if (_filteredWarehouses.isEmpty && _searchController.text.isEmpty) {
+              if (_filteredWarehouses.isEmpty &&
+                  _searchController.text.isEmpty) {
                 _filteredWarehouses = warehouses;
               }
 
@@ -113,48 +128,61 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
                   title: 'No Warehouses Found',
                   message: 'Add your first warehouse to get started',
                   onRefresh: () async =>
-                  await context.read<WareHouseCubit>().getWarehouses(),
+                      await context.read<WareHouseCubit>().getWarehouses(),
                 );
               }
 
               return Column(
                 children: [
                   SearchBarWidget(
+                    text: 'warehouses',
                     controller: _searchController,
                     onChanged: (value) => _filterWarehouses(value, warehouses),
                   ),
                   Expanded(
                     child: _filteredWarehouses.isEmpty
                         ? CustomEmptyState(
-                      icon: Icons.search_off,
-                      title: 'No Results Found',
-                      message: 'Try searching with different keywords',
-                      onRefresh: () async {
-                        _searchController.clear();
-                        await context.read<WareHouseCubit>().getWarehouses();
-                      },
-                    )
+                            icon: Icons.search_off,
+                            title: 'No Results Found',
+                            message: 'Try searching with different keywords',
+                            onRefresh: () async {
+                              _searchController.clear();
+                              await context
+                                  .read<WareHouseCubit>()
+                                  .getWarehouses();
+                            },
+                          )
                         : RefreshIndicator(
-                      onRefresh: () async {
-                        await context.read<WareHouseCubit>().getWarehouses();
-                      },
-                      color: AppColors.primaryBlue,
-                      child: ListView.builder(
-                        padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-                        itemCount: _filteredWarehouses.length,
-                        itemBuilder: (context, index) {
-                          return AnimatedWarehouseCard(
-                            warehouse: _filteredWarehouses[index],
-                            index: index,
-                            onTap: () => _showWarehouseDetails(
-                                context, _filteredWarehouses[index]),
-                            onEdit: () => _navigateToEdit(_filteredWarehouses[index]),
-                            onDelete: () => _showDeleteDialog(
-                                context, _filteredWarehouses[index]),
-                          );
-                        },
-                      ),
-                    ),
+                            onRefresh: () async {
+                              await context
+                                  .read<WareHouseCubit>()
+                                  .getWarehouses();
+                            },
+                            color: AppColors.primaryBlue,
+                            child: ListView.builder(
+                              padding: EdgeInsets.all(
+                                ResponsiveUI.padding(context, 16),
+                              ),
+                              itemCount: _filteredWarehouses.length,
+                              itemBuilder: (context, index) {
+                                return AnimatedWarehouseCard(
+                                  warehouse: _filteredWarehouses[index],
+                                  index: index,
+                                  onTap: () => _showWarehouseDetails(
+                                    context,
+                                    _filteredWarehouses[index],
+                                  ),
+                                  onEdit: () => _navigateToEdit(
+                                    _filteredWarehouses[index],
+                                  ),
+                                  onDelete: () => _showDeleteDialog(
+                                    context,
+                                    _filteredWarehouses[index],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
                   ),
                 ],
               );
@@ -199,6 +227,7 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
   void _showDeleteDialog(BuildContext context, Warehouses warehouse) {
     if (warehouse.id == null || warehouse.id!.isEmpty) {
       CustomSnackbar.showError(context, 'Invalid warehouse ID');
+      showErrorSnackbar(context, 'Invalid warehouse ID');
       return;
     }
 
@@ -207,7 +236,8 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
       barrierDismissible: false,
       builder: (dialogContext) => CustomDeleteDialog(
         title: 'Delete Warehouse',
-        message: 'Are you sure you want to delete "${warehouse.name}"? This action cannot be undone.',
+        message:
+            'Are you sure you want to delete "${warehouse.name}"? This action cannot be undone.',
         onDelete: () {
           Navigator.pop(dialogContext);
 

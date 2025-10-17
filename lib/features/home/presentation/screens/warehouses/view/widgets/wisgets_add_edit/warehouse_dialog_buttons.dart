@@ -29,7 +29,7 @@ class WarehouseDialogButtons extends StatelessWidget {
     final iconSize20 = ResponsiveUI.iconSize(context, 20);
     final spacing8 = ResponsiveUI.spacing(context, 8);
     final spacing16 = ResponsiveUI.spacing(context, 16);
-    final value3 = ResponsiveUI.value(context, 300);
+    //final value3 = ResponsiveUI.value(context, 300);
 
     return Container(
       padding: EdgeInsets.all(padding24),

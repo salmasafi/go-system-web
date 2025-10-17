@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/core/widgets/custom_image_card.dart';
 import '../../../../../../../core/widgets/custom_gradient_divider.dart';
-import '../../../../../../../core/widgets/custom_icon_container.dart';
 import '../../../../../../../core/widgets/custom_popup_menu.dart';
 import 'custom_stat_chip.dart';
 import '../../data/model/ware_house_model.dart';
@@ -46,20 +46,23 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
       vsync: this,
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0.3, 0),
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
-    final delay = widget.animationDelay ??
+    final delay =
+        widget.animationDelay ??
         Duration(milliseconds: (widget.index ?? 0) * 100);
 
     Future.delayed(delay, () {
@@ -89,10 +92,7 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
             margin: EdgeInsets.only(bottom: marginBottom),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [
-                  AppColors.white,
-                  AppColors.lightBlueBackground,
-                ],
+                colors: [AppColors.white, AppColors.lightBlueBackground],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -134,10 +134,10 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
   }
 
   Widget _buildCardHeader() {
-    final iconSize = ResponsiveUI.iconSize(context, 30);
+    final iconSize = ResponsiveUI.iconSize(context, 70);
     final fontSizeName = ResponsiveUI.fontSize(context, 19);
     final fontSizeAddress = ResponsiveUI.fontSize(context, 14);
-    final spacing12 = ResponsiveUI.spacing(context, 12);
+    //final spacing12 = ResponsiveUI.spacing(context, 12);
     final spacing6 = ResponsiveUI.spacing(context, 6);
     final spacing4 = ResponsiveUI.spacing(context, 4);
     final spacing14 = ResponsiveUI.spacing(context, 14);
@@ -145,12 +145,13 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
 
     return Row(
       children: [
-        CustomIconContainer(
+        CustomImageContainer(
           icon: Icons.warehouse,
           size: iconSize,
           gradient: LinearGradient(
             colors: [AppColors.primaryBlue, AppColors.darkBlue],
           ),
+          image: null,
         ),
         SizedBox(width: spacing14),
         Expanded(
@@ -191,10 +192,7 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
           ),
         ),
         if (widget.onEdit != null || widget.onDelete != null)
-          CustomPopupMenu(
-            onEdit: widget.onEdit,
-            onDelete: widget.onDelete,
-          ),
+          CustomPopupMenu(onEdit: widget.onEdit, onDelete: widget.onDelete),
       ],
     );
   }

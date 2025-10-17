@@ -1,19 +1,21 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
+import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/core/widgets/animated_element.dart';
 import 'package:systego/core/widgets/app_bar_widgets.dart';
-import 'package:systego/core/widgets/custom_text_field_widget.dart';
-import 'package:systego/features/home/presentation/screens/brands_screen/view/create_brand.dart';
-import 'package:systego/features/home/presentation/screens/brands_screen/view/widgets/brand_card_widget.dart';
-import 'package:systego/features/home/presentation/screens/brands_screen/view/widgets/delete_brand_widget.dart';
+import 'package:systego/features/home/presentation/screens/brands_screen/view/create_brand_screen.dart';
+import 'package:systego/features/product/presentation/widgets/search_bar_widget.dart';
+import '../../../../../../core/constants/app_colors.dart';
 import '../../../../../../core/widgets/custom_error/custom_empty_state.dart';
-import '../../../../../../core/widgets/custom_error/custom_error_state.dart';
-import '../../../../../../core/widgets/custom_loading/custom_loading_state.dart';
+import '../../../../../../core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
 import '../logic/cubit/brand_cubit.dart';
 import '../logic/cubit/brand_states.dart';
 import '../logic/model/get_brands_model.dart';
 import 'edit_brand_screen.dart';
+import 'widgets/brand_card_widget.dart';
+import 'widgets/delete_brand_widget.dart';
 
 class BrandsScreen extends StatefulWidget {
   const BrandsScreen({super.key});
@@ -23,209 +25,192 @@ class BrandsScreen extends StatefulWidget {
 }
 
 class _BrandsScreenState extends State<BrandsScreen> {
-  final _controller = TextEditingController();
   String _searchQuery = '';
+  TextEditingController controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     BrandsCubit.get(context).getBrands();
-    _controller.addListener(() {
-      setState(() => _searchQuery = _controller.text.toLowerCase().trim());
+  }
+
+  Future<void> _refresh() async {
+    setState(() {
+      _searchQuery = '';
     });
+    await BrandsCubit.get(context).getBrands();
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  Widget _buildListContent(BrandsState state) {
+    if (state is GetBrandsLoading) {
+      return RefreshIndicator(
+        onRefresh: _refresh,
+        color: AppColors.primaryBlue,
+        child: const CustomLoadingShimmer(),
+      );
+    }
 
-  List<Brands> _getFilteredBrands(List<Brands> brands) {
-    if (_searchQuery.isEmpty) return brands;
-    return brands
-        .where((brand) => (brand.name ?? '').toLowerCase().contains(_searchQuery))
+    if (state is GetBrandsError) {
+      return CustomEmptyState(
+        icon: Icons.branding_watermark,
+        title: 'Error Occurred',
+        message: state.error,
+        onRefresh: _refresh,
+        actionLabel: 'Retry',
+        onAction: _refresh,
+      );
+    }
+
+    final cubit = BrandsCubit.get(context);
+    final brands = cubit.allBrands;
+
+    List<Brands> filteredBrands = brands
+        .where(
+          (brand) => (brand.name ?? '').toLowerCase().contains(
+            _searchQuery.toLowerCase(),
+          ),
+        )
         .toList();
+
+    if (filteredBrands.isEmpty) {
+      String title = brands.isEmpty
+          ? 'No Brands Available'
+          : 'No Matching Brands';
+      String message = brands.isEmpty
+          ? 'Add your first brand to get started'
+          : 'Try adjusting your search terms';
+      return CustomEmptyState(
+        icon: Icons.branding_watermark,
+        title: title,
+        message: message,
+        onRefresh: _refresh,
+        actionLabel: 'Retry',
+        onAction: _refresh,
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: _refresh,
+      color: AppColors.primaryBlue,
+      child: ListView.builder(
+        padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+        itemCount: filteredBrands.length,
+        itemBuilder: (context, index) {
+          return AnimatedBrandCard(
+            brand: filteredBrands[index],
+            index: index,
+            onEdit: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => Padding(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: EditBrandBottomSheet(
+                    brandId: filteredBrands[index].id ?? '',
+                  ),
+                ),
+              ).then((result) {
+                if (result == true && mounted) {
+                  BrandsCubit.get(context).getBrands();
+                }
+              });
+            },
+            onDelete: () {
+              showDialog(
+                context: context,
+                builder: (dialogContext) => DeleteBrandDialog(
+                  brandName: filteredBrands[index].name ?? '',
+                  onDelete: () {
+                    Navigator.pop(dialogContext);
+                    BrandsCubit.get(
+                      context,
+                    ).deleteBrand(filteredBrands[index].id ?? '');
+                  },
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<BrandsCubit, BrandsState>(
-      listener: (context, state) {
-        if (state is DeleteBrandSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.green,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
-            ),
-          );
-          BrandsCubit.get(context).getBrands();
-        } else if (state is DeleteBrandError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.error),
-              backgroundColor: Colors.red,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
-            ),
-          );
-        }
-      },
-      child: Scaffold(
-        appBar: appBarWithActions(
+    return Scaffold(
+      backgroundColor: AppColors.lightBlueBackground,
+      appBar: appBarWithActions(context, "Brands", () async {
+        final result = await Navigator.push(
           context,
-          "Brands",
-              () async {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => AddBrandScreen()),
-            );
-            if (result == true && mounted) {
-              BrandsCubit.get(context).getBrands();
-            }
-          },
-          showActions: true,
-        ),
-        backgroundColor: Colors.grey[100],
-        body: Center(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: ResponsiveUI.contentMaxWidth(context)),
-            child: Column(
-              children: [
-                Container(
-                  margin: EdgeInsets.symmetric(
-                    horizontal: ResponsiveUI.padding(context, 16),
-                    vertical: ResponsiveUI.spacing(context, 12),
+          MaterialPageRoute(builder: (_) => const AddBrandScreen()),
+        );
+        if (result == true && mounted) {
+          BrandsCubit.get(context).getBrands();
+        }
+      }, showActions: true),
+      body: BlocConsumer<BrandsCubit, BrandsState>(
+        listener: (context, state) {
+          if (state is DeleteBrandSuccess) {
+            _showSuccessSnackbar(context, state.message);
+            BrandsCubit.get(context).getBrands();
+          } else if (state is DeleteBrandError) {
+            showErrorSnackbar(context, state.error);
+          } else if (state is GetBrandsError) {
+            showErrorSnackbar(context, state.error);
+          }
+        },
+        builder: (context, state) {
+          return Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: ResponsiveUI.contentMaxWidth(context),
+              ),
+              child: Column(
+                children: [
+                  AnimatedElement(
+                    delay: Duration.zero,
+                    child: SearchBarWidget(
+                      onChanged: (String query) {
+                        setState(() {
+                          _searchQuery = query.toLowerCase().trim();
+                        });
+                      },
+                      controller: controller,
+                      text: 'brands',
+                    ),
                   ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
+                  Expanded(
+                    child: AnimatedElement(
+                      delay: const Duration(milliseconds: 200),
+                      child: _buildListContent(state),
+                    ),
                   ),
-                  child: CustomTextField(
-                    controller: _controller,
-                    labelText: '',
-                    hintText: 'Search brands...',
-                    prefixIcon: Icons.search,
-                    hasBoxDecoration: false,
-                    hasBorder: false,
-                    prefixIconColor: AppColors.darkGray.withOpacity(0.7),
-
-                  ),
-                ),
-                Expanded(
-                  child: BlocBuilder<BrandsCubit, BrandsState>(
-                    builder: (context, state) {
-                      if (state is GetBrandsLoading) {
-                        return const Center(
-                          child:CustomLoadingState()
-                        );
-                      }
-
-                      if (state is GetBrandsError) {
-                        return CustomErrorState(
-                          message: state.error,
-                          onRetry: () => BrandsCubit.get(context).getBrands(),
-                        );
-                      }
-
-                      final cubit = BrandsCubit.get(context);
-                      final filteredBrands = _getFilteredBrands(cubit.allBrands);
-
-                      if (filteredBrands.isEmpty) {
-                        return CustomEmptyState(
-                          icon: _searchQuery.isEmpty ? Icons.branding_watermark : Icons.search_off,
-                          title: _searchQuery.isEmpty ? 'No Brands Available' : 'No Results Found',
-                          message: _searchQuery.isEmpty ? 'Add a new brand to get started' : 'No brands match "$_searchQuery"',
-                          actionLabel: _searchQuery.isEmpty ? 'Add a Brand' : null,
-                          onAction: _searchQuery.isEmpty
-                              ? () => Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => AddBrandScreen()),
-                          ).then((result) {
-                            if (result == true && mounted) {
-                              BrandsCubit.get(context).getBrands();
-                            }
-                          })
-                              : null,
-                        );
-                      }
-
-                      return RefreshIndicator(
-                        color: AppColors.primaryBlue,
-                        backgroundColor: Colors.white,
-                        onRefresh: () => cubit.getBrands(),
-                        child: ListView.builder(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: ResponsiveUI.padding(context, 16),
-                            vertical: ResponsiveUI.spacing(context, 8),
-                          ),
-                          itemCount: filteredBrands.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: EdgeInsets.only(bottom: ResponsiveUI.spacing(context, 8)),
-                              child: BrandCardWidget(
-                                brand: filteredBrands[index],
-                                onEdit: () {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    backgroundColor: Colors.transparent,
-                                    builder: (context) => Padding(
-                                      padding: EdgeInsets.only(
-                                        bottom: MediaQuery.of(context).viewInsets.bottom,
-                                      ),
-                                      child: EditBrandBottomSheet(
-                                        brandId: filteredBrands[index].id ?? '',
-                                      ),
-                                    ),
-                                  ).then((result) {
-                                    if (result == true && mounted) {
-                                      BrandsCubit.get(context).getBrands();
-                                    }
-                                  });
-                                },
-                                onDelete: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (dialogContext) => DeleteBrandDialog(
-                                      brandName: filteredBrands[index].name ?? '',
-                                      onDelete: () {
-                                        Navigator.pop(dialogContext);
-                                        BrandsCubit.get(context).deleteBrand(
-                                          filteredBrands[index].id ?? '',
-                                        );
-                                      },
-                                    ),
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
+  }
+
+  void _showSuccessSnackbar(BuildContext context, String message) {
+    final snackBar = SnackBar(
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      content: AwesomeSnackbarContent(
+        title: 'Success!',
+        message: message,
+        contentType: ContentType.success,
+      ),
+    );
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(snackBar);
   }
 }

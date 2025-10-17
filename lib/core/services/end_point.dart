@@ -24,8 +24,7 @@ class EndPoint {
   static const String createBrand = '/api/admin/brand';
   static const String getBrands = '/api/admin/brand';
   static String getBrandById(String id) => '/api/admin/brand/$id';
-
-
+  static const String getProductById = '/api/admin/product';
 
   static const String getProducts = '/api/admin/product';
 }

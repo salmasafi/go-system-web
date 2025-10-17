@@ -1,6 +1,7 @@
 import 'dart:developer';
-
 import 'package:dio/dio.dart';
+import 'package:systego/core/services/session_helper.dart';
+import 'cache_helper.dart.dart';
 
 class DioHelper {
   static late Dio dio;
@@ -10,10 +11,21 @@ class DioHelper {
       BaseOptions(
         baseUrl: 'https://Bcknd.systego.net',
         receiveDataWhenStatusError: true,
-        connectTimeout: const Duration(seconds: 80),
-        receiveTimeout: const Duration(seconds: 80),
-        headers: {
-          'Content-Type': 'application/json',
+        connectTimeout: const Duration(seconds: 20),
+        receiveTimeout: const Duration(seconds: 20),
+        headers: {'Content-Type': 'application/json'},
+      ),
+    );
+
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onError: (DioException e, handler) async {
+          if (e.response?.statusCode == 401) {
+            print('🚨 Unauthorized — broadcasting sessionExpired');
+            await CacheHelper.clearAllData();
+            SessionManager.notifySessionExpired();
+          }
+          return handler.next(e);
         },
       ),
     );
@@ -23,53 +35,60 @@ class DioHelper {
     required String url,
     Map<String, dynamic>? query,
     String? lang = 'en',
-    String? token,
+    //String? token,
   }) async {
+    final String? token = CacheHelper.getData(key: 'token');
+
     dio.options.headers = {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
     };
 
-    final uri = Uri.parse(dio.options.baseUrl + url).replace(queryParameters: query);
+    final uri = Uri.parse(
+      dio.options.baseUrl + url,
+    ).replace(queryParameters: query);
     log('🔗 Full Request URL: $uri');
 
-    return await dio.get(
-      url,
-      queryParameters: query,
-    );
+    return await dio.get(url, queryParameters: query);
   }
 
   static Future<Response> postData({
     required dynamic data,
     required String url,
     Map<String, dynamic>? query,
-    String? token,
+    // String? token,
   }) async {
+    final String? token = CacheHelper.getData(key: 'token');
+
     dio.options.headers = {
-      'Content-Type': data is FormData ? 'multipart/form-data' : 'application/json',
+      'Content-Type': data is FormData
+          ? 'multipart/form-data'
+          : 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
     };
 
-    final uri = Uri.parse(dio.options.baseUrl + url).replace(queryParameters: query);
+    final uri = Uri.parse(
+      dio.options.baseUrl + url,
+    ).replace(queryParameters: query);
     log('🔗 Full Request URL: $uri');
 
-    return await dio.post(
-      url,
-      data: data,
-      queryParameters: query,
-    );
+    return await dio.post(url, data: data, queryParameters: query);
   }
 
   static Future<Response> putData({
     required String url,
     Map<String, dynamic>? data,
     Map<String, dynamic>? query,
-    String? token,
+    // String? token,
     String lang = 'en',
     bool isFormData = false,
   }) async {
+    final String? token = CacheHelper.getData(key: 'token');
+
     dio.options.headers = {
-      'Content-Type': isFormData ? 'application/x-www-form-urlencoded' : 'application/json',
+      'Content-Type': isFormData
+          ? 'application/x-www-form-urlencoded'
+          : 'application/json',
       'lang': lang,
       if (token != null) 'Authorization': 'Bearer $token',
     };
@@ -85,40 +104,41 @@ class DioHelper {
     Map<String, dynamic>? query,
     required String url,
     Map<String, dynamic>? data,
-    String? token,
+    // String? token,
   }) async {
+    final String? token = CacheHelper.getData(key: 'token');
+
     dio.options.headers = {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
     };
 
-    final uri = Uri.parse(dio.options.baseUrl + url).replace(queryParameters: query);
+    final uri = Uri.parse(
+      dio.options.baseUrl + url,
+    ).replace(queryParameters: query);
     log('🔗 Full Request URL: $uri');
 
-    return await dio.patch(
-      url,
-      data: data,
-      queryParameters: query,
-    );
+    return await dio.patch(url, data: data, queryParameters: query);
   }
 
   static Future<Response> deleteData({
     required String url,
     Map<String, dynamic>? query,
-    String? token,
+    //String? token,
   }) async {
+    final String? token = CacheHelper.getData(key: 'token');
+
     dio.options.headers = {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
     };
 
-    final uri = Uri.parse(dio.options.baseUrl + url).replace(queryParameters: query);
+    final uri = Uri.parse(
+      dio.options.baseUrl + url,
+    ).replace(queryParameters: query);
     log('🔗 Full Request URL: $uri');
 
-    return await dio.delete(
-      url,
-      queryParameters: query,
-    );
+    return await dio.delete(url, queryParameters: query);
   }
 
   static void printResponse(Response response) {

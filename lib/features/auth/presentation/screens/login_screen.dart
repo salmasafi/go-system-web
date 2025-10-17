@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
+import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/utils/validators.dart';
 import 'package:systego/core/widgets/custom_button_widget.dart';
@@ -41,21 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: BlocConsumer<LoginCubit, LoginState>(
           listener: (context, state) {
             if (state is LoginSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Login successful!',
-                    style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14)),
-                  ),
-                  backgroundColor: Colors.green,
-                  duration: const Duration(seconds: 2),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
-                  ),
-                  margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
-                ),
-              );
+              showSuccessSnackbar(context, 'Login successful!');
 
               // Navigate to home screen
               Navigator.pushReplacement(
@@ -63,21 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 MaterialPageRoute(builder: (context) => const HomeScreen()),
               );
             } else if (state is LoginError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    state.error,
-                    style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14)),
-                  ),
-                  backgroundColor: Colors.red,
-                  duration: const Duration(seconds: 3),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
-                  ),
-                  margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
-                ),
-              );
+              showErrorSnackbar(context, state.error);
             }
           },
           builder: (context, state) {
@@ -88,10 +61,12 @@ class _LoginScreenState extends State<LoginScreen> {
               key: _formKey,
               child: Center(
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: ResponsiveUI.contentMaxWidth(context)),
+                  constraints: BoxConstraints(
+                    maxWidth: ResponsiveUI.contentMaxWidth(context),
+                  ),
                   child: SingleChildScrollView(
                     padding: EdgeInsets.symmetric(
-                      horizontal: ResponsiveUI.horizontalPadding(context),
+                      horizontal: ResponsiveUI.padding(context, 25),
                       vertical: ResponsiveUI.padding(context, 60),
                     ),
                     child: Column(
@@ -140,13 +115,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: isLoading
                                 ? () {} // Disable button during loading
                                 : () {
-                              if (_formKey.currentState!.validate()) {
-                                cubit.userLogin(
-                                  email: _emailController.text.trim(),
-                                  password: _passwordController.text,
-                                );
-                              }
-                            },
+                                    if (_formKey.currentState!.validate()) {
+                                      cubit.userLogin(
+                                        email: _emailController.text.trim(),
+                                        password: _passwordController.text,
+                                      );
+                                    }
+                                  },
                             text: "Login",
                             isLoading: isLoading,
                           ),
