@@ -65,7 +65,7 @@ class ResponsiveUI {
   static int gridColumns(BuildContext context) {
     if (isDesktop(context)) return 3;
     if (isTablet(context)) return 2;
-    return 1;
+    return 2;
   }
 
   // Responsive image aspect ratio

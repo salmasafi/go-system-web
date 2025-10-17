@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/home/presentation/screens/purchase_screen/purchase_screen.dart';
+import 'package:systego/features/home/presentation/screens/purchase_screen/view/purchase_screen.dart';
+import 'package:systego/features/home/presentation/screens/supplier_screen/view/supplier_screen.dart';
 import 'package:systego/features/home/presentation/screens/warehouses/view/warehouses_screen.dart';
 import '../../../product/presentation/screens/products_screen.dart';
 import '../widgets/custom_bottom_app_bar_widget.dart';
@@ -26,13 +27,12 @@ class _HomeScreenState extends State<HomeScreen> {
     {'icon': Icons.local_offer_rounded, 'label': 'Brands'},
     {'icon': Icons.warehouse_rounded, 'label': 'Warehouses'},
     {'icon': Icons.shopping_cart_rounded, 'label': 'Purchase'},
+    {'icon': Icons.factory, 'label': 'Suppliers'},
   ];
 
   void _navigateToPage(String label) {
-    final screenName = '${label}Screen';
-
-    switch (screenName) {
-      case 'CategoriesScreen':
+    switch (label) {
+      case 'Categories':
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -43,18 +43,27 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
         break;
-      case 'ProductsScreen':
+
+      case 'Products':
         Navigator.push(context, MaterialPageRoute(builder: (_) => const ProductsScreen()));
         break;
-      case 'BrandsScreen':
+
+      case 'Brands':
         Navigator.push(context, MaterialPageRoute(builder: (_) => const BrandsScreen()));
         break;
-      case 'WarehousesScreen':
+
+      case 'Warehouses':
         Navigator.push(context, MaterialPageRoute(builder: (_) => const WarehousesScreen()));
         break;
-      case 'PurchaseScreen':
+
+      case 'Purchase':
         Navigator.push(context, MaterialPageRoute(builder: (_) => const PurchaseScreen()));
         break;
+
+      case 'Suppliers':
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const SupplierScreen()));
+        break;
+
       default:
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('No screen found for $label')),

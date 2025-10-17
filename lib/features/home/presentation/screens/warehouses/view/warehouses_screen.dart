@@ -8,12 +8,12 @@ import '../../../../../../core/utils/responsive_ui.dart';
 import '../../../../../../core/widgets/app_bar_widgets.dart';
 import '../../../../../../core/widgets/custom_error/custom_empty_state.dart';
 import '../../../../../../core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
+import '../../../../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
 import '../../../../../../core/widgets/custom_warehouse_details_sheet.dart';
 import '../../../../../product/presentation/widgets/search_bar_widget.dart';
 import '../cubit/warehouse_cubit.dart';
 import '../cubit/warehouse_state.dart';
 import '../data/model/ware_house_model.dart';
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
 class WarehousesScreen extends StatefulWidget {
   const WarehousesScreen({super.key});
@@ -68,7 +68,7 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
           BlocConsumer<WareHouseCubit, WarehousesState>(
             listener: (context, state) {
               if (state is WarehousesError) {
-                _showErrorSnackbar(context, state.message);
+                CustomSnackbar.showError(context, state.message);
                 setState(() => _isDeleting = false);
               }
 
@@ -83,16 +83,16 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
               }
 
               if (state is WarehouseDeleted) {
-                _showSuccessSnackbar(context, 'Warehouse deleted successfully!');
+                CustomSnackbar.showSuccess(context, 'Warehouse deleted successfully!');
                 setState(() => _isDeleting = false);
               }
 
               if (state is WarehouseCreated) {
-                _showSuccessSnackbar(context, 'Warehouse created successfully!');
+                CustomSnackbar.showSuccess(context, 'Warehouse created successfully!');
               }
 
               if (state is WarehouseUpdated) {
-                _showSuccessSnackbar(context, 'Warehouse updated successfully!');
+                CustomSnackbar.showSuccess(context, 'Warehouse updated successfully!');
               }
             },
             builder: (context, state) {
@@ -160,7 +160,6 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
               );
             },
           ),
-
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -188,23 +187,6 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
     );
   }
 
-  void _showErrorSnackbar(BuildContext context, String message) {
-    final snackBar = SnackBar(
-      elevation: 0,
-      behavior: SnackBarBehavior.floating,
-      backgroundColor: Colors.transparent,
-      content: AwesomeSnackbarContent(
-        title: 'Error!',
-        message: message,
-        contentType: ContentType.failure,
-      ),
-    );
-
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(snackBar);
-  }
-
   void _showWarehouseDetails(BuildContext context, Warehouses warehouse) {
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
@@ -216,7 +198,7 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
 
   void _showDeleteDialog(BuildContext context, Warehouses warehouse) {
     if (warehouse.id == null || warehouse.id!.isEmpty) {
-      _showErrorSnackbar(context, 'Invalid warehouse ID');
+      CustomSnackbar.showError(context, 'Invalid warehouse ID');
       return;
     }
 
@@ -237,22 +219,4 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
       ),
     );
   }
-
-  void _showSuccessSnackbar(BuildContext context, String message) {
-    final snackBar = SnackBar(
-      elevation: 0,
-      behavior: SnackBarBehavior.floating,
-      backgroundColor: Colors.transparent,
-      content: AwesomeSnackbarContent(
-        title: 'Success!',
-        message: message,
-        contentType: ContentType.success,
-      ),
-    );
-
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(snackBar);
-  }
 }
-

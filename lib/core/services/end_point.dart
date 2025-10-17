@@ -7,6 +7,14 @@ class EndPoint {
   static const String updateWarehouse = '/api/admin/warehouse';
   static const String deleteWarehouse = '/api/admin/warehouse';
 
+  /// supplier
+  static const String createSupplier = '/api/admin/supplier';
+  static const String getSuppliers = '/api/admin/supplier';
+  static String getSupplierById(String id) => '/api/admin/supplier/$id';
+  static const String updateSupplier = '/api/admin/supplier';
+  static const String deleteSupplier = '/api/admin/supplier';
+
+
 
 
   static const String createCategory = '/api/admin/category';

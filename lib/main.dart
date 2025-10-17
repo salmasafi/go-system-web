@@ -10,6 +10,7 @@ import 'core/services/dio_helper.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
 import 'features/home/presentation/screens/categories_screen/logic/cubit/categories_cubit.dart';
 import 'features/home/presentation/screens/home_screen.dart';
+import 'features/home/presentation/screens/supplier_screen/cubit/supplier_cubit.dart';
 import 'features/home/presentation/screens/warehouses/cubit/warehouse_cubit.dart';
 
 void main() async {
@@ -45,13 +46,10 @@ class MainApp extends StatelessWidget {
       providers: [
         BlocProvider<WareHouseCubit>(create: (context) => WareHouseCubit()),
         BlocProvider<ProductsCubit>(create: (context) => ProductsCubit()),
-        BlocProvider<WareHouseCubit>(
-          create: (context) => WareHouseCubit(),
-        ),BlocProvider<CategoriesCubit>(
-          create: (context) => CategoriesCubit(),
-        ),BlocProvider<BrandsCubit>(
-          create: (context) => BrandsCubit(),
-        ),
+        BlocProvider<WareHouseCubit>(create: (context) => WareHouseCubit(),),
+        BlocProvider<CategoriesCubit>(create: (context) => CategoriesCubit(),),
+        BlocProvider<BrandsCubit>(create: (context) => BrandsCubit(),),
+        BlocProvider<SupplierCubit>(create: (context) => SupplierCubit(),),
       ],
       child: MaterialApp(
         title: 'Product Details',
