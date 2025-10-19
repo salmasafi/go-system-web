@@ -4,7 +4,6 @@ import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/features/home/presentation/screens/supplier_screen/cubit/supplier_cubit.dart';
 import 'package:systego/features/home/presentation/screens/supplier_screen/cubit/supplier_state.dart';
-import 'package:systego/features/home/presentation/screens/supplier_screen/model/supplier_whis_id_model.dart' as supplier_details;
 import 'package:systego/features/home/presentation/screens/supplier_screen/view/widgets_supplier_detalis/supplier_details_content.dart';
 import '../../../../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
 

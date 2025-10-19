@@ -5,7 +5,6 @@ import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/app_bar_widgets.dart';
 import 'package:systego/features/home/presentation/screens/supplier_screen/cubit/supplier_cubit.dart';
 import 'package:systego/features/home/presentation/screens/supplier_screen/cubit/supplier_state.dart';
-import 'package:systego/features/home/presentation/screens/supplier_screen/view/supplier_details_bottom_sheet.dart';
 import 'package:systego/features/home/presentation/screens/supplier_screen/view/widgets_supplier_screen/supplier_list.dart';
 import 'package:systego/features/home/presentation/screens/supplier_screen/view/widgets_supplier_screen/supplier_search_filter_section.dart';
 import 'suppplier_add_edit/supplier_dialog.dart';

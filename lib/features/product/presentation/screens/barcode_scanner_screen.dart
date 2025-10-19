@@ -104,7 +104,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
 }
 
 class ScannerIconContainer extends StatelessWidget {
-  const ScannerIconContainer({Key? key}) : super(key: key);
+  const ScannerIconContainer({super.key});
 
   @override
   Widget build(BuildContext context) {
