@@ -9,6 +9,8 @@ class CustomTextField extends StatefulWidget {
   final bool obscureText;
   final ValueChanged<bool>? onObscureChanged;
   final IconData? prefixIcon;
+  final IconData? suffixIcon;
+  final void Function()? suffixOnPressed;
   final bool isPassword;
   final String? Function(String?)? validator;
   final void Function(String)? onChanged;
@@ -31,6 +33,8 @@ class CustomTextField extends StatefulWidget {
     this.obscureText = false,
     this.onObscureChanged,
     this.prefixIcon,
+    this.suffixIcon,
+    this.suffixOnPressed,
     this.isPassword = false,
     this.validator,
     this.onChanged,
@@ -148,7 +152,13 @@ class _CustomTextFieldState extends State<CustomTextField> {
                     widget.onObscureChanged?.call(_obscure);
                   },
                 )
-              : null,
+              : IconButton(
+                  icon: Icon(
+                 widget.suffixIcon,
+                    color: AppColors.linkBlue,
+                  ),
+                  onPressed: widget.suffixOnPressed,
+                ),
 
           contentPadding: EdgeInsets.symmetric(
             vertical: widget.verticalPadding,

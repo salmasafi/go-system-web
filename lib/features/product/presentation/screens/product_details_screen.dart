@@ -94,10 +94,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         ),
                         ProductInfoGrid(
                           items: [
-                            ProductInfoItem(
-                              label: 'Product Type',
-                              value: product.prices[0].variations[0].name,
-                            ),
+                            // ProductInfoItem(
+                            //   label: 'Product Type',
+                            //   value: product.prices[0].variations[0].name,
+                            // ),
                             ProductInfoItem(
                               label: 'Product Code',
                               value: product.id,

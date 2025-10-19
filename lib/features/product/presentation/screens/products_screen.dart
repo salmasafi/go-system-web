@@ -15,6 +15,7 @@ import 'package:systego/features/product/data/models/product_model.dart';
 import 'package:systego/features/product/presentation/widgets/filter_by_category_brand_widgets.dart';
 import 'package:systego/features/product/presentation/widgets/product_list.dart';
 import '../widgets/search_bar_widget.dart';
+import 'barcode_scanner_screen.dart';
 
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
@@ -188,15 +189,36 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       children: [
                         AnimatedElement(
                           delay: Duration.zero,
-                          child: SearchBarWidget(
-                            controller: controller,
-                            onChanged: (String query) {
-                              setState(() {
-                                _searchQuery = query;
-                              });
-                            },
-                            text: 'products by name or code',
-                          ),
+                          child: // في ملف products_screen.dart
+                              // فقط قم بتحديث الجزء الخاص بـ SearchBarWidget
+                              SearchBarWidget(
+                                controller: controller,
+                                onChanged: (String query) {
+                                  setState(() {
+                                    _searchQuery = query;
+                                  });
+                                },
+                                text: 'products by name or code',
+                                suffixIcon: Icons.qr_code_scanner,
+                                suffixOnPressed: () async {
+                                  // Navigate to Barcode Scanner Screen
+                                  final result = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const BarcodeScannerScreen(),
+                                    ),
+                                  );
+
+                                  // If barcode was scanned, use it to search
+                                  if (result != null && result != '-1') {
+                                    setState(() {
+                                      _searchQuery = result;
+                                      controller.text = result;
+                                    });
+                                  }
+                                },
+                              ),
                         ),
                         FilterButtons(
                           onCategorySelected: (id) {

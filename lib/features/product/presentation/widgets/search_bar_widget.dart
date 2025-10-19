@@ -9,12 +9,16 @@ class SearchBarWidget extends StatefulWidget {
   final void Function(String)? onChanged;
   final TextEditingController controller;
   final String text;
+  final IconData? suffixIcon;
+  final void Function()? suffixOnPressed;
 
   const SearchBarWidget({
     super.key,
     required this.onChanged,
     required this.controller,
     required this.text,
+    this.suffixIcon,
+    this.suffixOnPressed,
   });
 
   @override
@@ -41,6 +45,8 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
         verticalPadding: ResponsiveUI.padding(context, 16),
         backgroundColor: AppColors.white,
         borderColor: AppColors.white,
+        suffixIcon: widget.suffixIcon,
+        suffixOnPressed: widget.suffixOnPressed,
       ),
     );
     // return Container(
