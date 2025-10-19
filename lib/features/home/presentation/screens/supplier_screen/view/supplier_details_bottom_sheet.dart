@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:systego/features/home/presentation/screens/supplier_screen/cubit/supplier_cubit.dart';
 import 'package:systego/features/home/presentation/screens/supplier_screen/cubit/supplier_state.dart';
 import 'package:systego/features/home/presentation/screens/supplier_screen/view/widgets_supplier_detalis/supplier_details_content.dart';
@@ -10,10 +11,7 @@ import '../../../../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
 class SupplierDetailsBottomSheet extends StatelessWidget {
   final String supplierId;
 
-  const SupplierDetailsBottomSheet({
-    super.key,
-    required this.supplierId,
-  });
+  const SupplierDetailsBottomSheet({super.key, required this.supplierId});
 
   static void show(BuildContext context, String supplierId) {
     if (supplierId.isEmpty) {
@@ -47,9 +45,7 @@ class SupplierDetailsBottomSheet extends StatelessWidget {
             _buildHandleBar(context),
             _buildHeader(context),
             Divider(height: 1, color: AppColors.lightGray),
-            Expanded(
-              child: _buildContent(context),
-            ),
+            Expanded(child: _buildContent(context)),
           ],
         ),
       ),
@@ -63,7 +59,9 @@ class SupplierDetailsBottomSheet extends StatelessWidget {
       height: ResponsiveUI.value(context, 4),
       decoration: BoxDecoration(
         color: AppColors.lightGray,
-        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 2)),
+        borderRadius: BorderRadius.circular(
+          ResponsiveUI.borderRadius(context, 2),
+        ),
       ),
     );
   }
@@ -105,9 +103,10 @@ class SupplierDetailsBottomSheet extends StatelessWidget {
       builder: (context, state) {
         if (state is SupplierLoading) {
           return Center(
-            child: CircularProgressIndicator(
-              color: AppColors.primaryBlue,
-            ),
+            child: CustomLoadingState(),
+            // CircularProgressIndicator(
+            //   color: AppColors.primaryBlue,
+            // ),
           );
         }
 

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/animated_element.dart';
+import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:systego/features/product/cubit/product_filter_cubit.dart';
 import 'package:systego/features/product/cubit/product_filter_state.dart';
 import 'package:systego/features/product/data/models/filter_models.dart';
@@ -379,7 +380,8 @@ class GenericFilterPanel extends StatelessWidget {
           return Container(
             padding: EdgeInsets.all(16),
             child: Center(
-              child: CircularProgressIndicator(color: AppColors.primaryBlue),
+              child: CustomLoadingState(),
+              //  child: CircularProgressIndicator(color: AppColors.primaryBlue),
             ),
           );
         }

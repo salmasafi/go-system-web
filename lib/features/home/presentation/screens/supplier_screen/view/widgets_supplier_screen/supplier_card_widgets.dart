@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
 import '../../model/supplier_model.dart';
 
 class SupplierImage extends StatelessWidget {
@@ -33,14 +34,15 @@ class SupplierImage extends StatelessWidget {
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) return child;
             return Center(
-              child: CircularProgressIndicator(
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded /
-                    loadingProgress.expectedTotalBytes!
-                    : null,
-                color: AppColors.primaryBlue,
-                strokeWidth: 2,
-              ),
+              child: CustomLoadingState(),
+              // CircularProgressIndicator(
+              //   value: loadingProgress.expectedTotalBytes != null
+              //       ? loadingProgress.cumulativeBytesLoaded /
+              //       loadingProgress.expectedTotalBytes!
+              //       : null,
+              //   color: AppColors.primaryBlue,
+              //   strokeWidth: 2,
+              // ),
             );
           },
           errorBuilder: (context, error, stackTrace) {

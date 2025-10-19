@@ -94,17 +94,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         ),
                         ProductInfoGrid(
                           items: [
-                            // ProductInfoItem(
-                            //   label: 'Product Type',
-                            //   value: product.prices[0].variations[0].name,
-                            // ),
                             ProductInfoItem(
                               label: 'Product Code',
                               value: product.id,
                             ),
                             ProductInfoItem(
                               label: 'Brand',
-                              value: product.brandId.name,
+                              value: product.brandId?.name ?? 'No Brand',
                             ),
                             ProductInfoItem(
                               label: 'Category',
@@ -117,17 +113,78 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               label: 'Quantity',
                               value: '${product.quantity}',
                             ),
-                            // ProductInfoItem(
-                            //   label: 'Quantity',
-                            //   value: '${product.lowStock}',
-                            // ),
                             ProductInfoItem(
                               label: 'Price',
-                              value:
-                                  '\$${product.price.toStringAsFixed(2)}',
+                              value: '\$${product.price.toStringAsFixed(2)}',
                             ),
                           ],
                         ),
+
+                        SizedBox(
+                          height: ResponsiveUI.verticalSpacing(context, 3),
+                        ),
+
+                        // 🟢 NEW SECTION — Show variations if available
+                        if (product.prices.isNotEmpty &&
+                            product.prices.any(
+                              (element) => element.variations.isNotEmpty,
+                            ))
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Available Variations',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.black,
+                                ),
+                              ),
+                              SizedBox(
+                                height: ResponsiveUI.verticalSpacing(
+                                  context,
+                                  1,
+                                ),
+                              ),
+                              ...product.prices.map((price) {
+                                final hasVariations =
+                                    price.variations != null &&
+                                    price.variations.isNotEmpty;
+
+                                return Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: ResponsiveUI.verticalSpacing(
+                                      context,
+                                      1,
+                                    ),
+                                  ),
+                                  child: ProductInfoGrid(
+                                    items: [
+                                      ProductInfoItem(
+                                        label: 'Code',
+                                        value: price.code,
+                                      ),
+
+                                      ProductInfoItem(
+                                        label: 'Price',
+                                        value: price.price.toString(),
+                                      ),
+                                      if (hasVariations)
+                                        ...price.variations.map((v) {
+                                          return ProductInfoItem(
+                                            label: v.name,
+                                            value: v.options
+                                                .map((o) => o.name)
+                                                .join(', '),
+                                          );
+                                        }),
+                                    ],
+                                  ),
+                                );
+                              }),
+                            ],
+                          ),
+
                         SizedBox(
                           height: ResponsiveUI.verticalSpacing(context, 3),
                         ),

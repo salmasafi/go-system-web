@@ -11,16 +11,16 @@ class ProductDetailsModel {
   factory ProductDetailsModel.fromJson(Map<String, dynamic> json) {
     return ProductDetailsModel(
       success: json['success'] ?? false,
-      data: json['data'] != null ? ProductDetailsData.fromJson(json['data']) : null,
+      data: json['data'] != null
+          ? ProductDetailsData.fromJson(json['data'])
+          : null,
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'success': success,
-      'data': data?.toJson(),
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'success': success,
+        'data': data?.toJson(),
+      };
 }
 
 class ProductDetailsData {
@@ -39,12 +39,10 @@ class ProductDetailsData {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'product': product.toJson(),
-      'message': message,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'product': product.toJson(),
+        'message': message,
+      };
 }
 
 class Product {
@@ -52,7 +50,7 @@ class Product {
   final String name;
   final String image;
   final List<Category> categoryId;
-  final Brand brandId;
+  final Brand? brandId;
   final String unit;
   final double price;
   final int quantity;
@@ -66,6 +64,7 @@ class Product {
   final bool differentPrice;
   final bool showQuantity;
   final int maximumToShow;
+  final bool isFeatured;
   final List<String> galleryProduct;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -76,7 +75,7 @@ class Product {
     required this.name,
     required this.image,
     required this.categoryId,
-    required this.brandId,
+    this.brandId,
     required this.unit,
     required this.price,
     required this.quantity,
@@ -90,6 +89,7 @@ class Product {
     required this.differentPrice,
     required this.showQuantity,
     required this.maximumToShow,
+    required this.isFeatured,
     required this.galleryProduct,
     required this.createdAt,
     required this.updatedAt,
@@ -101,11 +101,12 @@ class Product {
       id: json['_id'] ?? '',
       name: json['name'] ?? '',
       image: json['image'] ?? '',
-      categoryId: (json['categoryId'] as List<dynamic>?)
-              ?.map((e) => Category.fromJson(e as Map<String, dynamic>))
+      categoryId: (json['categoryId'] as List?)
+              ?.map((e) => Category.fromJson(e))
               .toList() ??
           [],
-      brandId: Brand.fromJson(json['brandId'] as Map<String, dynamic>),
+      brandId:
+          json['brandId'] != null ? Brand.fromJson(json['brandId']) : null,
       unit: json['unit'] ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       quantity: json['quantity'] ?? 0,
@@ -119,44 +120,45 @@ class Product {
       differentPrice: json['different_price'] ?? false,
       showQuantity: json['show_quantity'] ?? false,
       maximumToShow: json['maximum_to_show'] ?? 0,
-      galleryProduct: (json['gallery_product'] as List<dynamic>?)
-              ?.cast<String>() ??
-          [],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
-      prices: (json['prices'] as List<dynamic>?)
-              ?.map((e) => Price.fromJson(e as Map<String, dynamic>))
+      isFeatured: json['is_featured'] ?? false,
+      galleryProduct:
+          (json['gallery_product'] as List?)?.cast<String>() ?? [],
+      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ??
+          DateTime.fromMillisecondsSinceEpoch(0),
+      updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ??
+          DateTime.fromMillisecondsSinceEpoch(0),
+      prices: (json['prices'] as List?)
+              ?.map((e) => Price.fromJson(e))
               .toList() ??
           [],
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'name': name,
-      'image': image,
-      'categoryId': categoryId.map((e) => e.toJson()).toList(),
-      'brandId': brandId.toJson(),
-      'unit': unit,
-      'price': price,
-      'quantity': quantity,
-      'description': description,
-      'exp_ability': expAbility,
-      'minimum_quantity_sale': minimumQuantitySale,
-      'low_stock': lowStock,
-      'whole_price': wholePrice,
-      'start_quantaty': startQuantaty,
-      'product_has_imei': productHasImei,
-      'different_price': differentPrice,
-      'show_quantity': showQuantity,
-      'maximum_to_show': maximumToShow,
-      'gallery_product': galleryProduct,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
-      'prices': prices.map((e) => e.toJson()).toList(),
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        '_id': id,
+        'name': name,
+        'image': image,
+        'categoryId': categoryId.map((e) => e.toJson()).toList(),
+        'brandId': brandId?.toJson(),
+        'unit': unit,
+        'price': price,
+        'quantity': quantity,
+        'description': description,
+        'exp_ability': expAbility,
+        'minimum_quantity_sale': minimumQuantitySale,
+        'low_stock': lowStock,
+        'whole_price': wholePrice,
+        'start_quantaty': startQuantaty,
+        'product_has_imei': productHasImei,
+        'different_price': differentPrice,
+        'show_quantity': showQuantity,
+        'maximum_to_show': maximumToShow,
+        'is_featured': isFeatured,
+        'gallery_product': galleryProduct,
+        'createdAt': createdAt.toIso8601String(),
+        'updatedAt': updatedAt.toIso8601String(),
+        'prices': prices.map((e) => e.toJson()).toList(),
+      };
 }
 
 class Category {
@@ -165,8 +167,8 @@ class Category {
   final String image;
   final int productQuantity;
   final String? parentId;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   Category({
     required this.id,
@@ -174,8 +176,8 @@ class Category {
     required this.image,
     required this.productQuantity,
     this.parentId,
-    required this.createdAt,
-    required this.updatedAt,
+    this.createdAt,
+    this.updatedAt,
   });
 
   factory Category.fromJson(Map<String, dynamic> json) {
@@ -185,22 +187,20 @@ class Category {
       image: json['image'] ?? '',
       productQuantity: json['product_quantity'] ?? 0,
       parentId: json['parentId'],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      createdAt: DateTime.tryParse(json['createdAt'] ?? ''),
+      updatedAt: DateTime.tryParse(json['updatedAt'] ?? ''),
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'name': name,
-      'image': image,
-      'product_quantity': productQuantity,
-      'parentId': parentId,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        '_id': id,
+        'name': name,
+        'image': image,
+        'product_quantity': productQuantity,
+        'parentId': parentId,
+        'createdAt': createdAt?.toIso8601String(),
+        'updatedAt': updatedAt?.toIso8601String(),
+      };
 }
 
 class Brand {
@@ -223,24 +223,23 @@ class Brand {
       id: json['_id'] ?? '',
       name: json['name'] ?? '',
       logo: json['logo'] ?? '',
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ??
+          DateTime.fromMillisecondsSinceEpoch(0),
+      updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ??
+          DateTime.fromMillisecondsSinceEpoch(0),
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'name': name,
-      'logo': logo,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        '_id': id,
+        'name': name,
+        'logo': logo,
+        'createdAt': createdAt.toIso8601String(),
+        'updatedAt': updatedAt.toIso8601String(),
+      };
 }
 
 class Price {
-  final List<Variation> variations;
   final String id;
   final String productId;
   final double price;
@@ -249,9 +248,9 @@ class Price {
   final int quantity;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final List<Variation> variations;
 
   Price({
-    required this.variations,
     required this.id,
     required this.productId,
     required this.price,
@@ -260,40 +259,39 @@ class Price {
     required this.quantity,
     required this.createdAt,
     required this.updatedAt,
+    required this.variations,
   });
 
   factory Price.fromJson(Map<String, dynamic> json) {
     return Price(
-      variations: (json['variations'] as List<dynamic>?)
-              ?.map((e) => Variation.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
       id: json['_id'] ?? '',
       productId: json['productId'] ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       code: json['code'] ?? '',
-      gallery: (json['gallery'] as List<dynamic>?)
-              ?.cast<String>() ??
-          [],
+      gallery: (json['gallery'] as List?)?.cast<String>() ?? [],
       quantity: json['quantity'] ?? 0,
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ??
+          DateTime.fromMillisecondsSinceEpoch(0),
+      updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ??
+          DateTime.fromMillisecondsSinceEpoch(0),
+      variations: (json['variations'] as List?)
+              ?.map((e) => Variation.fromJson(e))
+              .toList() ??
+          [],
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'variations': variations.map((e) => e.toJson()).toList(),
-      '_id': id,
-      'productId': productId,
-      'price': price,
-      'code': code,
-      'gallery': gallery,
-      'quantity': quantity,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        '_id': id,
+        'productId': productId,
+        'price': price,
+        'code': code,
+        'gallery': gallery,
+        'quantity': quantity,
+        'createdAt': createdAt.toIso8601String(),
+        'updatedAt': updatedAt.toIso8601String(),
+        'variations': variations.map((e) => e.toJson()).toList(),
+      };
 }
 
 class Variation {
@@ -308,57 +306,37 @@ class Variation {
   factory Variation.fromJson(Map<String, dynamic> json) {
     return Variation(
       name: json['name'] ?? '',
-      options: (json['options'] as List<dynamic>?)
-              ?.map((e) => Option.fromJson(e as Map<String, dynamic>))
+      options: (json['options'] as List?)
+              ?.map((e) => Option.fromJson(e))
               .toList() ??
           [],
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'options': options.map((e) => e.toJson()).toList(),
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'options': options.map((e) => e.toJson()).toList(),
+      };
 }
 
 class Option {
   final String id;
-  final String variationId;
   final String name;
-  final bool status;
-  final DateTime createdAt;
-  final DateTime updatedAt;
 
   Option({
     required this.id,
-    required this.variationId,
     required this.name,
-    required this.status,
-    required this.createdAt,
-    required this.updatedAt,
   });
 
   factory Option.fromJson(Map<String, dynamic> json) {
     return Option(
       id: json['_id'] ?? '',
-      variationId: json['variationId'] ?? '',
       name: json['name'] ?? '',
-      status: json['status'] ?? false,
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'variationId': variationId,
-      'name': name,
-      'status': status,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        '_id': id,
+        'name': name,
+      };
 }
