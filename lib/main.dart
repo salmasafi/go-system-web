@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/features/product/cubit/get_products_cubit/product_cubit.dart';
 import 'package:systego/features/product/cubit/product_details_cubit/product_details_cubit.dart';
+import 'package:systego/features/product/cubit/product_filter_cubit.dart';
 import 'core/services/cache_helper.dart.dart';
 import 'core/services/dio_helper.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
@@ -55,7 +56,7 @@ class _MainAppState extends State<MainApp> {
   void initState() {
     super.initState();
     SessionManager.onSessionExpired.listen((_) {
-      print('🔁 Session expired — navigating to login');
+      log('🔁 Session expired — navigating to login');
       navigatorKey.currentState?.pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const LoginScreen()),
         (route) => false,
@@ -69,11 +70,14 @@ class _MainAppState extends State<MainApp> {
       providers: [
         BlocProvider<WareHouseCubit>(create: (context) => WareHouseCubit()),
         BlocProvider<ProductsCubit>(create: (context) => ProductsCubit()),
-        BlocProvider<CategoriesCubit>(create: (context) => CategoriesCubit(),),
-        BlocProvider<BrandsCubit>(create: (context) => BrandsCubit(),),
-        BlocProvider<SupplierCubit>(create: (context) => SupplierCubit(),),
+        BlocProvider<CategoriesCubit>(create: (context) => CategoriesCubit()),
+        BlocProvider<BrandsCubit>(create: (context) => BrandsCubit()),
+        BlocProvider<SupplierCubit>(create: (context) => SupplierCubit()),
         BlocProvider<ProductDetailsCubit>(
           create: (context) => ProductDetailsCubit(),
+        ),
+        BlocProvider<ProductFiltersCubit>(
+          create: (context) => ProductFiltersCubit(),
         ),
         BlocProvider<WareHouseCubit>(create: (context) => WareHouseCubit()),
         BlocProvider<CategoriesCubit>(create: (context) => CategoriesCubit()),

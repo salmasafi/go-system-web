@@ -1,89 +1,220 @@
+// File 1: lib/features/product/presentation/widgets/filter_by_category_brand_widgets.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/animated_element.dart';
-import 'package:systego/features/product/data/models/product_model.dart';
+import 'package:systego/features/product/cubit/product_filter_cubit.dart';
+import 'package:systego/features/product/cubit/product_filter_state.dart';
+import 'package:systego/features/product/data/models/filter_models.dart';
 
-class FilterButtons extends StatelessWidget {
-  final bool showCategories;
-  final bool showBrands;
-  final bool showWarehouses;
-  final bool showVariations;
+enum FilterType { categories, brands, variations, warehouses }
 
-  final VoidCallback onCategoriesToggle;
-  final VoidCallback onBrandsToggle;
-  final VoidCallback onWarehousesToggle;
-  final VoidCallback onVariationsToggle;
+class FilterItem {
+  final String id;
+  final String name;
+  final String image;
+  final int count;
+
+  FilterItem({
+    required this.id,
+    required this.name,
+    required this.image,
+    required this.count,
+  });
+}
+
+class FilterButtons extends StatefulWidget {
+  final Function(String?) onCategorySelected;
+  final Function(String?) onBrandSelected;
+  final Function(String?) onVariationSelected;
+  final Function(String?) onWarehouseSelected;
 
   const FilterButtons({
     super.key,
-    required this.showCategories,
-    required this.showBrands,
-    required this.showWarehouses,
-    required this.showVariations,
-
-    required this.onCategoriesToggle,
-    required this.onBrandsToggle,
-    required this.onWarehousesToggle,
-    required this.onVariationsToggle,
+    required this.onCategorySelected,
+    required this.onBrandSelected,
+    required this.onVariationSelected,
+    required this.onWarehouseSelected,
   });
 
   @override
+  State<FilterButtons> createState() => _FilterButtonsState();
+}
+
+class _FilterButtonsState extends State<FilterButtons> {
+  bool _showCategoriesFilter = false;
+  bool _showBrandsFilter = false;
+  bool _showWarhousesFilter = false;
+  bool _showVariationsFilter = false;
+
+  @override
   Widget build(BuildContext context) {
-    return AnimatedElement(
-      delay: const Duration(milliseconds: 200),
-      child: Padding(
-        padding: EdgeInsets.only(
-          left: ResponsiveUI.padding(context, 16),
-          right: ResponsiveUI.padding(context, 16),
-          bottom: ResponsiveUI.padding(context, 12),
-        ),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: FilterButton(
-                    label: 'Categories',
-                    isActive: showCategories,
-                    onTap: onCategoriesToggle,
+    return BlocBuilder<ProductFiltersCubit, ProductFiltersState>(
+      builder: (context, state) {
+        if (state is ProductFiltersSuccess) {
+          return AnimatedElement(
+            delay: const Duration(milliseconds: 200),
+            child: Padding(
+              padding: EdgeInsets.only(
+                bottom: ResponsiveUI.padding(context, 12),
+              ),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ResponsiveUI.padding(context, 16),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: FilterButton(
+                                label: 'Categories',
+                                isActive: _showCategoriesFilter,
+                                onTap: () {
+                                  setState(() {
+                                    _showCategoriesFilter =
+                                        !_showCategoriesFilter;
+                                    if (_showCategoriesFilter) {
+                                      _showBrandsFilter = false;
+                                      _showWarhousesFilter = false;
+                                      _showVariationsFilter = false;
+                                    }
+                                  });
+                                },
+                              ),
+                            ),
+                            SizedBox(width: ResponsiveUI.spacing(context, 12)),
+                            Expanded(
+                              child: FilterButton(
+                                label: 'Brands',
+                                isActive: _showBrandsFilter,
+                                onTap: () {
+                                  setState(() {
+                                    _showBrandsFilter = !_showBrandsFilter;
+                                    if (_showBrandsFilter) {
+                                      _showCategoriesFilter = false;
+                                      _showWarhousesFilter = false;
+                                      _showVariationsFilter = false;
+                                    }
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: FilterButton(
+                                label: 'Warehouses',
+                                isActive: _showWarhousesFilter,
+                                onTap: () {
+                                  setState(() {
+                                    _showWarhousesFilter =
+                                        !_showWarhousesFilter;
+                                    if (_showWarhousesFilter) {
+                                      _showCategoriesFilter = false;
+                                      _showBrandsFilter = false;
+                                      _showVariationsFilter = false;
+                                    }
+                                  });
+                                },
+                              ),
+                            ),
+                            SizedBox(width: ResponsiveUI.spacing(context, 12)),
+                            Expanded(
+                              child: FilterButton(
+                                label: 'Variations',
+                                isActive: _showVariationsFilter,
+                                onTap: () {
+                                  setState(() {
+                                    _showVariationsFilter =
+                                        !_showVariationsFilter;
+                                    if (_showVariationsFilter) {
+                                      _showCategoriesFilter = false;
+                                      _showWarhousesFilter = false;
+                                      _showBrandsFilter = false;
+                                    }
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(width: ResponsiveUI.spacing(context, 12)),
-                Expanded(
-                  child: FilterButton(
-                    label: 'Brands',
-                    isActive: showBrands,
-                    onTap: onBrandsToggle,
-                  ),
-                ),
-              ],
+                  SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                  if (_showCategoriesFilter)
+                    AnimatedElement(
+                      delay: Duration.zero,
+                      child: GenericFilterPanel(
+                        filterType: FilterType.categories,
+                        selectedId: null, // Local or pass from parent if needed
+                        onSelected: widget.onCategorySelected,
+                        onClose: () {
+                          setState(() {
+                            _showCategoriesFilter = false;
+                          });
+                        },
+                      ),
+                    ),
+                  if (_showBrandsFilter)
+                    AnimatedElement(
+                      delay: Duration.zero,
+                      child: GenericFilterPanel(
+                        filterType: FilterType.brands,
+                        selectedId: null,
+                        onSelected: widget.onBrandSelected,
+                        onClose: () {
+                          setState(() {
+                            _showBrandsFilter = false;
+                          });
+                        },
+                      ),
+                    ),
+                  if (_showVariationsFilter)
+                    AnimatedElement(
+                      delay: Duration.zero,
+                      child: GenericFilterPanel(
+                        filterType: FilterType.variations,
+                        selectedId: null,
+                        onSelected: widget.onVariationSelected,
+                        onClose: () {
+                          setState(() {
+                            _showVariationsFilter = false;
+                          });
+                        },
+                      ),
+                    ),
+                  if (_showWarhousesFilter)
+                    AnimatedElement(
+                      delay: Duration.zero,
+                      child: GenericFilterPanel(
+                        filterType: FilterType.warehouses,
+                        selectedId: null,
+                        onSelected: widget.onWarehouseSelected,
+                        onClose: () {
+                          setState(() {
+                            _showWarhousesFilter = false;
+                          });
+                        },
+                      ),
+                    ),
+                ],
+              ),
             ),
-            SizedBox(height: ResponsiveUI.spacing(context, 12)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: FilterButton(
-                    label: 'Warehouses',
-                    isActive: showWarehouses,
-                    onTap: onWarehousesToggle,
-                  ),
-                ),
-                SizedBox(width: ResponsiveUI.spacing(context, 12)),
-                Expanded(
-                  child: FilterButton(
-                    label: 'Variations',
-                    isActive: showVariations,
-                    onTap: onVariationsToggle,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+          );
+        } else {
+          return const SizedBox.shrink();
+        }
+      },
     );
   }
 }
@@ -142,178 +273,192 @@ class FilterButton extends StatelessWidget {
   }
 }
 
-class CategoriesFilterPanel extends StatelessWidget {
-  final List<Product> products;
-  final String? selectedCategoryId;
-  final Function(String?) onCategorySelected;
+// Generic Filter Panel using BlocBuilder
+class GenericFilterPanel extends StatelessWidget {
+  final FilterType filterType;
+  final String? selectedId;
+  final Function(String?) onSelected;
   final VoidCallback onClose;
 
-  const CategoriesFilterPanel({
+  const GenericFilterPanel({
     super.key,
-    required this.products,
-    required this.selectedCategoryId,
-    required this.onCategorySelected,
+    required this.filterType,
+    required this.selectedId,
+    required this.onSelected,
     required this.onClose,
   });
 
-  Map<String, CategoryInfo> _getUniqueCategories() {
-    Map<String, CategoryInfo> categoriesMap = {};
-
-    for (var product in products) {
-      for (var category in product.categoryId) {
-        if (!categoriesMap.containsKey(category.id)) {
-          categoriesMap[category.id] = CategoryInfo(
-            category: category,
-            productCount: 1,
-          );
-        } else {
-          categoriesMap[category.id]!.productCount++;
-        }
-      }
+  String _getTitle() {
+    switch (filterType) {
+      case FilterType.categories:
+        return 'Categories';
+      case FilterType.brands:
+        return 'Brands';
+      case FilterType.variations:
+        return 'Variations';
+      case FilterType.warehouses:
+        return 'Warehouses';
     }
-
-    return categoriesMap;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final categories = _getUniqueCategories();
+  List<FilterItem> _getItems(List<dynamic> list) {
+    return list.map((item) {
+      int count = 0;
+      switch (filterType) {
+        case FilterType.categories:
+          count = (item as Category).productQuantity;
+          return FilterItem(
+            id: item.id,
+            name: item.name,
+            image: item.image,
+            count: count,
+          );
+        case FilterType.brands:
+          return FilterItem(
+            id: (item as Brand).id,
+            name: item.name,
+            image: item.logo,
+            count: 0, // Add count from API if available
+          );
+        case FilterType.variations:
+          final varn = item as Variation;
+          return FilterItem(
+            id: varn.id,
+            name: varn.name,
+            image: '',
+            count: varn.options.length,
+          );
+        case FilterType.warehouses:
+          final wh = item as Warehouse;
+          return FilterItem(
+            id: wh.id,
+            name: wh.name,
+            image: '',
+            count: wh.numberOfProducts,
+          );
+      }
+    }).toList();
+  }
 
-    return Container(
-      margin: EdgeInsets.symmetric(
-        horizontal: ResponsiveUI.padding(context, 16),
-      ),
-      padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(
-          ResponsiveUI.borderRadius(context, 12),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          FilterPanelHeader(title: 'Categories', onClose: onClose),
-          SizedBox(height: ResponsiveUI.spacing(context, 16)),
-          SizedBox(
-            height: ResponsiveUI.value(context, 200),
-            child: GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4,
-                crossAxisSpacing: ResponsiveUI.spacing(context, 12),
-                mainAxisSpacing: ResponsiveUI.spacing(context, 12),
-                childAspectRatio: 0.85,
-              ),
-              itemCount: categories.length,
-              itemBuilder: (context, index) {
-                final categoryInfo = categories.values.elementAt(index);
-                final category = categoryInfo.category;
-                final isSelected = selectedCategoryId == category.id;
-
-                return CategoryItem(
-                  category: category,
-                  productCount: categoryInfo.productCount,
-                  isSelected: isSelected,
-                  onTap: () {
-                    onCategorySelected(isSelected ? null : category.id);
-                  },
-                );
-              },
-            ),
-          ),
-        ],
-      ),
+  Widget _buildItem(FilterItem item, bool isSelected) {
+    return ListTile(
+      leading: item.image.isNotEmpty
+          ? CircleAvatar(
+              backgroundImage: NetworkImage(item.image),
+              onBackgroundImageError: (_, __) => Icon(Icons.error),
+            )
+          : Icon(_getIconForType()),
+      title: Text(item.name),
+      subtitle: Text('${item.count} products'),
+      trailing: isSelected
+          ? Icon(Icons.check, color: AppColors.primaryBlue)
+          : null,
+      selected: isSelected,
+      onTap: () => onSelected(isSelected ? null : item.id),
     );
   }
-}
 
-class BrandsFilterPanel extends StatelessWidget {
-  final List<Product> products;
-  final String? selectedBrandId;
-  final Function(String?) onBrandSelected;
-  final VoidCallback onClose;
-
-  const BrandsFilterPanel({
-    super.key,
-    required this.products,
-    required this.selectedBrandId,
-    required this.onBrandSelected,
-    required this.onClose,
-  });
-
-  Map<String, BrandInfo> _getUniqueBrands() {
-    Map<String, BrandInfo> brandsMap = {};
-
-    for (var product in products) {
-      if (!brandsMap.containsKey(product.brandId.id)) {
-        brandsMap[product.brandId.id] = BrandInfo(
-          brand: product.brandId,
-          productCount: 1,
-        );
-      } else {
-        brandsMap[product.brandId.id]!.productCount++;
-      }
+  IconData _getIconForType() {
+    switch (filterType) {
+      case FilterType.categories:
+        return Icons.category;
+      case FilterType.brands:
+        return Icons.business;
+      case FilterType.variations:
+        return Icons.tune;
+      case FilterType.warehouses:
+        return Icons.warehouse;
     }
-
-    return brandsMap;
   }
 
   @override
   Widget build(BuildContext context) {
-    final brands = _getUniqueBrands();
-
-    return Container(
-      margin: EdgeInsets.symmetric(
-        horizontal: ResponsiveUI.padding(context, 16),
-      ),
-      padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(
-          ResponsiveUI.borderRadius(context, 12),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          FilterPanelHeader(title: 'Brands', onClose: onClose),
-          SizedBox(height: ResponsiveUI.spacing(context, 16)),
-          SizedBox(
-            height: ResponsiveUI.value(context, 200),
-            child: ListView.builder(
-              itemCount: brands.length,
-              itemBuilder: (context, index) {
-                final brandInfo = brands.values.elementAt(index);
-                final brand = brandInfo.brand;
-                final isSelected = selectedBrandId == brand.id;
-
-                return BrandItem(
-                  brand: brand,
-                  productCount: brandInfo.productCount,
-                  isSelected: isSelected,
-                  onTap: () {
-                    onBrandSelected(isSelected ? null : brand.id);
-                  },
-                );
-              },
+    return BlocBuilder<ProductFiltersCubit, ProductFiltersState>(
+      builder: (context, state) {
+        if (state is ProductFiltersLoading) {
+          return Container(
+            padding: EdgeInsets.all(16),
+            child: Center(
+              child: CircularProgressIndicator(color: AppColors.primaryBlue),
             ),
-          ),
-        ],
-      ),
+          );
+        }
+
+        if (state is ProductFiltersError) {
+          return Container(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Text('Error: ${state.message}'),
+                ElevatedButton(
+                  onPressed: () =>
+                      context.read<ProductFiltersCubit>().getFilters(),
+                  child: Text('Retry'),
+                ),
+              ],
+            ),
+          );
+        }
+
+        if (state is ProductFiltersSuccess) {
+          List<dynamic> list;
+          switch (filterType) {
+            case FilterType.categories:
+              list = state.filters.data?.categories ?? [];
+              break;
+            case FilterType.brands:
+              list = state.filters.data?.brands ?? [];
+              break;
+            case FilterType.variations:
+              list = state.filters.data?.variations ?? [];
+              break;
+            case FilterType.warehouses:
+              list = state.filters.data?.warehouses ?? [];
+          }
+
+          final items = _getItems(list);
+
+          return Container(
+            margin: EdgeInsets.symmetric(
+              horizontal: ResponsiveUI.padding(context, 16),
+            ),
+            padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(
+                ResponsiveUI.borderRadius(context, 12),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FilterPanelHeader(title: _getTitle(), onClose: onClose),
+                SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                SizedBox(
+                  height: ResponsiveUI.value(context, 200),
+                  child: ListView.builder(
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      final item = items[index];
+                      final isSelected = selectedId == item.id;
+                      return _buildItem(item, isSelected);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return const SizedBox.shrink();
+      },
     );
   }
 }
@@ -348,214 +493,4 @@ class FilterPanelHeader extends StatelessWidget {
       ],
     );
   }
-}
-
-class CategoryItem extends StatelessWidget {
-  final Category category;
-  final int productCount;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const CategoryItem({
-    super.key,
-    required this.category,
-    required this.productCount,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primaryBlue.withOpacity(0.1)
-              : Colors.white,
-          borderRadius: BorderRadius.circular(
-            ResponsiveUI.borderRadius(context, 8),
-          ),
-          border: Border.all(
-            color: isSelected ? AppColors.primaryBlue : Colors.grey[300]!,
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: ResponsiveUI.value(context, 50),
-              height: ResponsiveUI.value(context, 50),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(
-                  ResponsiveUI.borderRadius(context, 8),
-                ),
-              ),
-              child: category.image.isNotEmpty
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(
-                        ResponsiveUI.borderRadius(context, 8),
-                      ),
-                      child: Image.network(
-                        category.image,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Icon(
-                            Icons.category,
-                            size: ResponsiveUI.iconSize(context, 30),
-                            color: Colors.grey,
-                          );
-                        },
-                      ),
-                    )
-                  : Icon(
-                      Icons.category,
-                      size: ResponsiveUI.iconSize(context, 30),
-                      color: Colors.grey,
-                    ),
-            ),
-            SizedBox(height: ResponsiveUI.spacing(context, 6)),
-            Text(
-              category.name,
-              style: TextStyle(
-                fontSize: ResponsiveUI.fontSize(context, 11),
-                fontWeight: FontWeight.w600,
-                color: isSelected ? AppColors.primaryBlue : Colors.black87,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-            ),
-            Text(
-              '$productCount',
-              style: TextStyle(
-                fontSize: ResponsiveUI.fontSize(context, 10),
-                color: Colors.grey[600],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class BrandItem extends StatelessWidget {
-  final Brand brand;
-  final int productCount;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const BrandItem({
-    super.key,
-    required this.brand,
-    required this.productCount,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: EdgeInsets.only(bottom: ResponsiveUI.spacing(context, 8)),
-        padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primaryBlue.withOpacity(0.1)
-              : Colors.white,
-          borderRadius: BorderRadius.circular(
-            ResponsiveUI.borderRadius(context, 8),
-          ),
-          border: Border.all(
-            color: isSelected ? AppColors.primaryBlue : Colors.grey[300]!,
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: ResponsiveUI.value(context, 40),
-              height: ResponsiveUI.value(context, 40),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(
-                  ResponsiveUI.borderRadius(context, 8),
-                ),
-              ),
-              child: brand.logo.isNotEmpty
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(
-                        ResponsiveUI.borderRadius(context, 8),
-                      ),
-                      child: Image.network(
-                        brand.logo,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Icon(
-                            Icons.business,
-                            size: ResponsiveUI.iconSize(context, 24),
-                            color: Colors.grey,
-                          );
-                        },
-                      ),
-                    )
-                  : Icon(
-                      Icons.business,
-                      size: ResponsiveUI.iconSize(context, 24),
-                      color: Colors.grey,
-                    ),
-            ),
-            SizedBox(width: ResponsiveUI.spacing(context, 12)),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    brand.name,
-                    style: TextStyle(
-                      fontSize: ResponsiveUI.fontSize(context, 14),
-                      fontWeight: FontWeight.w600,
-                      color: isSelected
-                          ? AppColors.primaryBlue
-                          : Colors.black87,
-                    ),
-                  ),
-                  Text(
-                    '$productCount Products',
-                    style: TextStyle(
-                      fontSize: ResponsiveUI.fontSize(context, 12),
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.chevron_right,
-              size: ResponsiveUI.iconSize(context, 20),
-              color: Colors.grey[400],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class CategoryInfo {
-  final Category category;
-  int productCount;
-
-  CategoryInfo({required this.category, required this.productCount});
-}
-
-class BrandInfo {
-  final Brand brand;
-  int productCount;
-
-  BrandInfo({required this.brand, required this.productCount});
 }

@@ -96,7 +96,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           items: [
                             ProductInfoItem(
                               label: 'Product Type',
-                              value: 'Standard',
+                              value: product.prices[0].variations[0].name,
                             ),
                             ProductInfoItem(
                               label: 'Product Code',
@@ -117,14 +117,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               label: 'Quantity',
                               value: '${product.quantity}',
                             ),
+                            // ProductInfoItem(
+                            //   label: 'Quantity',
+                            //   value: '${product.lowStock}',
+                            // ),
                             ProductInfoItem(
-                              label: 'Alert Quantity',
-                              value: '${product.lowStock}',
-                            ),
-                            ProductInfoItem(
-                              label: 'Purchase Cost',
+                              label: 'Price',
                               value:
-                                  '\$${product.wholePrice.toStringAsFixed(2)}',
+                                  '\$${product.price.toStringAsFixed(2)}',
                             ),
                           ],
                         ),

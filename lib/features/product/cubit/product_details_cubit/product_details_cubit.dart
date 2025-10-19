@@ -17,11 +17,10 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
     emit(ProductDetailsLoading());
 
     try {
-    
       log('Fetching product details for ID: $productId');
 
       final response = await DioHelper.getData(
-        url: '${EndPoint.getProductById}/$productId',
+        url: EndPoint.getProductById(productId),
       );
 
       log('Response Status Code: ${response.statusCode}');
@@ -30,17 +29,24 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
       if (response.statusCode == 200) {
         productDetailsModel = ProductDetailsModel.fromJson(response.data);
 
-        if (productDetailsModel?.success == true && productDetailsModel?.data != null) {
+        if (productDetailsModel?.success == true &&
+            productDetailsModel?.data != null) {
           log('Product details loaded successfully');
           emit(ProductDetailsSuccess(productDetailsModel!));
         } else {
-          final errorMessage = productDetailsModel?.data?.message ?? 'Failed to load product details';
+          final errorMessage =
+              productDetailsModel?.data?.message ??
+              'Failed to load product details';
           log('Failed to load product: $errorMessage');
           emit(ProductDetailsError(errorMessage));
         }
       } else {
         log('Failed with status: ${response.statusCode}');
-        emit(ProductDetailsError('Failed to load product details: ${response.statusCode}'));
+        emit(
+          ProductDetailsError(
+            'Failed to load product details: ${response.statusCode}',
+          ),
+        );
       }
     } catch (error) {
       log('Error: $error');

@@ -88,6 +88,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
         decoration: InputDecoration(
           labelText: widget.labelText,
           hintText: widget.hintText,
+          hintStyle: const TextStyle(
+            fontWeight: FontWeight.w600,
+            color: AppColors.darkGray,
+          ),
           labelStyle: const TextStyle(
             fontWeight: FontWeight.w600,
             color: AppColors.darkGray,
