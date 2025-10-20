@@ -14,6 +14,7 @@ class CustomTextField extends StatefulWidget {
   final bool isPassword;
   final String? Function(String?)? validator;
   final void Function(String)? onChanged;
+  final void Function(String)? onSubmitted;
   final Color? prefixIconColor;
   final bool hasBoxDecoration;
   final bool hasBorder;
@@ -23,6 +24,7 @@ class CustomTextField extends StatefulWidget {
   final double verticalPadding;
   final double horizontalPadding;
   final double elevation;
+  final bool autofocus;
 
   const CustomTextField({
     super.key,
@@ -38,6 +40,7 @@ class CustomTextField extends StatefulWidget {
     this.isPassword = false,
     this.validator,
     this.onChanged,
+    this.onSubmitted,
     this.hasBoxDecoration = false,
     this.hasBorder = false,
     this.borderColor,
@@ -47,6 +50,7 @@ class CustomTextField extends StatefulWidget {
     this.horizontalPadding = 16,
     this.elevation = 0,
     this.prefixIconColor,
+    this.autofocus = false,
   });
 
   @override
@@ -86,9 +90,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
       child: TextFormField(
         controller: widget.controller,
         keyboardType: widget.keyboardType,
+        autofocus: widget.autofocus,
         obscureText: widget.isPassword ? _obscure : false,
         validator: widget.validator,
         onChanged: widget.onChanged,
+        onFieldSubmitted: widget.onSubmitted,
+        textInputAction: TextInputAction.done, // Treat Enter as submit
         decoration: InputDecoration(
           labelText: widget.labelText,
           hintText: widget.hintText,
@@ -153,10 +160,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                   },
                 )
               : IconButton(
-                  icon: Icon(
-                 widget.suffixIcon,
-                    color: AppColors.linkBlue,
-                  ),
+                  icon: Icon(widget.suffixIcon, color: AppColors.linkBlue),
                   onPressed: widget.suffixOnPressed,
                 ),
 

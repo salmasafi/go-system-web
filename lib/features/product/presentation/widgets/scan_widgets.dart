@@ -94,7 +94,7 @@ class ScanButton extends StatelessWidget {
               children: [
                 Icon(
                   Icons.camera_alt,
-                  color: Colors.white,
+                  color: AppColors.white,
                   size: ResponsiveUI.iconSize(context, 24),
                 ),
                 SizedBox(width: ResponsiveUI.spacing(context, 12)),
