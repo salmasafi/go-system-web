@@ -78,10 +78,17 @@ class CustomDeleteDialog extends StatelessWidget {
                       padding: EdgeInsets.symmetric(vertical: buttonPadding),
                       side: BorderSide(color: AppColors.lightGray),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+                        borderRadius: BorderRadius.circular(
+                          ResponsiveUI.borderRadius(context, 12),
+                        ),
                       ),
                     ),
-                    child: Text(cancelText ?? 'Cancel'),
+                    child: Text(
+                      cancelText ?? 'Cancel',
+                      style: TextStyle(
+                        color: AppColors.black,
+                      ),
+                    ),
                   ),
                 ),
                 SizedBox(width: ResponsiveUI.spacing(context, 12)),
@@ -90,10 +97,12 @@ class CustomDeleteDialog extends StatelessWidget {
                     onPressed: onDelete,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: iconColor ?? AppColors.red,
-                      foregroundColor: Colors.white,
+                      foregroundColor: AppColors.white,
                       padding: EdgeInsets.symmetric(vertical: buttonPadding),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+                        borderRadius: BorderRadius.circular(
+                          ResponsiveUI.borderRadius(context, 12),
+                        ),
                       ),
                     ),
                     child: Text(deleteText ?? 'Delete'),

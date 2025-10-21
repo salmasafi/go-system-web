@@ -1,6 +1,6 @@
 import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/services/end_point.dart';
+import 'package:systego/core/services/endpoints.dart';
 import '../../../core/services/cache_helper.dart.dart';
 import '../../../core/services/dio_helper.dart';
 import '../../../core/utils/error_handler.dart';

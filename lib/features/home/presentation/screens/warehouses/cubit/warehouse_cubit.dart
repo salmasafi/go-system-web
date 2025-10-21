@@ -1,13 +1,9 @@
 import 'dart:developer';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/features/home/presentation/screens/warehouses/cubit/warehouse_state.dart';
-
-import '../../../../../../core/services/cache_helper.dart.dart';
 import '../../../../../../core/services/dio_helper.dart';
-import '../../../../../../core/services/end_point.dart';
+import '../../../../../../core/services/endpoints.dart';
 import '../data/model/ware_house_model.dart';
-
 
 class WareHouseCubit extends Cubit<WarehousesState> {
   WareHouseCubit() : super(WarehousesInitial());
@@ -19,13 +15,13 @@ class WareHouseCubit extends Cubit<WarehousesState> {
     emit(WarehousesLoading());
 
     try {
-      final token = CacheHelper.getData(key: 'token');
+      //final token = CacheHelper.getData(key: 'token');
 
-      log(' Token: $token');
+      //log(' Token: $token');
 
       final response = await DioHelper.getData(
         url: EndPoint.warehouses,
-       // token: token,
+        // token: token,
       );
 
       log(' Response Status Code: ${response.statusCode}');
@@ -38,12 +34,16 @@ class WareHouseCubit extends Cubit<WarehousesState> {
 
         log(' Warehouses loaded successfully: ${warehouses.length} items');
         log(' Message: ${warehouseModel?.data?.message}');
-        log(' First warehouse type: ${warehouses.isNotEmpty ? warehouses.first.runtimeType : "empty"}');
+        log(
+          ' First warehouse type: ${warehouses.isNotEmpty ? warehouses.first.runtimeType : "empty"}',
+        );
 
         emit(WarehousesSuccess());
       } else {
         log(' Failed with status: ${response.statusCode}');
-        emit(WarehousesError('Failed to load warehouses: ${response.statusCode}'));
+        emit(
+          WarehousesError('Failed to load warehouses: ${response.statusCode}'),
+        );
       }
     } catch (error) {
       log(' Error: $error');
@@ -61,13 +61,13 @@ class WareHouseCubit extends Cubit<WarehousesState> {
     emit(WarehouseCreating());
 
     try {
-    //  final token = CacheHelper.getData(key: 'token');
+      //  final token = CacheHelper.getData(key: 'token');
 
       log(' Creating warehouse with name: $name');
 
       final response = await DioHelper.postData(
         url: EndPoint.createWarehouse,
-       // token: token,
+        // token: token,
         data: {
           'name': name,
           'address': address,
@@ -87,7 +87,9 @@ class WareHouseCubit extends Cubit<WarehousesState> {
         await getWarehouses();
       } else {
         log(' Failed to create warehouse: ${response.statusCode}');
-        emit(WarehousesError('Failed to create warehouse: ${response.statusCode}'));
+        emit(
+          WarehousesError('Failed to create warehouse: ${response.statusCode}'),
+        );
       }
     } catch (error) {
       log(' Create Error: $error');
@@ -106,13 +108,13 @@ class WareHouseCubit extends Cubit<WarehousesState> {
     emit(WarehouseUpdating());
 
     try {
-     // final token = CacheHelper.getData(key: 'token');
+      // final token = CacheHelper.getData(key: 'token');
 
       log(' Updating warehouse ID: $warehouseId');
 
       final response = await DioHelper.putData(
         url: '${EndPoint.updateWarehouse}/$warehouseId',
-       // token: token,
+        // token: token,
         data: {
           'name': name,
           'address': address,
@@ -132,7 +134,9 @@ class WareHouseCubit extends Cubit<WarehousesState> {
         await getWarehouses();
       } else {
         log(' Failed to update warehouse: ${response.statusCode}');
-        emit(WarehousesError('Failed to update warehouse: ${response.statusCode}'));
+        emit(
+          WarehousesError('Failed to update warehouse: ${response.statusCode}'),
+        );
       }
     } catch (error) {
       log(' Update Error: $error');
@@ -145,13 +149,13 @@ class WareHouseCubit extends Cubit<WarehousesState> {
     emit(WarehouseDeleting());
 
     try {
-     // final token = CacheHelper.getData(key: 'token');
+      // final token = CacheHelper.getData(key: 'token');
 
       log(' Deleting warehouse ID: $warehouseId');
 
       final response = await DioHelper.deleteData(
         url: '${EndPoint.deleteWarehouse}/$warehouseId',
-       // token: token,
+        // token: token,
       );
 
       log(' Delete Response Status Code: ${response.statusCode}');
@@ -169,7 +173,9 @@ class WareHouseCubit extends Cubit<WarehousesState> {
         await getWarehouses();
       } else {
         log(' Failed to delete warehouse: ${response.statusCode}');
-        emit(WarehousesError('Failed to delete warehouse: ${response.statusCode}'));
+        emit(
+          WarehousesError('Failed to delete warehouse: ${response.statusCode}'),
+        );
       }
     } catch (error) {
       log(' Delete Error: $error');

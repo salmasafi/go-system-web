@@ -17,7 +17,8 @@ class EditCategoryBottomSheet extends StatefulWidget {
   const EditCategoryBottomSheet({super.key, required this.category});
 
   @override
-  State<EditCategoryBottomSheet> createState() => _EditCategoryBottomSheetState();
+  State<EditCategoryBottomSheet> createState() =>
+      _EditCategoryBottomSheetState();
 }
 
 class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
@@ -32,7 +33,9 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
     super.initState();
     _nameController = TextEditingController(text: widget.category.name);
     _selectedParentId = widget.category.parentId?.id;
-    CategoriesCubit.get(context).getCategories(); // Ensure parentCategories is populated
+    CategoriesCubit.get(
+      context,
+    ).getCategories(); // Ensure parentCategories is populated
   }
 
   @override
@@ -56,10 +59,12 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
             'Please enter category name',
             style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14)),
           ),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.red,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
+            borderRadius: BorderRadius.circular(
+              ResponsiveUI.borderRadius(context, 8),
+            ),
           ),
           margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
         ),
@@ -93,14 +98,19 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
     final image = _selectedImage != null
         ? Image.file(_selectedImage!, fit: BoxFit.cover)
         : widget.category.image.isNotEmpty
-        ? Image.network(widget.category.image, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const CustomImagePlaceholder())
+        ? Image.network(
+            widget.category.image,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const CustomImagePlaceholder(),
+          )
         : const CustomImagePlaceholder();
 
     return BlocListener<CategoriesCubit, CategoriesState>(
       listener: (context, state) {
         if (state is GetCategoriesLoading || state is UpdateCategoryLoading) {
           setState(() => _isLoading = true);
-        } else if (state is GetCategoriesSuccess || state is GetCategoriesError) {
+        } else if (state is GetCategoriesSuccess ||
+            state is GetCategoriesError) {
           setState(() => _isLoading = false);
         } else if (state is UpdateCategorySuccess) {
           setState(() => _isLoading = false);
@@ -110,10 +120,12 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                 state.message,
                 style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14)),
               ),
-              backgroundColor: Colors.green,
+              backgroundColor: AppColors.successGreen,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
+                borderRadius: BorderRadius.circular(
+                  ResponsiveUI.borderRadius(context, 8),
+                ),
               ),
               margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
             ),
@@ -127,10 +139,12 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                 state.error,
                 style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14)),
               ),
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.red,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
+                borderRadius: BorderRadius.circular(
+                  ResponsiveUI.borderRadius(context, 8),
+                ),
               ),
               margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
             ),
@@ -139,250 +153,328 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
       },
       child: Container(
         constraints: BoxConstraints(maxWidth: maxWidth),
-        margin: EdgeInsets.symmetric(horizontal: isDesktop ? ResponsiveUI.padding(context, 20) : 0),
+        margin: EdgeInsets.symmetric(
+          horizontal: isDesktop ? ResponsiveUI.padding(context, 20) : 0,
+        ),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(ResponsiveUI.borderRadius(context, 24))),
+          color: AppColors.white,
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(ResponsiveUI.borderRadius(context, 24)),
+          ),
         ),
         child: SafeArea(
           child: _isLoading
               ? Container(
-            height: ResponsiveUI.value(context, 300),
-            padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-            child: Center(
-              child: CustomLoadingState(
-                size: ResponsiveUI.iconSize(context, 60),
-              ),
-            ),
-          )
+                  height: ResponsiveUI.value(context, 300),
+                  padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+                  child: Center(
+                    child: CustomLoadingState(
+                      size: ResponsiveUI.iconSize(context, 60),
+                    ),
+                  ),
+                )
               : SingleChildScrollView(
-            padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Center(
-                  child: Container(
-                    width: ResponsiveUI.value(context, 40),
-                    height: ResponsiveUI.value(context, 4),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.all(Radius.circular(ResponsiveUI.borderRadius(context, 2))),
-                    ),
-                  ),
-                ),
-                SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                Text(
-                  'Edit Category',
-                  style: TextStyle(
-                    fontSize: ResponsiveUI.fontSize(context, 20),
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                CustomTextField(
-                  controller: _nameController,
-                  labelText: 'Category Name',
-                  hintText: 'Enter category name',
-                  prefixIcon: Icons.category,
-                  hasBoxDecoration: false,
-                  hasBorder: true,
-                  prefixIconColor: AppColors.darkGray.withOpacity(0.7),
-                ),
-                SizedBox(height: ResponsiveUI.spacing(context, 25)),
-                SizedBox(
-                  height: ResponsiveUI.value(context, 60),
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedParentId,
-                    decoration: InputDecoration(
-                      labelText: 'Parent Category (Optional)',
-                      prefixIcon: Icon(
-                        Icons.folder,
-                        color: AppColors.darkGray,
-                        size: ResponsiveUI.iconSize(context, 24),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
-                        borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
-                        borderSide: const BorderSide(color: AppColors.primaryBlue, width: 2),
-                      ),
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: ResponsiveUI.padding(context, 12),
-                        vertical: ResponsiveUI.padding(context, 8),
-                      ),
-                    ),
-                    dropdownColor: Colors.white,
-                    icon: Icon(
-                      Icons.arrow_drop_down,
-                      color: AppColors.primaryBlue,
-                      size: ResponsiveUI.iconSize(context, 24),
-                    ),
-                    style: TextStyle(
-                      color: AppColors.darkGray,
-                      fontSize: ResponsiveUI.fontSize(context, 14),
-                    ),
-                    items: [
-                      DropdownMenuItem(
-                        value: null,
-                        child: Text(
-                          'None',
-                          style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14)),
+                  padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Center(
+                        child: Container(
+                          width: ResponsiveUI.value(context, 40),
+                          height: ResponsiveUI.value(context, 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.shadowGray[300],
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(
+                                ResponsiveUI.borderRadius(context, 2),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                      ...cubit.parentCategories
-                          .where((parent) => parent.id != widget.category.id) // Exclude current category
-                          .map(
-                            (parent) => DropdownMenuItem(
-                          value: parent.id,
-                          child: Row(
-                            children: [
-                              Container(
-                                width: ResponsiveUI.value(context, 24),
-                                height: ResponsiveUI.value(context, 24),
-                                margin: EdgeInsets.only(right: ResponsiveUI.spacing(context, 8)),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 4)),
-                                  color: Colors.grey[200],
+                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                      Text(
+                        'Edit Category',
+                        style: TextStyle(
+                          fontSize: ResponsiveUI.fontSize(context, 20),
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                      CustomTextField(
+                        controller: _nameController,
+                        labelText: 'Category Name',
+                        hintText: 'Enter category name',
+                        prefixIcon: Icons.category,
+                        hasBoxDecoration: false,
+                        hasBorder: true,
+                        prefixIconColor: AppColors.darkGray.withOpacity(0.7),
+                      ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 25)),
+                      SizedBox(
+                        height: ResponsiveUI.value(context, 60),
+                        child: DropdownButtonFormField<String>(
+                          value: _selectedParentId,
+                          decoration: InputDecoration(
+                            labelText: 'Parent Category (Optional)',
+                            prefixIcon: Icon(
+                              Icons.folder,
+                              color: AppColors.darkGray,
+                              size: ResponsiveUI.iconSize(context, 24),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                ResponsiveUI.borderRadius(context, 8),
+                              ),
+                              borderSide: BorderSide(
+                                color: AppColors.shadowGray[300]!,
+                                width: 1,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                ResponsiveUI.borderRadius(context, 8),
+                              ),
+                              borderSide: const BorderSide(
+                                color: AppColors.primaryBlue,
+                                width: 2,
+                              ),
+                            ),
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: ResponsiveUI.padding(context, 12),
+                              vertical: ResponsiveUI.padding(context, 8),
+                            ),
+                          ),
+                          dropdownColor: AppColors.white,
+                          icon: Icon(
+                            Icons.arrow_drop_down,
+                            color: AppColors.primaryBlue,
+                            size: ResponsiveUI.iconSize(context, 24),
+                          ),
+                          style: TextStyle(
+                            color: AppColors.darkGray,
+                            fontSize: ResponsiveUI.fontSize(context, 14),
+                          ),
+                          items: [
+                            DropdownMenuItem(
+                              value: null,
+                              child: Text(
+                                'None',
+                                style: TextStyle(
+                                  fontSize: ResponsiveUI.fontSize(context, 14),
                                 ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 4)),
-                                  child: Image.network(
-                                    parent.image,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => Icon(
-                                      Icons.category,
-                                      color: Colors.grey[400],
-                                      size: ResponsiveUI.iconSize(context, 16),
+                              ),
+                            ),
+                            ...cubit.parentCategories
+                                .where(
+                                  (parent) => parent.id != widget.category.id,
+                                ) // Exclude current category
+                                .map(
+                                  (parent) => DropdownMenuItem(
+                                    value: parent.id,
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: ResponsiveUI.value(
+                                            context,
+                                            24,
+                                          ),
+                                          height: ResponsiveUI.value(
+                                            context,
+                                            24,
+                                          ),
+                                          margin: EdgeInsets.only(
+                                            right: ResponsiveUI.spacing(
+                                              context,
+                                              8,
+                                            ),
+                                          ),
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(
+                                              ResponsiveUI.borderRadius(
+                                                context,
+                                                4,
+                                              ),
+                                            ),
+                                            color: AppColors.shadowGray[200],
+                                          ),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                              ResponsiveUI.borderRadius(
+                                                context,
+                                                4,
+                                              ),
+                                            ),
+                                            child: Image.network(
+                                              parent.image,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (_, __, ___) =>
+                                                  Icon(
+                                                    Icons.category,
+                                                    color: AppColors.shadowGray[400],
+                                                    size: ResponsiveUI.iconSize(
+                                                      context,
+                                                      16,
+                                                    ),
+                                                  ),
+                                            ),
+                                          ),
+                                        ),
+                                        Text(
+                                          parent.name,
+                                          style: TextStyle(
+                                            fontSize: ResponsiveUI.fontSize(
+                                              context,
+                                              14,
+                                            ),
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
+                          ],
+                          onChanged: _isLoading
+                              ? null
+                              : (val) =>
+                                    setState(() => _selectedParentId = val),
+                        ),
+                      ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                      Text(
+                        'Category Image',
+                        style: TextStyle(
+                          fontSize: ResponsiveUI.fontSize(context, 14),
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.shadowGray[700],
+                        ),
+                      ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 8)),
+                      GestureDetector(
+                        onTap: _isLoading ? null : _pickImage,
+                        child: Container(
+                          height: ResponsiveUI.value(context, 300),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: AppColors.shadowGray[300]!,
+                              width: 1,
+                            ),
+                            borderRadius: BorderRadius.circular(
+                              ResponsiveUI.borderRadius(context, 12),
+                            ),
+                            color: AppColors.shadowGray[50],
+                          ),
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(
+                                  ResponsiveUI.borderRadius(context, 12),
+                                ),
+                                child: image,
                               ),
-                              Text(
-                                parent.name,
-                                style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14)),
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                              if (_selectedImage != null ||
+                                  widget.category.image.isNotEmpty)
+                                Positioned(
+                                  top: ResponsiveUI.padding(context, 8),
+                                  right: ResponsiveUI.padding(context, 8),
+                                  child: Container(
+                                    padding: EdgeInsets.all(
+                                      ResponsiveUI.padding(context, 6),
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black54,
+                                      borderRadius: BorderRadius.circular(
+                                        ResponsiveUI.borderRadius(context, 6),
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.edit,
+                                      color: AppColors.white,
+                                      size: ResponsiveUI.iconSize(context, 18),
+                                    ),
+                                  ),
+                                ),
                             ],
                           ),
                         ),
                       ),
-                    ],
-                    onChanged: _isLoading ? null : (val) => setState(() => _selectedParentId = val),
-                  ),
-                ),
-                SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                Text(
-                  'Category Image',
-                  style: TextStyle(
-                    fontSize: ResponsiveUI.fontSize(context, 14),
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[700],
-                  ),
-                ),
-                SizedBox(height: ResponsiveUI.spacing(context, 8)),
-                GestureDetector(
-                  onTap: _isLoading ? null : _pickImage,
-                  child: Container(
-                    height: ResponsiveUI.value(context, 300),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey[300]!, width: 1),
-                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
-                      color: Colors.grey[50],
-                    ),
-                    child: Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
-                          child: image,
-                        ),
-                        if (_selectedImage != null || widget.category.image.isNotEmpty)
-                          Positioned(
-                            top: ResponsiveUI.padding(context, 8),
-                            right: ResponsiveUI.padding(context, 8),
-                            child: Container(
-                              padding: EdgeInsets.all(ResponsiveUI.padding(context, 6)),
-                              decoration: BoxDecoration(
-                                color: Colors.black54,
-                                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 6)),
+                      SizedBox(height: ResponsiveUI.spacing(context, 8)),
+                      _selectedImage == null && widget.category.image.isEmpty
+                          ? Text(
+                              'Tap to select an image',
+                              style: TextStyle(
+                                fontSize: ResponsiveUI.fontSize(context, 12),
+                                color: Colors.orange[700],
+                                fontStyle: FontStyle.italic,
                               ),
-                              child: Icon(
-                                Icons.edit,
-                                color: Colors.white,
-                                size: ResponsiveUI.iconSize(context, 18),
-                              ),
+                              textAlign: TextAlign.center,
+                            )
+                          : _selectedImage != null
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.check_circle,
+                                  color: AppColors.successGreen,
+                                  size: ResponsiveUI.iconSize(context, 16),
+                                ),
+                                SizedBox(
+                                  width: ResponsiveUI.spacing(context, 4),
+                                ),
+                                Text(
+                                  'New image selected',
+                                  style: TextStyle(
+                                    fontSize: ResponsiveUI.fontSize(
+                                      context,
+                                      12,
+                                    ),
+                                    color: Colors.green[700],
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : const SizedBox.shrink(),
+                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                      ElevatedButton(
+                        onPressed: _isLoading ? null : _submitUpdate,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryBlue,
+                          padding: EdgeInsets.symmetric(
+                            vertical: ResponsiveUI.padding(context, 14),
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              ResponsiveUI.borderRadius(context, 12),
                             ),
                           ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(height: ResponsiveUI.spacing(context, 8)),
-                _selectedImage == null && widget.category.image.isEmpty
-                    ? Text(
-                  'Tap to select an image',
-                  style: TextStyle(
-                    fontSize: ResponsiveUI.fontSize(context, 12),
-                    color: Colors.orange[700],
-                    fontStyle: FontStyle.italic,
-                  ),
-                  textAlign: TextAlign.center,
-                )
-                    : _selectedImage != null
-                    ? Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.check_circle,
-                      color: Colors.green,
-                      size: ResponsiveUI.iconSize(context, 16),
-                    ),
-                    SizedBox(width: ResponsiveUI.spacing(context, 4)),
-                    Text(
-                      'New image selected',
-                      style: TextStyle(
-                        fontSize: ResponsiveUI.fontSize(context, 12),
-                        color: Colors.green[700],
-                        fontWeight: FontWeight.w500,
+                        ),
+                        child: _isLoading
+                            ? SizedBox(
+                                height: ResponsiveUI.iconSize(context, 20),
+                                width: ResponsiveUI.iconSize(context, 20),
+                                child: const CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    AppColors.white,
+                                  ),
+                                ),
+                              )
+                            : Text(
+                                'Update Category',
+                                style: TextStyle(
+                                  fontSize: ResponsiveUI.fontSize(context, 16),
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.white,
+                                ),
+                              ),
                       ),
-                    ),
-                  ],
-                )
-                    : const SizedBox.shrink(),
-                SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _submitUpdate,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryBlue,
-                    padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 14)),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
-                    ),
-                  ),
-                  child: _isLoading
-                      ? SizedBox(
-                    height: ResponsiveUI.iconSize(context, 20),
-                    width: ResponsiveUI.iconSize(context, 20),
-                    child: const CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  )
-                      : Text(
-                    'Update Category',
-                    style: TextStyle(
-                      fontSize: ResponsiveUI.fontSize(context, 16),
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
         ),
       ),
     );

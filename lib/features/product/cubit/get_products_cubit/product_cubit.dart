@@ -1,8 +1,7 @@
 // cubit/product_cubit.dart
 import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/services/end_point.dart';
-import '../../../../core/services/cache_helper.dart.dart';
+import 'package:systego/core/services/endpoints.dart';
 import '../../../../core/services/dio_helper.dart';
 import '../../../../core/utils/error_handler.dart';
 import '../../data/models/product_model.dart';
@@ -38,15 +37,7 @@ class ProductsCubit extends Cubit<ProductsState> {
           log('Products fetch failed: $errorMessage');
           emit(ProductsError(errorMessage));
         }
-      } 
-      // else if (response.statusCode == 401) {
-      //   await CacheHelper.clearAllData();
-      //   navigatorKey.currentState?.pushAndRemoveUntil(
-      //     MaterialPageRoute(builder: (context) => const LoginScreen()),
-      //     (route) => false,
-      //   );
-      // } 
-      else {
+      } else {
         final errorMessage = ErrorHandler.handleError(response);
         log('Response error: $errorMessage');
         emit(ProductsError(errorMessage));
@@ -58,14 +49,40 @@ class ProductsCubit extends Cubit<ProductsState> {
     }
   }
 
-  // Get cached products
-  List<Product> getCachedProducts() {
-    final cached = CacheHelper.getModel<List<Product>>(
-      key: 'products',
-      fromJson: (jsonList) => (jsonList as List)
-          .map((json) => Product.fromJson(json as Map<String, dynamic>))
-          .toList(),
-    );
-    return cached ?? [];
+  Future<void> deleteProduct(String productId) async {
+    emit(ProductsLoading());
+
+    try {
+      log('Starting product delete request...');
+
+      final response = await DioHelper.deleteData(
+        url: EndPoint.deleteProduct(productId.toString()),
+      );
+
+      log('Response received: ${response.statusCode}');
+      // DioHelper.printResponse(response); // Uncomment if printResponse method exists
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        if (data['success'] == true && data['data'] != null) {
+          final message = data['data']['message'] as String? ?? '';
+
+          log('product delete successful');
+          emit(ProductDeleteSuccess(message));
+        } else {
+          final errorMessage = data['message'] ?? 'Failed to delete product';
+          log('Product delete failed: $errorMessage');
+          emit(ProductsError(errorMessage));
+        }
+      } else {
+        final errorMessage = ErrorHandler.handleError(response);
+        log('Response error: $errorMessage');
+        emit(ProductsError(errorMessage));
+      }
+    } catch (error) {
+      log('Product delete error caught: $error');
+      final errorMessage = ErrorHandler.handleError(error);
+      emit(ProductsError(errorMessage));
+    }
   }
 }

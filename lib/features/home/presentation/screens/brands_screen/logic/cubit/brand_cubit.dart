@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/features/home/presentation/screens/brands_screen/logic/model/get_brand_by_id_model.dart';
 //import '../../../../../../../core/services/cache_helper.dart.dart';
 import '../../../../../../../core/services/dio_helper.dart';
-import '../../../../../../../core/services/end_point.dart';
+import '../../../../../../../core/services/endpoints.dart';
 import '../../../../../../../core/utils/error_handler.dart';
 import '../model/get_brands_model.dart';
 import '../model/create_brand_model.dart';

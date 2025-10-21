@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // لـ RawKeyboardListener
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
@@ -29,7 +30,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
     );
 
     if (result != null) {
-      debugPrint('Camera scanned: $result'); // Debug
+      log('Camera scanned: $result'); // Debug
       if (mounted) {
         Navigator.pop(context, result);
       }
@@ -96,7 +97,6 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightBlueBackground,
       appBar: appBarWithActions(
         context,
         'Scan Barcode',

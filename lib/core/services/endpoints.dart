@@ -27,6 +27,6 @@ class EndPoint {
   /// Product
   static const String getProducts = '/api/admin/product';
   static String getProductById(String id) => '/api/admin/product/$id';
-  //static const String getProductById = '/api/admin/product';
+  static String deleteProduct(String id) => '/api/admin/product/$id';
   static const String productSelect = '/api/admin/product/select';
 }

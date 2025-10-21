@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/utils/validators.dart';
 import 'package:systego/core/widgets/custom_button_widget.dart';
 import 'package:systego/core/widgets/custom_text_field_widget.dart';
 import 'package:systego/core/widgets/simple_fadein_animation_widget.dart';
 import 'package:systego/features/home/presentation/screens/home_screen.dart';
+import '../../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
 import '../../cubit/login_cubit.dart';
 import '../../cubit/login_state.dart';
 import '../widgets/login_title_widget.dart';
@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: BlocConsumer<LoginCubit, LoginState>(
           listener: (context, state) {
             if (state is LoginSuccess) {
-              showSuccessSnackbar(context, 'Login successful!');
+              CustomSnackbar.showSuccess(context, 'Login successful!');
 
               // Navigate to home screen
               Navigator.pushReplacement(
@@ -50,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 MaterialPageRoute(builder: (context) => const HomeScreen()),
               );
             } else if (state is LoginError) {
-              showErrorSnackbar(context, state.error);
+              CustomSnackbar.showSuccess(context, state.error);
             }
           },
           builder: (context, state) {

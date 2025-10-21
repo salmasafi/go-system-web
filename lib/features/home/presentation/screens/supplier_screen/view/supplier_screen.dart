@@ -39,7 +39,6 @@ class _SupplierScreenState extends State<SupplierScreen> {
     return BlocProvider(
       create: (context) => SupplierCubit()..getSuppliers(),
       child: Scaffold(
-        backgroundColor: AppColors.lightBlueBackground,
         appBar: appBarWithActions(context, 'Suppliers', () {
           SupplierDialog.show(context);
         }, showActions: true),

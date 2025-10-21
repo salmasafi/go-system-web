@@ -1,7 +1,6 @@
 import 'dart:convert';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/services/end_point.dart';
+import 'package:systego/core/services/endpoints.dart';
 import 'package:systego/features/home/presentation/screens/supplier_screen/cubit/supplier_state.dart';
 import 'dart:developer';
 import '../../../../../../core/services/cache_helper.dart.dart';

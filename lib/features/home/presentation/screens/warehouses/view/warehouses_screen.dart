@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/features/home/presentation/screens/warehouses/view/warehouse_form_dialog.dart';
 import 'package:systego/features/home/presentation/screens/warehouses/view/widgets/animated_warehouse_card.dart';
 import 'package:systego/features/home/presentation/screens/warehouses/view/widgets/custom_delete_dialog.dart';
@@ -60,7 +59,6 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightBlueBackground,
       appBar: appBarWithActions(context, 'Warehouses', () {
         Navigator.pop(context);
       }),
@@ -69,7 +67,6 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
           BlocConsumer<WareHouseCubit, WarehousesState>(
             listener: (context, state) {
               if (state is WarehousesError) {
-                showErrorSnackbar(context, state.message);
                 CustomSnackbar.showError(context, state.message);
                 setState(() => _isDeleting = false);
               }
@@ -85,8 +82,7 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
               }
 
               if (state is WarehouseDeleted) {
-                CustomSnackbar.showSuccess(context, 'Warehouse deleted successfully!');
-                showSuccessSnackbar(
+                CustomSnackbar.showSuccess(
                   context,
                   'Warehouse deleted successfully!',
                 );
@@ -94,16 +90,14 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
               }
 
               if (state is WarehouseCreated) {
-                CustomSnackbar.showSuccess(context, 'Warehouse created successfully!');
-                showSuccessSnackbar(
+                CustomSnackbar.showSuccess(
                   context,
                   'Warehouse created successfully!',
                 );
               }
 
               if (state is WarehouseUpdated) {
-                CustomSnackbar.showSuccess(context, 'Warehouse updated successfully!');
-                showSuccessSnackbar(
+                CustomSnackbar.showSuccess(
                   context,
                   'Warehouse updated successfully!',
                 );
@@ -200,7 +194,7 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
         backgroundColor: AppColors.primaryBlue,
         child: Icon(
           Icons.add,
-          color: Colors.white,
+          color: AppColors.white,
           size: ResponsiveUI.iconSize(context, 24),
         ),
       ),
@@ -227,7 +221,6 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
   void _showDeleteDialog(BuildContext context, Warehouses warehouse) {
     if (warehouse.id == null || warehouse.id!.isEmpty) {
       CustomSnackbar.showError(context, 'Invalid warehouse ID');
-      showErrorSnackbar(context, 'Invalid warehouse ID');
       return;
     }
 

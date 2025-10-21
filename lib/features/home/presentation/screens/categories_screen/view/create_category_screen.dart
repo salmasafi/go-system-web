@@ -498,7 +498,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                                         ),
                                       ),
                                     ),
-                                    backgroundColor: Colors.red,
+                                    backgroundColor: AppColors.red,
                                     behavior: SnackBarBehavior.floating,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(
@@ -524,7 +524,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                                         ),
                                       ),
                                     ),
-                                    backgroundColor: Colors.red,
+                                    backgroundColor: AppColors.red,
                                     behavior: SnackBarBehavior.floating,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(
@@ -551,7 +551,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                                         ),
                                       ),
                                     ),
-                                    backgroundColor: Colors.red,
+                                    backgroundColor: AppColors.red,
                                     behavior: SnackBarBehavior.floating,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(

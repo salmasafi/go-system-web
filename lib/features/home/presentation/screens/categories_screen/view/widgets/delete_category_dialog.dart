@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 
+import '../../../../../../../core/constants/app_colors.dart';
+
 class DeleteCategoryDialog extends StatelessWidget {
   final String categoryName;
   final VoidCallback onDelete;
@@ -18,7 +20,7 @@ class DeleteCategoryDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
       ),
       elevation: 8,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       child: Padding(
         padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
         child: Column(

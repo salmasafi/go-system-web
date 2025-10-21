@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/animated_element.dart';
 import 'package:systego/core/widgets/app_bar_widgets.dart';
@@ -11,6 +10,7 @@ import 'package:systego/features/home/presentation/screens/categories_screen/vie
 import 'package:systego/features/home/presentation/screens/categories_screen/view/widgets/delete_category_dialog.dart';
 import 'package:systego/features/home/presentation/screens/categories_screen/view/create_category_screen.dart';
 import 'package:systego/features/home/presentation/screens/categories_screen/view/edit_category_screen.dart';
+import '../../../../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
 import '../../../../../product/presentation/widgets/search_bar_widget.dart';
 import '../logic/cubit/categories_cubit.dart';
 import '../logic/cubit/categories_states.dart';
@@ -153,12 +153,12 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       body: BlocConsumer<CategoriesCubit, CategoriesState>(
         listener: (context, state) {
           if (state is DeleteCategorySuccess) {
-            showSuccessSnackbar(context, state.message);
+            CustomSnackbar.showSuccess(context, state.message);
             CategoriesCubit.get(context).getCategories();
           } else if (state is DeleteCategoryError) {
-            showErrorSnackbar(context, state.error);
+            CustomSnackbar.showError(context, state.error);
           } else if (state is GetCategoriesError) {
-            showErrorSnackbar(context, state.error);
+            CustomSnackbar.showError(context, state.error);
           }
         },
         builder: (context, state) {

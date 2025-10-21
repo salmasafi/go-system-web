@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/animated_element.dart';
 import 'package:systego/core/widgets/app_bar_widgets.dart';
@@ -14,6 +13,7 @@ import 'package:systego/features/product/cubit/product_filter_state.dart';
 import 'package:systego/features/product/data/models/product_model.dart';
 import 'package:systego/features/product/presentation/widgets/filter_by_category_brand_widgets.dart';
 import 'package:systego/features/product/presentation/widgets/product_list.dart';
+import '../../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
 import '../widgets/search_bar_widget.dart';
 import 'barcode_scanner_screen.dart';
 
@@ -32,11 +32,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
   String? _selectedVariationId;
   String? _selectedWarehouseId;
 
+  void productsInit() async {
+    context.read<ProductFiltersCubit>().getFilters();
+    context.read<ProductsCubit>().getProducts();
+  }
+
   @override
   void initState() {
     super.initState();
-    context.read<ProductsCubit>().getProducts();
-    context.read<ProductFiltersCubit>().getFilters();
+    productsInit();
   }
 
   Future<void> _refresh() async {
@@ -48,7 +52,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
       _selectedVariationId = null;
       _selectedWarehouseId = null;
     });
-    await context.read<ProductsCubit>().getProducts();
+    productsInit();
   }
 
   List<Product> _filterProducts(List<Product> products) {
@@ -91,171 +95,155 @@ class _ProductsScreenState extends State<ProductsScreen> {
     }).toList();
   }
 
-  Widget _buildListContent(ProductsState state) {
-    if (state is ProductsLoading) {
-      return RefreshIndicator(
-        onRefresh: _refresh,
-        color: AppColors.primaryBlue,
-        child: const CustomLoadingShimmer(),
-      );
-    }
+  Widget _buildListContent() {
+    return BlocConsumer<ProductsCubit, ProductsState>(
+      listener: (context, state) {
+        if (state is ProductDeleteSuccess) {
+          CustomSnackbar.showSuccess(context, state.message);
+          productsInit();
+        }
+      },
+      builder: (context, state) {
+        if (state is ProductsLoading) {
+          return RefreshIndicator(
+            onRefresh: _refresh,
+            color: AppColors.primaryBlue,
+            child: const CustomLoadingShimmer(),
+          );
+        } else if (state is ProductsSuccess) {
+          final products = state.products;
+          List<Product> displayProducts = _filterProducts(products);
 
-    if (state is ProductsSuccess) {
-      final products = state.products;
-      List<Product> displayProducts = _filterProducts(products);
-
-      if (displayProducts.isEmpty) {
-        String title = products.isEmpty
-            ? 'No Products Found'
-            : 'No Matching Products';
-        String message = products.isEmpty
-            ? 'Add your first product to get started'
-            : 'Try adjusting your search or filters';
-        return CustomEmptyState(
-          icon: Icons.inventory_2_outlined,
-          title: title,
-          message: message,
-          onRefresh: _refresh,
-          actionLabel: 'Retry',
-          onAction: _refresh,
-        );
-      }
-
-      return RefreshIndicator(
-        onRefresh: _refresh,
-        color: AppColors.primaryBlue,
-        child: ProductsList(products: displayProducts),
-      );
-    }
-
-    if (state is ProductsError) {
-      return CustomEmptyState(
-        icon: Icons.inventory_2_outlined,
-        title: 'Error Occurred',
-        message: state.message,
-        onRefresh: _refresh,
-        actionLabel: 'Retry',
-        onAction: _refresh,
-      );
-    }
-
-    return CustomEmptyState(
-      icon: Icons.inventory_2_outlined,
-      title: 'No Products Found',
-      message: 'Pull to refresh or check your connection',
-      onRefresh: _refresh,
-      actionLabel: 'Retry',
-      onAction: _refresh,
+          if (displayProducts.isEmpty) {
+            String title = products.isEmpty
+                ? 'No Products Found'
+                : 'No Matching Products';
+            String message = products.isEmpty
+                ? 'Add your first product to get started'
+                : 'Try adjusting your search or filters';
+            return CustomEmptyState(
+              icon: Icons.inventory_2_outlined,
+              title: title,
+              message: message,
+              onRefresh: _refresh,
+              actionLabel: 'Retry',
+              onAction: _refresh,
+            );
+          } else {
+            return RefreshIndicator(
+              onRefresh: _refresh,
+              color: AppColors.primaryBlue,
+              child: ProductsList(products: displayProducts),
+            );
+          }
+        } else if (state is ProductsError) {
+          return CustomEmptyState(
+            icon: Icons.inventory_2_outlined,
+            title: 'Error Occurred',
+            message: state.message,
+            onRefresh: _refresh,
+            actionLabel: 'Retry',
+            onAction: _refresh,
+          );
+        } else {
+          return CustomEmptyState(
+            icon: Icons.inventory_2_outlined,
+            title: 'No Products Found',
+            message: 'Pull to refresh or check your connection',
+            onRefresh: _refresh,
+            actionLabel: 'Retry',
+            onAction: _refresh,
+          );
+        }
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightBlueBackground,
-      appBar: appBarWithActions(context, 'Products', () {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => ProductDetailsScreen()),
-        // );
-      }, showActions: true),
-      body: MultiBlocListener(
-        listeners: [
-          BlocListener<ProductsCubit, ProductsState>(
-            listener: (context, state) {
-              if (state is ProductsError) {
-                showErrorSnackbar(context, state.message);
-              }
-            },
-          ),
-          BlocListener<ProductFiltersCubit, ProductFiltersState>(
-            listener: (context, state) {
-              if (state is ProductFiltersError) {
-                showErrorSnackbar(context, state.message);
-              }
-            },
-          ),
-        ],
-        child: BlocBuilder<ProductsCubit, ProductsState>(
-          builder: (context, state) {
-            return BlocBuilder<ProductFiltersCubit, ProductFiltersState>(
-              builder: (context, filtersState) {
-                return Center(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxWidth: ResponsiveUI.contentMaxWidth(context),
-                    ),
-                    child: Column(
-                      children: [
-                        AnimatedElement(
-                          delay: Duration.zero,
-                          child: // في ملف products_screen.dart
-                              // فقط قم بتحديث الجزء الخاص بـ SearchBarWidget
-                              SearchBarWidget(
-                                controller: controller,
-                                onChanged: (String query) {
-                                  setState(() {
-                                    _searchQuery = query;
-                                  });
-                                },
-                                text: 'products by name or code',
-                                suffixIcon: Icons.qr_code_scanner,
-                                suffixOnPressed: () async {
-                                  // Navigate to Barcode Scanner Screen
-                                  final result = await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const BarcodeScannerScreen(),
-                                    ),
-                                  );
+      appBar: appBarWithActions(context, 'Products', () {}, showActions: true),
+      body: BlocConsumer<ProductFiltersCubit, ProductFiltersState>(
+        listener: (context, state) {
+          if (state is ProductFiltersError) {
+            CustomSnackbar.showError(context, state.message);
+          }
+        },
 
-                                  // If barcode was scanned, use it to search
-                                  if (result != null && result != '-1') {
-                                    setState(() {
-                                      _searchQuery = result;
-                                      controller.text = result;
-                                    });
-                                  }
-                                },
+        builder: (context, filtersState) {
+          return Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: ResponsiveUI.contentMaxWidth(context),
+              ),
+              child: Column(
+                children: [
+                  AnimatedElement(
+                    delay: Duration.zero,
+                    child: // في ملف products_screen.dart
+                        // فقط قم بتحديث الجزء الخاص بـ SearchBarWidget
+                        SearchBarWidget(
+                          controller: controller,
+                          onChanged: (String query) {
+                            setState(() {
+                              _searchQuery = query;
+                            });
+                          },
+                          text: 'products by name or code',
+                          suffixIcon: Icons.qr_code_scanner,
+                          suffixOnPressed: () async {
+                            // Navigate to Barcode Scanner Screen
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const BarcodeScannerScreen(),
                               ),
-                        ),
-                        FilterButtons(
-                          onCategorySelected: (id) {
-                            setState(() {
-                              _selectedCategoryId = id;
-                            });
-                          },
-                          onBrandSelected: (id) {
-                            setState(() {
-                              _selectedBrandId = id;
-                            });
-                          },
-                          onVariationSelected: (id) {
-                            setState(() {
-                              _selectedVariationId = id;
-                            });
-                          },
-                          onWarehouseSelected: (id) {
-                            setState(() {
-                              _selectedWarehouseId = id;
-                            });
+                            );
+
+                            // If barcode was scanned, use it to search
+                            if (result != null && result != '-1') {
+                              setState(() {
+                                _searchQuery = result;
+                                controller.text = result;
+                              });
+                            }
                           },
                         ),
-                        Expanded(
-                          child: AnimatedElement(
-                            delay: const Duration(milliseconds: 200),
-                            child: _buildListContent(state),
-                          ),
-                        ),
-                      ],
+                  ),
+                  FilterButtons(
+                    onCategorySelected: (id) {
+                      setState(() {
+                        _selectedCategoryId = id;
+                      });
+                    },
+                    onBrandSelected: (id) {
+                      setState(() {
+                        _selectedBrandId = id;
+                      });
+                    },
+                    onVariationSelected: (id) {
+                      setState(() {
+                        _selectedVariationId = id;
+                      });
+                    },
+                    onWarehouseSelected: (id) {
+                      setState(() {
+                        _selectedWarehouseId = id;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: AnimatedElement(
+                      delay: const Duration(milliseconds: 200),
+                      child: _buildListContent(),
                     ),
                   ),
-                );
-              },
-            );
-          },
-        ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
