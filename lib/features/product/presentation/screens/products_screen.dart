@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/animated_element.dart';
+import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/app_bar_widgets.dart';
 import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
@@ -11,6 +11,7 @@ import 'package:systego/features/product/cubit/get_products_cubit/product_state.
 import 'package:systego/features/product/cubit/product_filter_cubit.dart';
 import 'package:systego/features/product/cubit/product_filter_state.dart';
 import 'package:systego/features/product/data/models/product_model.dart';
+import 'package:systego/features/product/presentation/screens/add_product_screen.dart';
 import 'package:systego/features/product/presentation/widgets/filter_by_category_brand_widgets.dart';
 import 'package:systego/features/product/presentation/widgets/product_list.dart';
 import '../../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
@@ -101,6 +102,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
         if (state is ProductDeleteSuccess) {
           CustomSnackbar.showSuccess(context, state.message);
           productsInit();
+        } else if (state is ProductAddSuccess) {
+          CustomSnackbar.showSuccess(context, state.message);
+          productsInit();
         }
       },
       builder: (context, state) {
@@ -162,7 +166,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarWithActions(context, 'Products', () {}, showActions: true),
+      appBar: appBarWithActions(context, 'Products', () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AddProductScreen()),
+        );
+      }, showActions: true),
       body: BlocConsumer<ProductFiltersCubit, ProductFiltersState>(
         listener: (context, state) {
           if (state is ProductFiltersError) {

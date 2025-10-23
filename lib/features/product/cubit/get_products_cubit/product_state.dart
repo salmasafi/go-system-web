@@ -19,6 +19,11 @@ class ProductDeleteSuccess extends ProductsState {
   ProductDeleteSuccess(this.message);
 }
 
+class ProductAddSuccess extends ProductsState {
+  final String message;
+  ProductAddSuccess(this.message);
+}
+
 class ProductsError extends ProductsState {
   final String message;
   ProductsError(this.message);

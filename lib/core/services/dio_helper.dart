@@ -11,8 +11,8 @@ class DioHelper {
       BaseOptions(
         baseUrl: 'https://Bcknd.systego.net',
         receiveDataWhenStatusError: true,
-        connectTimeout: const Duration(seconds: 20),
-        receiveTimeout: const Duration(seconds: 20),
+        // connectTimeout: const Duration(seconds: 20),
+        // receiveTimeout: const Duration(seconds: 20),
         headers: {'Content-Type': 'application/json'},
       ),
     );
@@ -21,7 +21,7 @@ class DioHelper {
       InterceptorsWrapper(
         onError: (DioException e, handler) async {
           if (e.response?.statusCode == 401) {
-            print('🚨 Unauthorized — broadcasting sessionExpired');
+            log('🚨 Unauthorized — broadcasting sessionExpired');
             await CacheHelper.clearAllData();
             SessionManager.notifySessionExpired();
           }

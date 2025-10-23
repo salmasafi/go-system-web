@@ -6,7 +6,7 @@ import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/app_bar_widgets.dart';
 import 'package:systego/core/widgets/custom_button_widget.dart';
-import 'package:systego/core/widgets/custom_text_field_widget.dart';
+import 'package:systego/core/widgets/custom_textfield/custom_text_field_widget.dart';
 import '../../../../../../core/widgets/custom_error/custom_error_state.dart';
 import '../logic/cubit/brand_cubit.dart';
 import '../logic/cubit/brand_states.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_colors.dart';
+import '../../../../../core/constants/app_colors.dart';
 
 class CustomTextField extends StatefulWidget {
   final TextEditingController controller;
@@ -25,6 +25,7 @@ class CustomTextField extends StatefulWidget {
   final double horizontalPadding;
   final double elevation;
   final bool autofocus;
+  final int maxLines;
 
   const CustomTextField({
     super.key,
@@ -51,6 +52,7 @@ class CustomTextField extends StatefulWidget {
     this.elevation = 0,
     this.prefixIconColor,
     this.autofocus = false,
+    this.maxLines = 1,
   });
 
   @override
@@ -96,6 +98,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         onChanged: widget.onChanged,
         onFieldSubmitted: widget.onSubmitted,
         textInputAction: TextInputAction.done, // Treat Enter as submit
+        maxLines: widget.maxLines,
         decoration: InputDecoration(
           labelText: widget.labelText,
           hintText: widget.hintText,

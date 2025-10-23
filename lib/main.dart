@@ -90,6 +90,12 @@ class _MainAppState extends State<MainApp> {
         theme: ThemeData(
           fontFamily: 'Rubik',
           scaffoldBackgroundColor: AppColors.lightBlueBackground,
+          textSelectionTheme: const TextSelectionThemeData(
+            cursorColor: AppColors.primaryBlue, // 🔵 لون المؤشر
+            selectionColor: AppColors.primaryBlue, // لون التحديد (عند السحب)
+            selectionHandleColor:
+                AppColors.primaryBlue, // لون الدائرة الصغيرة في نهاية التحديد
+          ),
         ),
         home: widget.isLoggedIn ? const HomeScreen() : const LoginScreen(),
       ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/custom_text_field_widget.dart';
+import 'package:systego/core/widgets/custom_textfield/custom_text_field_widget.dart';
 //import 'package:systego/core/constants/app_colors.dart';
 //import 'package:systego/core/utils/responsive_ui.dart';
 

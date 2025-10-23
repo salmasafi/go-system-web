@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/animated_element.dart';
+import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:systego/features/product/cubit/product_filter_cubit.dart';
 import 'package:systego/features/product/cubit/product_filter_state.dart';
@@ -307,7 +307,7 @@ class GenericFilterPanel extends StatelessWidget {
       int count = 0;
       switch (filterType) {
         case FilterType.categories:
-          count = (item as Category).productQuantity;
+          count = (item as CategoryFilter).productQuantity;
           return FilterItem(
             id: item.id,
             name: item.name,
@@ -316,13 +316,13 @@ class GenericFilterPanel extends StatelessWidget {
           );
         case FilterType.brands:
           return FilterItem(
-            id: (item as Brand).id,
+            id: (item as BrandFilter).id,
             name: item.name,
             image: item.logo,
             count: 0, // Add count from API if available
           );
         case FilterType.variations:
-          final varn = item as Variation;
+          final varn = item as VariationFilter;
           return FilterItem(
             id: varn.id,
             name: varn.name,
@@ -330,7 +330,7 @@ class GenericFilterPanel extends StatelessWidget {
             count: varn.options.length,
           );
         case FilterType.warehouses:
-          final wh = item as Warehouse;
+          final wh = item as WarehouseFilter;
           return FilterItem(
             id: wh.id,
             name: wh.name,

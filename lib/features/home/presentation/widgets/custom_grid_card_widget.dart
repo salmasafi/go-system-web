@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/widgets/simple_fadein_animation_widget.dart';
+import '../../../../core/widgets/animation/simple_fadein_animation_widget.dart';
 
 class CustomGridCard extends StatelessWidget {
   final IconData icon;

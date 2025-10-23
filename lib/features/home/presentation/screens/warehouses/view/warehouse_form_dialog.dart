@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/home/presentation/screens/warehouses/view/widgets/wisgets_add_edit/warehouse_dialog_buttons.dart';
-import 'package:systego/features/home/presentation/screens/warehouses/view/widgets/wisgets_add_edit/warehouse_dialog_form.dart';
-import 'package:systego/features/home/presentation/screens/warehouses/view/widgets/wisgets_add_edit/warehouse_dialog_header.dart';
+import 'package:systego/features/home/presentation/screens/warehouses/view/widgets/widgets_add_edit/warehouse_dialog_buttons.dart';
+import 'package:systego/features/home/presentation/screens/warehouses/view/widgets/widgets_add_edit/warehouse_dialog_form.dart';
+import 'package:systego/features/home/presentation/screens/warehouses/view/widgets/widgets_add_edit/warehouse_dialog_header.dart';
 import '../cubit/warehouse_cubit.dart';
 import '../cubit/warehouse_state.dart';
 import '../data/model/ware_house_model.dart';

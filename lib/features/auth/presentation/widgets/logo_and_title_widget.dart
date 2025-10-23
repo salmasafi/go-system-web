@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/widgets/simple_fadein_animation_widget.dart';
+import '../../../../core/widgets/animation/simple_fadein_animation_widget.dart';
 
 class LogoAndTitleWidget extends StatelessWidget {
   const LogoAndTitleWidget({super.key});

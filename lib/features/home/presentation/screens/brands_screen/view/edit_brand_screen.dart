@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/custom_text_field_widget.dart';
+import 'package:systego/core/widgets/custom_textfield/custom_text_field_widget.dart';
 import '../../../../../../core/widgets/custom_loading/custom_loading_state.dart';
 import '../../categories_screen/view/widgets/build_image_placeholder_widget.dart';
 import '../logic/cubit/brand_cubit.dart';

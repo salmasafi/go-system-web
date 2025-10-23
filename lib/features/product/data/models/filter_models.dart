@@ -24,10 +24,10 @@ class ProductFiltersModel {
 }
 
 class ProductFiltersData {
-  final List<Category> categories;
-  final List<Brand> brands;
-  final List<Variation> variations;
-  final List<Warehouse> warehouses;
+  final List<CategoryFilter> categories;
+  final List<BrandFilter> brands;
+  final List<VariationFilter> variations;
+  final List<WarehouseFilter> warehouses;
 
   ProductFiltersData({
     required this.categories,
@@ -39,16 +39,16 @@ class ProductFiltersData {
   factory ProductFiltersData.fromJson(Map<String, dynamic> json) {
     return ProductFiltersData(
       categories: (json['categories'] as List<dynamic>? ?? [])
-          .map((e) => Category.fromJson(e as Map<String, dynamic>))
+          .map((e) => CategoryFilter.fromJson(e as Map<String, dynamic>))
           .toList(),
       brands: (json['brands'] as List<dynamic>? ?? [])
-          .map((e) => Brand.fromJson(e as Map<String, dynamic>))
+          .map((e) => BrandFilter.fromJson(e as Map<String, dynamic>))
           .toList(),
       variations: (json['variations'] as List<dynamic>? ?? [])
-          .map((e) => Variation.fromJson(e as Map<String, dynamic>))
+          .map((e) => VariationFilter.fromJson(e as Map<String, dynamic>))
           .toList(),
       warehouses: (json['warehouses'] as List<dynamic>? ?? [])
-          .map((e) => Warehouse.fromJson(e as Map<String, dynamic>))
+          .map((e) => WarehouseFilter.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
   }
@@ -64,7 +64,7 @@ class ProductFiltersData {
 }
 
 // Category model (as before)
-class Category {
+class CategoryFilter {
   final String id;
   final String name;
   final String image;
@@ -73,7 +73,7 @@ class Category {
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  Category({
+  CategoryFilter({
     required this.id,
     required this.name,
     required this.image,
@@ -83,8 +83,8 @@ class Category {
     required this.updatedAt,
   });
 
-  factory Category.fromJson(Map<String, dynamic> json) {
-    return Category(
+  factory CategoryFilter.fromJson(Map<String, dynamic> json) {
+    return CategoryFilter(
       id: json['_id'] ?? '',
       name: json['name'] ?? '',
       image: json['image'] ?? '',
@@ -109,14 +109,14 @@ class Category {
 }
 
 // Brand model (explicitly defined for filters)
-class Brand {
+class BrandFilter {
   final String id;
   final String name;
   final String logo;
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  Brand({
+  BrandFilter({
     required this.id,
     required this.name,
     required this.logo,
@@ -124,8 +124,8 @@ class Brand {
     required this.updatedAt,
   });
 
-  factory Brand.fromJson(Map<String, dynamic> json) {
-    return Brand(
+  factory BrandFilter.fromJson(Map<String, dynamic> json) {
+    return BrandFilter(
       id: json['_id'] ?? '',
       name: json['name'] ?? '',
       logo: json['logo'] ?? '',
@@ -146,14 +146,14 @@ class Brand {
 }
 
 // Variation and Option (as before)
-class Variation {
+class VariationFilter {
   final String id;
   final String name;
   final List<Option> options;
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  Variation({
+  VariationFilter({
     required this.id,
     required this.name,
     required this.options,
@@ -161,8 +161,8 @@ class Variation {
     required this.updatedAt,
   });
 
-  factory Variation.fromJson(Map<String, dynamic> json) {
-    return Variation(
+  factory VariationFilter.fromJson(Map<String, dynamic> json) {
+    return VariationFilter(
       id: json['_id'] ?? '',
       name: json['name'] ?? '',
       options: (json['options'] as List<dynamic>? ?? [])
@@ -225,7 +225,7 @@ class Option {
 }
 
 // Warehouse (as before)
-class Warehouse {
+class WarehouseFilter {
   final String id;
   final String name;
   final String address;
@@ -236,7 +236,7 @@ class Warehouse {
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  Warehouse({
+  WarehouseFilter({
     required this.id,
     required this.name,
     required this.address,
@@ -248,8 +248,8 @@ class Warehouse {
     required this.updatedAt,
   });
 
-  factory Warehouse.fromJson(Map<String, dynamic> json) {
-    return Warehouse(
+  factory WarehouseFilter.fromJson(Map<String, dynamic> json) {
+    return WarehouseFilter(
       id: json['_id'] ?? '',
       name: json['name'] ?? '',
       address: json['address'] ?? '',
