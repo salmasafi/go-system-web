@@ -3,63 +3,24 @@ import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
 import 'package:systego/core/widgets/custom_popup_menu.dart';
-import 'package:systego/features/product/models/product_model.dart';
 import 'package:systego/core/widgets/custom_image_card.dart';
 import '../../../warehouses/view/widgets/custom_stat_chip.dart';
-import '../screens/product_details_screen.dart';
-//import 'package:systego/features/product/presentation/widgets/product_image.dart';
-//import 'package:systego/features/product/presentation/widgets/product_info.dart';
-//import 'package:systego/features/product/presentation/widgets/product_menu.dart';
+import '../../model/get_brands_model.dart';
 
-// class ProductCard extends StatelessWidget {
-//   final Product product;
-
-//   const ProductCard({super.key, required this.product});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       margin: EdgeInsets.only(bottom: ResponsiveUI.spacing(context, 12)),
-//       padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
-//       decoration: BoxDecoration(
-//         color: AppColors.white,
-//         borderRadius: BorderRadius.circular(
-//           ResponsiveUI.borderRadius(context, 12),
-//         ),
-//         boxShadow: [
-//           BoxShadow(
-//             color: AppColors.black.withOpacity(0.05),
-//             blurRadius: 8,
-//             offset: const Offset(0, 2),
-//           ),
-//         ],
-//       ),
-//       child: Row(
-//         children: [
-//           ProductImage(imageUrl: product.image),
-//           SizedBox(width: ResponsiveUI.spacing(context, 12)),
-//           Expanded(child: ProductInfo(product: product)),
-//           ProductMenu(),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
-class AnimatedProductCard extends StatefulWidget {
-  final Product product;
+class AnimatedBrandCard extends StatefulWidget {
+  final Brands brand;
   final int? index;
-  //final VoidCallback? onTap;
+  final VoidCallback? onTap;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
   final Duration? animationDuration;
   final Duration? animationDelay;
 
-  const AnimatedProductCard({
+  const AnimatedBrandCard({
     super.key,
-    required this.product,
+    required this.brand,
     this.index,
-    //this.onTap,
+    this.onTap,
     this.onEdit,
     this.onDelete,
     this.animationDuration,
@@ -67,10 +28,10 @@ class AnimatedProductCard extends StatefulWidget {
   });
 
   @override
-  State<AnimatedProductCard> createState() => _AnimatedProductCardState();
+  State<AnimatedBrandCard> createState() => _AnimatedBrandCardState();
 }
 
-class _AnimatedProductCardState extends State<AnimatedProductCard>
+class _AnimatedBrandCardState extends State<AnimatedBrandCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
@@ -145,15 +106,7 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          ProductDetailsScreen(productId: widget.product.id),
-                    ),
-                  );
-                }, //widget.onTap,
+                onTap: widget.onTap,
                 borderRadius: BorderRadius.circular(
                   ResponsiveUI.borderRadius(context, 20),
                 ),
@@ -167,8 +120,8 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
                       const CustomGradientDivider(),
                       SizedBox(height: ResponsiveUI.spacing(context, 16)),
                       _buildStatsRow(),
-                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                      //_buildDescriptionRow(),
+                      //SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                      //_buildLogoRow(),
                     ],
                   ),
                 ),
@@ -184,11 +137,12 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
     return Row(
       children: [
         CustomImageContainer(
+          icon: Icons.branding_watermark,
           size: ResponsiveUI.iconSize(context, 70),
           gradient: LinearGradient(
             colors: [AppColors.primaryBlue, AppColors.darkBlue],
           ),
-          image: widget.product.image,
+          image: widget.brand.logo,
         ),
         SizedBox(width: ResponsiveUI.spacing(context, 14)),
         Expanded(
@@ -196,7 +150,7 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                widget.product.name,
+                widget.brand.name ?? 'Brand',
                 style: TextStyle(
                   fontSize: 19,
                   fontWeight: FontWeight.bold,
@@ -206,34 +160,15 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
               SizedBox(height: ResponsiveUI.spacing(context, 6)),
               Row(
                 children: [
-                  Icon(Icons.category, size: 15, color: AppColors.successGreen),
-                  SizedBox(width: ResponsiveUI.spacing(context, 4)),
-                  Expanded(
-                    child: Text(
-                      widget.product.categoryId.isNotEmpty
-                          ? widget.product.categoryId.first.name
-                          : 'No category',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.darkGray.withOpacity(0.6),
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
                   Icon(
-                    Icons.branding_watermark,
+                    Icons.calendar_today,
                     size: 15,
                     color: AppColors.successGreen,
                   ),
                   SizedBox(width: ResponsiveUI.spacing(context, 4)),
                   Expanded(
                     child: Text(
-                      widget.product.brandId.name,
+                      _formatDate(widget.brand.createdAt),
                       style: TextStyle(
                         fontSize: 14,
                         color: AppColors.darkGray.withOpacity(0.6),
@@ -258,16 +193,16 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
       children: [
         Expanded(
           child: CustomStatChip(
-            icon: Icons.production_quantity_limits,
-            label: '${widget.product.quantity} Units',
+            icon: Icons.branding_watermark,
+            label: 'Created: ${widget.brand.createdAt}',
             color: AppColors.successGreen,
           ),
         ),
         SizedBox(width: ResponsiveUI.spacing(context, 10)),
         Expanded(
           child: CustomStatChip(
-            icon: Icons.attach_money,
-            label: widget.product.price.toStringAsFixed(2),
+            icon: Icons.update,
+            label: 'Updated: ${_formatDate(widget.brand.updatedAt)}',
             color: AppColors.linkBlue,
           ),
         ),
@@ -275,23 +210,33 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
     );
   }
 
-  // Widget _buildDescriptionRow() {
+  // Widget _buildLogoRow() {
   //   return Row(
   //     children: [
-  //       Icon(Icons.description, size: 16, color: AppColors.categoryPurple),
+  //       Icon(Icons.image, size: 16, color: AppColors.categoryPurple),
   //       SizedBox(width: ResponsiveUI.spacing(context, 6)),
   //       Expanded(
   //         child: Text(
-  //           widget.product.description,
+  //           widget.brand.logo ?? 'No logo',
   //           style: TextStyle(
   //             fontSize: 13,
   //             color: AppColors.darkGray.withOpacity(0.7),
   //           ),
-  //           maxLines: 2,
+  //           maxLines: 1,
   //           overflow: TextOverflow.ellipsis,
   //         ),
   //       ),
   //     ],
   //   );
   // }
+
+  String _formatDate(String? date) {
+    if (date == null) return 'N/A';
+    try {
+      final dateTime = DateTime.parse(date);
+      return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+    } catch (e) {
+      return 'N/A';
+    }
+  }
 }

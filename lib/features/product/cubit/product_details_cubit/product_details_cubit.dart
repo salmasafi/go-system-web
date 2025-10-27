@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../core/services/dio_helper.dart';
 import '../../../../core/services/endpoints.dart';
-import '../../data/models/product_details_model.dart';
+import '../../models/product_details_model.dart';
 import 'product_details_state.dart';
 
 class ProductDetailsCubit extends Cubit<ProductDetailsState> {

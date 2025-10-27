@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/features/product/cubit/get_products_cubit/product_cubit.dart';
-import 'package:systego/features/product/data/models/product_model.dart';
+import 'package:systego/features/product/models/product_model.dart';
 import 'package:systego/features/product/presentation/widgets/product_card.dart';
 import '../../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
-import '../../../home/presentation/screens/warehouses/view/widgets/custom_delete_dialog.dart';
+import '../../../warehouses/view/widgets/custom_delete_dialog.dart';
 
 class ProductsList extends StatelessWidget {
   final List<Product> products;

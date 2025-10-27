@@ -4,7 +4,7 @@ import 'package:systego/core/services/endpoints.dart';
 import '../../../core/services/cache_helper.dart.dart';
 import '../../../core/services/dio_helper.dart';
 import '../../../core/utils/error_handler.dart';
-import '../data/models/user_model.dart';
+import '../model/user_model.dart';
 import 'login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {

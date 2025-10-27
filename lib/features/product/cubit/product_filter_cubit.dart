@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/services/endpoints.dart';
 import '../../../../core/services/dio_helper.dart';
 import '../../../../core/utils/error_handler.dart';
-import '../data/models/filter_models.dart';
+import '../models/filter_models.dart';
 import 'product_filter_state.dart';
 
 class ProductFiltersCubit extends Cubit<ProductFiltersState> {

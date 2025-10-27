@@ -7,7 +7,7 @@ import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:systego/features/product/cubit/product_filter_cubit.dart';
 import 'package:systego/features/product/cubit/product_filter_state.dart';
-import 'package:systego/features/product/data/models/filter_models.dart';
+import 'package:systego/features/product/models/filter_models.dart';
 
 enum FilterType { categories, brands, variations, warehouses }
 

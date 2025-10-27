@@ -1,5 +1,5 @@
 // cubit/product_state.dart
-import 'package:systego/features/product/data/models/product_model.dart';
+import 'package:systego/features/product/models/product_model.dart';
 
 abstract class ProductsState {}
 

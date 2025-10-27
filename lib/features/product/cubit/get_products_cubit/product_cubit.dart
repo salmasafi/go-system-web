@@ -3,10 +3,10 @@
 import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/services/endpoints.dart';
-import 'package:systego/features/product/data/models/product_to_add.dart';
+import 'package:systego/features/product/models/product_to_add.dart';
 import '../../../../core/services/dio_helper.dart';
 import '../../../../core/utils/error_handler.dart';
-import '../../data/models/product_model.dart';
+import '../../models/product_model.dart';
 import 'product_state.dart';
 
 class ProductsCubit extends Cubit<ProductsState> {

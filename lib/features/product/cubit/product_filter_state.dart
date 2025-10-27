@@ -1,5 +1,5 @@
 // cubit/product_filters_state.dart
-import 'package:systego/features/product/data/models/filter_models.dart';
+import 'package:systego/features/product/models/filter_models.dart';
 
 abstract class ProductFiltersState {}
 

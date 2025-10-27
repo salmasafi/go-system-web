@@ -13,7 +13,7 @@ import 'package:systego/features/product/cubit/get_products_cubit/product_cubit.
 import 'package:systego/features/product/cubit/get_products_cubit/product_state.dart';
 import 'package:systego/features/product/cubit/product_filter_cubit.dart';
 import 'package:systego/features/product/cubit/product_filter_state.dart';
-import 'package:systego/features/product/data/models/filter_models.dart';
+import 'package:systego/features/product/models/filter_models.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});

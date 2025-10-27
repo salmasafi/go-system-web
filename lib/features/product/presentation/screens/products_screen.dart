@@ -10,7 +10,7 @@ import 'package:systego/features/product/cubit/get_products_cubit/product_cubit.
 import 'package:systego/features/product/cubit/get_products_cubit/product_state.dart';
 import 'package:systego/features/product/cubit/product_filter_cubit.dart';
 import 'package:systego/features/product/cubit/product_filter_state.dart';
-import 'package:systego/features/product/data/models/product_model.dart';
+import 'package:systego/features/product/models/product_model.dart';
 import 'package:systego/features/product/presentation/screens/add_product_screen.dart';
 import 'package:systego/features/product/presentation/widgets/filter_by_category_brand_widgets.dart';
 import 'package:systego/features/product/presentation/widgets/product_list.dart';
