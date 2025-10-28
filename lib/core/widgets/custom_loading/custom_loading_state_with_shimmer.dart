@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:systego/core/utils/responsive_ui.dart';
 
 import '../../constants/app_colors.dart';
 
@@ -7,16 +8,18 @@ class CustomLoadingShimmer extends StatelessWidget {
   final int? itemCount;
   final EdgeInsets? padding;
 
-  const CustomLoadingShimmer({
-    super.key,
-    this.itemCount,
-    this.padding,
-  });
+  const CustomLoadingShimmer({super.key, this.itemCount, this.padding});
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: padding ?? const EdgeInsets.all(16),
+      padding:
+          padding ??
+          EdgeInsets.only(
+            bottom: ResponsiveUI.padding(context, 16),
+            left: ResponsiveUI.padding(context, 16),
+            right: ResponsiveUI.padding(context, 16),
+          ),
       itemCount: itemCount ?? 5,
       itemBuilder: (context, index) {
         return Shimmer.fromColors(

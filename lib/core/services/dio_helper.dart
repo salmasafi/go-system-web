@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:dio/dio.dart';
+import 'package:systego/core/services/endpoints.dart';
 import 'package:systego/core/services/session_helper.dart';
 import 'cache_helper.dart.dart';
 
@@ -9,7 +10,7 @@ class DioHelper {
   static void init() {
     dio = Dio(
       BaseOptions(
-        baseUrl: 'https://Bcknd.systego.net',
+        baseUrl: EndPoint.baseUrl,
         receiveDataWhenStatusError: true,
         // connectTimeout: const Duration(seconds: 20),
         // receiveTimeout: const Duration(seconds: 20),

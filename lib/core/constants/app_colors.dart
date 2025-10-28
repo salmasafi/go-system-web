@@ -4,6 +4,8 @@ class AppColors {
   // Primary blue for accents, navigation, and main buttons
   static const primaryBlue = Color(0xFF007AFF);
 
+  static const mediumBlue700 = Colors.lightBlue;
+
   // Dark blue for Place Order button and similar prominent actions
   static const darkBlue = Color(0xFF003366);
 

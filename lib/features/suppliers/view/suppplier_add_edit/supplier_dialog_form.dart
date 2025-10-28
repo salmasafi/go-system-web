@@ -155,7 +155,6 @@ class SupplierDialogForm extends StatelessWidget {
 
   Widget _buildImagePicker(BuildContext context) {
     final borderRadius12 = ResponsiveUI.borderRadius(context, 12);
-    final padding16 = ResponsiveUI.padding(context, 16);
     final iconSize40 = ResponsiveUI.iconSize(context, 40);
     final fontSize14 = ResponsiveUI.fontSize(context, 14);
     final height120 = ResponsiveUI.value(context, 120);

@@ -56,160 +56,154 @@ class _FilterButtonsState extends State<FilterButtons> {
         if (state is ProductFiltersSuccess) {
           return AnimatedElement(
             delay: const Duration(milliseconds: 200),
-            child: Padding(
-              padding: EdgeInsets.only(
-                bottom: ResponsiveUI.padding(context, 12),
-              ),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: ResponsiveUI.padding(context, 16),
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: FilterButton(
-                                label: 'Categories',
-                                isActive: _showCategoriesFilter,
-                                onTap: () {
-                                  setState(() {
-                                    _showCategoriesFilter =
-                                        !_showCategoriesFilter;
-                                    if (_showCategoriesFilter) {
-                                      _showBrandsFilter = false;
-                                      _showWarhousesFilter = false;
-                                      _showVariationsFilter = false;
-                                    }
-                                  });
-                                },
-                              ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: ResponsiveUI.padding(context, 16),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: FilterButton(
+                              label: 'Categories',
+                              isActive: _showCategoriesFilter,
+                              onTap: () {
+                                setState(() {
+                                  _showCategoriesFilter =
+                                      !_showCategoriesFilter;
+                                  if (_showCategoriesFilter) {
+                                    _showBrandsFilter = false;
+                                    _showWarhousesFilter = false;
+                                    _showVariationsFilter = false;
+                                  }
+                                });
+                              },
                             ),
-                            SizedBox(width: ResponsiveUI.spacing(context, 12)),
-                            Expanded(
-                              child: FilterButton(
-                                label: 'Brands',
-                                isActive: _showBrandsFilter,
-                                onTap: () {
-                                  setState(() {
-                                    _showBrandsFilter = !_showBrandsFilter;
-                                    if (_showBrandsFilter) {
-                                      _showCategoriesFilter = false;
-                                      _showWarhousesFilter = false;
-                                      _showVariationsFilter = false;
-                                    }
-                                  });
-                                },
-                              ),
+                          ),
+                          SizedBox(width: ResponsiveUI.spacing(context, 12)),
+                          Expanded(
+                            child: FilterButton(
+                              label: 'Brands',
+                              isActive: _showBrandsFilter,
+                              onTap: () {
+                                setState(() {
+                                  _showBrandsFilter = !_showBrandsFilter;
+                                  if (_showBrandsFilter) {
+                                    _showCategoriesFilter = false;
+                                    _showWarhousesFilter = false;
+                                    _showVariationsFilter = false;
+                                  }
+                                });
+                              },
                             ),
-                          ],
-                        ),
-                        SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: FilterButton(
-                                label: 'Warehouses',
-                                isActive: _showWarhousesFilter,
-                                onTap: () {
-                                  setState(() {
-                                    _showWarhousesFilter =
-                                        !_showWarhousesFilter;
-                                    if (_showWarhousesFilter) {
-                                      _showCategoriesFilter = false;
-                                      _showBrandsFilter = false;
-                                      _showVariationsFilter = false;
-                                    }
-                                  });
-                                },
-                              ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: FilterButton(
+                              label: 'Warehouses',
+                              isActive: _showWarhousesFilter,
+                              onTap: () {
+                                setState(() {
+                                  _showWarhousesFilter = !_showWarhousesFilter;
+                                  if (_showWarhousesFilter) {
+                                    _showCategoriesFilter = false;
+                                    _showBrandsFilter = false;
+                                    _showVariationsFilter = false;
+                                  }
+                                });
+                              },
                             ),
-                            SizedBox(width: ResponsiveUI.spacing(context, 12)),
-                            Expanded(
-                              child: FilterButton(
-                                label: 'Variations',
-                                isActive: _showVariationsFilter,
-                                onTap: () {
-                                  setState(() {
-                                    _showVariationsFilter =
-                                        !_showVariationsFilter;
-                                    if (_showVariationsFilter) {
-                                      _showCategoriesFilter = false;
-                                      _showWarhousesFilter = false;
-                                      _showBrandsFilter = false;
-                                    }
-                                  });
-                                },
-                              ),
+                          ),
+                          SizedBox(width: ResponsiveUI.spacing(context, 12)),
+                          Expanded(
+                            child: FilterButton(
+                              label: 'Variations',
+                              isActive: _showVariationsFilter,
+                              onTap: () {
+                                setState(() {
+                                  _showVariationsFilter =
+                                      !_showVariationsFilter;
+                                  if (_showVariationsFilter) {
+                                    _showCategoriesFilter = false;
+                                    _showWarhousesFilter = false;
+                                    _showBrandsFilter = false;
+                                  }
+                                });
+                              },
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                if (_showCategoriesFilter)
+                  AnimatedElement(
+                    delay: Duration.zero,
+                    child: GenericFilterPanel(
+                      filterType: FilterType.categories,
+                      selectedId: null, // Local or pass from parent if needed
+                      onSelected: widget.onCategorySelected,
+                      onClose: () {
+                        setState(() {
+                          _showCategoriesFilter = false;
+                        });
+                      },
                     ),
                   ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                  if (_showCategoriesFilter)
-                    AnimatedElement(
-                      delay: Duration.zero,
-                      child: GenericFilterPanel(
-                        filterType: FilterType.categories,
-                        selectedId: null, // Local or pass from parent if needed
-                        onSelected: widget.onCategorySelected,
-                        onClose: () {
-                          setState(() {
-                            _showCategoriesFilter = false;
-                          });
-                        },
-                      ),
+                if (_showBrandsFilter)
+                  AnimatedElement(
+                    delay: Duration.zero,
+                    child: GenericFilterPanel(
+                      filterType: FilterType.brands,
+                      selectedId: null,
+                      onSelected: widget.onBrandSelected,
+                      onClose: () {
+                        setState(() {
+                          _showBrandsFilter = false;
+                        });
+                      },
                     ),
-                  if (_showBrandsFilter)
-                    AnimatedElement(
-                      delay: Duration.zero,
-                      child: GenericFilterPanel(
-                        filterType: FilterType.brands,
-                        selectedId: null,
-                        onSelected: widget.onBrandSelected,
-                        onClose: () {
-                          setState(() {
-                            _showBrandsFilter = false;
-                          });
-                        },
-                      ),
+                  ),
+                if (_showVariationsFilter)
+                  AnimatedElement(
+                    delay: Duration.zero,
+                    child: GenericFilterPanel(
+                      filterType: FilterType.variations,
+                      selectedId: null,
+                      onSelected: widget.onVariationSelected,
+                      onClose: () {
+                        setState(() {
+                          _showVariationsFilter = false;
+                        });
+                      },
                     ),
-                  if (_showVariationsFilter)
-                    AnimatedElement(
-                      delay: Duration.zero,
-                      child: GenericFilterPanel(
-                        filterType: FilterType.variations,
-                        selectedId: null,
-                        onSelected: widget.onVariationSelected,
-                        onClose: () {
-                          setState(() {
-                            _showVariationsFilter = false;
-                          });
-                        },
-                      ),
+                  ),
+                if (_showWarhousesFilter)
+                  AnimatedElement(
+                    delay: Duration.zero,
+                    child: GenericFilterPanel(
+                      filterType: FilterType.warehouses,
+                      selectedId: null,
+                      onSelected: widget.onWarehouseSelected,
+                      onClose: () {
+                        setState(() {
+                          _showWarhousesFilter = false;
+                        });
+                      },
                     ),
-                  if (_showWarhousesFilter)
-                    AnimatedElement(
-                      delay: Duration.zero,
-                      child: GenericFilterPanel(
-                        filterType: FilterType.warehouses,
-                        selectedId: null,
-                        onSelected: widget.onWarehouseSelected,
-                        onClose: () {
-                          setState(() {
-                            _showWarhousesFilter = false;
-                          });
-                        },
-                      ),
-                    ),
-                ],
-              ),
+                  ),
+              ],
             ),
           );
         } else {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:systego/core/constants/app_colors.dart';
 import '../../../../core/widgets/animation/simple_fadein_animation_widget.dart';
 
 class CustomGridCard extends StatelessWidget {
@@ -30,13 +30,13 @@ class CustomGridCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.blue.withOpacity(0.1),
+                color: AppColors.mediumBlue700.withOpacity(0.05),
                 blurRadius: 15,
                 offset: const Offset(0, 6),
               ),
             ],
             border: Border.all(
-              color: Colors.blue.withOpacity(0.2),
+              color: AppColors.mediumBlue700.withOpacity(0.1),
               width: 1,
             ),
           ),
@@ -46,13 +46,13 @@ class CustomGridCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.lightBlue.withOpacity(0.1),
+                  color: AppColors.mediumBlue700[700]?.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   icon,
                   size: 48,
-                  color: Colors.lightBlue[700],
+                  color: AppColors.mediumBlue700[700],
                 ),
               ),
               const SizedBox(height: 12),

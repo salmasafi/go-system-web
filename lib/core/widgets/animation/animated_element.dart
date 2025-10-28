@@ -3,8 +3,16 @@ import 'package:flutter/material.dart';
 class AnimatedElement extends StatefulWidget {
   final Widget child;
   final Duration delay;
+  final VoidCallback? onTap;
+  final Duration? animationDuration;
 
-  const AnimatedElement({super.key, required this.child, required this.delay});
+  const AnimatedElement({
+    super.key,
+    required this.child,
+    required this.delay,
+    this.onTap,
+    this.animationDuration,
+  });
 
   @override
   State<AnimatedElement> createState() => _AnimatedElementState();
@@ -21,7 +29,7 @@ class _AnimatedElementState extends State<AnimatedElement>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 600),
+      duration: widget.animationDuration ?? const Duration(milliseconds: 600),
       vsync: this,
     );
 
@@ -53,11 +61,23 @@ class _AnimatedElementState extends State<AnimatedElement>
 
   @override
   Widget build(BuildContext context) {
+    Widget animatedChild = widget.child;
+    if (widget.onTap != null) {
+      animatedChild = Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: widget.onTap,
+          borderRadius: BorderRadius.circular(20),
+          child: widget.child,
+        ),
+      );
+    }
+
     return SlideTransition(
       position: _slideAnimation,
       child: FadeTransition(
         opacity: _fadeAnimation,
-        child: ScaleTransition(scale: _scaleAnimation, child: widget.child),
+        child: ScaleTransition(scale: _scaleAnimation, child: animatedChild),
       ),
     );
   }

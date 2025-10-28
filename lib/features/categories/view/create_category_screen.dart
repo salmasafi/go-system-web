@@ -86,7 +86,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
 
         return Scaffold(
           backgroundColor: AppColors.white,
-          appBar: appBarWithActions(context, "New Category", () {}),
+          appBar: appBarWithActions(context, title: "New Category"),
           body: SafeArea(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(

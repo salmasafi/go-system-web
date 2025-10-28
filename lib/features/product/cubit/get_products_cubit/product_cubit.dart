@@ -53,7 +53,6 @@ class ProductsCubit extends Cubit<ProductsState> {
     }
   }
 
-  // Add Product function (similar structure to deleteProduct)
   Future<void> addProduct() async {
     emit(ProductsLoading());
 

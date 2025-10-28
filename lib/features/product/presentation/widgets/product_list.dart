@@ -6,6 +6,7 @@ import 'package:systego/features/product/models/product_model.dart';
 import 'package:systego/features/product/presentation/widgets/product_card.dart';
 import '../../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
 import '../../../warehouses/view/widgets/custom_delete_dialog.dart';
+import '../screens/product_details_screen.dart';
 
 class ProductsList extends StatelessWidget {
   final List<Product> products;
@@ -21,6 +22,13 @@ class ProductsList extends StatelessWidget {
       itemBuilder: (context, index) {
         return AnimatedProductCard(
           product: products[index],
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  ProductDetailsScreen(productId: products[index].id),
+            ),
+          ),
           onDelete: () => _showDeleteDialog(context, products[index]),
         );
       },

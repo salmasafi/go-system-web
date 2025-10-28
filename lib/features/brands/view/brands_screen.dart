@@ -93,7 +93,9 @@ class _BrandsScreenState extends State<BrandsScreen> {
       onRefresh: _refresh,
       color: AppColors.primaryBlue,
       child: ListView.builder(
-        padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+        padding: EdgeInsets.symmetric(
+          horizontal: ResponsiveUI.padding(context, 16),
+        ),
         itemCount: filteredBrands.length,
         itemBuilder: (context, index) {
           return AnimatedBrandCard(
@@ -142,15 +144,20 @@ class _BrandsScreenState extends State<BrandsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.lightBlueBackground,
-      appBar: appBarWithActions(context, "Brands", () async {
-        final result = await Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const AddBrandScreen()),
-        );
-        if (result == true && mounted) {
-          BrandsCubit.get(context).getBrands();
-        }
-      }, showActions: true),
+      appBar: appBarWithActions(
+        context,
+        title: "Brands",
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const AddBrandScreen()),
+          );
+          if (result == true && mounted) {
+            BrandsCubit.get(context).getBrands();
+          }
+        },
+        showActions: true,
+      ),
       body: BlocConsumer<BrandsCubit, BrandsState>(
         listener: (context, state) {
           if (state is DeleteBrandSuccess) {

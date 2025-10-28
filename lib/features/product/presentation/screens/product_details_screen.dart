@@ -36,11 +36,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: appBarWithActions(context, 'Product Details', () {}),
+      appBar: appBarWithActions(context, title: 'Product Details'),
       body: BlocBuilder<ProductDetailsCubit, ProductDetailsState>(
         builder: (context, state) {
           if (state is ProductDetailsLoading) {
-            return const CustomLoadingShimmer();
+            return CustomLoadingShimmer(
+              padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+            );
           }
 
           if (state is ProductDetailsError) {
@@ -148,7 +150,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               ),
                               ...product.prices.map((price) {
                                 final hasVariations =
-                                    price.variations != null &&
                                     price.variations.isNotEmpty;
 
                                 return Padding(

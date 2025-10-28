@@ -14,7 +14,6 @@ import '../../../core/widgets/custom_loading/custom_loading_state_with_shimmer.d
 import '../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
 import '../model/supplier_model.dart';
 
-
 class SupplierScreen extends StatefulWidget {
   const SupplierScreen({super.key});
 
@@ -39,9 +38,14 @@ class _SupplierScreenState extends State<SupplierScreen> {
     return BlocProvider(
       create: (context) => SupplierCubit()..getSuppliers(),
       child: Scaffold(
-        appBar: appBarWithActions(context, 'Suppliers', () {
-          SupplierDialog.show(context);
-        }, showActions: true),
+        appBar: appBarWithActions(
+          context,
+          title: 'Suppliers',
+          onPressed: () {
+            SupplierDialog.show(context);
+          },
+          showActions: true,
+        ),
         body: BlocConsumer<SupplierCubit, SupplierStates>(
           listener: (context, state) {
             if (state is SupplierError) {
@@ -151,9 +155,7 @@ class _SupplierScreenState extends State<SupplierScreen> {
                         ),
                       )
                     else
-                      Expanded(
-                        child: SupplierList(suppliers: suppliers),
-                      ),
+                      Expanded(child: SupplierList(suppliers: suppliers)),
                   ],
                 ),
               );

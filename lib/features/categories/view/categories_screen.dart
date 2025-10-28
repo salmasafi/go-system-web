@@ -140,16 +140,20 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightBlueBackground,
-      appBar: appBarWithActions(context, "Categories", () async {
-        final result = await Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const AddCategoryScreen()),
-        );
-        if (result == true && mounted) {
-          CategoriesCubit.get(context).getCategories();
-        }
-      }, showActions: true),
+      appBar: appBarWithActions(
+        context,
+        title: "Categories",
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const AddCategoryScreen()),
+          );
+          if (result == true && mounted) {
+            CategoriesCubit.get(context).getCategories();
+          }
+        },
+        showActions: true,
+      ),
       body: BlocConsumer<CategoriesCubit, CategoriesState>(
         listener: (context, state) {
           if (state is DeleteCategorySuccess) {

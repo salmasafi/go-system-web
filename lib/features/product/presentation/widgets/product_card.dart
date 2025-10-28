@@ -2,54 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
-import 'package:systego/core/widgets/custom_popup_menu.dart';
 import 'package:systego/features/product/models/product_model.dart';
-import 'package:systego/core/widgets/custom_image_card.dart';
+import '../../../../core/widgets/custom_image_card.dart';
+import '../../../../core/widgets/custom_popup_menu.dart';
 import '../../../warehouses/view/widgets/custom_stat_chip.dart';
-import '../screens/product_details_screen.dart';
-//import 'package:systego/features/product/presentation/widgets/product_image.dart';
-//import 'package:systego/features/product/presentation/widgets/product_info.dart';
-//import 'package:systego/features/product/presentation/widgets/product_menu.dart';
-
-// class ProductCard extends StatelessWidget {
-//   final Product product;
-
-//   const ProductCard({super.key, required this.product});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       margin: EdgeInsets.only(bottom: ResponsiveUI.spacing(context, 12)),
-//       padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
-//       decoration: BoxDecoration(
-//         color: AppColors.white,
-//         borderRadius: BorderRadius.circular(
-//           ResponsiveUI.borderRadius(context, 12),
-//         ),
-//         boxShadow: [
-//           BoxShadow(
-//             color: AppColors.black.withOpacity(0.05),
-//             blurRadius: 8,
-//             offset: const Offset(0, 2),
-//           ),
-//         ],
-//       ),
-//       child: Row(
-//         children: [
-//           ProductImage(imageUrl: product.image),
-//           SizedBox(width: ResponsiveUI.spacing(context, 12)),
-//           Expanded(child: ProductInfo(product: product)),
-//           ProductMenu(),
-//         ],
-//       ),
-//     );
-//   }
-// }
 
 class AnimatedProductCard extends StatefulWidget {
   final Product product;
   final int? index;
-  //final VoidCallback? onTap;
+  final VoidCallback? onTap;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
   final Duration? animationDuration;
@@ -59,7 +20,7 @@ class AnimatedProductCard extends StatefulWidget {
     super.key,
     required this.product,
     this.index,
-    //this.onTap,
+    this.onTap,
     this.onEdit,
     this.onDelete,
     this.animationDuration,
@@ -145,15 +106,7 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          ProductDetailsScreen(productId: widget.product.id),
-                    ),
-                  );
-                }, //widget.onTap,
+                onTap: widget.onTap,
                 borderRadius: BorderRadius.circular(
                   ResponsiveUI.borderRadius(context, 20),
                 ),

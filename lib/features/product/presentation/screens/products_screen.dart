@@ -31,6 +31,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   String? _selectedCategoryId;
   String? _selectedBrandId;
   String? _selectedVariationId;
+  // ignore: unused_field
   String? _selectedWarehouseId;
 
   void productsInit() async {
@@ -166,12 +167,17 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarWithActions(context, 'Products', () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => AddProductScreen()),
-        );
-      }, showActions: true),
+      appBar: appBarWithActions(
+        context,
+        title: 'Products',
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddProductScreen()),
+          );
+        },
+        showActions: true,
+      ),
       body: BlocConsumer<ProductFiltersCubit, ProductFiltersState>(
         listener: (context, state) {
           if (state is ProductFiltersError) {

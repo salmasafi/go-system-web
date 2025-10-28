@@ -59,9 +59,13 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarWithActions(context, 'Warehouses', () {
-        Navigator.pop(context);
-      }),
+      appBar: appBarWithActions(
+        context,
+        title: 'Warehouses',
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
       body: Stack(
         children: [
           BlocConsumer<WareHouseCubit, WarehousesState>(
@@ -105,7 +109,9 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
             },
             builder: (context, state) {
               if (state is WarehousesLoading && !_isDeleting) {
-                return const CustomLoadingShimmer();
+                return CustomLoadingShimmer(
+                  padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+                );
               }
 
               final warehouses = context.read<WareHouseCubit>().warehouses;
@@ -154,8 +160,8 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
                             },
                             color: AppColors.primaryBlue,
                             child: ListView.builder(
-                              padding: EdgeInsets.all(
-                                ResponsiveUI.padding(context, 16),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: ResponsiveUI.padding(context, 16),
                               ),
                               itemCount: _filteredWarehouses.length,
                               itemBuilder: (context, index) {

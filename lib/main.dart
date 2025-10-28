@@ -6,12 +6,14 @@ import 'package:systego/features/brands/cubit/brand_cubit.dart';
 import 'package:systego/features/categories/cubit/categories_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
+import 'package:systego/features/currency/cubit/currency_cubit.dart';
 import 'package:systego/features/product/cubit/get_products_cubit/product_cubit.dart';
 import 'package:systego/features/product/cubit/product_details_cubit/product_details_cubit.dart';
 import 'package:systego/features/product/cubit/product_filter_cubit.dart';
 import 'core/services/cache_helper.dart.dart';
 import 'core/services/dio_helper.dart';
 import 'features/auth/presentation/view/login_screen.dart';
+import 'features/home/cubit/notifications_cubit.dart';
 import 'features/home/presentation/view/home_screen.dart';
 import 'features/suppliers/cubit/supplier_cubit.dart';
 import 'features/warehouses/cubit/warehouse_cubit.dart';
@@ -72,11 +74,15 @@ class _MainAppState extends State<MainApp> {
         BlocProvider<CategoriesCubit>(create: (context) => CategoriesCubit()),
         BlocProvider<BrandsCubit>(create: (context) => BrandsCubit()),
         BlocProvider<SupplierCubit>(create: (context) => SupplierCubit()),
+        BlocProvider<CurrencyCubit>(create: (context) => CurrencyCubit()),
         BlocProvider<ProductDetailsCubit>(
           create: (context) => ProductDetailsCubit(),
         ),
         BlocProvider<ProductFiltersCubit>(
           create: (context) => ProductFiltersCubit(),
+        ),
+        BlocProvider<NotificationsCubit>(
+          create: (_) => NotificationsCubit()..getNotifications(),
         ),
         BlocProvider<WareHouseCubit>(create: (context) => WareHouseCubit()),
         BlocProvider<CategoriesCubit>(create: (context) => CategoriesCubit()),

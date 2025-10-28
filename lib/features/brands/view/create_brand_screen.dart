@@ -68,13 +68,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
       builder: (context, state) {
         if (state is CreateBrandError) {
           return Scaffold(
-            backgroundColor: AppColors.white,
-            appBar: appBarWithActions(
-              context,
-              "New Brand",
-              () {},
-              showActions: false,
-            ),
+            appBar: appBarWithActions(context, title: "New Brand"),
             body: CustomErrorState(
               message: state.error,
               onRetry: () {
@@ -92,13 +86,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
         }
 
         return Scaffold(
-          backgroundColor: AppColors.white,
-          appBar: appBarWithActions(
-            context,
-            "New Brand",
-            () {},
-            showActions: false,
-          ),
+          appBar: appBarWithActions(context, title: "New Brand"),
           body: SafeArea(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(

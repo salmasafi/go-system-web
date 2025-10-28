@@ -127,7 +127,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       builder: (context, state) {
         return Scaffold(
           backgroundColor: AppColors.white,
-          appBar: appBarWithActions(context, "New Product", () {}),
+          appBar: appBarWithActions(context, title: "New Product"),
           body: SafeArea(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(

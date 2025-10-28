@@ -17,7 +17,6 @@ class BarcodeScannerScreen extends StatefulWidget {
 }
 
 class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
-  final FocusNode _focusNode = FocusNode(); // للتركيز على الكيبورد
   String _currentInput = ''; // لتجميع إدخال القارئ الخارجي
   bool _isListeningForExternal = false; // جديد: التحكم في وضع الاستماع للخارجي
 
@@ -42,70 +41,14 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
       _isListeningForExternal = true;
       _currentInput = ''; // مسح أي إدخال سابق
     });
-    _focusNode.requestFocus(); // طلب التركيز
-    debugPrint('External scanner mode activated'); // Debug
-  }
-
-  void _handleBarcodeInput(String input) {
-    if (input.isNotEmpty) {
-      debugPrint('External scanner scanned: $input'); // Debug
-      setState(() {
-        _isListeningForExternal = false; // إيقاف الوضع بعد النجاح
-      });
-      if (mounted) {
-        Navigator.pop(context, input);
-      }
-    }
-    _currentInput = ''; // مسح الإدخال
-  }
-
-  void _onKeyEvent(KeyEvent event) {
-    if (!_isListeningForExternal) return; // تجاهل إذا لم يكن الوضع مفعلاً
-
-    final key = event.logicalKey;
-    if (key == LogicalKeyboardKey.enter) {
-      // معالجة الكود عند Enter
-      _handleBarcodeInput(_currentInput);
-    } else if (key == LogicalKeyboardKey.backspace) {
-      // دعم المسح
-      setState(() {
-        _currentInput = _currentInput.isNotEmpty ? _currentInput.substring(0, _currentInput.length - 1) : '';
-      });
-    } else {
-      // إضافة الحروف/الأرقام
-      final character = event.character;
-      if (character != null && character.isNotEmpty && character != ' ') {
-        setState(() {
-          _currentInput += character;
-        });
-      }
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // لا نطلب التركيز تلقائيًا الآن
-  }
-
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    super.dispose();
+    log('External scanner mode activated'); // Debug
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarWithActions(
-        context,
-        'Scan Barcode',
-        () => Navigator.pop(context),
-        showActions: false,
-      ),
-      body: KeyboardListener ( // مستمع الكيبورد (مشروط الآن)
-        focusNode: _focusNode,
-        onKeyEvent: _onKeyEvent,
+      appBar: appBarWithActions(context, title: 'Scan Barcode'),
+      body: SingleChildScrollView(
         child: Center(
           child: ConstrainedBox(
             constraints: BoxConstraints(
@@ -137,8 +80,8 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                   AnimatedElement(
                     delay: const Duration(milliseconds: 200),
                     child: Text(
-                      _isListeningForExternal 
-                          ? 'Ready for external scan...\nPoint your scanner and press Enter after reading.' 
+                      _isListeningForExternal
+                          ? 'Ready for external scan...\nPoint your scanner and press Enter after reading.'
                           : 'Point your camera at the product barcode\nto search for it instantly',
                       style: TextStyle(
                         fontSize: ResponsiveUI.fontSize(context, 15),
@@ -148,8 +91,8 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 48)),
-                  
+                  SizedBox(height: ResponsiveUI.spacing(context, 18)),
+
                   // زر المسح بالكاميرا
                   AnimatedElement(
                     delay: const Duration(milliseconds: 300),
@@ -160,28 +103,41 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                         icon: const Icon(Icons.camera_alt),
                         label: const Text('Scan with Camera'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryBlue, // استخدم لونك المفضل
-                          foregroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 16)),
+                          backgroundColor:
+                              AppColors.primaryBlue, // استخدم لونك المفضل
+                          foregroundColor: AppColors.white,
+                          padding: EdgeInsets.symmetric(
+                            vertical: ResponsiveUI.padding(context, 16),
+                          ),
                         ),
                       ),
                     ),
                   ),
                   SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                  
+
                   // زر المسح بالقارئ الخارجي
                   AnimatedElement(
                     delay: const Duration(milliseconds: 300),
                     child: SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: _isListeningForExternal ? null : _startExternalScanning, // تعطيل إذا مفعل
+                        onPressed: _isListeningForExternal
+                            ? null
+                            : _startExternalScanning, // تعطيل إذا مفعل
                         icon: const Icon(Icons.usb),
-                        label: Text(_isListeningForExternal ? 'Listening...' : 'Scan with External Scanner'),
+                        label: Text(
+                          _isListeningForExternal
+                              ? 'Listening...'
+                              : 'Scan with External Scanner',
+                        ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: _isListeningForExternal ? Colors.grey : AppColors.primaryBlue,
+                          backgroundColor: _isListeningForExternal
+                              ? AppColors.shadowGray
+                              : AppColors.primaryBlue,
                           foregroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 16)),
+                          padding: EdgeInsets.symmetric(
+                            vertical: ResponsiveUI.padding(context, 16),
+                          ),
                         ),
                       ),
                     ),
