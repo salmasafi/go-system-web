@@ -20,7 +20,7 @@ class WareHouseCubit extends Cubit<WarehousesState> {
       //log(' Token: $token');
 
       final response = await DioHelper.getData(
-        url: EndPoint.warehouses,
+        url: EndPoint.getWarehouses,
         // token: token,
       );
 

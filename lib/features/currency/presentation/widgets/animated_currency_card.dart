@@ -11,6 +11,7 @@ class AnimatedCurrencyCard extends StatefulWidget {
   final CurrencyModel currency;
   final int? index;
   final VoidCallback? onDelete;
+  final VoidCallback? onEdit;
   final VoidCallback? onTap;
   final Duration? animationDuration;
   final Duration? animationDelay;
@@ -20,6 +21,7 @@ class AnimatedCurrencyCard extends StatefulWidget {
     required this.currency,
     this.index,
     this.onDelete,
+    this.onEdit,
     this.onTap,
     this.animationDuration,
     this.animationDelay,
@@ -90,7 +92,7 @@ class _AnimatedCurrencyCardState extends State<AnimatedCurrencyCard> {
   Widget _buildHeader(CurrencyModel currency) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
-      
+
       children: [
         CircleAvatar(
           radius: ResponsiveUI.borderRadius(context, 25),
@@ -111,8 +113,10 @@ class _AnimatedCurrencyCardState extends State<AnimatedCurrencyCard> {
             color: AppColors.darkGray,
           ),
         ),
+        Spacer(),
 
-        if (widget.onDelete != null) CustomPopupMenu(onDelete: widget.onDelete),
+        if (widget.onEdit != null || widget.onDelete != null)
+          CustomPopupMenu(onEdit: widget.onEdit, onDelete: widget.onDelete),
       ],
     );
   }
@@ -132,17 +136,17 @@ class _AnimatedCurrencyCardState extends State<AnimatedCurrencyCard> {
         Text(
           'Created at: $createdAt',
           style: TextStyle(
-            fontSize: 13,
+            fontSize: ResponsiveUI.fontSize(context, 13),
             color: AppColors.darkGray.withOpacity(0.6),
           ),
         ),
-        Text(
-          'Updated at: $updatedAt',
-          style: TextStyle(
-            fontSize: 13,
-            color: AppColors.darkGray.withOpacity(0.6),
-          ),
-        ),
+        // Text(
+        //   'Updated at: $updatedAt',
+        //   style: TextStyle(
+        //     fontSize: 13,
+        //     color: AppColors.darkGray.withOpacity(0.6),
+        //   ),
+        // ),
       ],
     );
   }

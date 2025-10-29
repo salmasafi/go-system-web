@@ -10,14 +10,12 @@ class CurrencyCubit extends Cubit<CurrencyState> {
 
   //CreateCurrencyModel? currencyModel;
   List<CurrencyModel> allCurrencies = [];
-  //CurrencyItem? selectedCurrency;
+  // CurrencyModel? selectedCurrency;
 
   Future<void> getCurrencies() async {
     emit(GetCurrenciesLoading());
     try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getCurrencies,
-      );
+      final response = await DioHelper.getData(url: EndPoint.getCurrencies);
 
       if (response.statusCode == 200) {
         final model = CurrenciesResponse.fromJson(response.data);
@@ -37,19 +35,17 @@ class CurrencyCubit extends Cubit<CurrencyState> {
     }
   }
 
-  // Future<void> getCurrencyById(String CurrencyId) async {
+  // Future<void> getCurrencyById(String currencyId) async {
   //   emit(GetCurrencyByIdLoading());
   //   try {
-  //    // final token = CacheHelper.getData(key: 'token') as String?;
   //     final response = await DioHelper.getData(
-  //       url: EndPoint.getCurrencyById(CurrencyId),
-  //      // token: token,
+  //       url: EndPoint.getCurrencyById(currencyId),
   //     );
 
   //     if (response.statusCode == 200) {
   //       final json = response.data;
   //       if (json['success'] == true && json['data']?['Currency'] != null) {
-  //         selectedCurrency = CurrencyItem.fromJson(json['data']['Currency']);
+  //         selectedCurrency = CurrencyModel.fromJson(json['data']['Currency']);
   //         emit(GetCurrencyByIdSuccess(selectedCurrency!));
   //       } else {
   //         final errorMessage = ErrorHandler.handleError(response);
@@ -65,143 +61,70 @@ class CurrencyCubit extends Cubit<CurrencyState> {
   //   }
   // }
 
-  // Future<void> createCurrency({
-  //   required String name,
-  //   required File imageFile,
-  //   String? parentId,
-  // }) async {
-  //   emit(CreateCurrencyLoading());
-  //   try {
-  //     if (await imageFile.length() > 5 * 1024 * 1024) {
-  //       emit(CreateCurrencyError('Image exceeds 5MB'));
-  //       return;
-  //     }
+  Future<void> createCurrency({required String name}) async {
+    emit(CreateCurrencyLoading());
+    try {
+      final data = {'name': name};
 
-  //    // final token = CacheHelper.getData(key: 'token') as String?;
-  //     final bytes = await imageFile.readAsBytes();
-  //     final base64Image = base64Encode(bytes);
+      final response = await DioHelper.postData(
+        url: EndPoint.createCurrency,
+        data: data,
+      );
 
-  //     final data = {
-  //       'name': name,
-  //       'image': base64Image,
-  //       if (parentId != null && parentId.isNotEmpty) 'parentId': parentId,
-  //     };
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        emit(CreateCurrencySuccess('Currency is created successfully'));
+      } else {
+        final errorMessage = ErrorHandler.handleError(response);
+        emit(CreateCurrencyError(errorMessage));
+      }
+    } catch (e) {
+      final errorMessage = ErrorHandler.handleError(e);
+      emit(CreateCurrencyError(errorMessage));
+    }
+  }
 
-  //     final response = await DioHelper.postData(
-  //       url: EndPoint.createCurrency,
-  //       data: data,
-  //       //token: token,
-  //     );
+  Future<void> updateCurrency({
+    required String currencyId,
+    required String name,
+  }) async {
+    emit(UpdateCurrencyLoading());
+    try {
+      final data = <String, dynamic>{'name': name};
 
-  //     if (response.statusCode == 200 || response.statusCode == 201) {
-  //       CurrencyModel = CreateCurrencyModel.fromJson(response.data);
-  //       if (CurrencyModel?.success == true) {
-  //         await getCurrency();
-  //         emit(CreateCurrencySuccess(
-  //           CurrencyModel?.data?.message ?? 'Currency created successfully',
-  //         ));
-  //       } else {
-  //         final errorMessage = ErrorHandler.handleError(response);
-  //         emit(CreateCurrencyError(errorMessage));
-  //       }
-  //     } else {
-  //       final errorMessage = ErrorHandler.handleError(response);
-  //       emit(CreateCurrencyError(errorMessage));
-  //     }
-  //   } catch (e) {
-  //     final errorMessage = ErrorHandler.handleError(e);
-  //     emit(CreateCurrencyError(errorMessage));
-  //   }
-  // }
+      final response = await DioHelper.putData(
+        url: EndPoint.updateCurrency(currencyId),
+        data: data,
+      );
 
-  // Future<void> updateCurrency({
-  //   required String CurrencyId,
-  //   required String name,
-  //   File? imageFile,
-  //   String? parentId,
-  // }) async {
-  //   emit(UpdateCurrencyLoading());
-  //   try {
-  //  //   final token = CacheHelper.getData(key: 'token') as String?;
+      if (response.statusCode == 200) {
+        emit(UpdateCurrencySuccess('Currency updated successfully'));
+      } else {
+        final errorMessage = ErrorHandler.handleError(response);
+        emit(UpdateCurrencyError(errorMessage));
+      }
+    } catch (e) {
+      final errorMessage = ErrorHandler.handleError(e);
+      emit(UpdateCurrencyError(errorMessage));
+    }
+  }
 
-  //     final data = <String, dynamic>{'name': name};
+  Future<void> deleteCurrency(String currencyId) async {
+    emit(DeleteCurrencyLoading());
+    try {
+      final response = await DioHelper.deleteData(
+        url: EndPoint.getCurrencyById(currencyId),
+      );
 
-  //     if (imageFile != null) {
-  //       if (await imageFile.length() > 5 * 1024 * 1024) {
-  //         emit(UpdateCurrencyError('Image exceeds 5MB'));
-  //         return;
-  //       }
-  //       final bytes = await imageFile.readAsBytes();
-  //       data['image'] = base64Encode(bytes);
-  //     }
-
-  //     if (parentId != null && parentId.isNotEmpty) {
-  //       data['parentId'] = parentId;
-  //     }
-  //     // Remove the else clause to avoid sending parentId: null
-
-  //     final response = await DioHelper.putData(
-  //       url: EndPoint.getCurrencyById(CurrencyId),
-  //       data: data,
-  //       //token: token,
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       final model = CreateCurrencyModel.fromJson(response.data);
-  //       if (model.success == true) {
-  //         await getCurrency();
-  //         emit(UpdateCurrencySuccess(
-  //           model.data?.message ?? 'Currency updated successfully',
-  //         ));
-  //       } else {
-  //         final errorMessage = ErrorHandler.handleError(response);
-  //         emit(UpdateCurrencyError(errorMessage));
-  //       }
-  //     } else {
-  //       final errorMessage = ErrorHandler.handleError(response);
-  //       emit(UpdateCurrencyError(errorMessage));
-  //     }
-  //   } catch (e) {
-  //     final errorMessage = ErrorHandler.handleError(e);
-  //     emit(UpdateCurrencyError(errorMessage));
-  //   }
-  // }
-
-  // Future<void> deleteCurrency(String CurrencyId) async {
-  //   emit(DeleteCurrencyLoading());
-  //   try {
-  //    // final token = CacheHelper.getData(key: 'token') as String?;
-
-  //     final response = await DioHelper.deleteData(
-  //       url: EndPoint.getCurrencyById(CurrencyId),
-  //      // token: token,
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       final model = DeleteCurrencyModel.fromJson(response.data);
-  //       if (model.success == true) {
-  //         allCurrency.removeWhere((Currency) => Currency.id == CurrencyId);
-  //         parentCurrency.removeWhere((Currency) => Currency.id == CurrencyId);
-
-  //         if (selectedCurrency?.id == CurrencyId) {
-  //           selectedCurrency = null;
-  //         }
-
-  //         emit(DeleteCurrencySuccess(
-  //           model.data?.message ?? 'Currency deleted successfully',
-  //         ));
-  //       } else {
-  //         final errorMessage = ErrorHandler.handleError(response);
-  //         emit(DeleteCurrencyError(errorMessage));
-  //       }
-  //     } else {
-  //       final errorMessage = ErrorHandler.handleError(response);
-  //       emit(DeleteCurrencyError(errorMessage));
-  //     }
-  //   } catch (e) {
-  //     final errorMessage = ErrorHandler.handleError(e);
-  //     emit(DeleteCurrencyError(errorMessage));
-  //   }
-  // }
-
+      if (response.statusCode == 200) {
+        allCurrencies.removeWhere((currency) => currency.id == currencyId);
+        emit(DeleteCurrencySuccess('Currency deleted successfully'));
+      } else {
+        final errorMessage = ErrorHandler.handleError(response);
+        emit(DeleteCurrencyError(errorMessage));
+      }
+    } catch (e) {
+      final errorMessage = ErrorHandler.handleError(e);
+      emit(DeleteCurrencyError(errorMessage));
+    }
+  }
 }

@@ -18,7 +18,7 @@ class ProductFiltersCubit extends Cubit<ProductFiltersState> {
     try {
       log('Starting filters request...');
 
-      final response = await DioHelper.getData(url: EndPoint.productSelect);
+      final response = await DioHelper.getData(url: EndPoint.productFilter);
 
       log('Response received: ${response.statusCode}');
 

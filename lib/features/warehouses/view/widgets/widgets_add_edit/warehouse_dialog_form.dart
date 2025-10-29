@@ -81,7 +81,7 @@ class WarehouseDialogForm extends StatelessWidget {
               ),
             ),
           ),
-          if (isLoading) buildLoadingOverlay(context),
+          if (isLoading) buildLoadingOverlay(context, 45),
         ],
       ),
     );

@@ -62,8 +62,12 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
       appBar: appBarWithActions(
         context,
         title: 'Warehouses',
+        showActions: true,
         onPressed: () {
-          Navigator.pop(context);
+          showDialog(
+            context: context,
+            builder: (context) => const WarehouseFormDialog(),
+          );
         },
       ),
       body: Stack(
@@ -190,21 +194,21 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) => const WarehouseFormDialog(),
-          );
-        },
-        backgroundColor: AppColors.primaryBlue,
-        child: Icon(
-          Icons.add,
-          color: AppColors.white,
-          size: ResponsiveUI.iconSize(context, 24),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      //   floatingActionButton: FloatingActionButton(
+      //     onPressed: () {
+      //       showDialog(
+      //         context: context,
+      //         builder: (context) => const WarehouseFormDialog(),
+      //       );
+      //     },
+      //     backgroundColor: AppColors.primaryBlue,
+      //     child: Icon(
+      //       Icons.add,
+      //       color: AppColors.white,
+      //       size: ResponsiveUI.iconSize(context, 24),
+      //     ),
+      //   ),
+      //   floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 

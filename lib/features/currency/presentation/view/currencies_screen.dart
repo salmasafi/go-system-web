@@ -7,6 +7,7 @@ import 'package:systego/core/widgets/app_bar_widgets.dart';
 import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
 import 'package:systego/features/currency/cubit/currency_cubit.dart';
+import 'package:systego/features/currency/presentation/widgets/currrency_form_dialog.dart';
 import '../../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
 import '../widgets/currencies_list.dart';
 
@@ -37,11 +38,22 @@ class _CurrenciesScreenState extends State<CurrenciesScreen> {
       listener: (context, state) {
         if (state is GetCurrenciesError) {
           CustomSnackbar.showError(context, state.error);
-          //currenciesInit();
+        } else if (state is DeleteCurrencyError) {
+          CustomSnackbar.showError(context, state.error);
+          currenciesInit();
+        } else if (state is DeleteCurrencySuccess) {
+          CustomSnackbar.showSuccess(context, state.message);
+          currenciesInit();
+        } else if (state is CreateCurrencySuccess) {
+          CustomSnackbar.showSuccess(context, state.message);
+          currenciesInit();
+        } else if (state is UpdateCurrencySuccess) {
+          CustomSnackbar.showSuccess(context, state.message);
+          currenciesInit();
         }
       },
       builder: (context, state) {
-        if (state is GetCurrenciesLoading) {
+        if (state is GetCurrenciesLoading || state is DeleteCurrencyLoading) {
           return RefreshIndicator(
             onRefresh: _refresh,
             color: AppColors.primaryBlue,
@@ -74,15 +86,6 @@ class _CurrenciesScreenState extends State<CurrenciesScreen> {
               child: CurrenciesList(currencies: currencies),
             );
           }
-        } else if (state is GetCurrenciesError) {
-          return CustomEmptyState(
-            icon: Icons.monetization_on_rounded,
-            title: 'Error Occurred',
-            message: state.error,
-            onRefresh: _refresh,
-            actionLabel: 'Retry',
-            onAction: _refresh,
-          );
         } else {
           return CustomEmptyState(
             icon: Icons.monetization_on_rounded,
@@ -100,7 +103,15 @@ class _CurrenciesScreenState extends State<CurrenciesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarWithActions(context, title: 'Currencies'),
+      appBar: appBarWithActions(
+        context,
+        title: 'Currencies',
+        showActions: true,
+        onPressed: () => showDialog(
+          context: context,
+          builder: (context) => CurrencyFormDialog(),
+        ),
+      ),
       body: Center(
         child: ConstrainedBox(
           constraints: BoxConstraints(

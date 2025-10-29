@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:systego/core/utils/responsive_ui.dart';
 
 import '../../constants/app_colors.dart';
 
@@ -7,12 +8,7 @@ class CustomLoadingState extends StatelessWidget {
   final Color? color;
   final double? size;
 
-  const CustomLoadingState({
-    super.key,
-    this.message,
-    this.color,
-    this.size,
-  });
+  const CustomLoadingState({super.key, this.message, this.color, this.size});
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +17,8 @@ class CustomLoadingState extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-            width: size ?? 60,
-            height: size ?? 60,
+            width: ResponsiveUI.spacing(context, size ?? 60),
+            height: ResponsiveUI.spacing(context, size ?? 60),
             child: CircularProgressIndicator(
               color: color ?? AppColors.primaryBlue,
               strokeWidth: 5,

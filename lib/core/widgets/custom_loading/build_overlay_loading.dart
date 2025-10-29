@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
 import '../../constants/app_colors.dart';
 import '../../utils/responsive_ui.dart';
 
-Widget buildLoadingOverlay(BuildContext context) {
+Widget buildLoadingOverlay(BuildContext context, double size) {
   final borderRadius24 = ResponsiveUI.borderRadius(context, 24);
   final borderRadius20 = ResponsiveUI.borderRadius(context, 20);
   final padding30 = ResponsiveUI.padding(context, 30);
-  //final value20 = ResponsiveUI.value(context, 20);
-  final strokeWidth3 = ResponsiveUI.value(context, 3);
-  final spacing20 = ResponsiveUI.spacing(context, 20);
-  final fontSize16 = ResponsiveUI.fontSize(context, 16);
   final value10 = ResponsiveUI.value(context, 0.1);
   final value20Blur = ResponsiveUI.value(context, 20);
 
@@ -31,23 +28,10 @@ Widget buildLoadingOverlay(BuildContext context) {
             ),
           ],
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CircularProgressIndicator(
-              color: AppColors.primaryBlue,
-              strokeWidth: strokeWidth3,
-            ),
-            SizedBox(height: spacing20),
-            Text(
-              'Processing...',
-              style: TextStyle(
-                fontSize: fontSize16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.shadowGray[700],
-              ),
-            ),
-          ],
+        child: CustomLoadingState(
+          color: AppColors.primaryBlue,
+          message: 'Processing...',
+          size: size,
         ),
       ),
     ),
