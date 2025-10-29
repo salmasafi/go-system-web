@@ -23,10 +23,8 @@ class BrandsCubit extends Cubit<BrandsState> {
   Future<void> getBrands() async {
     emit(GetBrandsLoading());
     try {
-    //  final token = CacheHelper.getData(key: 'token') as String?;
       final response = await DioHelper.getData(
         url: EndPoint.getBrands,
-       // token: token,
       );
 
       if (response.statusCode == 200) {
@@ -51,10 +49,8 @@ class BrandsCubit extends Cubit<BrandsState> {
   Future<void> getBrandById(String brandId) async {
     emit(GetBrandByIdLoading());
     try {
-    //  final token = CacheHelper.getData(key: 'token') as String?;
       final response = await DioHelper.getData(
         url: EndPoint.getBrandById(brandId),
-        //token: token,
       );
 
       if (response.statusCode == 200) {
@@ -143,7 +139,7 @@ class BrandsCubit extends Cubit<BrandsState> {
       }
 
       final response = await DioHelper.putData(
-        url: EndPoint.getBrandById(brandId),
+        url: EndPoint.updateBrand(brandId),
         data: data,
     //    token: token,
       );
@@ -174,7 +170,7 @@ class BrandsCubit extends Cubit<BrandsState> {
     try {
       //final token = CacheHelper.getData(key: 'token') as String?;
       final response = await DioHelper.deleteData(
-        url: EndPoint.getBrandById(brandId),
+        url: EndPoint.deleteBrand(brandId),
        // token: token,
       );
 

@@ -13,6 +13,7 @@ import 'package:systego/features/product/cubit/product_filter_cubit.dart';
 import 'core/services/cache_helper.dart.dart';
 import 'core/services/dio_helper.dart';
 import 'features/auth/presentation/view/login_screen.dart';
+import 'features/country/cubit/country_cubit.dart';
 import 'features/home/cubit/notifications_cubit.dart';
 import 'features/home/presentation/view/home_screen.dart';
 import 'features/suppliers/cubit/supplier_cubit.dart';
@@ -75,6 +76,7 @@ class _MainAppState extends State<MainApp> {
         BlocProvider<BrandsCubit>(create: (context) => BrandsCubit()),
         BlocProvider<SupplierCubit>(create: (context) => SupplierCubit()),
         BlocProvider<CurrencyCubit>(create: (context) => CurrencyCubit()),
+                BlocProvider<CountryCubit>(create: (context) => CountryCubit()),
         BlocProvider<ProductDetailsCubit>(
           create: (context) => ProductDetailsCubit(),
         ),

@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/services/cache_helper.dart.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/features/country/presentation/view/countries_screen.dart';
 import 'package:systego/features/currency/presentation/view/currencies_screen.dart';
 import 'package:systego/features/purchase/view/purchase_screen.dart';
 import 'package:systego/features/suppliers/view/supplier_screen.dart';
@@ -46,6 +47,8 @@ class _HomeScreenState extends State<HomeScreen> {
     {'icon': Icons.factory, 'label': 'Suppliers'},
     {'icon': Icons.type_specimen, 'label': 'Variations'},
     {'icon': Icons.monetization_on_rounded, 'label': 'Currencies'},
+    {'icon': Icons.location_on_rounded, 'label': 'Countries'},
+    {'icon': Icons.location_city_rounded, 'label': 'Cities'},
   ];
 
   void _navigateToPage(String label) {
@@ -98,6 +101,20 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
 
       case 'Currencies':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const CurrenciesScreen()),
+        );
+        break;
+
+      case 'Countries':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const CountriessScreen()),
+        );
+        break;
+
+      case 'Cities':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const CurrenciesScreen()),

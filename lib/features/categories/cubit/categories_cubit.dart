@@ -108,7 +108,6 @@ class CategoriesCubit extends Cubit<CategoriesState> {
       final response = await DioHelper.postData(
         url: EndPoint.createCategory,
         data: data,
-        //token: token,
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -159,7 +158,7 @@ class CategoriesCubit extends Cubit<CategoriesState> {
       // Remove the else clause to avoid sending parentId: null
 
       final response = await DioHelper.putData(
-        url: EndPoint.getCategoryById(categoryId),
+        url: EndPoint.updateCategory(categoryId),
         data: data,
         //token: token,
       );
@@ -191,7 +190,7 @@ class CategoriesCubit extends Cubit<CategoriesState> {
      // final token = CacheHelper.getData(key: 'token') as String?;
 
       final response = await DioHelper.deleteData(
-        url: EndPoint.getCategoryById(categoryId),
+        url: EndPoint.deleteCategory(categoryId),
        // token: token,
       );
 

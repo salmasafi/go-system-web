@@ -112,7 +112,7 @@ class CurrencyCubit extends Cubit<CurrencyState> {
     emit(DeleteCurrencyLoading());
     try {
       final response = await DioHelper.deleteData(
-        url: EndPoint.getCurrencyById(currencyId),
+        url: EndPoint.deleteCurrency(currencyId),
       );
 
       if (response.statusCode == 200) {
