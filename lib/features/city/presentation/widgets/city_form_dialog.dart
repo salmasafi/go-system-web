@@ -1,32 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/custom_snck_bar/custom_snackbar.dart';
-import 'package:systego/features/currency/model/currency_model.dart';
+import 'package:systego/features/country/model/country_model.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/responsive_ui.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/custom_loading/build_overlay_loading.dart';
+import '../../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
 import '../../../../core/widgets/custom_textfield/build_text_field.dart';
-import '../../cubit/currency_cubit.dart';
+import '../../../../core/widgets/custom_drop_down_menu.dart';
+import '../../cubit/city_state.dart';
+import '../../cubit/city_cubit.dart';
+import '../../model/city_model.dart';
 
-class CurrencyFormDialog extends StatefulWidget {
-  final CurrencyModel? currency;
+class CityFormDialog extends StatefulWidget {
+  final CityModel? city;
 
-  const CurrencyFormDialog({super.key, this.currency});
+  const CityFormDialog({super.key, this.city});
 
   @override
-  State<CurrencyFormDialog> createState() => _CurrencyFormDialogState();
+  State<CityFormDialog> createState() => _CityFormDialogState();
 }
 
-class _CurrencyFormDialogState extends State<CurrencyFormDialog>
+class _CityFormDialogState extends State<CityFormDialog>
     with SingleTickerProviderStateMixin {
   final _nameController = TextEditingController();
   final _arNameController = TextEditingController();
+  final _shipingCostController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
 
-  bool get isEditMode => widget.currency != null;
+  // Dropdown state
+  CountryModel? selectedCountry;
+  final countries = CityCubit.countries;
+
+  bool get isEditMode => widget.city != null;
 
   @override
   void initState() {
@@ -37,8 +45,54 @@ class _CurrencyFormDialogState extends State<CurrencyFormDialog>
 
   void _initializeControllers() {
     if (isEditMode) {
-      _nameController.text = widget.currency!.name;
-      _arNameController.text = widget.currency!.arName;
+      _nameController.text = widget.city!.name;
+      _arNameController.text = widget.city!.arName;
+      _shipingCostController.text = widget.city!.shipingCost.toString();
+      // Start with null
+      selectedCountry = null;
+      // Set to city's country if available AND it exists in countries
+      if (widget.city?.country != null && countries.isNotEmpty) {
+        final matching = countries.where(
+          (country) =>
+              country.id ==
+              widget.city!.country?.id, // Match by ID for uniqueness
+        );
+        if (matching.isNotEmpty) {
+          selectedCountry = matching.first;
+        }
+      }
+
+      // Fallback: If still null, find default from countries
+      if (selectedCountry == null && countries.isNotEmpty) {
+        final defaults = countries.where((country) => country.isDefault);
+        if (defaults.isNotEmpty) {
+          selectedCountry = null;
+        }
+      }
+    } else {
+      _shipingCostController.text = '';
+
+      // Start with null
+      selectedCountry = null;
+      // Set to city's country if available AND it exists in countries
+      if (widget.city?.country != null && countries.isNotEmpty) {
+        final matching = countries.where(
+          (country) =>
+              country.id ==
+              widget.city!.country?.id, // Match by ID for uniqueness
+        );
+        if (matching.isNotEmpty) {
+          selectedCountry = matching.first;
+        }
+      }
+
+      // Fallback: If still null, find default from countries
+      if (selectedCountry == null && countries.isNotEmpty) {
+        final defaults = countries.where((country) => country.isDefault);
+        if (defaults.isNotEmpty) {
+          selectedCountry = defaults.first;
+        }
+      }
     }
   }
 
@@ -58,6 +112,7 @@ class _CurrencyFormDialogState extends State<CurrencyFormDialog>
   void dispose() {
     _nameController.dispose();
     _arNameController.dispose();
+    _shipingCostController.dispose();
     _animationController.dispose();
     super.dispose();
   }
@@ -74,12 +129,11 @@ class _CurrencyFormDialogState extends State<CurrencyFormDialog>
       child: Dialog(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        child: BlocConsumer<CurrencyCubit, CurrencyState>(
+        child: BlocConsumer<CityCubit, CityState>(
           listener: _handleStateChanges,
           builder: (context, state) {
             final isLoading =
-                state is CreateCurrencyLoading ||
-                state is UpdateCurrencyLoading;
+                state is CreateCityLoading || state is UpdateCityLoading;
 
             return Container(
               constraints: BoxConstraints(
@@ -90,7 +144,7 @@ class _CurrencyFormDialogState extends State<CurrencyFormDialog>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CurrencyDialogHeader(
+                  CityDialogHeader(
                     isEditMode: isEditMode,
                     onClose: () => Navigator.of(context).pop(),
                   ),
@@ -108,13 +162,13 @@ class _CurrencyFormDialogState extends State<CurrencyFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _nameController,
-                                  label: 'Currency Name (EN)',
-                                  icon: Icons.monetization_on_rounded,
-                                  hint: 'Enter currency name (AR)',
+                                  label: 'City Name (EN)',
+                                  icon: Icons.location_city_rounded,
+                                  hint: 'Enter city name in English',
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'currency name in english',
+                                        'city name in english',
                                       ),
                                 ),
                                 SizedBox(
@@ -123,13 +177,53 @@ class _CurrencyFormDialogState extends State<CurrencyFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _arNameController,
-                                  label: 'Currency Name (AR)',
-                                  icon: Icons.monetization_on_rounded,
-                                  hint: 'Enter currency name in Arabic',
+                                  label: 'City Name (AR)',
+                                  icon: Icons.location_city_rounded,
+                                  hint: 'Enter city name in Arabic',
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'currency name in arabic',
+                                        'city name in arabic',
+                                      ),
+                                ),
+                                SizedBox(
+                                  height: ResponsiveUI.spacing(context, 12),
+                                ),
+                                // Custom Dropdown Menu for Country
+                                buildDropdownField<CountryModel>(
+                                  context,
+                                  value: selectedCountry,
+                                  items: countries,
+                                  label: 'Country',
+                                  icon: Icons.public_rounded,
+                                  hint: 'Select a country',
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedCountry = value;
+                                    });
+                                  },
+                                  itemLabel: (country) => country.name,
+                                  validator: (value) {
+                                    if (value == null) {
+                                      return 'Please select a country';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                SizedBox(
+                                  height: ResponsiveUI.spacing(context, 12),
+                                ),
+                                buildTextField(
+                                  context,
+                                  controller: _shipingCostController,
+                                  keyboardType: TextInputType.number,
+                                  label: 'Shiping cost',
+                                  icon: Icons.local_shipping,
+                                  hint: 'Enter shiping cost',
+                                  validator: (v) =>
+                                      LoginValidator.validateRequired(
+                                        v,
+                                        'Shiping cost',
                                       ),
                                 ),
                               ],
@@ -140,7 +234,7 @@ class _CurrencyFormDialogState extends State<CurrencyFormDialog>
                       ],
                     ),
                   ),
-                  CurrencyDialogButtons(
+                  CityDialogButtons(
                     isEditMode: isEditMode,
                     isLoading: isLoading,
                     onCancel: () => Navigator.of(context).pop(),
@@ -171,43 +265,47 @@ class _CurrencyFormDialogState extends State<CurrencyFormDialog>
     );
   }
 
-  void _handleStateChanges(BuildContext context, CurrencyState state) {
-    if (state is CreateCurrencySuccess || state is UpdateCurrencySuccess) {
+  void _handleStateChanges(BuildContext context, CityState state) {
+    if (state is CreateCitySuccess || state is UpdateCitySuccess) {
       Navigator.of(context).pop();
     }
 
-    if (state is CreateCurrencyError) {
+    if (state is CreateCityError) {
       CustomSnackbar.showError(context, state.error);
-    } else if (state is UpdateCurrencyError) {
+    } else if (state is UpdateCityError) {
       CustomSnackbar.showError(context, state.error);
     }
   }
 
   void _handleSubmit() {
     if (_formKey.currentState!.validate()) {
-      final cubit = context.read<CurrencyCubit>();
+      final cubit = context.read<CityCubit>();
 
       if (isEditMode) {
-        cubit.updateCurrency(
-          currencyId: widget.currency!.id,
+        cubit.updateCity(
+          cityId: widget.city!.id,
           name: _nameController.text.trim(),
           arName: _arNameController.text.trim(),
+          countryId: selectedCountry!.id,
+          shipingCost: _shipingCostController.text.trim(),
         );
       } else {
-        cubit.createCurrency(
+        cubit.createCity(
           name: _nameController.text.trim(),
           arName: _arNameController.text.trim(),
+          countryId: selectedCountry!.id,
+          shipingCost: _shipingCostController.text.trim(),
         );
       }
     }
   }
 }
 
-class CurrencyDialogHeader extends StatelessWidget {
+class CityDialogHeader extends StatelessWidget {
   final bool isEditMode;
   final VoidCallback onClose;
 
-  const CurrencyDialogHeader({
+  const CityDialogHeader({
     super.key,
     required this.isEditMode,
     required this.onClose,
@@ -267,7 +365,7 @@ class CurrencyDialogHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isEditMode ? 'Edit Currency' : 'New Currency',
+                  isEditMode ? 'Edit City' : 'New City',
                   style: TextStyle(
                     color: AppColors.white,
                     fontSize: fontSize22,
@@ -275,7 +373,7 @@ class CurrencyDialogHeader extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  isEditMode ? 'Update currency details' : 'Add a new currency',
+                  isEditMode ? 'Update City details' : 'Add a new City',
                   style: TextStyle(
                     color: AppColors.white.withOpacity(0.9),
                     fontSize: fontSize13,
@@ -305,13 +403,13 @@ class CurrencyDialogHeader extends StatelessWidget {
   }
 }
 
-class CurrencyDialogButtons extends StatelessWidget {
+class CityDialogButtons extends StatelessWidget {
   final bool isEditMode;
   final bool isLoading;
   final VoidCallback onCancel;
   final VoidCallback onSubmit;
 
-  const CurrencyDialogButtons({
+  const CityDialogButtons({
     super.key,
     required this.isEditMode,
     required this.isLoading,
@@ -332,7 +430,6 @@ class CurrencyDialogButtons extends StatelessWidget {
     final iconSize20 = ResponsiveUI.iconSize(context, 20);
     final spacing8 = ResponsiveUI.spacing(context, 8);
     final spacing16 = ResponsiveUI.spacing(context, 16);
-    //final value3 = ResponsiveUI.value(context, 300);
 
     return Container(
       padding: EdgeInsets.all(padding24),
@@ -398,7 +495,7 @@ class CurrencyDialogButtons extends StatelessWidget {
                   SizedBox(width: spacing8),
                   Flexible(
                     child: Text(
-                      isEditMode ? 'Update Currency' : 'Create Currency',
+                      isEditMode ? 'Update City' : 'Create City',
                       style: TextStyle(
                         fontSize: value14,
                         fontWeight: FontWeight.bold,
@@ -415,4 +512,3 @@ class CurrencyDialogButtons extends StatelessWidget {
     );
   }
 }
-

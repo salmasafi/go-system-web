@@ -22,6 +22,7 @@ class AddCategoryScreen extends StatefulWidget {
 
 class _AddCategoryScreenState extends State<AddCategoryScreen> {
   final _nameController = TextEditingController();
+  final _arNameController = TextEditingController();
   File? _selectedImage;
   CategoryItem? _selectedParentCategory;
   bool _makeParentCategory = true;
@@ -30,8 +31,9 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
     final pickedFile = await ImagePicker().pickImage(
       source: ImageSource.gallery,
     );
-    if (pickedFile != null)
+    if (pickedFile != null) {
       setState(() => _selectedImage = File(pickedFile.path));
+    }
   }
 
   @override
@@ -51,7 +53,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                 state.message,
                 style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14)),
               ),
-              backgroundColor: Colors.green,
+              backgroundColor: AppColors.successGreen,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(
@@ -99,13 +101,20 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
 
                   CustomTextField(
                     controller: _nameController,
-                    labelText: 'Enter Category Name',
+                    labelText: 'Enter Category Name (EN)',
                     hasBoxDecoration: false,
                     hasBorder: true,
                     prefixIcon: Icons.category,
                   ),
                   SizedBox(height: ResponsiveUI.spacing(context, 16)),
-
+                  CustomTextField(
+                    controller: _arNameController,
+                    labelText: 'Enter Category Name (AR)',
+                    hasBoxDecoration: false,
+                    hasBorder: true,
+                    prefixIcon: Icons.category,
+                  ),
+                  SizedBox(height: ResponsiveUI.spacing(context, 16)),
                   CheckboxListTile(
                     value: _makeParentCategory,
                     onChanged: (value) {
@@ -567,6 +576,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                               }
                               cubit.createCategory(
                                 name: _nameController.text.trim(),
+                                arName: _arNameController.text.trim(),
                                 imageFile: _selectedImage!,
                                 parentId: _makeParentCategory
                                     ? null

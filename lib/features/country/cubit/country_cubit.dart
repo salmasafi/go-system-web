@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/services/dio_helper.dart';
 import '../../../core/services/endpoints.dart';
@@ -14,10 +15,10 @@ class CountryCubit extends Cubit<CountryState> {
     emit(GetCountriesLoading());
     try {
       final response = await DioHelper.getData(url: EndPoint.getCountries);
-
+      log(response.data.toString());
       if (response.statusCode == 200) {
         final model = CountryResponse.fromJson(response.data);
-        if (model.success == true && model.data.countries.isNotEmpty) {
+        if (model.success == true) {
           emit(GetCountriesSuccess(model.data.countries));
         } else {
           final errorMessage = ErrorHandler.handleError(response);
@@ -53,10 +54,13 @@ class CountryCubit extends Cubit<CountryState> {
     }
   }
 
-  Future<void> createCountry({required String name}) async {
+  Future<void> createCountry({
+    required String name,
+    required String arName,
+  }) async {
     emit(CreateCountryLoading());
     try {
-      final data = {'name': name};
+      final data = {'name': name, 'ar_name': arName};
 
       final response = await DioHelper.postData(
         url: EndPoint.createCountry,
@@ -78,10 +82,11 @@ class CountryCubit extends Cubit<CountryState> {
   Future<void> updateCountry({
     required String countryId,
     required String name,
+    required String arName,
   }) async {
     emit(UpdateCountryLoading());
     try {
-      final data = <String, dynamic>{'name': name};
+      final data = {'name': name, 'ar_name': arName};
 
       final response = await DioHelper.putData(
         url: EndPoint.updateCountry(countryId),

@@ -6,6 +6,7 @@ import 'package:systego/features/brands/cubit/brand_cubit.dart';
 import 'package:systego/features/categories/cubit/categories_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
+import 'package:systego/features/city/cubit/city_cubit.dart';
 import 'package:systego/features/currency/cubit/currency_cubit.dart';
 import 'package:systego/features/product/cubit/get_products_cubit/product_cubit.dart';
 import 'package:systego/features/product/cubit/product_details_cubit/product_details_cubit.dart';
@@ -76,7 +77,8 @@ class _MainAppState extends State<MainApp> {
         BlocProvider<BrandsCubit>(create: (context) => BrandsCubit()),
         BlocProvider<SupplierCubit>(create: (context) => SupplierCubit()),
         BlocProvider<CurrencyCubit>(create: (context) => CurrencyCubit()),
-                BlocProvider<CountryCubit>(create: (context) => CountryCubit()),
+        BlocProvider<CountryCubit>(create: (context) => CountryCubit()),
+        BlocProvider<CityCubit>(create: (context) => CityCubit()),
         BlocProvider<ProductDetailsCubit>(
           create: (context) => ProductDetailsCubit(),
         ),

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/features/currency/model/currency_model.dart';
 import '../../../core/services/dio_helper.dart';
@@ -16,7 +18,7 @@ class CurrencyCubit extends Cubit<CurrencyState> {
     emit(GetCurrenciesLoading());
     try {
       final response = await DioHelper.getData(url: EndPoint.getCurrencies);
-
+      log(response.data.toString());
       if (response.statusCode == 200) {
         final model = CurrenciesResponse.fromJson(response.data);
         if (model.success == true && model.data.currencies.isNotEmpty) {
@@ -61,10 +63,13 @@ class CurrencyCubit extends Cubit<CurrencyState> {
   //   }
   // }
 
-  Future<void> createCurrency({required String name}) async {
+  Future<void> createCurrency({
+    required String name,
+    required String arName,
+  }) async {
     emit(CreateCurrencyLoading());
     try {
-      final data = {'name': name};
+      final data = {'name': name, 'ar_name': arName};
 
       final response = await DioHelper.postData(
         url: EndPoint.createCurrency,
@@ -86,10 +91,11 @@ class CurrencyCubit extends Cubit<CurrencyState> {
   Future<void> updateCurrency({
     required String currencyId,
     required String name,
+    required String arName,
   }) async {
     emit(UpdateCurrencyLoading());
     try {
-      final data = <String, dynamic>{'name': name};
+      final data = {'name': name, 'ar_name': arName};
 
       final response = await DioHelper.putData(
         url: EndPoint.updateCurrency(currencyId),

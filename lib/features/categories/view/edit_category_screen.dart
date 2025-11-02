@@ -23,6 +23,7 @@ class EditCategoryBottomSheet extends StatefulWidget {
 
 class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
   late TextEditingController _nameController;
+  late TextEditingController _arNameController;
   String? _selectedParentId;
   File? _selectedImage;
   final _picker = ImagePicker();
@@ -32,6 +33,7 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.category.name);
+    _arNameController = TextEditingController(text: widget.category.arName);
     _selectedParentId = widget.category.parentId?.id;
     CategoriesCubit.get(
       context,
@@ -41,6 +43,7 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
   @override
   void dispose() {
     _nameController.dispose();
+    _arNameController.dispose();
     super.dispose();
   }
 
@@ -52,11 +55,12 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
   }
 
   void _submitUpdate() {
-    if (_nameController.text.trim().isEmpty) {
+    if (_nameController.text.trim().isEmpty ||
+        _arNameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Please enter category name',
+            'Please enter category name in English & Arabic',
             style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14)),
           ),
           backgroundColor: AppColors.red,
@@ -77,6 +81,7 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
       CategoriesCubit.get(context).updateCategory(
         categoryId: widget.category.id,
         name: _nameController.text.trim(),
+        arName: _arNameController.text.trim(),
         imageFile: _selectedImage,
         parentId: _selectedParentId,
       );
@@ -85,6 +90,7 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
       CategoriesCubit.get(context).updateCategory(
         categoryId: widget.category.id,
         name: _nameController.text.trim(),
+        arName: _arNameController.text.trim(),
         imageFile: _selectedImage,
       );
     }
@@ -202,17 +208,28 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                      SizedBox(height: ResponsiveUI.spacing(context, 25)),
                       CustomTextField(
                         controller: _nameController,
-                        labelText: 'Category Name',
-                        hintText: 'Enter category name',
+                        labelText: 'Category Name (EN)',
+                        hintText: 'Enter category name in English',
                         prefixIcon: Icons.category,
                         hasBoxDecoration: false,
                         hasBorder: true,
                         prefixIconColor: AppColors.darkGray.withOpacity(0.7),
                       ),
                       SizedBox(height: ResponsiveUI.spacing(context, 25)),
+                      CustomTextField(
+                        controller: _arNameController,
+                        labelText: 'Category Name (AR)',
+                        hintText: 'Enter category name in Arabic',
+                        prefixIcon: Icons.category,
+                        hasBoxDecoration: false,
+                        hasBorder: true,
+                        prefixIconColor: AppColors.darkGray.withOpacity(0.7),
+                      ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 25)),
+
                       SizedBox(
                         height: ResponsiveUI.value(context, 60),
                         child: DropdownButtonFormField<String>(
@@ -313,7 +330,8 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                                               errorBuilder: (_, __, ___) =>
                                                   Icon(
                                                     Icons.category,
-                                                    color: AppColors.shadowGray[400],
+                                                    color: AppColors
+                                                        .shadowGray[400],
                                                     size: ResponsiveUI.iconSize(
                                                       context,
                                                       16,

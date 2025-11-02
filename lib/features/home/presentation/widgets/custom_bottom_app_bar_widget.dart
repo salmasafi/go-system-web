@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
+import 'package:systego/core/constants/app_colors.dart';
 
 class CustomBottomAppBar extends StatelessWidget {
   final int currentIndex;
@@ -16,7 +17,7 @@ class CustomBottomAppBar extends StatelessWidget {
     return ConvexAppBar(
       style: TabStyle.fixedCircle,
       backgroundColor: Colors.white,
-      activeColor: Colors.blue,
+      activeColor: AppColors.linkBlue,
       color: Colors.grey[600],
       height: 60,
       top: -25,
@@ -41,8 +42,8 @@ class CustomBottomAppBar extends StatelessWidget {
           title: 'Reports',
         ),
         TabItem(
-          icon: Icons.more_horiz_rounded,
-          title: 'More',
+          icon: Icons.exit_to_app_rounded, //Icons.more_horiz_rounded,
+          title: 'Exit',  //'More',
         ),
       ],
       initialActiveIndex: currentIndex,

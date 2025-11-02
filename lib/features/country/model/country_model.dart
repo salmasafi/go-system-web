@@ -42,26 +42,35 @@ class CountryData {
 class CountryModel {
   final String id;
   final String name;
+  final String arName;
   final bool isDefault;
   final int version;
 
   CountryModel({
     required this.id,
     required this.name,
+    required this.arName,
     required this.isDefault,
     required this.version,
   });
 
-  factory CountryModel.fromJson(Map<String, dynamic> json) {
+  factory CountryModel.fromJson(Map json) {
     return CountryModel(
       id: json['_id'] as String,
       name: json['name'] as String,
+      arName: json['ar_name'] as String,
       isDefault: json['isDefault'] as bool,
       version: json['__v'] as int,
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'_id': id, 'name': name, 'isDefault': isDefault, '__v': version};
+    return {
+      '_id': id,
+      'name': name,
+      'ar_name': arName,
+      'isDefault': isDefault,
+      '__v': version,
+    };
   }
 }

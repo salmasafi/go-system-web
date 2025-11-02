@@ -2,10 +2,7 @@ class CategoryResponse {
   final bool success;
   final CategoryData data;
 
-  CategoryResponse({
-    required this.success,
-    required this.data,
-  });
+  CategoryResponse({required this.success, required this.data});
 
   factory CategoryResponse.fromJson(Map<String, dynamic> json) {
     return CategoryResponse(
@@ -15,10 +12,7 @@ class CategoryResponse {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'success': success,
-      'data': data.toJson(),
-    };
+    return {'success': success, 'data': data.toJson()};
   }
 }
 
@@ -49,7 +43,9 @@ class CategoryData {
     return {
       'message': message,
       'categories': categories.map((item) => item.toJson()).toList(),
-      'ParentCategories': parentCategories.map((item) => item.toJson()).toList(),
+      'ParentCategories': parentCategories
+          .map((item) => item.toJson())
+          .toList(),
     };
   }
 }
@@ -57,6 +53,7 @@ class CategoryData {
 class CategoryItem {
   final String id;
   final String name;
+  final String arName;
   final String image;
   final int productQuantity;
   final String createdAt;
@@ -67,6 +64,7 @@ class CategoryItem {
   CategoryItem({
     required this.id,
     required this.name,
+    required this.arName,
     required this.image,
     required this.productQuantity,
     required this.createdAt,
@@ -79,6 +77,7 @@ class CategoryItem {
     return CategoryItem(
       id: json['_id'] as String,
       name: json['name'] as String,
+      arName: json['ar_name'] ?? '',// as String,
       image: json['image'] as String,
       productQuantity: json['product_quantity'] as int,
       createdAt: json['createdAt'] as String,
@@ -94,6 +93,7 @@ class CategoryItem {
     return {
       '_id': id,
       'name': name,
+      'ar_name': arName,
       'image': image,
       'product_quantity': productQuantity,
       'createdAt': createdAt,
@@ -107,23 +107,19 @@ class CategoryItem {
 class ParentCategory {
   final String id;
   final String name;
+  final String arName;
 
-  ParentCategory({
-    required this.id,
-    required this.name,
-  });
+  ParentCategory({required this.id, required this.name, required this.arName});
 
   factory ParentCategory.fromJson(Map<String, dynamic> json) {
     return ParentCategory(
       id: json['_id'] as String,
       name: json['name'] as String,
+      arName: json['ar_name'] ?? '', //as String,
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'name': name,
-    };
+    return {'_id': id, 'name': name, 'ar_name': arName};
   }
 }

@@ -22,6 +22,7 @@ class CountryFormDialog extends StatefulWidget {
 class _CountryFormDialogState extends State<CountryFormDialog>
     with SingleTickerProviderStateMixin {
   final _nameController = TextEditingController();
+  final _arNameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
@@ -38,6 +39,7 @@ class _CountryFormDialogState extends State<CountryFormDialog>
   void _initializeControllers() {
     if (isEditMode) {
       _nameController.text = widget.country!.name;
+      _arNameController.text = widget.country!.arName;
     }
   }
 
@@ -56,6 +58,7 @@ class _CountryFormDialogState extends State<CountryFormDialog>
   @override
   void dispose() {
     _nameController.dispose();
+    _arNameController.dispose();
     _animationController.dispose();
     super.dispose();
   }
@@ -100,16 +103,36 @@ class _CountryFormDialogState extends State<CountryFormDialog>
                           ),
                           child: Form(
                             key: _formKey,
-                            child: buildTextField(
-                              context,
-                              controller: _nameController,
-                              label: 'Country Name',
-                              icon: Icons.monetization_on_rounded,
-                              hint: 'Enter country name',
-                              validator: (v) => LoginValidator.validateRequired(
-                                v,
-                                'Country name',
-                              ),
+                            child: Column(
+                              children: [
+                                buildTextField(
+                                  context,
+                                  controller: _nameController,
+                                  label: 'Country Name (EN)',
+                                  icon: Icons.location_on_rounded,
+                                  hint: 'Enter country name in English',
+                                  validator: (v) =>
+                                      LoginValidator.validateRequired(
+                                        v,
+                                        'country name in english',
+                                      ),
+                                ),
+                                SizedBox(
+                                  height: ResponsiveUI.spacing(context, 12),
+                                ),
+                                buildTextField(
+                                  context,
+                                  controller: _arNameController,
+                                  label: 'Country Name (AR)',
+                                  icon: Icons.location_on_rounded,
+                                  hint: 'Enter country name in Arabic',
+                                  validator: (v) =>
+                                      LoginValidator.validateRequired(
+                                        v,
+                                        'country name in arabic',
+                                      ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -168,13 +191,18 @@ class _CountryFormDialogState extends State<CountryFormDialog>
         cubit.updateCountry(
           countryId: widget.country!.id,
           name: _nameController.text.trim(),
+          arName: _arNameController.text.trim(),
         );
       } else {
-        cubit.createCountry(name: _nameController.text.trim());
+        cubit.createCountry(
+          name: _nameController.text.trim(),
+          arName: _arNameController.text.trim(),
+        );
       }
     }
   }
 }
+
 
 class CountryDialogHeader extends StatelessWidget {
   final bool isEditMode;
@@ -229,7 +257,7 @@ class CountryDialogHeader extends StatelessWidget {
               borderRadius: BorderRadius.circular(borderRadius12),
             ),
             child: Icon(
-              isEditMode ? Icons.edit_note : Icons.add_business,
+              isEditMode ? Icons.edit : Icons.add,
               color: AppColors.white,
               size: iconSize28,
             ),

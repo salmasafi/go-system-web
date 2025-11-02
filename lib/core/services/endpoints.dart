@@ -54,6 +54,13 @@ class EndPoint {
   static String updateCountry(String id) => '/api/admin/country/$id';
   static String deleteCountry(String id) => '/api/admin/country/$id';
 
+  /// City
+  static const String getCities = '/api/admin/city';
+  static String selectCity(String id) => '/api/admin/city/$id';
+  static String createCity = '/api/admin/city';
+  static String updateCity(String id) => '/api/admin/city/$id';
+  static String deleteCity(String id) => '/api/admin/city/$id';
+
   /// Notifications
   static const String getNotifications = '/api/admin/notification';
   static String markAsRead(String id) => '/api/admin/notification/$id';

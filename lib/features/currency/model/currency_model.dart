@@ -42,6 +42,7 @@ class CurrenciesData {
 class CurrencyModel {
   final String id;
   final String name;
+  final String arName;
   final DateTime createdAt;
   final DateTime updatedAt;
   final int version;
@@ -49,6 +50,7 @@ class CurrencyModel {
   CurrencyModel({
     required this.id,
     required this.name,
+    required this.arName,
     required this.createdAt,
     required this.updatedAt,
     required this.version,
@@ -58,7 +60,7 @@ class CurrencyModel {
     return CurrencyModel(
       id: json['_id'] as String,
       name: json['name'] as String,
-
+      arName: json['ar_name'] as String,
       createdAt: DateTime.parse(json['createdAt'] ?? ''),
       updatedAt: DateTime.parse(json['createdAt'] ?? ''),
       version: json['__v'] as int,
@@ -69,6 +71,7 @@ class CurrencyModel {
     return {
       '_id': id,
       'name': name,
+      'ar_name': arName,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
       '__v': version,
