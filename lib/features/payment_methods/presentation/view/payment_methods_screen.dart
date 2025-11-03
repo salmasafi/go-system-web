@@ -74,7 +74,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
           final paymentMethods = state.paymentMethods;
 
           if (paymentMethods.isEmpty) {
-            String title = paymentMethods.isEmpty ? 'No PaymentMethods' : 'No Matching PaymentMethods';
+            String title = paymentMethods.isEmpty ? 'No Payment Methods' : 'No Matching Payment Methods';
             String message = paymentMethods.isEmpty
                 ? 'You\'re all caught up!'
                 : 'Try adjusting your filters';
@@ -96,7 +96,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
         } else {
           return CustomEmptyState(
             icon: Icons.monetization_on_rounded,
-            title: 'No PaymentMethods',
+            title: 'No Payment Methods',
             message: 'Pull to refresh or check your connection',
             onRefresh: _refresh,
             actionLabel: 'Retry',
@@ -112,7 +112,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
     return Scaffold(
       appBar: appBarWithActions(
         context,
-        title: 'PaymentMethods',
+        title: 'Payment Methods',
         showActions: true,
         onPressed: () => showDialog(
           context: context,

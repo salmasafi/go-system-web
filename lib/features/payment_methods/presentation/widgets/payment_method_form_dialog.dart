@@ -118,7 +118,7 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
                                   context,
                                   controller: _nameController,
                                   label: 'Payment Method Name (EN)',
-                                  icon: Icons.gps_fixed,
+                                  icon: Icons.attach_money_rounded,
                                   hint: 'Enter payment method name in English',
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
@@ -133,7 +133,7 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
                                   context,
                                   controller: _arNameController,
                                   label: 'Payment Method Name (AR)',
-                                  icon: Icons.gps_fixed,
+                                  icon: Icons.attach_money_rounded,
                                   hint: 'Enter payment method name in Arabic',
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
@@ -149,7 +149,7 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
                                   controller: _typeController,
                                   keyboardType: TextInputType.number,
                                   label: 'Type',
-                                  icon: Icons.local_shipping,
+                                  icon: Icons.type_specimen,
                                   hint: 'Enter type',
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
@@ -162,10 +162,10 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
                                 ),
                                 buildTextField(
                                   context,
-                                  controller: _typeController,
+                                  controller: _descriptionController,
                                   keyboardType: TextInputType.number,
                                   label: 'Description',
-                                  icon: Icons.local_shipping,
+                                  icon: Icons.description,
                                   hint: 'Enter description',
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
@@ -319,7 +319,7 @@ class PaymentMethodDialogHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isEditMode ? 'Edit PaymentMethod' : 'New PaymentMethod',
+                  isEditMode ? 'Edit Payment Method' : 'New Payment Method',
                   style: TextStyle(
                     color: AppColors.white,
                     fontSize: fontSize22,
@@ -328,8 +328,8 @@ class PaymentMethodDialogHeader extends StatelessWidget {
                 ),
                 Text(
                   isEditMode
-                      ? 'Update PaymentMethod details'
-                      : 'Add a new PaymentMethod',
+                      ? 'Update Payment Method details'
+                      : 'Add a new Payment Method',
                   style: TextStyle(
                     color: AppColors.white.withOpacity(0.9),
                     fontSize: fontSize13,
@@ -452,8 +452,8 @@ class PaymentMethodDialogButtons extends StatelessWidget {
                   Flexible(
                     child: Text(
                       isEditMode
-                          ? 'Update PaymentMethod'
-                          : 'Create PaymentMethod',
+                          ? 'Update Payment Method'
+                          : 'Create Payment Method',
                       style: TextStyle(
                         fontSize: value14,
                         fontWeight: FontWeight.bold,

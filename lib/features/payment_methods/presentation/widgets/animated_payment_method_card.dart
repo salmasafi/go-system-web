@@ -78,9 +78,9 @@ class _AnimatedPaymentMethodCardState extends State<AnimatedPaymentMethodCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildHeader(paymentMethod),
-                  SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                  const CustomGradientDivider(),
                   SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                  const CustomGradientDivider(),
+                  SizedBox(height: ResponsiveUI.spacing(context, 15)),
                   _buildFooter(paymentMethod),
                 ],
               ),
@@ -93,27 +93,46 @@ class _AnimatedPaymentMethodCardState extends State<AnimatedPaymentMethodCard> {
 
   Widget _buildHeader(PaymentMethodModel paymentMethod) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         CircleAvatar(
           radius: ResponsiveUI.borderRadius(context, 25),
           backgroundColor: AppColors.primaryBlue.withOpacity(0.8),
           child: Icon(
-            Icons.gps_fixed,
+            Icons.attach_money_rounded,
             color: AppColors.white,
             size: ResponsiveUI.fontSize(context, 24),
           ),
         ),
         SizedBox(width: ResponsiveUI.spacing(context, 14)),
-        Text(
-          paymentMethod.name,
-          style: TextStyle(
-            fontSize: ResponsiveUI.fontSize(context, 16),
-            fontWeight: FontWeight.w600,
-            color: AppColors.darkGray,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                paymentMethod.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: ResponsiveUI.fontSize(context, 16),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.darkGray,
+                ),
+              ),
+              Text(
+                paymentMethod.description,
+                //  maxLines: 1,
+                // overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: ResponsiveUI.fontSize(context, 14),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.shadowGray,
+                ),
+              ),
+            ],
           ),
         ),
-        Spacer(),
+
+        //Spacer(),
 
         if (widget.onEdit != null || widget.onDelete != null)
           CustomPopupMenu(onEdit: widget.onEdit, onDelete: widget.onDelete),
