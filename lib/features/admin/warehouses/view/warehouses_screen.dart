@@ -1,0 +1,255 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:systego/features/admin/warehouses/view/warehouse_form_dialog.dart';
+import 'package:systego/features/admin/warehouses/view/widgets/animated_warehouse_card.dart';
+import 'package:systego/features/admin/warehouses/view/widgets/custom_delete_dialog.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/responsive_ui.dart';
+import '../../../../core/widgets/app_bar_widgets.dart';
+import '../../../../core/widgets/custom_error/custom_empty_state.dart';
+import '../../../../core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
+import '../../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
+import '../../../../core/widgets/custom_warehouse_details_sheet.dart';
+import '../../product/presentation/widgets/search_bar_widget.dart';
+import '../cubit/warehouse_cubit.dart';
+import '../cubit/warehouse_state.dart';
+import '../model/ware_house_model.dart';
+
+class WarehousesScreen extends StatefulWidget {
+  const WarehousesScreen({super.key});
+
+  @override
+  State<WarehousesScreen> createState() => _WarehousesScreenState();
+}
+
+class _WarehousesScreenState extends State<WarehousesScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  List<Warehouses> _filteredWarehouses = [];
+  bool _isDeleting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<WareHouseCubit>().getWarehouses();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _filterWarehouses(String query, List<Warehouses> warehouses) {
+    setState(() {
+      if (query.isEmpty) {
+        _filteredWarehouses = warehouses;
+      } else {
+        _filteredWarehouses = warehouses.where((warehouse) {
+          final nameLower = (warehouse.name ?? '').toLowerCase();
+          final locationLower = (warehouse.address ?? '').toLowerCase();
+          final searchLower = query.toLowerCase();
+
+          return nameLower.contains(searchLower) ||
+              locationLower.contains(searchLower);
+        }).toList();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: appBarWithActions(
+        context,
+        title: 'Warehouses',
+        showActions: true,
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => const WarehouseFormDialog(),
+          );
+        },
+      ),
+      body: Stack(
+        children: [
+          BlocConsumer<WareHouseCubit, WarehousesState>(
+            listener: (context, state) {
+              if (state is WarehousesError) {
+                CustomSnackbar.showError(context, state.message);
+                setState(() => _isDeleting = false);
+              }
+
+              if (state is WarehousesSuccess) {
+                final warehouses = context.read<WareHouseCubit>().warehouses;
+                _filterWarehouses(_searchController.text, warehouses);
+                setState(() => _isDeleting = false);
+              }
+
+              if (state is WarehouseDeleting) {
+                setState(() => _isDeleting = true);
+              }
+
+              if (state is WarehouseDeleted) {
+                CustomSnackbar.showSuccess(
+                  context,
+                  'Warehouse deleted successfully!',
+                );
+                setState(() => _isDeleting = false);
+              }
+
+              if (state is WarehouseCreated) {
+                CustomSnackbar.showSuccess(
+                  context,
+                  'Warehouse created successfully!',
+                );
+              }
+
+              if (state is WarehouseUpdated) {
+                CustomSnackbar.showSuccess(
+                  context,
+                  'Warehouse updated successfully!',
+                );
+              }
+            },
+            builder: (context, state) {
+              if (state is WarehousesLoading && !_isDeleting) {
+                return CustomLoadingShimmer(
+                  padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+                );
+              }
+
+              final warehouses = context.read<WareHouseCubit>().warehouses;
+
+              // Initialize filtered list if empty
+              if (_filteredWarehouses.isEmpty &&
+                  _searchController.text.isEmpty) {
+                _filteredWarehouses = warehouses;
+              }
+
+              if (warehouses.isEmpty) {
+                return CustomEmptyState(
+                  icon: Icons.warehouse_outlined,
+                  title: 'No Warehouses Found',
+                  message: 'Add your first warehouse to get started',
+                  onRefresh: () async =>
+                      await context.read<WareHouseCubit>().getWarehouses(),
+                );
+              }
+
+              return Column(
+                children: [
+                  SearchBarWidget(
+                    text: 'warehouses',
+                    controller: _searchController,
+                    onChanged: (value) => _filterWarehouses(value, warehouses),
+                  ),
+                  Expanded(
+                    child: _filteredWarehouses.isEmpty
+                        ? CustomEmptyState(
+                            icon: Icons.search_off,
+                            title: 'No Results Found',
+                            message: 'Try searching with different keywords',
+                            onRefresh: () async {
+                              _searchController.clear();
+                              await context
+                                  .read<WareHouseCubit>()
+                                  .getWarehouses();
+                            },
+                          )
+                        : RefreshIndicator(
+                            onRefresh: () async {
+                              await context
+                                  .read<WareHouseCubit>()
+                                  .getWarehouses();
+                            },
+                            color: AppColors.primaryBlue,
+                            child: ListView.builder(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: ResponsiveUI.padding(context, 16),
+                              ),
+                              itemCount: _filteredWarehouses.length,
+                              itemBuilder: (context, index) {
+                                return AnimatedWarehouseCard(
+                                  warehouse: _filteredWarehouses[index],
+                                  index: index,
+                                  onTap: () => _showWarehouseDetails(
+                                    context,
+                                    _filteredWarehouses[index],
+                                  ),
+                                  onEdit: () => _navigateToEdit(
+                                    _filteredWarehouses[index],
+                                  ),
+                                  onDelete: () => _showDeleteDialog(
+                                    context,
+                                    _filteredWarehouses[index],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+      //   floatingActionButton: FloatingActionButton(
+      //     onPressed: () {
+      //       showDialog(
+      //         context: context,
+      //         builder: (context) => const WarehouseFormDialog(),
+      //       );
+      //     },
+      //     backgroundColor: AppColors.primaryBlue,
+      //     child: Icon(
+      //       Icons.add,
+      //       color: AppColors.white,
+      //       size: ResponsiveUI.iconSize(context, 24),
+      //     ),
+      //   ),
+      //   floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
+  }
+
+  void _navigateToEdit(Warehouses warehouse) {
+    showDialog(
+      context: context,
+      builder: (context) => WarehouseFormDialog(warehouse: warehouse),
+    );
+  }
+
+  void _showWarehouseDetails(BuildContext context, Warehouses warehouse) {
+    showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => CustomWarehouseDetailsSheet(warehouse: warehouse),
+    );
+  }
+
+  void _showDeleteDialog(BuildContext context, Warehouses warehouse) {
+    if (warehouse.id == null || warehouse.id!.isEmpty) {
+      CustomSnackbar.showError(context, 'Invalid warehouse ID');
+      return;
+    }
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => CustomDeleteDialog(
+        title: 'Delete Warehouse',
+        message:
+            'Are you sure you want to delete "${warehouse.name}"? This action cannot be undone.',
+        onDelete: () {
+          Navigator.pop(dialogContext);
+
+          // Call delete method from cubit
+          context.read<WareHouseCubit>().deleteWarehouse(
+            warehouseId: warehouse.id!,
+          );
+        },
+      ),
+    );
+  }
+}

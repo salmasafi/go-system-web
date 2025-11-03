@@ -1,11 +1,11 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/widgets/custom_image_card.dart';
-import '../../features/warehouses/model/ware_house_model.dart';
-import '../../features/warehouses/view/widgets/custom_detail_tile.dart';
+import '../../features/admin/warehouses/model/ware_house_model.dart';
+import '../../features/admin/warehouses/view/widgets/custom_detail_tile.dart';
 import '../constants/app_colors.dart';
 import 'custom_detail_section.dart';
-import '../../features/warehouses/view/widgets/custom_drag_handle.dart';
+import '../../features/admin/warehouses/view/widgets/custom_drag_handle.dart';
 import 'custom_gradient_divider.dart';
 
 class CustomWarehouseDetailsSheet extends StatelessWidget {
