@@ -20,7 +20,9 @@ import 'package:systego/features/warehouses/view/warehouses_screen.dart';
 import 'package:systego/main.dart';
 import '../../../../core/widgets/app_bar_widgets.dart';
 import '../../../auth/presentation/view/login_screen.dart';
+import '../../../payment_methods/presentation/view/payment_methods_screen.dart';
 import '../../../product/presentation/screens/products_screen.dart';
+import '../../../zone/presentation/view/zones_screen.dart';
 import '../../cubit/notifications_cubit.dart';
 import '../widgets/custom_bottom_app_bar_widget.dart';
 import '../widgets/custom_grid_card_widget.dart';
@@ -56,6 +58,8 @@ class _HomeScreenState extends State<HomeScreen> {
     {'icon': Icons.monetization_on_rounded, 'label': 'Currencies'},
     {'icon': Icons.location_on_rounded, 'label': 'Countries'},
     {'icon': Icons.location_city_rounded, 'label': 'Cities'},
+    {'icon': Icons.gps_fixed, 'label': 'Zones'},
+    {'icon': Icons.attach_money_rounded, 'label': 'Payment Methods'},
   ];
 
   void _navigateToPage(String label) {
@@ -120,6 +124,20 @@ class _HomeScreenState extends State<HomeScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const CitiesScreen()),
+        );
+        break;
+
+      case 'Zones':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ZonesScreen()),
+        );
+        break;
+
+      case 'Payment Methods':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const PaymentMethodsScreen()),
         );
         break;
 

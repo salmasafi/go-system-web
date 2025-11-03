@@ -61,6 +61,23 @@ class EndPoint {
   static String updateCity(String id) => '/api/admin/city/$id';
   static String deleteCity(String id) => '/api/admin/city/$id';
 
+  /// Zone
+  static const String getZones = '/api/admin/zone';
+  static String selectZone(String id) => '/api/admin/zone/$id';
+  static String createZone = '/api/admin/zone';
+  static String updateZone(String id) => '/api/admin/zone/$id';
+  static String deleteZone(String id) => '/api/admin/zone/$id';
+
+  /// Payment Method
+  static const String getPaymentMethods = '/api/admin/payment_method';
+  static String selectPaymentMethod(String id) =>
+      '/api/admin/payment_method/$id';
+  static String createPaymentMethod = '/api/admin/payment_method';
+  static String updatePaymentMethod(String id) =>
+      '/api/admin/payment_method/$id';
+  static String deletePaymentMethod(String id) =>
+      '/api/admin/payment_method/$id';
+
   /// Notifications
   static const String getNotifications = '/api/admin/notification';
   static String markAsRead(String id) => '/api/admin/notification/$id';

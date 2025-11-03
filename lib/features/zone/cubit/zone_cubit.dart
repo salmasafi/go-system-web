@@ -1,18 +1,16 @@
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/features/country/model/country_model.dart';
 import '../../../core/services/dio_helper.dart';
 import '../../../core/services/endpoints.dart';
 import '../../../core/utils/error_handler.dart';
-import '../model/city_model.dart';
-import 'city_state.dart';
+import '../model/zone_model.dart';
+import 'zone_state.dart';
 
-class CityCubit extends Cubit<CityState> {
-  CityCubit() : super(CityInitial());
+class ZoneCubit extends Cubit<ZoneState> {
+  ZoneCubit() : super(ZoneInitial());
 
- static  List<CityModel> cities = [];
-  static List<CountryModel> countries = [];
+  List<ZoneModel> allZones = [];
 
   String _extractErrorMessage(dynamic errorOrResponse) {
     // Helper to safely extract message, bypassing ErrorHandler issues
@@ -30,135 +28,118 @@ class CityCubit extends Cubit<CityState> {
     return ErrorHandler.handleError(errorOrResponse);
   }
 
-  Future<void> getCities() async {
-    emit(GetCitiesLoading());
+  Future<void> getZones() async {
+    emit(GetZonesLoading());
     try {
-      final response = await DioHelper.getData(url: EndPoint.getCities);
-      log(response.data.toString()); // Safer log with toString()
+      final response = await DioHelper.getData(url: EndPoint.getZones);
+      log(response.data.toString()); 
       if (response.statusCode == 200) {
-        final model = CityResponse.fromJson(
+        final model = ZoneResponse.fromJson(
           response.data as Map<String, dynamic>,
         );
         if (model.success == true) {
-          cities = model.data.cities;
-          countries = model.data.countries;
-          emit(GetCitiesSuccess(model.data));
+          allZones = model.data.zones;
+          emit(GetZonesSuccess(allZones));
         } else {
           final errorMessage = model.data.message;
-          emit(GetCitiesError(errorMessage));
+          emit(GetZonesError(errorMessage));
         }
       } else {
         final errorMessage = _extractErrorMessage(response);
-        emit(GetCitiesError(errorMessage));
+        emit(GetZonesError(errorMessage));
       }
     } catch (e) {
       final errorMessage = _extractErrorMessage(e);
-      emit(GetCitiesError(errorMessage));
+      emit(GetZonesError(errorMessage));
     }
   }
 
-  // Future<void> selectCity(String cityId, String name) async {
-  //   emit(SelectCityLoading());
-  //   try {
-  //     final response = await DioHelper.putData(
-  //       url: EndPoint.selectCity(cityId),
-  //       data: {'isDefault': true},
-  //     );
-
-  //     if (response.statusCode == 200 || response.statusCode == 201) {
-  //       emit(SelectCitySuccess('$name is the default City now!'));
-  //     } else {
-  //       final errorMessage = _extractErrorMessage(response);
-  //       emit(SelectCityError(errorMessage));
-  //     }
-  //   } catch (e) {
-  //     final errorMessage = _extractErrorMessage(e);
-  //     emit(SelectCityError(errorMessage));
-  //   }
-  // }
-
-  Future<void> createCity({
+  Future<void> createZone({
     required String name,
     required String arName,
     required String countryId,
-    required String shipingCost,
+    required String cityId,
+    required num cost,
   }) async {
-    emit(CreateCityLoading());
+    emit(CreateZoneLoading());
     try {
       final data = {
         "name": name,
         "ar_name": arName,
-        "country": countryId,
-        "shipingCost": shipingCost,
+        "countryId": countryId,
+        "cityId": cityId,
+        "cost": cost,
       };
 
       final response = await DioHelper.postData(
-        url: EndPoint.createCity,
+        url: EndPoint.createZone,
         data: data,
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateCitySuccess('City is created successfully'));
+        emit(CreateZoneSuccess('Zone is created successfully'));
       } else {
         final errorMessage = _extractErrorMessage(response);
-        emit(CreateCityError(errorMessage));
+        emit(CreateZoneError(errorMessage));
       }
     } catch (e) {
       final errorMessage = _extractErrorMessage(e);
-      emit(CreateCityError(errorMessage));
+      emit(CreateZoneError(errorMessage));
     }
   }
 
-  Future<void> updateCity({
-    required String cityId,
+  Future<void> updateZone({
+    required String zoneId,
     required String name,
     required String arName,
     required String countryId,
-    required String shipingCost,
+    required String cityId,
+    required String cost,
   }) async {
-    emit(UpdateCityLoading());
+    emit(UpdateZoneLoading());
     try {
       final data = <String, dynamic>{
         'name': name,
         "ar_name": arName,
-        "country": countryId,
-        "shipingCost": shipingCost,
+        "countryId": countryId,
+        "cityId": cityId,
+        "cost": cost,
       };
 
       final response = await DioHelper.putData(
-        url: EndPoint.updateCity(cityId),
+        url: EndPoint.updateZone(zoneId),
         data: data,
       );
 
       if (response.statusCode == 200) {
-        emit(UpdateCitySuccess('City updated successfully'));
+        emit(UpdateZoneSuccess('Zone updated successfully'));
       } else {
         final errorMessage = _extractErrorMessage(response);
-        emit(UpdateCityError(errorMessage));
+        emit(UpdateZoneError(errorMessage));
       }
     } catch (e) {
       final errorMessage = _extractErrorMessage(e);
-      emit(UpdateCityError(errorMessage));
+      emit(UpdateZoneError(errorMessage));
     }
   }
 
-  Future<void> deleteCity(String cityId) async {
-    emit(DeleteCityLoading());
+  Future<void> deleteZone(String zoneId) async {
+    emit(DeleteZoneLoading());
     try {
       final response = await DioHelper.deleteData(
-        url: EndPoint.deleteCity(cityId),
+        url: EndPoint.deleteZone(zoneId),
       );
 
       if (response.statusCode == 200) {
-        cities.removeWhere((city) => city.id == cityId);
-        emit(DeleteCitySuccess('City deleted successfully'));
+        allZones.removeWhere((zone) => zone.id == zoneId);
+        emit(DeleteZoneSuccess('Zone deleted successfully'));
       } else {
         final errorMessage = _extractErrorMessage(response);
-        emit(DeleteCityError(errorMessage));
+        emit(DeleteZoneError(errorMessage));
       }
     } catch (e) {
       final errorMessage = _extractErrorMessage(e);
-      emit(DeleteCityError(errorMessage));
+      emit(DeleteZoneError(errorMessage));
     }
   }
 }

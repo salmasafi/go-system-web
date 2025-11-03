@@ -8,9 +8,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/features/city/cubit/city_cubit.dart';
 import 'package:systego/features/currency/cubit/currency_cubit.dart';
+import 'package:systego/features/payment_methods/cubit/payment_method_cubit.dart';
 import 'package:systego/features/product/cubit/get_products_cubit/product_cubit.dart';
 import 'package:systego/features/product/cubit/product_details_cubit/product_details_cubit.dart';
 import 'package:systego/features/product/cubit/product_filter_cubit.dart';
+import 'package:systego/features/zone/cubit/zone_cubit.dart';
 import 'core/services/cache_helper.dart.dart';
 import 'core/services/dio_helper.dart';
 import 'features/auth/presentation/view/login_screen.dart';
@@ -79,6 +81,10 @@ class _MainAppState extends State<MainApp> {
         BlocProvider<CurrencyCubit>(create: (context) => CurrencyCubit()),
         BlocProvider<CountryCubit>(create: (context) => CountryCubit()),
         BlocProvider<CityCubit>(create: (context) => CityCubit()),
+        BlocProvider<ZoneCubit>(create: (context) => ZoneCubit()),
+        BlocProvider<PaymentMethodCubit>(
+          create: (context) => PaymentMethodCubit(),
+        ),
         BlocProvider<ProductDetailsCubit>(
           create: (context) => ProductDetailsCubit(),
         ),
@@ -88,9 +94,6 @@ class _MainAppState extends State<MainApp> {
         BlocProvider<NotificationsCubit>(
           create: (_) => NotificationsCubit()..getNotifications(),
         ),
-        BlocProvider<WareHouseCubit>(create: (context) => WareHouseCubit()),
-        BlocProvider<CategoriesCubit>(create: (context) => CategoriesCubit()),
-        BlocProvider<BrandsCubit>(create: (context) => BrandsCubit()),
       ],
       child: MaterialApp(
         navigatorKey: navigatorKey,
