@@ -10,7 +10,7 @@ import 'package:systego/features/admin/city/cubit/city_cubit.dart';
 import 'package:systego/features/admin/zone/cubit/zone_cubit.dart';
 import '../../../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
 import '../../cubit/zone_state.dart';
-import '../../../../zone/presentation/widgets/Zone_form_dialog.dart';
+import '../widgets/zone_form_dialog.dart';
 import '../widgets/zones_list.dart';
 
 class ZonesScreen extends StatefulWidget {
