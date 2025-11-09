@@ -34,6 +34,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   // ignore: unused_field
   String? _selectedWarehouseId;
 
+
   void productsInit() async {
     context.read<ProductFiltersCubit>().getFilters();
     context.read<ProductsCubit>().getProducts();
@@ -205,7 +206,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                             });
                           },
                           text: 'products by name or code',
-                          suffixIcon: Icons.qr_code_scanner,
+                          suffixIcon:  Icons.qr_code_scanner,
                           suffixOnPressed: () async {
                             // Navigate to Barcode Scanner Screen
                             final result = await Navigator.push(

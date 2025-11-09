@@ -1,15 +1,5 @@
-// Updated UI: home_screen.dart
-// Changes:
-// - Added imports for notifications cubit and state.
-// - Wrapped Scaffold in BlocProvider<NotificationsCubit> with auto-fetch.
-// - Used BlocBuilder to dynamically get unreadCount for appBarWithActions (default 0 on loading/error).
-// - Removed hardcoded notificationCount: 5; now dynamic.
-// - Added onPressed stub for notifications (implement navigation later).
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/services/cache_helper.dart.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/features/admin/city/presentation/view/cities_screen.dart';
 import 'package:systego/features/admin/country/presentation/view/countries_screen.dart';
@@ -17,35 +7,31 @@ import 'package:systego/features/admin/currency/presentation/view/currencies_scr
 import 'package:systego/features/admin/purchase/view/purchase_screen.dart';
 import 'package:systego/features/admin/suppliers/view/supplier_screen.dart';
 import 'package:systego/features/admin/warehouses/view/warehouses_screen.dart';
-import 'package:systego/main.dart';
+import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/app_bar_widgets.dart';
-import '../../../auth/presentation/view/login_screen.dart';
+import '../../../../home/presentation/view/notifications_screen.dart';
 import '../../../payment_methods/presentation/view/payment_methods_screen.dart';
 import '../../../product/presentation/screens/products_screen.dart';
 import '../../../zone/presentation/view/zones_screen.dart';
-import '../../cubit/notifications_cubit.dart';
-import '../widgets/custom_bottom_app_bar_widget.dart';
+import '../../../../home/cubit/notifications_cubit.dart';
 import '../widgets/custom_grid_card_widget.dart';
 import '../../../brands/view/brands_screen.dart';
 import '../../../categories/view/categories_screen.dart';
-import 'notifications_screen.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _DashboardScreenState extends State<DashboardScreen> {
   Future<void> _refresh() async {
     // setState(() {
     //   _searchQuery = '';
     // });
     await context.read<NotificationsCubit>().getNotifications();
   }
-
-  int _currentIndex = 0;
 
   final cardItems = [
     {'icon': Icons.grid_view_rounded, 'label': 'Categories'},
@@ -174,6 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           backgroundColor: AppColors.shadowGray[50],
+
           body: RefreshIndicator(
             onRefresh: _refresh,
             color: AppColors.primaryBlue,
@@ -203,21 +190,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
             ),
-          ),
-          bottomNavigationBar: CustomBottomAppBar(
-            currentIndex: _currentIndex,
-            onTap: (index) async {
-              if (index == 4) {
-                await CacheHelper.clearAllData();
-                navigatorKey.currentState?.pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                  (route) => false,
-                );
-              }
-              setState(() {
-                _currentIndex = index;
-              });
-            },
           ),
         );
       },

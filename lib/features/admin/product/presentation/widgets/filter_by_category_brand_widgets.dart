@@ -235,12 +235,12 @@ class FilterButton extends StatelessWidget {
           vertical: ResponsiveUI.padding(context, 12),
         ),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(
             ResponsiveUI.borderRadius(context, 8),
           ),
           border: Border.all(
-            color: isActive ? AppColors.primaryBlue : Colors.grey[300]!,
+            color: isActive ? AppColors.primaryBlue : AppColors.shadowGray[300]!,
             width: 1,
           ),
         ),
@@ -250,7 +250,7 @@ class FilterButton extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                color: isActive ? AppColors.primaryBlue : Colors.grey[700],
+                color: isActive ? AppColors.primaryBlue : AppColors.shadowGray[700],
                 fontSize: ResponsiveUI.fontSize(context, 14),
                 fontWeight: FontWeight.w500,
               ),
@@ -258,7 +258,7 @@ class FilterButton extends StatelessWidget {
             SizedBox(width: ResponsiveUI.spacing(context, 6)),
             Icon(
               isActive ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-              color: isActive ? AppColors.primaryBlue : Colors.grey[600],
+              color: isActive ? AppColors.primaryBlue : AppColors.shadowGray[600],
               size: ResponsiveUI.iconSize(context, 20),
             ),
           ],

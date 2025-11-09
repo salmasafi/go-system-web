@@ -17,10 +17,11 @@ import 'core/services/cache_helper.dart.dart';
 import 'core/services/dio_helper.dart';
 import 'features/admin/auth/presentation/view/login_screen.dart';
 import 'features/admin/country/cubit/country_cubit.dart';
-import 'features/admin/home/cubit/notifications_cubit.dart';
-import 'features/admin/home/presentation/view/home_screen.dart';
+import 'features/home/cubit/notifications_cubit.dart';
+import 'features/home/presentation/view/home_screen.dart';
 import 'features/admin/suppliers/cubit/supplier_cubit.dart';
 import 'features/admin/warehouses/cubit/warehouse_cubit.dart';
+import 'features/pos/home/cubit/pos_home_cubit.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -73,6 +74,7 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<PosCubit>(create: (context) => PosCubit()),
         BlocProvider<WareHouseCubit>(create: (context) => WareHouseCubit()),
         BlocProvider<ProductsCubit>(create: (context) => ProductsCubit()),
         BlocProvider<CategoriesCubit>(create: (context) => CategoriesCubit()),

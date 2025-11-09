@@ -81,4 +81,16 @@ class EndPoint {
   /// Notifications
   static const String getNotifications = '/api/admin/notification';
   static String markAsRead(String id) => '/api/admin/notification/$id';
+
+  /// POS
+  static String posCategories = '/api/admin/pos-home/categories';
+  static String posBrands = '/api/admin/pos-home/brands';
+  static String posFeatured = '/api/admin/pos-home/featured';
+  static String posSelections = '/api/admin/pos-home/selections';
+
+  static String posCategoryProducts(String categoryId) =>
+      '/api/admin/pos-home/categories/$categoryId/products';
+
+  static String posBrandProducts(String brandId) =>
+      '/api/admin/pos-home/brands/$brandId/products';
 }

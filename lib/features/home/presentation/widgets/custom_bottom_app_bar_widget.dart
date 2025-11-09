@@ -34,8 +34,10 @@ class CustomBottomAppBar extends StatelessWidget {
           title: 'Product',
         ),
         TabItem(
-          icon: Icons.print_rounded,
-          title: 'Print',
+          // icon: Icons.print_rounded,
+          // title: 'Print',
+               icon: Icons.point_of_sale_rounded,
+          title: 'Point Of Sale',
         ),
         TabItem(
           icon: Icons.bar_chart_rounded,
