@@ -25,7 +25,7 @@ class POSTabBar extends StatelessWidget {
                   label: 'Featured',
                   value: 'featured',
                   isSelected: selectedTab == 'featured',
-                  onTap: () => cubit.selectTab('featured'),
+                  onTap: () => cubit.selectTab(tab: 'featured'),
                 ),
               ),
               const SizedBox(width: 8),
@@ -34,7 +34,7 @@ class POSTabBar extends StatelessWidget {
                   label: 'Category',
                   value: 'category',
                   isSelected: selectedTab == 'category',
-                  onTap: () => cubit.selectTab('category'),
+                  onTap: () => cubit.selectTab(tab: 'category'),
                 ),
               ),
               const SizedBox(width: 8),
@@ -43,7 +43,7 @@ class POSTabBar extends StatelessWidget {
                   label: 'Brand',
                   value: 'brand',
                   isSelected: selectedTab == 'brand',
-                  onTap: () => cubit.selectTab('brand'),
+                  onTap: () => cubit.selectTab(tab: 'brand'),
                 ),
               ),
             ],
@@ -76,7 +76,7 @@ class _TabItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           gradient: isSelected
-              ? const LinearGradient(colors: [AppColors.primaryBlue, Colors.blue])
+              ? const LinearGradient(colors: [AppColors.primaryBlue, AppColors.mediumBlue700])
               : null,
           color: isSelected ? null : AppColors.lightBlueBackground,
           borderRadius: BorderRadius.circular(12),

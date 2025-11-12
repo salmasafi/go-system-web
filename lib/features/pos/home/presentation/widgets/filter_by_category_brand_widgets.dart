@@ -1,4 +1,3 @@
-// lib/features/pos/home/presentation/widgets/tab_bar.dart
 // lib/features/pos/home/presentation/widgets/pos_filter_widgets.dart
 
 import 'package:flutter/material.dart';
@@ -18,65 +17,56 @@ class FilterItem {
   final String id;
   final String name;
   final String image;
-  final int count;
-
-  FilterItem({
-    required this.id,
-    required this.name,
-    required this.image,
-    required this.count,
-  });
+  FilterItem({required this.id, required this.name, required this.image});
 }
 
-class POSFilterBar extends StatelessWidget {
+class POSFilterBar extends StatefulWidget {
   const POSFilterBar({super.key});
+  @override
+  State<POSFilterBar> createState() => _POSFilterBarState();
+}
 
+class _POSFilterBarState extends State<POSFilterBar> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PosCubit, PosState>(
       builder: (context, state) {
         final cubit = context.read<PosCubit>();
-        if (state is! PosDataLoaded && state is! PosLoading) {
-          return const SizedBox.shrink();
-        }
+
+        final bool showCategoryFilters = cubit.showCategoryFilters;
+        final bool showBrandFilters = cubit.showBrandFilters;
 
         return AnimatedElement(
           delay: const Duration(milliseconds: 200),
           child: Column(
             children: [
               SizedBox(height: ResponsiveUI.spacing(context, 12)),
-              // Panels
-              if (cubit.selectedTab == 'category')
+
+              // CATEGORY PANEL
+              if (showCategoryFilters)
                 AnimatedElement(
                   delay: Duration.zero,
                   child: GenericFilterPanel(
                     filterType: FilterType.categories,
                     selectedId: cubit.currentCategoryId,
-                    onSelected: (id) {
-                      if (id != null) {
-                        cubit.getProductsByCategory(id);
-                      }
-                    },
-                    onClose: () {
-                      cubit.clearFilter();
-                    },
+                    onSelected: (id) => cubit.getProductsByCategory(id),
+                    onClose: () => cubit.hideFilterPanels(), // Only hide
+                    onFilterClear: () =>
+                        cubit.clearFilter(), // Clear + back to featured
                   ),
                 ),
 
-              if (cubit.selectedTab == 'brand')
+              // BRAND PANEL
+              if (showBrandFilters)
                 AnimatedElement(
                   delay: Duration.zero,
                   child: GenericFilterPanel(
                     filterType: FilterType.brands,
                     selectedId: cubit.currentBrandId,
-                    onSelected: (id) {
-                      if (id != null) {
-                        cubit.getProductsByBrand(id);
-                      }
-                    },
-                    onClose: () {
-                      cubit.clearFilter();
-                    },
+                    onSelected: (id) => cubit.getProductsByBrand(id),
+                    onClose: () => cubit.hideFilterPanels(), // Only hide
+                    onFilterClear: () =>
+                        cubit.clearFilter(), // Clear + back to featured
                   ),
                 ),
             ],
@@ -87,12 +77,14 @@ class POSFilterBar extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
 // Generic Panel
 class GenericFilterPanel extends StatelessWidget {
   final FilterType filterType;
   final String? selectedId;
   final Function(String?) onSelected;
-  final VoidCallback onClose;
+  final VoidCallback onClose; // Hide panel only
+  final VoidCallback onFilterClear; // Clear filter + go to featured
 
   const GenericFilterPanel({
     super.key,
@@ -100,6 +92,7 @@ class GenericFilterPanel extends StatelessWidget {
     required this.selectedId,
     required this.onSelected,
     required this.onClose,
+    required this.onFilterClear,
   });
 
   String _title() =>
@@ -110,21 +103,22 @@ class GenericFilterPanel extends StatelessWidget {
   List<FilterItem> _items(List<dynamic> list) {
     return list.map((e) {
       final item = e as dynamic;
-      final count = list.length; // fallback; update if API gives count
       return FilterItem(
         id: filterType == FilterType.categories
             ? (item as Category).id
             : (item as Brand).id,
-        name: filterType == FilterType.categories ? item.name : item.name,
-        image: '',
-        count: count,
+        name: filterType == FilterType.categories
+            ? (item as Category).name
+            : (item as Brand).name,
+        image: filterType == FilterType.categories
+            ? (item as Category).image ?? ''
+            : (item as Brand).logo ?? '',
       );
     }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<PosCubit>();
     return BlocBuilder<PosCubit, PosState>(
       builder: (context, state) {
         if (state is PosLoading) {
@@ -139,17 +133,16 @@ class GenericFilterPanel extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: CustomErrorState(
               message: state.message,
-              onRetry: () => cubit.loadPosData(),
+              onRetry: () => context.read<PosCubit>().loadPosData(),
             ),
           );
         }
 
         if (state is PosDataLoaded || state is PosInitial) {
           final cubit = context.read<PosCubit>();
-          final List<dynamic> source = filterType == FilterType.categories
+          final source = filterType == FilterType.categories
               ? cubit.categories
               : cubit.brands;
-
           if (source.isEmpty) return const SizedBox.shrink();
 
           final items = _items(source);
@@ -158,15 +151,18 @@ class GenericFilterPanel extends StatelessWidget {
             margin: EdgeInsets.symmetric(
               horizontal: ResponsiveUI.padding(context, 16),
             ),
-            padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+            padding: EdgeInsets.symmetric(
+              horizontal: ResponsiveUI.padding(context, 16),
+              vertical: ResponsiveUI.padding(context, 10),
+            ),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.white,
               borderRadius: BorderRadius.circular(
                 ResponsiveUI.borderRadius(context, 12),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: AppColors.black.withOpacity(0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -175,27 +171,71 @@ class GenericFilterPanel extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                FilterPanelHeader(title: _title(), onClose: onClose),
+                FilterPanelHeader(
+                  title: _title(),
+                  onClose: onClose,
+                  onFilterClear: onFilterClear,
+                ),
                 SizedBox(height: ResponsiveUI.spacing(context, 16)),
                 SizedBox(
                   height: ResponsiveUI.value(context, 200),
-                  child: ListView.builder(
+                  child: GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                    ),
                     itemCount: items.length,
                     itemBuilder: (_, i) {
                       final it = items[i];
                       final selected = selectedId == it.id;
-                      return ListTile(
-                        leading: Icon(_icon()),
-                        title: Text(it.name),
-                        subtitle: Text('${it.count} items'),
-                        trailing: selected
-                            ? const Icon(
-                                Icons.check,
-                                color: AppColors.primaryBlue,
-                              )
-                            : null,
-                        selected: selected,
-                        onTap: () => onSelected(selected ? null : it.id),
+                      return GestureDetector(
+                        onTap: () {
+                          onSelected(selected ? null : it.id);
+                          //Optional: auto-hide panel after selection?
+                          //onClose();
+                        },
+                        child: Container(
+                          margin: EdgeInsets.all(
+                            ResponsiveUI.padding(context, 5),
+                          ),
+                          padding: EdgeInsets.all(
+                            ResponsiveUI.padding(context, 10),
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 1,
+                              color: selected
+                                  ? AppColors.linkBlue
+                                  : Colors.transparent,
+                            ),
+                            borderRadius: BorderRadius.circular(
+                              ResponsiveUI.borderRadius(context, 16),
+                            ),
+                            color: selected
+                                ? AppColors.lightBlueBackground.withOpacity(0.7)
+                                : AppColors.white,
+                          ),
+                          child: Center(
+                            child: Column(
+                              children: [
+                                it.image.isNotEmpty
+                                    ? CircleAvatar(
+                                        backgroundImage: NetworkImage(it.image),
+                                        onBackgroundImageError: (_, __) =>
+                                            Icon(_icon()),
+                                      )
+                                    : Icon(_icon()),
+                                SizedBox(
+                                  height: ResponsiveUI.value(context, 10),
+                                ),
+                                Text(
+                                  it.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       );
                     },
                   ),
@@ -211,19 +251,22 @@ class GenericFilterPanel extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
 class FilterPanelHeader extends StatelessWidget {
   final String title;
   final VoidCallback onClose;
+  final VoidCallback onFilterClear;
+
   const FilterPanelHeader({
     super.key,
     required this.title,
     required this.onClose,
+    required this.onFilterClear,
   });
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           title,
@@ -233,9 +276,21 @@ class FilterPanelHeader extends StatelessWidget {
             color: Colors.black87,
           ),
         ),
+        const Spacer(),
+        // Clear Filter Button
+        IconButton(
+          icon: Icon(
+            Icons.filter_alt_off,
+            size: ResponsiveUI.iconSize(context, 24),
+          ),
+          onPressed: onFilterClear,
+          tooltip: 'Clear filter',
+        ),
+        // Close Panel Button
         IconButton(
           icon: Icon(Icons.close, size: ResponsiveUI.iconSize(context, 24)),
           onPressed: onClose,
+          tooltip: 'Close panel',
         ),
       ],
     );

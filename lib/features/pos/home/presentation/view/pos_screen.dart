@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/error_handler.dart';
+import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
 import '../../../../admin/product/presentation/screens/barcode_scanner_screen.dart';
 import '../../cubit/pos_home_cubit.dart';
@@ -37,7 +38,6 @@ class _POSScreenState extends State<POSScreen> {
 
   void posInit() async {
     await context.read<PosCubit>().loadPosData();
-    context.read<PosCubit>().selectTab();
   }
 
   void _addToCart(Product product) {
@@ -108,11 +108,16 @@ class _POSScreenState extends State<POSScreen> {
               Expanded(
                 child: state is PosProductsLoading
                     ? const CustomLoadingState()
-                    : POSProductGrid(
-                        products: state is PosDataLoaded
-                            ? _filterProducts(state.displayedProducts)
-                            : [],
+                    : (state is PosDataLoaded && state.displayedProducts.isNotEmpty)
+                    ? POSProductGrid(
+                        products: _filterProducts(state.displayedProducts),
                         onProductTap: _addToCart,
+                      )
+                    : CustomEmptyState(
+                        icon: Icons.inventory_2_outlined,
+                        title: 'No Products Found',
+                        message: 'Try adjusting your search or filters',
+                        actionLabel: 'Retry',
                       ),
               ),
             ],

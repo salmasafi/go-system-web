@@ -12,10 +12,13 @@ class PosCubit extends Cubit<PosState> {
   PosCubit() : super(PosInitial());
 
   String selectedTab = 'featured';
+  bool showCategoryFilters = false;
+  bool showBrandFilters = false;
 
   List<Category> categories = [];
   List<Brand> brands = [];
-  List<Product> products = [];
+  List<Product> categoryProducts = [];
+  List<Product> brandProducts = [];
   List<Product> featuredProducts = [];
 
   // Selections
@@ -34,6 +37,12 @@ class PosCubit extends Cubit<PosState> {
   // NEW: clear filter and go back to featured
   void clearFilter() {
     selectedTab = 'featured';
+    selectedCategoryId = null;
+    selectedBrandId = null;
+    showBrandFilters = false;
+    showCategoryFilters = false;
+    categoryProducts = [];
+    brandProducts = [];
     emit(PosDataLoaded(featuredProducts));
   }
 
@@ -62,6 +71,7 @@ class PosCubit extends Cubit<PosState> {
         getFeaturedProducts(),
       ]);
       emit(PosLoaded());
+      await selectTab(isEmit: true);
     } catch (e) {
       final msg = _extractErrorMessage(e);
       emit(PosError(msg));
@@ -135,16 +145,17 @@ class PosCubit extends Cubit<PosState> {
   Future<void> getProductsByCategory(String? categoryId) async {
     emit(PosProductsLoading());
     if (categoryId != null) {
+      emit(PosProductsLoading());
       try {
         final response = await DioHelper.getData(
           url: EndPoint.posCategoryProducts(categoryId),
         );
         if (response.statusCode == 200) {
           final data = response.data['data']['products'] as List;
-          products = data.map((e) => Product.fromJson(e)).toList();
+          categoryProducts = data.map((e) => Product.fromJson(e)).toList();
           selectedCategoryId = categoryId;
-          // CHANGED: emit PosDataLoaded
-          emit(PosDataLoaded(products));
+          hideFilterPanels(); // CHANGED: emit PosDataLoaded
+          emit(PosDataLoaded(categoryProducts));
         }
       } catch (e) {
         final msg = _extractErrorMessage(e);
@@ -164,10 +175,11 @@ class PosCubit extends Cubit<PosState> {
         );
         if (response.statusCode == 200) {
           final data = response.data['data']['products'] as List;
-          products = data.map((e) => Product.fromJson(e)).toList();
+          brandProducts = data.map((e) => Product.fromJson(e)).toList();
           selectedBrandId = brandId;
+          hideFilterPanels();
           // CHANGED: emit PosDataLoaded
-          emit(PosDataLoaded(products));
+          emit(PosDataLoaded(brandProducts));
         }
       } catch (e) {
         final msg = _extractErrorMessage(e);
@@ -178,15 +190,52 @@ class PosCubit extends Cubit<PosState> {
     }
   }
 
-  void selectTab([String tab = 'featured']) {
+  Future<void> selectTab({String tab = 'featured', bool isEmit = false}) async {
+    // emit(PosProductsLoading());
     selectedTab = tab;
     if (tab == 'featured') {
-      // CHANGED: emit PosDataLoaded
-      emit(PosDataLoaded(featuredProducts));
+      hideFilterPanels();
+    //  if (isEmit) {
+        emit(PosDataLoaded(featuredProducts));
+     // }
     } else if (tab == 'category') {
-      getProductsByCategory(selectedCategoryId);
+      showFilterPanel(isCategory: true);
+      emit(PosDataLoaded(featuredProducts));
+
+      // getProductsByCategory(selectedCategoryId);
+      emit(PosDataLoaded(categoryProducts));
     } else if (tab == 'brand') {
-      getProductsByBrand(selectedBrandId);
+      showFilterPanel(isCategory: false);
+      emit(PosDataLoaded(brandProducts));
+
+      // getProductsByBrand(selectedBrandId);
+    } else {
+      emit(PosDataLoaded([]));
     }
+  }
+
+  Future<void> showFilterPanel({required bool isCategory}) async {
+    if (isCategory) {
+      showCategoryFilters = true;
+      showBrandFilters = false;
+    } else {
+      showCategoryFilters = false;
+      showBrandFilters = true;
+    }
+  }
+
+  Future<void> hideFilterPanels() async {
+    //emit(PosLoading());
+
+    showCategoryFilters = false;
+    showBrandFilters = false;
+
+    // if (selectedTab == 'brand') {
+    //   emit(PosDataLoaded(brandProducts));
+    // } else if (selectedTab == 'category') {
+    //   emit(PosDataLoaded(categoryProducts));
+    // } else {
+    //   emit(PosDataLoaded(featuredProducts));
+    // }
   }
 }
