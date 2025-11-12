@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
 import '../../model/pos_models.dart';
-import 'action_botton.dart';
-import 'checkout_dialog.dart';
 
 class POSCartSummary extends StatefulWidget {
   final double total;
@@ -104,7 +102,7 @@ class _POSCartSummaryState extends State<POSCartSummary> {
     );
   }
 
-  void _showCheckoutDialog() {
-    showDialog(context: context, builder: (_) => POSCheckoutDialog());
-  }
+  // void _showCheckoutDialog() {
+  //   showDialog(context: context, builder: (_) => POSCheckoutDialog());
+  // }
 }

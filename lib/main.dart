@@ -105,6 +105,18 @@ class _MainAppState extends State<MainApp> {
         theme: ThemeData(
           fontFamily: 'Rubik',
           scaffoldBackgroundColor: AppColors.lightBlueBackground,
+          primarySwatch: AppColors.mediumBlue700,
+        dialogTheme: DialogThemeData(backgroundColor: Colors.white),
+          textButtonTheme: TextButtonThemeData(
+            style: ButtonStyle(
+              textStyle: WidgetStateProperty.all<TextStyle>(
+                const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.black,
+                ),
+              ),
+            ),
+          ),
           textSelectionTheme: const TextSelectionThemeData(
             cursorColor: AppColors.primaryBlue, // 🔵 لون المؤشر
             selectionColor: AppColors.primaryBlue, // لون التحديد (عند السحب)

@@ -8,8 +8,8 @@ import '../../cubit/pos_home_cubit.dart';
 import '../../cubit/pos_home_state.dart';
 import 'selection_option.dart';
 
-class POSCheckoutDialog extends StatelessWidget {
-  const POSCheckoutDialog({super.key});
+class POSCustomerDialog extends StatelessWidget {
+  const POSCustomerDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class POSCheckoutDialog extends StatelessWidget {
           const Icon(Icons.payment, color: AppColors.primaryBlue),
           SizedBox(width: ResponsiveUI.spacing(context, 12)),
           Text(
-            'Select Payment Method',
+            'Select Customer',
             style: TextStyle(
               fontSize: ResponsiveUI.fontSize(context, 18),
               fontWeight: FontWeight.bold,
@@ -39,12 +39,12 @@ class POSCheckoutDialog extends StatelessWidget {
         child: BlocBuilder<PosCubit, PosState>(
           builder: (context, state) {
             final cubit = context.read<PosCubit>();
-            final paymentMethods = cubit.paymentMethods;
+            final customers = cubit.customers;
 
-            if (paymentMethods.isEmpty) {
+            if (customers.isEmpty) {
               return CustomEmptyState(
                 icon: Icons.attach_money_rounded,
-                title: 'No Payment Methods Found',
+                title: 'No Customers Found',
                 message: 'Pull to refresh or check your connection',
                 actionLabel: 'Retry',
                 onAction: () => cubit.loadPosData(),
@@ -52,14 +52,14 @@ class POSCheckoutDialog extends StatelessWidget {
             }
 
             return ListView.builder(
-              itemCount: paymentMethods.length,
+              itemCount: customers.length,
               itemBuilder: (context, index) {
-                final paymentMethod = paymentMethods[index];
+                final customer = customers[index];
                 return POSSelectionOption(
-                  label: paymentMethod.name,
-                  icon: Icons.attach_money_rounded,
+                  label: customer.name,
+                  icon: Icons.person,
                   onTap: () {
-                    cubit.changePaymentMethodValue(paymentMethod);
+                    cubit.changeCustomerValue(customer);
                     Navigator.pop(context);
                   },
                 );

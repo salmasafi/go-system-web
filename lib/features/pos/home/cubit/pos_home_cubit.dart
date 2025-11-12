@@ -29,6 +29,9 @@ class PosCubit extends Cubit<PosState> {
   // Selected filters
   String? selectedCategoryId;
   String? selectedBrandId;
+  Warehouse? selectedWarhouse;
+  PaymentMethod? selectedPaymentMethod;
+  Customer? selectedCustomer;
 
   // NEW: expose current selected IDs
   String? get currentCategoryId => selectedCategoryId;
@@ -71,7 +74,7 @@ class PosCubit extends Cubit<PosState> {
         getFeaturedProducts(),
       ]);
       emit(PosLoaded());
-      await selectTab(isEmit: true);
+      await selectTab();
     } catch (e) {
       final msg = _extractErrorMessage(e);
       emit(PosError(msg));
@@ -130,16 +133,34 @@ class PosCubit extends Cubit<PosState> {
         warehouses = (json['warehouses'] as List)
             .map((e) => Warehouse.fromJson(e))
             .toList();
+        selectedWarhouse = warehouses.first;
         customers = (json['customers'] as List)
             .map((e) => Customer.fromJson(e))
             .toList();
+        selectedCustomer = customers.first;
         paymentMethods = (json['paymentMethods'] as List)
             .map((e) => PaymentMethod.fromJson(e))
             .toList();
+        selectedPaymentMethod = paymentMethods.first;
       }
     } catch (e) {
       log('Selections error: $e');
     }
+  }
+
+  Future<void> changeWarhouseValue(Warehouse warehouse) async {
+    selectedWarhouse = warehouse;
+    selectTab();
+  }
+
+  Future<void> changeCustomerValue(Customer customer) async {
+    selectedCustomer = customer;
+    selectTab();
+  }
+
+  Future<void> changePaymentMethodValue(PaymentMethod paymentMethod) async {
+    selectedPaymentMethod = paymentMethod;
+    selectTab();
   }
 
   Future<void> getProductsByCategory(String? categoryId) async {
@@ -190,7 +211,7 @@ class PosCubit extends Cubit<PosState> {
     }
   }
 
-  Future<void> selectTab({String tab = 'featured', bool isEmit = false}) async {
+  Future<void> selectTab({String tab = 'featured'}) async {
     // emit(PosProductsLoading());
     selectedTab = tab;
     if (tab == 'featured') {
