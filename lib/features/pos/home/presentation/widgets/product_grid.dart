@@ -18,7 +18,7 @@ class POSProductGrid extends StatelessWidget {
         padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: 0.75,
+          childAspectRatio:  1,
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
         ),

@@ -195,9 +195,9 @@ class PosCubit extends Cubit<PosState> {
     selectedTab = tab;
     if (tab == 'featured') {
       hideFilterPanels();
-    //  if (isEmit) {
-        emit(PosDataLoaded(featuredProducts));
-     // }
+      //  if (isEmit) {
+      emit(PosDataLoaded(featuredProducts));
+      // }
     } else if (tab == 'category') {
       showFilterPanel(isCategory: true);
       emit(PosDataLoaded(featuredProducts));
@@ -224,18 +224,22 @@ class PosCubit extends Cubit<PosState> {
     }
   }
 
-  Future<void> hideFilterPanels() async {
-    //emit(PosLoading());
-
+  Future<void> hideFilterPanels({
+    bool isCategoryRefresh = false,
+    bool isBrandRefresh = false,
+  }) async {
+    // if (isCategoryRefresh || isBrandRefresh) {
+    //   emit(PosProductsLoading());
+    // }
     showCategoryFilters = false;
     showBrandFilters = false;
 
-    // if (selectedTab == 'brand') {
-    //   emit(PosDataLoaded(brandProducts));
-    // } else if (selectedTab == 'category') {
-    //   emit(PosDataLoaded(categoryProducts));
-    // } else {
-    //   emit(PosDataLoaded(featuredProducts));
-    // }
+    if (isCategoryRefresh || isBrandRefresh) {
+      if (isCategoryRefresh) {
+        emit(PosDataLoaded(categoryProducts));
+      } else {
+        emit(PosDataLoaded(brandProducts));
+      }
+    }
   }
 }

@@ -25,57 +25,49 @@ class CustomEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget content = Center(
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: SizedBox(
-          height:
-              MediaQuery.of(context).size.height *
-              0.7, // Adjust as needed for full pull-to-refresh
-          child: Container(
-            padding: const EdgeInsets.all(60),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(30),
-                  decoration: BoxDecoration(
-                    color: (iconColor ?? AppColors.primaryBlue).withOpacity(
-                      0.1,
-                    ),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    icon,
-                    size: 100,
-                    color: iconColor ?? AppColors.primaryBlue,
-                  ),
+      child: Container(
+        padding: const EdgeInsets.all(40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(30),
+              decoration: BoxDecoration(
+                color: (iconColor ?? AppColors.primaryBlue).withOpacity(
+                  0.1,
                 ),
-                const SizedBox(height: 24),
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.darkGray,
-                  ),
-                ),
-                if (message != null) ...[
-                  const SizedBox(height: 12),
-                  Text(
-                    message!,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: AppColors.darkGray.withOpacity(0.7),
-                    ),
-                  ),
-                ],
-                if (onAction != null && actionLabel != null) ...[
-                  const SizedBox(height: 32),
-                  CustomElevatedButton(onPressed: onAction, text: actionLabel!),
-                ],
-              ],
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                size: 100,
+                color: iconColor ?? AppColors.primaryBlue,
+              ),
             ),
-          ),
+            const SizedBox(height: 24),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: AppColors.darkGray,
+              ),
+            ),
+            if (message != null) ...[
+              const SizedBox(height: 12),
+              Text(
+                message!,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: AppColors.darkGray.withOpacity(0.7),
+                ),
+              ),
+            ],
+            if (onAction != null && actionLabel != null) ...[
+              const SizedBox(height: 32),
+              CustomElevatedButton(onPressed: onAction, text: actionLabel!),
+            ],
+          ],
         ),
       ),
     );

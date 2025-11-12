@@ -74,30 +74,30 @@ class _POSCartSummaryState extends State<POSCartSummary> {
                 ),
               ],
             ),
-            SizedBox(height: ResponsiveUI.spacing(context, 16)),
-            Row(
-              children: [
-                Expanded(
-                  child: POSActionButton(
-                    label: 'Draft',
-                    icon: Icons.drafts_outlined,
-                    color: AppColors.warningOrange,
-                    onTap: () {},
-                  ),
-                ),
-                SizedBox(width: ResponsiveUI.spacing(context, 8)),
-                Expanded(
-                  flex: 2,
-                  child: POSActionButton(
-                    label: 'Checkout',
-                    icon: Icons.payment,
-                    color: AppColors.primaryBlue,
-                    onTap: () => _showCheckoutDialog(),
-                    // close bottom sheet & open checkout
-                  ),
-                ),
-              ],
-            ),
+            // SizedBox(height: ResponsiveUI.spacing(context, 16)),
+            //   Row(
+            //     children: [
+            //       Expanded(
+            //         child: POSActionButton(
+            //           label: 'Draft',
+            //           icon: Icons.drafts_outlined,
+            //           color: AppColors.warningOrange,
+            //           onTap: () {},
+            //         ),
+            //       ),
+            //       SizedBox(width: ResponsiveUI.spacing(context, 8)),
+            //       Expanded(
+            //         flex: 2,
+            //         child: POSActionButton(
+            //           label: 'Checkout',
+            //           icon: Icons.payment,
+            //           color: AppColors.primaryBlue,
+            //           onTap: () => _showCheckoutDialog(),
+            //           // close bottom sheet & open checkout
+            //         ),
+            //       ),
+            //     ],
+            //   ),
           ],
         ),
       ),

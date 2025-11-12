@@ -17,8 +17,8 @@ class CustomLoadingState extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-            width: ResponsiveUI.spacing(context, size ?? 60),
-            height: ResponsiveUI.spacing(context, size ?? 60),
+            width: ResponsiveUI.spacing(context, size ?? 45),
+            height: ResponsiveUI.spacing(context, size ?? 45),
             child: CircularProgressIndicator(
               color: color ?? AppColors.primaryBlue,
               strokeWidth: 5,

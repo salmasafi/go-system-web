@@ -50,7 +50,9 @@ class _POSFilterBarState extends State<POSFilterBar> {
                     filterType: FilterType.categories,
                     selectedId: cubit.currentCategoryId,
                     onSelected: (id) => cubit.getProductsByCategory(id),
-                    onClose: () => cubit.hideFilterPanels(), // Only hide
+                    onClose: () => cubit.hideFilterPanels(
+                      isCategoryRefresh: true,
+                    ), // Only hide
                     onFilterClear: () =>
                         cubit.clearFilter(), // Clear + back to featured
                   ),
@@ -64,7 +66,9 @@ class _POSFilterBarState extends State<POSFilterBar> {
                     filterType: FilterType.brands,
                     selectedId: cubit.currentBrandId,
                     onSelected: (id) => cubit.getProductsByBrand(id),
-                    onClose: () => cubit.hideFilterPanels(), // Only hide
+                    onClose: () => cubit.hideFilterPanels(
+                      isBrandRefresh: true,
+                    ), // Only hide
                     onFilterClear: () =>
                         cubit.clearFilter(), // Clear + back to featured
                   ),
@@ -191,7 +195,7 @@ class GenericFilterPanel extends StatelessWidget {
                         onTap: () {
                           onSelected(selected ? null : it.id);
                           //Optional: auto-hide panel after selection?
-                          //onClose();
+                          onClose();
                         },
                         child: Container(
                           margin: EdgeInsets.all(

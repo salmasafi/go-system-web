@@ -106,20 +106,45 @@ class _POSScreenState extends State<POSScreen> {
               POSTabBar(),
               POSFilterBar(), // NEW: filter buttons + panels
               Expanded(
-                child: state is PosProductsLoading
-                    ? const CustomLoadingState()
-                    : (state is PosDataLoaded && state.displayedProducts.isNotEmpty)
-                    ? POSProductGrid(
+                child: BlocBuilder<PosCubit, PosState>(
+                  builder: (context, state) {
+                    if (state is PosProductsLoading) {
+                      return const CustomLoadingState();
+                    } else if (state is PosDataLoaded &&
+                        state.displayedProducts.isNotEmpty) {
+                      return
+                      // Expanded(
+                      //   child:
+                      POSProductGrid(
                         products: _filterProducts(state.displayedProducts),
                         onProductTap: _addToCart,
-                      )
-                    : CustomEmptyState(
+                        //  ),
+                      );
+                    } else {
+                      return CustomEmptyState(
                         icon: Icons.inventory_2_outlined,
                         title: 'No Products Found',
                         message: 'Try adjusting your search or filters',
-                        actionLabel: 'Retry',
-                      ),
+                      );
+                    }
+                  },
+                ),
               ),
+              //   Expanded(
+              //     child: state is PosProductsLoading
+              //         ? const CustomLoadingState()
+              //         : (state is PosDataLoaded &&
+              //               state.displayedProducts.isNotEmpty)
+              //         ? POSProductGrid(
+              //             products: _filterProducts(state.displayedProducts),
+              //             onProductTap: _addToCart,
+              //           )
+              //         : CustomEmptyState(
+              //             icon: Icons.inventory_2_outlined,
+              //             title: 'No Products Found',
+              //             message: 'Try adjusting your search or filters',
+              //           ),
+              //   ),
             ],
           );
         },
@@ -154,7 +179,10 @@ class _POSScreenState extends State<POSScreen> {
             }
           });
         },
-        onRemove: (index) => setState(() => _cartItems.removeAt(index)),
+        onRemove: (index) {
+          setState(() => _cartItems.removeAt(index));
+          Navigator.pop(context);
+        },
       ),
     );
   }
