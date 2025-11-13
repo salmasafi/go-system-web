@@ -33,7 +33,11 @@ class _POSHeaderSectionState extends State<POSHeaderSection> {
       builder: (context, state) {
         final cubit = context.read<PosCubit>();
         return Container(
-          padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+          padding: EdgeInsets.only(
+            right: ResponsiveUI.padding(context, 16),
+            left: ResponsiveUI.padding(context, 16),
+            top: ResponsiveUI.padding(context, 16),
+          ),
           decoration: BoxDecoration(
             color: AppColors.white,
             boxShadow: [

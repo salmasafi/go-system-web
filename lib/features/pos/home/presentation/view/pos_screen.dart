@@ -68,89 +68,86 @@ class _POSScreenState extends State<POSScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.lightBlueBackground,
-      // appBar: const POSAppBar(),
-      body: SafeArea(
-        child: BlocConsumer<PosCubit, PosState>(
-          listener: (context, state) {
-            if (state is PosError) {
-              ErrorHandler.handleError(state.message);
-            }
-          },
-          builder: (context, state) {
-            if (state is PosLoading) {
-              return const CustomLoadingState();
-            }
-            return Column(
-              children: [
-                POSAppBar(),
-                POSHeaderSection(
-                  searchController: _searchController,
-                  onTap: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const BarcodeScannerScreen(),
-                      ),
-                    );
-                    if (result != null && result != '-1') {
-                      setState(() {
-                        _searchQuery = result;
-                        _searchController.text = result;
-                      });
+      appBar: const POSAppBar(),
+      body: BlocConsumer<PosCubit, PosState>(
+        listener: (context, state) {
+          if (state is PosError) {
+            ErrorHandler.handleError(state.message);
+          }
+        },
+        builder: (context, state) {
+          if (state is PosLoading) {
+            return const CustomLoadingState();
+          }
+          return Column(
+            children: [
+              POSHeaderSection(
+                searchController: _searchController,
+                onTap: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const BarcodeScannerScreen(),
+                    ),
+                  );
+                  if (result != null && result != '-1') {
+                    setState(() {
+                      _searchQuery = result;
+                      _searchController.text = result;
+                    });
+                  }
+                },
+                onChanged: (String query) {
+                  setState(() {
+                    _searchQuery = query;
+                  });
+                },
+              ),
+              POSTabBar(),
+              POSFilterBar(), // NEW: filter buttons + panels
+              Expanded(
+                child: BlocBuilder<PosCubit, PosState>(
+                  builder: (context, state) {
+                    if (state is PosProductsLoading) {
+                      return const CustomLoadingState();
+                    } else if (state is PosDataLoaded &&
+                        state.displayedProducts.isNotEmpty) {
+                      return
+                      // Expanded(
+                      //   child:
+                      POSProductGrid(
+                        products: _filterProducts(state.displayedProducts),
+                        onProductTap: _addToCart,
+                        //  ),
+                      );
+                    } else {
+                      return CustomEmptyState(
+                        icon: Icons.inventory_2_outlined,
+                        title: 'No Products Found',
+                        message: 'Try adjusting your search or filters',
+                      );
                     }
                   },
-                  onChanged: (String query) {
-                    setState(() {
-                      _searchQuery = query;
-                    });
-                  },
                 ),
-                POSTabBar(),
-                POSFilterBar(), // NEW: filter buttons + panels
-                Expanded(
-                  child: BlocBuilder<PosCubit, PosState>(
-                    builder: (context, state) {
-                      if (state is PosProductsLoading) {
-                        return const CustomLoadingState();
-                      } else if (state is PosDataLoaded &&
-                          state.displayedProducts.isNotEmpty) {
-                        return
-                        // Expanded(
-                        //   child:
-                        POSProductGrid(
-                          products: _filterProducts(state.displayedProducts),
-                          onProductTap: _addToCart,
-                          //  ),
-                        );
-                      } else {
-                        return CustomEmptyState(
-                          icon: Icons.inventory_2_outlined,
-                          title: 'No Products Found',
-                          message: 'Try adjusting your search or filters',
-                        );
-                      }
-                    },
-                  ),
-                ),
-                //   Expanded(
-                //     child: state is PosProductsLoading
-                //         ? const CustomLoadingState()
-                //         : (state is PosDataLoaded &&
-                //               state.displayedProducts.isNotEmpty)
-                //         ? POSProductGrid(
-                //             products: _filterProducts(state.displayedProducts),
-                //             onProductTap: _addToCart,
-                //           )
-                //         : CustomEmptyState(
-                //             icon: Icons.inventory_2_outlined,
-                //             title: 'No Products Found',
-                //             message: 'Try adjusting your search or filters',
-                //           ),
-                //   ),
-              ],
-            );
-          },
-        ),
+              ),
+              //   Expanded(
+              //     child: state is PosProductsLoading
+              //         ? const CustomLoadingState()
+              //         : (state is PosDataLoaded &&
+              //               state.displayedProducts.isNotEmpty)
+              //         ? POSProductGrid(
+              //             products: _filterProducts(state.displayedProducts),
+              //             onProductTap: _addToCart,
+              //           )
+              //         : CustomEmptyState(
+              //             icon: Icons.inventory_2_outlined,
+              //             title: 'No Products Found',
+              //             message: 'Try adjusting your search or filters',
+              //           ),
+              //   ),
+            ],
+          );
+        },
       ),
       bottomSheet: _cartItems.isNotEmpty
           ? POSCartSummary(total: _total, cartItems: _cartItems)

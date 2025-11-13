@@ -26,7 +26,7 @@ class CustomEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget content = Center(
       child: Container(
-        padding: const EdgeInsets.all(40),
+        padding: const EdgeInsets.all(50),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
