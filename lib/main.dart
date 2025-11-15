@@ -74,7 +74,7 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<PosCubit>(create: (context) => PosCubit()),
+        BlocProvider<PosCubit>(create: (context) => PosCubit()..loadPosData()),
         BlocProvider<WareHouseCubit>(create: (context) => WareHouseCubit()),
         BlocProvider<ProductsCubit>(create: (context) => ProductsCubit()),
         BlocProvider<CategoriesCubit>(create: (context) => CategoriesCubit()),
