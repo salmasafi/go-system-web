@@ -11,6 +11,8 @@ import 'pos_home_state.dart';
 class PosCubit extends Cubit<PosState> {
   PosCubit() : super(PosInitial());
 
+  List<CartItem> cartItems = [];
+
   String selectedTab = 'featured';
   bool showCategoryFilters = false;
   bool showBrandFilters = false;
@@ -212,24 +214,32 @@ class PosCubit extends Cubit<PosState> {
   }
 
   Future<void> selectTab({String tab = 'featured'}) async {
-    // emit(PosProductsLoading());
     selectedTab = tab;
     if (tab == 'featured') {
       hideFilterPanels();
-      //  if (isEmit) {
       emit(PosDataLoaded(featuredProducts));
-      // }
     } else if (tab == 'category') {
       showFilterPanel(isCategory: true);
-      emit(PosDataLoaded(featuredProducts));
-
-      // getProductsByCategory(selectedCategoryId);
       emit(PosDataLoaded(categoryProducts));
     } else if (tab == 'brand') {
       showFilterPanel(isCategory: false);
       emit(PosDataLoaded(brandProducts));
+    } else {
+      emit(PosDataLoaded([]));
+    }
+  }
 
-      // getProductsByBrand(selectedBrandId);
+  Future<void> refreshCartProducts() async {
+    cartItems = [];
+    if (selectedTab == 'featured') {
+      hideFilterPanels();
+      emit(PosDataLoaded(featuredProducts));
+    } else if (selectedTab == 'category') {
+      showFilterPanel(isCategory: true);
+      emit(PosDataLoaded(categoryProducts));
+    } else if (selectedTab == 'brand') {
+      showFilterPanel(isCategory: false);
+      emit(PosDataLoaded(brandProducts));
     } else {
       emit(PosDataLoaded([]));
     }

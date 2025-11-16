@@ -1,5 +1,7 @@
 // ── AppBar ───────────────────────────────────────────────────────────────
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:systego/features/admin/auth/cubit/login_cubit.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
 
@@ -189,7 +191,10 @@ class _POSAppBarState extends State<POSAppBar> {
                   ),
                   SizedBox(width: ResponsiveUI.spacing(context, 6)),
                   Text(
-                    'John Watson',
+                    context.read<LoginCubit>().userModel != null
+                        ? context
+                                  .read<LoginCubit>()
+                                  .getSavedUser()?.username?.toString() ?? '' : '',
                     style: TextStyle(
                       color: AppColors.white,
                       fontSize: ResponsiveUI.fontSize(context, 13),

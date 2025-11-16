@@ -1,16 +1,15 @@
 // ── Cart summary (bottom sheet) ───────────────────────────────────────────
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:systego/features/pos/home/cubit/pos_home_cubit.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
-import '../../model/pos_models.dart';
 
 class POSCartSummary extends StatefulWidget {
   final double total;
-  final List<CartItem> cartItems;
 
   const POSCartSummary({
     required this.total,
-    required this.cartItems,
     super.key,
   });
 
@@ -19,6 +18,7 @@ class POSCartSummary extends StatefulWidget {
 }
 
 class _POSCartSummaryState extends State<POSCartSummary> {
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -44,8 +44,8 @@ class _POSCartSummaryState extends State<POSCartSummary> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Items: ${widget.cartItems.length} '
-                      '(${widget.cartItems.fold(0, (s, i) => s + i.quantity)})',
+                      'Items: ${context.read<PosCubit>().cartItems.length} '
+                      '(${context.read<PosCubit>().cartItems.fold(0, (s, i) => s + i.quantity)})',
                       style: TextStyle(
                         fontSize: ResponsiveUI.fontSize(context, 14),
                         color: AppColors.shadowGray,

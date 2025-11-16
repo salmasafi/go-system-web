@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:systego/core/services/session_helper.dart';
+import 'package:systego/features/admin/auth/cubit/login_cubit.dart';
 import 'package:systego/features/admin/brands/cubit/brand_cubit.dart';
 import 'package:systego/features/admin/categories/cubit/categories_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -74,6 +75,7 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<LoginCubit>(create: (context) => LoginCubit()),
         BlocProvider<PosCubit>(create: (context) => PosCubit()..loadPosData()),
         BlocProvider<WareHouseCubit>(create: (context) => WareHouseCubit()),
         BlocProvider<ProductsCubit>(create: (context) => ProductsCubit()),
@@ -106,7 +108,7 @@ class _MainAppState extends State<MainApp> {
           fontFamily: 'Rubik',
           scaffoldBackgroundColor: AppColors.lightBlueBackground,
           primarySwatch: AppColors.mediumBlue700,
-        dialogTheme: DialogThemeData(backgroundColor: Colors.white),
+          dialogTheme: DialogThemeData(backgroundColor: Colors.white),
           textButtonTheme: TextButtonThemeData(
             style: ButtonStyle(
               textStyle: WidgetStateProperty.all<TextStyle>(

@@ -145,7 +145,7 @@ class _AnimatedPaymentMethodCardState extends State<AnimatedPaymentMethodCard> {
       children: [
         Expanded(
           child: CustomStatChip(
-            icon: Icons.location_on_rounded,
+            icon: Icons.info,
             label: 'Type: ${widget.paymentMethod.type}',
             color: AppColors.linkBlue,
           ),

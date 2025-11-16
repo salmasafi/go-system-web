@@ -27,28 +27,34 @@ class POSScreen extends StatefulWidget {
 
 class _POSScreenState extends State<POSScreen> {
   final TextEditingController _searchController = TextEditingController();
-  final List<CartItem> _cartItems = [];
   String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    // Data loads in PosCubit() constructor → safe
+
+    context.read<PosCubit>().loadPosData();
   }
 
   void _addToCart(Product product) {
     setState(() {
-      final existing = _cartItems.indexWhere((i) => i.product.id == product.id);
+      final existing = context.read<PosCubit>().cartItems.indexWhere(
+        (i) => i.product.id == product.id,
+      );
       if (existing >= 0) {
-        _cartItems[existing].quantity++;
+        context.read<PosCubit>().cartItems[existing].quantity++;
       } else {
-        _cartItems.add(CartItem(product: product, quantity: 1));
+        context.read<PosCubit>().cartItems.add(
+          CartItem(product: product, quantity: 1),
+        );
       }
     });
   }
 
-  double get _total =>
-      _cartItems.fold(0, (s, i) => s + i.product.price * i.quantity);
+  double get _total => context.read<PosCubit>().cartItems.fold(
+    0,
+    (s, i) => s + i.product.price * i.quantity,
+  );
 
   List<Product> _filterProducts(List<Product> products) {
     return products.where((product) {
@@ -66,20 +72,20 @@ class _POSScreenState extends State<POSScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => POSCartBottomSheet(
-        cartItems: _cartItems,
         onQuantityChanged: (index, delta) {
           setState(() {
-            final newQty = _cartItems[index].quantity + delta;
+            final newQty =
+                context.read<PosCubit>().cartItems[index].quantity + delta;
             if (newQty > 0) {
-              _cartItems[index].quantity = newQty;
+              context.read<PosCubit>().cartItems[index].quantity = newQty;
             } else {
-              _cartItems.removeAt(index);
+              context.read<PosCubit>().cartItems.removeAt(index);
             }
           });
         },
         onRemove: (index) {
           setState(() {
-            _cartItems.removeAt(index);
+            context.read<PosCubit>().cartItems.removeAt(index);
           });
         },
       ),
@@ -88,93 +94,100 @@ class _POSScreenState extends State<POSScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.lightBlueBackground,
-      appBar: const POSAppBar(),
-      body: BlocConsumer<PosCubit, PosState>(
-        listener: (context, state) {
-          if (state is PosError) {
-            ErrorHandler.handleError(state.message);
-          }
-        },
-        builder: (context, state) {
-          if (state is PosLoading) {
-            return const CustomLoadingState();
-          }
+    return BlocBuilder<PosCubit, PosState>(
+      builder: (context, state) {
+        final cubit = context.read<PosCubit>();
+        final cartItems = cubit.cartItems;
 
-          return Column(
-            children: [
-              // Search + Header
-              POSHeaderSection(
-                searchController: _searchController,
-                onTap: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const BarcodeScannerScreen(),
-                    ),
-                  );
-                  if (result != null && result != '-1') {
-                    setState(() {
-                      _searchQuery = result;
-                      _searchController.text = result;
-                    });
-                  }
-                },
-                onChanged: (query) => setState(() => _searchQuery = query),
-              ),
+        return Scaffold(
+          backgroundColor: AppColors.lightBlueBackground,
+          appBar: const POSAppBar(),
+          body: BlocConsumer<PosCubit, PosState>(
+            listener: (context, state) {
+              if (state is PosError) {
+                ErrorHandler.handleError(state.message);
+              }
+            },
+            builder: (context, state) {
+              if (state is PosLoading) {
+                return const CustomLoadingState();
+              }
 
-              // Tabs
-              const POSTabBar(),
-
-              // Filter Panel
-              const POSFilterBar(),
-
-              // Product Grid
-              Expanded(
-                child: BlocBuilder<PosCubit, PosState>(
-                  builder: (context, state) {
-                    if (state is PosProductsLoading) {
-                      return const CustomLoadingState();
-                    }
-                    if (state is PosDataLoaded &&
-                        state.displayedProducts.isNotEmpty) {
-                      return POSProductGrid(
-                        products: _filterProducts(state.displayedProducts),
-                        onProductTap: _addToCart,
+              return Column(
+                children: [
+                  // Search + Header
+                  POSHeaderSection(
+                    searchController: _searchController,
+                    onTap: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const BarcodeScannerScreen(),
+                        ),
                       );
-                    }
-                    return CustomEmptyState(
-                      icon: Icons.inventory_2_outlined,
-                      title: 'No Products Found',
-                      message: 'Try adjusting your search or filters',
-                    );
-                  },
-                ),
-              ),
-            ],
-          );
-        },
-      ),
+                      if (result != null && result != '-1') {
+                        setState(() {
+                          _searchQuery = result;
+                          _searchController.text = result;
+                        });
+                      }
+                    },
+                    onChanged: (query) => setState(() => _searchQuery = query),
+                  ),
 
-      // Cart Summary (bottom)
-      bottomSheet: _cartItems.isNotEmpty
-          ? POSCartSummary(total: _total, cartItems: _cartItems)
-          : null,
+                  // Tabs
+                  const POSTabBar(),
 
-      // FAB
-      floatingActionButton: _cartItems.isNotEmpty
-          ? AnimatedOpacity(
-              opacity: _cartItems.isNotEmpty ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 200),
-              child: POSCartFAB(
-                itemCount: _cartItems.fold(0, (s, i) => s + i.quantity),
-                onPressed: _showCartDialog,
-              ),
-            )
-          : null,
+                  // Filter Panel
+                  const POSFilterBar(),
 
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+                  // Product Grid
+                  Expanded(
+                    child: BlocBuilder<PosCubit, PosState>(
+                      builder: (context, state) {
+                        if (state is PosProductsLoading) {
+                          return const CustomLoadingState();
+                        }
+                        if (state is PosDataLoaded &&
+                            state.displayedProducts.isNotEmpty) {
+                          return POSProductGrid(
+                            products: _filterProducts(state.displayedProducts),
+                            onProductTap: _addToCart,
+                          );
+                        }
+                        return CustomEmptyState(
+                          icon: Icons.inventory_2_outlined,
+                          title: 'No Products Found',
+                          message: 'Try adjusting your search or filters',
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+
+          // Cart Summary (bottom)
+          bottomSheet: cartItems.isNotEmpty
+              ? POSCartSummary(total: _total)
+              : null,
+
+          // FAB
+          floatingActionButton: cartItems.isNotEmpty
+              ? AnimatedOpacity(
+                  opacity: cartItems.isNotEmpty ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 200),
+                  child: POSCartFAB(
+                    itemCount: cartItems.fold(0, (s, i) => s + i.quantity),
+                    onPressed: _showCartDialog,
+                  ),
+                )
+              : null,
+
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        );
+      },
     );
   }
 

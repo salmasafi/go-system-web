@@ -44,15 +44,15 @@ class LoginCubit extends Cubit<LoginState> {
             );
             log('Token saved successfully');
           }
-          // // Save user data
-          // if (userModel!.data!.user != null) {
-          //   await CacheHelper.saveModel<User>(
-          //     key: 'user',
-          //     model: userModel!.data!.user!,
-          //     toJson: (user) => user.toJson(),
-          //   );
-          //   log('User data saved successfully');
-          // }
+          // Save user data
+          if (userModel!.data!.user != null) {
+            await CacheHelper.saveModel<User>(
+              key: 'user',
+              model: userModel!.data!.user!,
+              toJson: (user) => user.toJson(),
+            );
+            log('User data saved successfully');
+          }
 
           log('Login successful');
           emit(LoginSuccess());

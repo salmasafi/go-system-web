@@ -229,7 +229,6 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
   void _handleSubmit() {
     if (_formKey.currentState!.validate()) {
       final cubit = context.read<PaymentMethodCubit>();
-
       if (isEditMode) {
         cubit.updatePaymentMethod(
           paymentMethodId: widget.paymentMethod!.id,
@@ -238,7 +237,7 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
           type: _typeController.text.trim(),
           description: _descriptionController.text.trim(),
           isActive: true,
-          icon: '',
+          icon: 'iVBORw0KGgoAAAANSUhEUgAAAOE...',
         );
       } else {
         cubit.createPaymentMethod(
@@ -247,7 +246,7 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
           type: _typeController.text.trim(),
           description: _descriptionController.text.trim(),
           isActive: true,
-          icon: '',
+          icon: 'iVBORw0KGgoAAAANSUhEUgAAAOE...',
         );
       }
     }
