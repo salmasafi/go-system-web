@@ -52,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
           }
         },
         builder: (context, state) {
-          final cubit = LoginCubit.get(context);
+          final cubit = context.read<LoginCubit>();
           final isLoading = state is LoginLoading;
       
           return Form(

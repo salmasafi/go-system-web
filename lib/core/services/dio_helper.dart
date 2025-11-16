@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:systego/core/services/endpoints.dart';
 import 'package:systego/core/services/session_helper.dart';
-import 'cache_helper.dart.dart';
+import 'cache_helper.dart';
 
 class DioHelper {
   static late Dio dio;

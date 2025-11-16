@@ -39,6 +39,7 @@ class EndPoint {
   static const String createProduct = '/api/admin/product';
   static String updateProduct(String id) => '/api/admin/product/$id';
   static String deleteProduct(String id) => '/api/admin/product/$id';
+  static String productByCode = '/api/admin/product/code';
 
   // Currency
   static const String getCurrencies = '/api/admin/currency';

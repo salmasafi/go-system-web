@@ -35,11 +35,11 @@ class PosCubit extends Cubit<PosState> {
   PaymentMethod? selectedPaymentMethod;
   Customer? selectedCustomer;
 
-  // NEW: expose current selected IDs
+  // Expose current selected IDs
   String? get currentCategoryId => selectedCategoryId;
   String? get currentBrandId => selectedBrandId;
 
-  // NEW: clear filter and go back to featured
+  // Clear filter and go back to featured
   void clearFilter() {
     selectedTab = 'featured';
     selectedCategoryId = null;
@@ -89,10 +89,6 @@ class PosCubit extends Cubit<PosState> {
       if (response.statusCode == 200) {
         final data = response.data['data']['category'] as List;
         categories = data.map((e) => Category.fromJson(e)).toList();
-        if (selectedCategoryId == null && categories.isNotEmpty) {
-          //selectedCategoryId = categories.first.id;
-          //await getProductsByCategory(selectedCategoryId);
-        }
       }
     } catch (e) {
       log('Categories error: $e');
@@ -105,10 +101,6 @@ class PosCubit extends Cubit<PosState> {
       if (response.statusCode == 200) {
         final data = response.data['data']['brand'] as List;
         brands = data.map((e) => Brand.fromJson(e)).toList();
-        if (selectedBrandId == null && brands.isNotEmpty) {
-          //selectedBrandId = brands.first.id;
-          //await getProductsByBrand(selectedBrandId!);
-        }
       }
     } catch (e) {
       log('Brands error: $e');
@@ -168,7 +160,6 @@ class PosCubit extends Cubit<PosState> {
   Future<void> getProductsByCategory(String? categoryId) async {
     emit(PosProductsLoading());
     if (categoryId != null) {
-      emit(PosProductsLoading());
       try {
         final response = await DioHelper.getData(
           url: EndPoint.posCategoryProducts(categoryId),
@@ -177,7 +168,7 @@ class PosCubit extends Cubit<PosState> {
           final data = response.data['data']['products'] as List;
           categoryProducts = data.map((e) => Product.fromJson(e)).toList();
           selectedCategoryId = categoryId;
-          hideFilterPanels(); // CHANGED: emit PosDataLoaded
+          hideFilterPanels();
           emit(PosDataLoaded(categoryProducts));
         }
       } catch (e) {
@@ -201,7 +192,6 @@ class PosCubit extends Cubit<PosState> {
           brandProducts = data.map((e) => Product.fromJson(e)).toList();
           selectedBrandId = brandId;
           hideFilterPanels();
-          // CHANGED: emit PosDataLoaded
           emit(PosDataLoaded(brandProducts));
         }
       } catch (e) {
@@ -259,9 +249,6 @@ class PosCubit extends Cubit<PosState> {
     bool isCategoryRefresh = false,
     bool isBrandRefresh = false,
   }) async {
-    // if (isCategoryRefresh || isBrandRefresh) {
-    //   emit(PosProductsLoading());
-    // }
     showCategoryFilters = false;
     showBrandFilters = false;
 
@@ -272,5 +259,69 @@ class PosCubit extends Cubit<PosState> {
         emit(PosDataLoaded(brandProducts));
       }
     }
+  }
+
+  // ────────────────────────────────────────────────────────────────
+  //  NEW: Get product by barcode
+  // ────────────────────────────────────────────────────────────────
+  Future<Product?> getProductByCode(String code) async {
+    emit(PosLoading());
+    try {
+      final response = await DioHelper.getData(
+        url:  EndPoint.productByCode,
+        
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data['data']['product'];
+        if (data != null) {
+          final product = Product.fromJson(data);
+          emit(PosLoaded());
+          return product;
+        } else {
+          emit(PosError('Product not found'));
+          return null;
+        }
+      } else {
+        final msg = _extractErrorMessage(response);
+        emit(PosError(msg));
+        return null;
+      }
+    } catch (e) {
+      final msg = _extractErrorMessage(e);
+      emit(PosError(msg));
+      return null;
+    }
+  }
+
+  // ────────────────────────────────────────────────────────────────
+  //  Cart Management
+  // ────────────────────────────────────────────────────────────────
+  void addToCart(Product product) {
+    final existingIndex = cartItems.indexWhere((i) => i.product.id == product.id);
+    if (existingIndex >= 0) {
+      cartItems[existingIndex].quantity++;
+    } else {
+      cartItems.add(CartItem(product: product, quantity: 1));
+    }
+    emit(PosCartUpdated(cartItems));
+  }
+
+  void removeFromCart(int index) {
+    if (index >= 0 && index < cartItems.length) {
+      cartItems.removeAt(index);
+      emit(PosCartUpdated(cartItems));
+    }
+  }
+
+  void updateQuantity(int index, int delta) {
+    if (index < 0 || index >= cartItems.length) return;
+    final newQty = cartItems[index].quantity + delta;
+    if (newQty > 0) {
+      cartItems[index].quantity = newQty;
+    } else {
+      cartItems.removeAt(index);
+    }
+    emit(PosCartUpdated(cartItems));
   }
 }

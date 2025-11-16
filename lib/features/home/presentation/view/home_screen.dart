@@ -7,7 +7,7 @@
 // - Added onPressed stub for notifications (implement navigation later).
 
 import 'package:flutter/material.dart';
-import 'package:systego/core/services/cache_helper.dart.dart';
+import 'package:systego/core/services/cache_helper.dart';
 import 'package:systego/features/pos/home/presentation/view/pos_screen.dart';
 import 'package:systego/main.dart';
 import '../../../admin/auth/presentation/view/login_screen.dart';

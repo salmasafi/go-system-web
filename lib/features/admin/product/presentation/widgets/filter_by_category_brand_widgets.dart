@@ -9,7 +9,10 @@ import 'package:systego/features/admin/product/cubit/product_filter_cubit.dart';
 import 'package:systego/features/admin/product/cubit/product_filter_state.dart';
 import 'package:systego/features/admin/product/models/filter_models.dart';
 
-enum FilterType { categories, brands, variations, warehouses }
+enum FilterType {
+  categories,
+  brands, // variations, warehouses
+}
 
 class FilterItem {
   final String id;
@@ -46,8 +49,8 @@ class FilterButtons extends StatefulWidget {
 class _FilterButtonsState extends State<FilterButtons> {
   bool _showCategoriesFilter = false;
   bool _showBrandsFilter = false;
-  bool _showWarhousesFilter = false;
-  bool _showVariationsFilter = false;
+  //bool _showWarhousesFilter = false;
+  //bool _showVariationsFilter = false;
 
   @override
   Widget build(BuildContext context) {
@@ -77,8 +80,8 @@ class _FilterButtonsState extends State<FilterButtons> {
                                       !_showCategoriesFilter;
                                   if (_showCategoriesFilter) {
                                     _showBrandsFilter = false;
-                                    _showWarhousesFilter = false;
-                                    _showVariationsFilter = false;
+                                    //_showWarhousesFilter = false;
+                                    //_showVariationsFilter = false;
                                   }
                                 });
                               },
@@ -94,8 +97,8 @@ class _FilterButtonsState extends State<FilterButtons> {
                                   _showBrandsFilter = !_showBrandsFilter;
                                   if (_showBrandsFilter) {
                                     _showCategoriesFilter = false;
-                                    _showWarhousesFilter = false;
-                                    _showVariationsFilter = false;
+                                    // _showWarhousesFilter = false;
+                                    //  _showVariationsFilter = false;
                                   }
                                 });
                               },
@@ -103,46 +106,47 @@ class _FilterButtonsState extends State<FilterButtons> {
                           ),
                         ],
                       ),
-                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: FilterButton(
-                              label: 'Warehouses',
-                              isActive: _showWarhousesFilter,
-                              onTap: () {
-                                setState(() {
-                                  _showWarhousesFilter = !_showWarhousesFilter;
-                                  if (_showWarhousesFilter) {
-                                    _showCategoriesFilter = false;
-                                    _showBrandsFilter = false;
-                                    _showVariationsFilter = false;
-                                  }
-                                });
-                              },
-                            ),
-                          ),
-                          SizedBox(width: ResponsiveUI.spacing(context, 12)),
-                          Expanded(
-                            child: FilterButton(
-                              label: 'Variations',
-                              isActive: _showVariationsFilter,
-                              onTap: () {
-                                setState(() {
-                                  _showVariationsFilter =
-                                      !_showVariationsFilter;
-                                  if (_showVariationsFilter) {
-                                    _showCategoriesFilter = false;
-                                    _showWarhousesFilter = false;
-                                    _showBrandsFilter = false;
-                                  }
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
+
+                      // SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //   children: [
+                      //     Expanded(
+                      //       child: FilterButton(
+                      //         label: 'Warehouses',
+                      //         isActive: _showWarhousesFilter,
+                      //         onTap: () {
+                      //           setState(() {
+                      //             _showWarhousesFilter = !_showWarhousesFilter;
+                      //             if (_showWarhousesFilter) {
+                      //               _showCategoriesFilter = false;
+                      //               _showBrandsFilter = false;
+                      //               _showVariationsFilter = false;
+                      //             }
+                      //           });
+                      //         },
+                      //       ),
+                      //     ),
+                      //     SizedBox(width: ResponsiveUI.spacing(context, 12)),
+                      //     Expanded(
+                      //       child: FilterButton(
+                      //         label: 'Variations',
+                      //         isActive: _showVariationsFilter,
+                      //         onTap: () {
+                      //           setState(() {
+                      //             _showVariationsFilter =
+                      //                 !_showVariationsFilter;
+                      //             if (_showVariationsFilter) {
+                      //               _showCategoriesFilter = false;
+                      //               _showWarhousesFilter = false;
+                      //               _showBrandsFilter = false;
+                      //             }
+                      //           });
+                      //         },
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
                     ],
                   ),
                 ),
@@ -175,34 +179,34 @@ class _FilterButtonsState extends State<FilterButtons> {
                       },
                     ),
                   ),
-                if (_showVariationsFilter)
-                  AnimatedElement(
-                    delay: Duration.zero,
-                    child: GenericFilterPanel(
-                      filterType: FilterType.variations,
-                      selectedId: null,
-                      onSelected: widget.onVariationSelected,
-                      onClose: () {
-                        setState(() {
-                          _showVariationsFilter = false;
-                        });
-                      },
-                    ),
-                  ),
-                if (_showWarhousesFilter)
-                  AnimatedElement(
-                    delay: Duration.zero,
-                    child: GenericFilterPanel(
-                      filterType: FilterType.warehouses,
-                      selectedId: null,
-                      onSelected: widget.onWarehouseSelected,
-                      onClose: () {
-                        setState(() {
-                          _showWarhousesFilter = false;
-                        });
-                      },
-                    ),
-                  ),
+                // if (_showVariationsFilter)
+                //   AnimatedElement(
+                //     delay: Duration.zero,
+                //     child: GenericFilterPanel(
+                //       filterType: FilterType.variations,
+                //       selectedId: null,
+                //       onSelected: widget.onVariationSelected,
+                //       onClose: () {
+                //         setState(() {
+                //           _showVariationsFilter = false;
+                //         });
+                //       },
+                //     ),
+                //   ),
+                // if (_showWarhousesFilter)
+                //   AnimatedElement(
+                //     delay: Duration.zero,
+                //     child: GenericFilterPanel(
+                //       filterType: FilterType.warehouses,
+                //       selectedId: null,
+                //       onSelected: widget.onWarehouseSelected,
+                //       onClose: () {
+                //         setState(() {
+                //           _showWarhousesFilter = false;
+                //         });
+                //       },
+                //     ),
+                //   ),
               ],
             ),
           );
@@ -240,7 +244,9 @@ class FilterButton extends StatelessWidget {
             ResponsiveUI.borderRadius(context, 8),
           ),
           border: Border.all(
-            color: isActive ? AppColors.primaryBlue : AppColors.shadowGray[300]!,
+            color: isActive
+                ? AppColors.primaryBlue
+                : AppColors.shadowGray[300]!,
             width: 1,
           ),
         ),
@@ -250,7 +256,9 @@ class FilterButton extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                color: isActive ? AppColors.primaryBlue : AppColors.shadowGray[700],
+                color: isActive
+                    ? AppColors.primaryBlue
+                    : AppColors.shadowGray[700],
                 fontSize: ResponsiveUI.fontSize(context, 14),
                 fontWeight: FontWeight.w500,
               ),
@@ -258,7 +266,9 @@ class FilterButton extends StatelessWidget {
             SizedBox(width: ResponsiveUI.spacing(context, 6)),
             Icon(
               isActive ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-              color: isActive ? AppColors.primaryBlue : AppColors.shadowGray[600],
+              color: isActive
+                  ? AppColors.primaryBlue
+                  : AppColors.shadowGray[600],
               size: ResponsiveUI.iconSize(context, 20),
             ),
           ],
@@ -289,10 +299,10 @@ class GenericFilterPanel extends StatelessWidget {
         return 'Categories';
       case FilterType.brands:
         return 'Brands';
-      case FilterType.variations:
-        return 'Variations';
-      case FilterType.warehouses:
-        return 'Warehouses';
+      // case FilterType.variations:
+      //   return 'Variations';
+      // case FilterType.warehouses:
+      //   return 'Warehouses';
     }
   }
 
@@ -315,22 +325,22 @@ class GenericFilterPanel extends StatelessWidget {
             image: item.logo,
             count: 0, // Add count from API if available
           );
-        case FilterType.variations:
-          final varn = item as VariationFilter;
-          return FilterItem(
-            id: varn.id,
-            name: varn.name,
-            image: '',
-            count: varn.options.length,
-          );
-        case FilterType.warehouses:
-          final wh = item as WarehouseFilter;
-          return FilterItem(
-            id: wh.id,
-            name: wh.name,
-            image: '',
-            count: wh.numberOfProducts,
-          );
+        // case FilterType.variations:
+        //   final varn = item as VariationFilter;
+        //   return FilterItem(
+        //     id: varn.id,
+        //     name: varn.name,
+        //     image: '',
+        //     count: varn.options.length,
+        //   );
+        // case FilterType.warehouses:
+        //   final wh = item as WarehouseFilter;
+        //   return FilterItem(
+        //     id: wh.id,
+        //     name: wh.name,
+        //     image: '',
+        //     count: wh.numberOfProducts,
+        //   );
       }
     }).toList();
   }
@@ -359,10 +369,10 @@ class GenericFilterPanel extends StatelessWidget {
         return Icons.category;
       case FilterType.brands:
         return Icons.business;
-      case FilterType.variations:
-        return Icons.tune;
-      case FilterType.warehouses:
-        return Icons.warehouse;
+      // case FilterType.variations:
+      //   return Icons.tune;
+      // case FilterType.warehouses:
+      //   return Icons.warehouse;
     }
   }
 
@@ -405,11 +415,11 @@ class GenericFilterPanel extends StatelessWidget {
             case FilterType.brands:
               list = state.filters.data?.brands ?? [];
               break;
-            case FilterType.variations:
-              list = state.filters.data?.variations ?? [];
-              break;
-            case FilterType.warehouses:
-              list = state.filters.data?.warehouses ?? [];
+            // case FilterType.variations:
+            //   list = state.filters.data?.variations ?? [];
+            //   break;
+            // case FilterType.warehouses:
+            //   list = state.filters.data?.warehouses ?? [];
           }
 
           final items = _getItems(list);

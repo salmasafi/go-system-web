@@ -32,34 +32,21 @@ class _POSScreenState extends State<POSScreen> {
   @override
   void initState() {
     super.initState();
-
     context.read<PosCubit>().loadPosData();
   }
 
   void _addToCart(Product product) {
-    setState(() {
-      final existing = context.read<PosCubit>().cartItems.indexWhere(
-        (i) => i.product.id == product.id,
-      );
-      if (existing >= 0) {
-        context.read<PosCubit>().cartItems[existing].quantity++;
-      } else {
-        context.read<PosCubit>().cartItems.add(
-          CartItem(product: product, quantity: 1),
-        );
-      }
-    });
+    context.read<PosCubit>().addToCart(product);
   }
 
   double get _total => context.read<PosCubit>().cartItems.fold(
-    0,
-    (s, i) => s + i.product.price * i.quantity,
-  );
+        0,
+        (s, i) => s + i.product.price * i.quantity,
+      );
 
   List<Product> _filterProducts(List<Product> products) {
     return products.where((product) {
-      bool matchesSearch =
-          _searchQuery.isEmpty ||
+      bool matchesSearch = _searchQuery.isEmpty ||
           product.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           product.price.toString().contains(_searchQuery.toLowerCase());
       return matchesSearch;
@@ -73,23 +60,38 @@ class _POSScreenState extends State<POSScreen> {
       backgroundColor: Colors.transparent,
       builder: (_) => POSCartBottomSheet(
         onQuantityChanged: (index, delta) {
-          setState(() {
-            final newQty =
-                context.read<PosCubit>().cartItems[index].quantity + delta;
-            if (newQty > 0) {
-              context.read<PosCubit>().cartItems[index].quantity = newQty;
-            } else {
-              context.read<PosCubit>().cartItems.removeAt(index);
-            }
-          });
+          context.read<PosCubit>().updateQuantity(index, delta);
         },
         onRemove: (index) {
-          setState(() {
-            context.read<PosCubit>().cartItems.removeAt(index);
-          });
+          context.read<PosCubit>().removeFromCart(index);
         },
       ),
     );
+  }
+
+  // ────────────────────────────────────────────────────────────────
+  //  Handle barcode scan → API → add to cart
+  // ────────────────────────────────────────────────────────────────
+  void _handleBarcodeScan(String code) async {
+    final cubit = context.read<PosCubit>();
+
+    // Clear search bar
+    setState(() {
+      _searchQuery = '';
+      _searchController.clear();
+    });
+
+    final product = await cubit.getProductByCode(code);
+    if (product != null && mounted) {
+      cubit.addToCart(product);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${product.name} added to cart'),
+          backgroundColor: AppColors.successGreen,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   @override
@@ -118,6 +120,7 @@ class _POSScreenState extends State<POSScreen> {
                   // Search + Header
                   POSHeaderSection(
                     searchController: _searchController,
+                    onChanged: (query) => setState(() => _searchQuery = query),
                     onTap: () async {
                       final result = await Navigator.push(
                         context,
@@ -125,14 +128,11 @@ class _POSScreenState extends State<POSScreen> {
                           builder: (_) => const BarcodeScannerScreen(),
                         ),
                       );
-                      if (result != null && result != '-1') {
-                        setState(() {
-                          _searchQuery = result;
-                          _searchController.text = result;
-                        });
+
+                      if (result != null && result is String && result != '-1') {
+                        _handleBarcodeScan(result);
                       }
                     },
-                    onChanged: (query) => setState(() => _searchQuery = query),
                   ),
 
                   // Tabs
@@ -148,13 +148,12 @@ class _POSScreenState extends State<POSScreen> {
                         if (state is PosProductsLoading) {
                           return const CustomLoadingState();
                         }
-                        if (state is PosDataLoaded &&
-                            state.displayedProducts.isNotEmpty) {
+                        if (state is PosDataLoaded && state.displayedProducts.isNotEmpty) {
                           return POSProductGrid(
                             products: _filterProducts(state.displayedProducts),
                             onProductTap: _addToCart,
                           );
-                        }
+                    }
                         return CustomEmptyState(
                           icon: Icons.inventory_2_outlined,
                           title: 'No Products Found',

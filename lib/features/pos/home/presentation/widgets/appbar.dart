@@ -1,4 +1,4 @@
-// ── AppBar ───────────────────────────────────────────────────────────────
+// lib/features/pos/home/presentation/widgets/pos_app_bar.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/features/admin/auth/cubit/login_cubit.dart';
@@ -49,7 +49,7 @@ class _POSAppBarState extends State<POSAppBar> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
+            colorScheme: const ColorScheme.light(
               primary: AppColors.primaryBlue,
               onPrimary: AppColors.white,
               onSurface: AppColors.darkGray,
@@ -73,6 +73,9 @@ class _POSAppBarState extends State<POSAppBar> {
 
   @override
   Widget build(BuildContext context) {
+    // Safely get username from LoginCubit (works after restart)
+    final username = context.read<LoginCubit>().savedUser?.username ?? 'Guest';
+
     return AppBar(
       elevation: 0,
       backgroundColor: AppColors.primaryBlue,
@@ -97,6 +100,7 @@ class _POSAppBarState extends State<POSAppBar> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // Date Box
               Container(
                 padding: EdgeInsets.all(ResponsiveUI.padding(context, 8)),
                 decoration: BoxDecoration(
@@ -106,6 +110,7 @@ class _POSAppBarState extends State<POSAppBar> {
                   ),
                 ),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       '${_selectedDate.day}',
@@ -129,6 +134,8 @@ class _POSAppBarState extends State<POSAppBar> {
                 ),
               ),
               SizedBox(width: ResponsiveUI.spacing(context, 10)),
+
+              // Date Text + Hint
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -151,6 +158,8 @@ class _POSAppBarState extends State<POSAppBar> {
                 ],
               ),
               SizedBox(width: ResponsiveUI.spacing(context, 8)),
+
+              // Calendar Icon
               Icon(
                 Icons.calendar_today,
                 color: AppColors.white,
@@ -161,6 +170,7 @@ class _POSAppBarState extends State<POSAppBar> {
         ),
       ),
       actions: [
+        // User Info Button
         Padding(
           padding: EdgeInsets.symmetric(
             horizontal: ResponsiveUI.padding(context, 16),
@@ -191,10 +201,7 @@ class _POSAppBarState extends State<POSAppBar> {
                   ),
                   SizedBox(width: ResponsiveUI.spacing(context, 6)),
                   Text(
-                    context.read<LoginCubit>().userModel != null
-                        ? context
-                                  .read<LoginCubit>()
-                                  .getSavedUser()?.username?.toString() ?? '' : '',
+                    username,
                     style: TextStyle(
                       color: AppColors.white,
                       fontSize: ResponsiveUI.fontSize(context, 13),
