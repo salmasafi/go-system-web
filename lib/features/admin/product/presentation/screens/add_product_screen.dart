@@ -1,3 +1,4 @@
+// lib/features/admin/product/presentation/screens/add_product_screen.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,12 +9,15 @@ import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/app_bar_widgets.dart';
 import 'package:systego/core/widgets/custom_button_widget.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
-import 'package:systego/core/widgets/custom_textfield/custom_text_field_widget.dart';
+import 'package:systego/core/widgets/custom_textfield/build_text_field.dart';
+import 'package:systego/core/widgets/custom_snck_bar/custom_snackbar.dart';
 import 'package:systego/features/admin/product/cubit/get_products_cubit/product_cubit.dart';
 import 'package:systego/features/admin/product/cubit/get_products_cubit/product_state.dart';
-import 'package:systego/features/admin/product/cubit/product_filter_cubit.dart';
 import 'package:systego/features/admin/product/cubit/product_filter_state.dart';
 import 'package:systego/features/admin/product/models/filter_models.dart';
+import '../../../../../core/utils/image_handler.dart';
+import '../../cubit/filter_product_cubit/product_filter_cubit.dart';
+import '../widgets/add_product_custom_widgets.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -22,10 +26,13 @@ class AddProductScreen extends StatefulWidget {
   State<AddProductScreen> createState() => _AddProductScreenState();
 }
 
-class _AddProductScreenState extends State<AddProductScreen> {
+class _AddProductScreenState extends State<AddProductScreen>
+    with TickerProviderStateMixin {
   // Controllers
   final _nameController = TextEditingController();
+  final _arNameController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _arDescriptionController = TextEditingController();
   final _priceController = TextEditingController();
   final _wholePriceController = TextEditingController();
   final _quantityController = TextEditingController();
@@ -46,17 +53,31 @@ class _AddProductScreenState extends State<AddProductScreen> {
   bool _hasExpiry = false;
   bool _hasIMEI = false;
   bool _differentPrice = false;
-  bool _showQuantity = true;
+  bool _showQuantity = false;
+
+  // Expiry Date
+  DateTime? _expiryDate;
+
+  // Tab Controller for variations
+  late TabController _tabController;
+  List<PriceVariation> _priceVariations = [];
+
+  // Variations & Options (from API)
+  List<VariationFilter> _variations = [];
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 0, vsync: this);
     context.read<ProductFiltersCubit>().getFilters();
+    _variations = context.read<ProductFiltersCubit>().variations;
 
     // Set default values
     _minQuantityController.text = '1';
     _lowStockController.text = '10';
     _maxToShowController.text = '100';
+    _quantityController.text = '0';
+    _wholePriceController.text = '0';
   }
 
   Future<void> _pickMainImage() async {
@@ -78,8 +99,59 @@ class _AddProductScreenState extends State<AddProductScreen> {
   }
 
   void _removeGalleryImage(int index) {
+    setState(() => _galleryImages.removeAt(index));
+  }
+
+  Future<void> _selectExpiryDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _expiryDate ?? DateTime.now().add(const Duration(days: 365)),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2030),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: AppColors.primaryBlue,
+              onPrimary: AppColors.white,
+              onSurface: AppColors.darkGray,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() => _expiryDate = picked);
+    }
+  }
+
+  void _addPriceVariation() {
     setState(() {
-      _galleryImages.removeAt(index);
+      _priceVariations.add(
+        PriceVariation(
+          priceController: TextEditingController(),
+          codeController: TextEditingController(),
+          quantityController: TextEditingController(text: '0'),
+          selectedOptions: [],
+          galleryImages: [],
+        ),
+      );
+      _tabController = TabController(
+        length: _priceVariations.length,
+        vsync: this,
+      );
+    });
+  }
+
+  void _removePriceVariation(int index) {
+    setState(() {
+      _priceVariations[index].dispose();
+      _priceVariations.removeAt(index);
+      _tabController = TabController(
+        length: _priceVariations.length,
+        vsync: this,
+      );
     });
   }
 
@@ -88,433 +160,301 @@ class _AddProductScreenState extends State<AddProductScreen> {
     return BlocConsumer<ProductsCubit, ProductsState>(
       listener: (context, state) {
         if (state is ProductAddSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                state.message,
-                style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14)),
-              ),
-              backgroundColor: AppColors.successGreen,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(
-                  ResponsiveUI.borderRadius(context, 8),
-                ),
-              ),
-              margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
-            ),
-          );
+          CustomSnackbar.showSuccess(context, state.message);
           Navigator.pop(context, true);
         } else if (state is ProductsError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                state.message,
-                style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14)),
-              ),
-              backgroundColor: AppColors.red,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(
-                  ResponsiveUI.borderRadius(context, 8),
-                ),
-              ),
-              margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
-            ),
-          );
+          CustomSnackbar.showError(context, state.message);
         }
       },
       builder: (context, state) {
         return Scaffold(
-          backgroundColor: AppColors.white,
-          appBar: appBarWithActions(context, title: "New Product"),
+          backgroundColor: AppColors.lightBlueBackground,
+          appBar: appBarWithActions(context, title: "Add Product"),
           body: SafeArea(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(
                 horizontal: ResponsiveUI.horizontalPadding(context),
+                vertical: ResponsiveUI.padding(context, 16),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: ResponsiveUI.spacing(context, 8)),
-
-                  // Product Name
-                  _buildSectionTitle('Product Information'),
-                  CustomTextField(
-                    controller: _nameController,
-                    labelText: 'Product Name',
-                    hasBoxDecoration: false,
-                    hasBorder: true,
-                    prefixIcon: Icons.inventory_2,
-                  ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 16)),
-
-                  // Description
-                  CustomTextField(
-                    controller: _descriptionController,
-                    labelText: 'Description',
-                    hasBoxDecoration: false,
-                    hasBorder: true,
-                    prefixIcon: Icons.description,
-                    maxLines: 3,
-                  ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 16)),
-
-                  // Categories Dropdown
-                  _buildSectionTitle('Category & Brand'),
-                  BlocBuilder<ProductFiltersCubit, ProductFiltersState>(
-                    builder: (context, filtersState) {
-                      if (filtersState is ProductFiltersLoading) {
-                        return _buildLoadingDropdown('Loading categories...');
-                      }
-
-                      if (filtersState is ProductFiltersSuccess) {
-                        if (filtersState.filters.data != null &&
-                            filtersState.filters.data!.categories.isNotEmpty) {}
-                        return _buildCategoriesDropdown(
-                          filtersState.filters.data!.categories,
-                        );
-                      }
-
-                      return _buildEmptyDropdown('No categories available');
-                    },
-                  ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 16)),
-
-                  // Brand Dropdown
-                  BlocBuilder<ProductFiltersCubit, ProductFiltersState>(
-                    builder: (context, filtersState) {
-                      if (filtersState is ProductFiltersLoading) {
-                        return _buildLoadingDropdown('Loading brands...');
-                      }
-
-                      if (filtersState is ProductFiltersSuccess) {
-                        return _buildBrandDropdown(
-                          filtersState.filters.data!.brands,
-                        );
-                      }
-
-                      return _buildEmptyDropdown('No brands available');
-                    },
-                  ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 16)),
-
-                  // Pricing Information
-                  _buildSectionTitle('Pricing & Stock'),
-                  Row(
+                  // Product Information Section
+                  ProductSectionCard(
+                    title: 'Product Information',
+                    icon: Icons.inventory_2,
                     children: [
-                      Expanded(
-                        child: CustomTextField(
-                          controller: _priceController,
-                          labelText: 'Price',
-                          hasBoxDecoration: false,
-                          hasBorder: true,
-                          prefixIcon: Icons.attach_money,
-                          keyboardType: TextInputType.number,
-                        ),
+                      buildTextField(
+                        context,
+                        controller: _nameController,
+                        label: 'Product Name (EN) *',
+                        icon: Icons.label,
+                        hint: 'Enter product name in English',
                       ),
-                      SizedBox(width: ResponsiveUI.spacing(context, 12)),
-                      Expanded(
-                        child: CustomTextField(
-                          controller: _wholePriceController,
-                          labelText: 'Wholesale Price',
-                          hasBoxDecoration: false,
-                          hasBorder: true,
-                          prefixIcon: Icons.money_off,
-                          keyboardType: TextInputType.number,
-                        ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                      buildTextField(
+                        context,
+                        controller: _arNameController,
+                        label: 'Product Name (AR) *',
+                        icon: Icons.label,
+                        hint: 'أدخل اسم المنتج بالعربية',
+                      ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                      buildTextField(
+                        context,
+                        controller: _descriptionController,
+                        label: 'Description (EN)',
+                        icon: Icons.description,
+                        hint: 'Enter product description',
+                        maxLines: 3,
+                      ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                      buildTextField(
+                        context,
+                        controller: _arDescriptionController,
+                        label: 'Description (AR)',
+                        icon: Icons.description,
+                        hint: 'أدخل وصف المنتج',
+                        maxLines: 3,
                       ),
                     ],
                   ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 16)),
 
-                  // Quantity & Unit
-                  Row(
+                  SizedBox(height: ResponsiveUI.spacing(context, 20)),
+
+                  // Category & Brand Section
+                  ProductSectionCard(
+                    title: 'Category & Brand',
+                    icon: Icons.category,
                     children: [
-                      Expanded(
-                        child: CustomTextField(
-                          controller: _quantityController,
-                          labelText: 'Quantity',
-                          hasBoxDecoration: false,
-                          hasBorder: true,
-                          prefixIcon: Icons.inventory,
-                          keyboardType: TextInputType.number,
-                        ),
+                      BlocBuilder<ProductFiltersCubit, ProductFiltersState>(
+                        builder: (context, filtersState) {
+                          if (filtersState is ProductFiltersLoading) {
+                            return _buildLoadingDropdown(
+                              'Loading categories...',
+                            );
+                          }
+                          if (filtersState is ProductFiltersSuccess) {
+                            return _buildCategoriesDropdown(
+                              filtersState.filters.data!.categories,
+                            );
+                          }
+                          return EmptyStateWidget(
+                            message: 'No categories available',
+                            icon: Icons.category,
+                            color: AppColors.warningOrange,
+                          );
+                        },
                       ),
-                      SizedBox(width: ResponsiveUI.spacing(context, 12)),
-                      Expanded(
-                        child: CustomTextField(
-                          controller: _unitController,
-                          labelText: 'Unit (piece, kg, etc.)',
-                          hasBoxDecoration: false,
-                          hasBorder: true,
-                          prefixIcon: Icons.scale,
-                        ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                      BlocBuilder<ProductFiltersCubit, ProductFiltersState>(
+                        builder: (context, filtersState) {
+                          if (filtersState is ProductFiltersLoading) {
+                            return _buildLoadingDropdown('Loading brands...');
+                          }
+                          if (filtersState is ProductFiltersSuccess) {
+                            return _buildBrandDropdown(
+                              filtersState.filters.data!.brands,
+                            );
+                          }
+                          return EmptyStateWidget(
+                            message: 'No categories available',
+                            icon: Icons.category,
+                            color: AppColors.warningOrange,
+                          );
+                        },
                       ),
                     ],
                   ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 16)),
 
-                  // Stock Settings
-                  Row(
+                  SizedBox(height: ResponsiveUI.spacing(context, 20)),
+
+                  // Pricing & Stock Section
+                  ProductSectionCard(
+                    title: 'Pricing & Stock',
+                    icon: Icons.attach_money,
                     children: [
-                      Expanded(
-                        child: CustomTextField(
-                          controller: _lowStockController,
-                          labelText: 'Low Stock Alert',
-                          hasBoxDecoration: false,
-                          hasBorder: true,
-                          prefixIcon: Icons.warning,
-                          keyboardType: TextInputType.number,
-                        ),
-                      ),
-                      SizedBox(width: ResponsiveUI.spacing(context, 12)),
-                      Expanded(
-                        child: CustomTextField(
-                          controller: _minQuantityController,
-                          labelText: 'Min. Sale Quantity',
-                          hasBoxDecoration: false,
-                          hasBorder: true,
-                          prefixIcon: Icons.shopping_cart,
-                          keyboardType: TextInputType.number,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 16)),
-
-                  CustomTextField(
-                    controller: _maxToShowController,
-                    labelText: 'Maximum to Show',
-                    hasBoxDecoration: false,
-                    hasBorder: true,
-                    prefixIcon: Icons.visibility,
-                    keyboardType: TextInputType.number,
-                  ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 24)),
-
-                  // Product Settings
-                  _buildSectionTitle('Product Settings'),
-                  CheckboxListTile(
-                    value: _hasExpiry,
-                    onChanged: (value) =>
-                        setState(() => _hasExpiry = value ?? false),
-                    title: Text(
-                      'Has Expiry Date',
-                      style: TextStyle(
-                        fontSize: ResponsiveUI.fontSize(context, 14),
-                      ),
-                    ),
-                    controlAffinity: ListTileControlAffinity.leading,
-                    contentPadding: EdgeInsets.zero,
-                    activeColor: AppColors.primaryBlue,
-                  ),
-                  CheckboxListTile(
-                    value: _hasIMEI,
-                    onChanged: (value) =>
-                        setState(() => _hasIMEI = value ?? false),
-                    title: Text(
-                      'Product has IMEI/Serial Number',
-                      style: TextStyle(
-                        fontSize: ResponsiveUI.fontSize(context, 14),
-                      ),
-                    ),
-                    controlAffinity: ListTileControlAffinity.leading,
-                    contentPadding: EdgeInsets.zero,
-                    activeColor: AppColors.primaryBlue,
-                  ),
-                  CheckboxListTile(
-                    value: _differentPrice,
-                    onChanged: (value) =>
-                        setState(() => _differentPrice = value ?? false),
-                    title: Text(
-                      'Different prices for variations',
-                      style: TextStyle(
-                        fontSize: ResponsiveUI.fontSize(context, 14),
-                      ),
-                    ),
-                    controlAffinity: ListTileControlAffinity.leading,
-                    contentPadding: EdgeInsets.zero,
-                    activeColor: AppColors.primaryBlue,
-                  ),
-                  CheckboxListTile(
-                    value: _showQuantity,
-                    onChanged: (value) =>
-                        setState(() => _showQuantity = value ?? true),
-                    title: Text(
-                      'Show quantity in store',
-                      style: TextStyle(
-                        fontSize: ResponsiveUI.fontSize(context, 14),
-                      ),
-                    ),
-                    controlAffinity: ListTileControlAffinity.leading,
-                    contentPadding: EdgeInsets.zero,
-                    activeColor: AppColors.primaryBlue,
-                  ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 24)),
-
-                  // Main Image
-                  _buildSectionTitle('Product Images'),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Main Image*',
-                        style: TextStyle(
-                          fontSize: ResponsiveUI.fontSize(context, 14),
-                          color: AppColors.darkGray,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      if (_mainImage != null)
-                        TextButton.icon(
-                          icon: Icon(
-                            Icons.delete,
-                            color: AppColors.red,
-                            size: ResponsiveUI.iconSize(context, 18),
-                          ),
-                          label: Text(
-                            'Remove',
-                            style: TextStyle(
-                              color: AppColors.red,
-                              fontSize: ResponsiveUI.fontSize(context, 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: buildTextField(
+                              context,
+                              controller: _unitController,
+                              label: 'Unit *',
+                              icon: Icons.scale,
+                              hint: 'piece, kg, etc.',
                             ),
                           ),
-                          onPressed: () => setState(() => _mainImage = null),
-                        ),
-                    ],
-                  ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 10)),
-                  GestureDetector(
-                    onTap: _pickMainImage,
-                    child: Container(
-                      width: ResponsiveUI.value(context, 140),
-                      height: ResponsiveUI.value(context, 140),
-                      decoration: BoxDecoration(
-                        color: AppColors.white,
-                        borderRadius: BorderRadius.circular(
-                          ResponsiveUI.borderRadius(context, 12),
-                        ),
-                        border: Border.all(
-                          color: AppColors.lightGray,
-                          width: 2,
-                        ),
-                      ),
-                      child: _mainImage != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(
-                                ResponsiveUI.borderRadius(context, 12),
-                              ),
-                              child: Image.file(_mainImage!, fit: BoxFit.cover),
-                            )
-                          : Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.add_photo_alternate_outlined,
-                                  size: ResponsiveUI.iconSize(context, 45),
-                                  color: AppColors.primaryBlue,
-                                ),
-                                SizedBox(
-                                  height: ResponsiveUI.spacing(context, 8),
-                                ),
-                                Text(
-                                  'Tap to upload',
-                                  style: TextStyle(
-                                    color: AppColors.darkGray,
-                                    fontSize: ResponsiveUI.fontSize(
-                                      context,
-                                      13,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                          SizedBox(width: ResponsiveUI.spacing(context, 12)),
+                          Expanded(
+                            child: buildTextField(
+                              context,
+                              controller: _minQuantityController,
+                              label: 'Min. Sale Qty *',
+                              icon: Icons.shopping_cart,
+                              hint: '1',
+                              keyboardType: TextInputType.number,
                             ),
-                    ),
-                  ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 24)),
-
-                  // Gallery Images
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Gallery Images (Optional)',
-                        style: TextStyle(
-                          fontSize: ResponsiveUI.fontSize(context, 14),
-                          color: AppColors.darkGray,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      TextButton.icon(
-                        icon: Icon(
-                          Icons.add_photo_alternate,
-                          color: AppColors.primaryBlue,
-                          size: ResponsiveUI.iconSize(context, 18),
-                        ),
-                        label: Text(
-                          'Add Images',
-                          style: TextStyle(
-                            color: AppColors.black,
-                            fontSize: ResponsiveUI.fontSize(context, 12),
                           ),
+                        ],
+                      ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: buildTextField(
+                              context,
+                              controller: _priceController,
+                              label: 'Unit Price *',
+                              icon: Icons.price_change,
+                              hint: '0.00',
+                              keyboardType: TextInputType.number,
+                            ),
+                          ),
+                          SizedBox(width: ResponsiveUI.spacing(context, 12)),
+                          Expanded(
+                            child: buildTextField(
+                              context,
+                              controller: _wholePriceController,
+                              label: 'Wholesale Price',
+                              icon: Icons.money_off,
+                              hint: '0.00',
+                              keyboardType: TextInputType.number,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: buildTextField(
+                              context,
+                              controller: _quantityController,
+                              label: 'Start Quantity',
+                              icon: Icons.inventory,
+                              hint: '0',
+                              keyboardType: TextInputType.number,
+                            ),
+                          ),
+                          SizedBox(width: ResponsiveUI.spacing(context, 12)),
+                          Expanded(
+                            child: buildTextField(
+                              context,
+                              controller: _lowStockController,
+                              label: 'Low Stock Alert',
+                              icon: Icons.warning,
+                              hint: '10',
+                              keyboardType: TextInputType.number,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                    ],
+                  ),
+
+                  SizedBox(height: ResponsiveUI.spacing(context, 20)),
+
+                  // Product Settings Section
+                  ProductSectionCard(
+                    title: 'Product Settings',
+                    icon: Icons.settings,
+                    children: [
+                      AnimatedCheckboxTile(
+                        value: _hasExpiry,
+                        title: 'Has Expiry Date',
+                        //   icon: Icons.calendar_today,
+                        onChanged: (value) {
+                          setState(() {
+                            _hasExpiry = value ?? false;
+                            if (!_hasExpiry) _expiryDate = null;
+                          });
+                        },
+                      ),
+                      if (_hasExpiry) ...[
+                        //SizedBox(height: ResponsiveUI.spacing(context, 8)),
+                        DatePickerCard(
+                          selectedDate: _expiryDate,
+                          onTap: _selectExpiryDate,
+                          label: 'Expiry Date',
                         ),
-                        onPressed: _pickGalleryImages,
+                      ],
+                      AnimatedCheckboxTile(
+                        value: _hasIMEI,
+                        title: 'Product has IMEI/Serial Number',
+                        // icon: Icons.qr_code,
+                        onChanged: (value) =>
+                            setState(() => _hasIMEI = value ?? false),
+                      ),
+                      AnimatedCheckboxTile(
+                        value: _showQuantity,
+                        title: 'Show Quantity',
+                        //  icon: Icons.visibility,
+                        onChanged: (value) =>
+                            setState(() => _showQuantity = value ?? true),
+                      ),
+                      if (_showQuantity) ...[
+                        SizedBox(height: ResponsiveUI.spacing(context, 8)),
+                        buildTextField(
+                          context,
+                          controller: _maxToShowController,
+                          label: 'Maximum to Show',
+                          icon: Icons.visibility,
+                          hint: '100',
+                          keyboardType: TextInputType.number,
+                        ),
+                        SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                      ],
+                      AnimatedCheckboxTile(
+                        value: _differentPrice,
+                        title: 'Different Prices for Variations',
+                        //   icon: Icons.price_check,
+                        onChanged: (value) {
+                          setState(() {
+                            _differentPrice = value ?? false;
+                            if (!_differentPrice) {
+                              for (var variation in _priceVariations) {
+                                variation.dispose();
+                              }
+                              _priceVariations.clear();
+                              _tabController = TabController(
+                                length: 0,
+                                vsync: this,
+                              );
+                            }
+                          });
+                        },
                       ),
                     ],
                   ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 10)),
-                  if (_galleryImages.isNotEmpty)
-                    Wrap(
-                      spacing: ResponsiveUI.spacing(context, 10),
-                      runSpacing: ResponsiveUI.spacing(context, 10),
-                      children: List.generate(_galleryImages.length, (index) {
-                        return Stack(
-                          children: [
-                            Container(
-                              width: ResponsiveUI.value(context, 80),
-                              height: ResponsiveUI.value(context, 80),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(
-                                  ResponsiveUI.borderRadius(context, 8),
-                                ),
-                                border: Border.all(color: AppColors.lightGray),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(
-                                  ResponsiveUI.borderRadius(context, 8),
-                                ),
-                                child: Image.file(
-                                  _galleryImages[index],
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              top: -8,
-                              right: -8,
-                              child: IconButton(
-                                icon: Container(
-                                  padding: EdgeInsets.all(
-                                    ResponsiveUI.padding(context, 4),
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.red,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(
-                                    Icons.close,
-                                    size: ResponsiveUI.iconSize(context, 12),
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                onPressed: () => _removeGalleryImage(index),
-                              ),
-                            ),
-                          ],
-                        );
-                      }),
-                    ),
+
+                  if (_differentPrice) ...[
+                    SizedBox(height: ResponsiveUI.spacing(context, 20)),
+                    _buildPriceVariationsSection(),
+                  ],
+
+                  SizedBox(height: ResponsiveUI.spacing(context, 20)),
+
+                  // Product Images Section
+                  ProductSectionCard(
+                    title: 'Product Images',
+                    icon: Icons.image,
+                    children: [
+                      MainImagePicker(
+                        image: _mainImage,
+                        onPick: _pickMainImage,
+                        onRemove: () => setState(() => _mainImage = null),
+                      ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                      GalleryImagesPicker(
+                        images: _galleryImages,
+                        onAdd: _pickGalleryImages,
+                        onRemove: _removeGalleryImage,
+                      ),
+                    ],
+                  ),
+
                   SizedBox(height: ResponsiveUI.spacing(context, 30)),
 
                   // Save Button
@@ -538,17 +478,264 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: ResponsiveUI.spacing(context, 12)),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: ResponsiveUI.fontSize(context, 16),
-          fontWeight: FontWeight.bold,
-          color: AppColors.primaryBlue,
-        ),
+  Widget _buildPriceVariationsSection() {
+    return ProductSectionCard(
+      title: 'Price Variations',
+      icon: Icons.price_change,
+      children: [
+        if (_priceVariations.isEmpty)
+          Center(
+            child: TextButton.icon(
+              onPressed: _addPriceVariation,
+              icon: Icon(Icons.add_circle, color: AppColors.primaryBlue),
+              label: Text(
+                'Add Price Variation',
+                style: TextStyle(color: AppColors.primaryBlue),
+              ),
+            ),
+          )
+        else ...[
+          TabBar(
+            controller: _tabController,
+            isScrollable: true,
+            labelColor: AppColors.primaryBlue,
+            unselectedLabelColor: AppColors.shadowGray,
+            indicatorColor: AppColors.primaryBlue,
+            tabs: List.generate(_priceVariations.length, (index) {
+              return Tab(text: 'Price Item ${index + 1}');
+            }),
+          ),
+          SizedBox(height: 16),
+          SizedBox(
+            height: 400,
+            child: TabBarView(
+              controller: _tabController,
+              children: List.generate(_priceVariations.length, (index) {
+                return _buildPriceVariationForm(index);
+              }),
+            ),
+          ),
+          SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _addPriceVariation,
+                  icon: Icon(Icons.add),
+                  label: Text('Add More'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.primaryBlue,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildPriceVariationForm(int index) {
+    final variation = _priceVariations[index];
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          buildTextField(
+            context,
+            controller: variation.priceController,
+            label: 'Price *',
+            icon: Icons.attach_money,
+            hint: '0.00',
+            keyboardType: TextInputType.number,
+          ),
+          SizedBox(height: 12),
+          buildTextField(
+            context,
+            controller: variation.codeController,
+            label: 'Product Code *',
+            icon: Icons.qr_code,
+            hint: 'Enter unique code',
+          ),
+          SizedBox(height: 12),
+          buildTextField(
+            context,
+            controller: variation.quantityController,
+            label: 'Quantity',
+            icon: Icons.inventory,
+            hint: '0',
+            keyboardType: TextInputType.number,
+          ),
+          SizedBox(height: 12),
+          // Options Selection (Multi-select from variations)
+          Text(
+            'Select Options',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.darkGray,
+            ),
+          ),
+          SizedBox(height: 8),
+          ..._variations.map((v) {
+            return _buildVariationOptionsSelector(v, variation);
+          }).toList(),
+          SizedBox(height: 12),
+          // Gallery for this variation
+          _buildVariationGallery(variation),
+          SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: () => _removePriceVariation(index),
+            icon: Icon(Icons.delete),
+            label: Text('Remove Variation'),
+            style: OutlinedButton.styleFrom(foregroundColor: AppColors.red),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildVariationOptionsSelector(
+    VariationFilter variation,
+    PriceVariation priceVariation,
+  ) {
+    // Find currently selected option ID for this variation
+    final String? selectedOptionId = priceVariation.selectedOptions
+        .cast<String?>()
+        .firstWhere(
+          (id) => variation.options.any((opt) => opt.id == id),
+          orElse: () => null,
+        );
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: AppColors.lightBlueBackground,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.primaryBlue.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            variation.name,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: AppColors.primaryBlue,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: variation.options.map((option) {
+              final bool isSelected = selectedOptionId == option.id;
+
+              return SingleVariationOptionChip(
+                label: option.name,
+                isSelected: isSelected,
+                onTap: () {
+                  setState(() {
+                    // Remove any existing option from this variation
+                    priceVariation.selectedOptions.removeWhere(
+                      (id) => variation.options.any((opt) => opt.id == id),
+                    );
+
+                    // If tapped again on same → deselect (allow zero)
+                    if (!isSelected) {
+                      priceVariation.selectedOptions.add(option.id);
+                    }
+                    // else: do nothing → already removed above → now unselected
+                  });
+                },
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVariationGallery(PriceVariation variation) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Variation Images',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: AppColors.darkGray,
+              ),
+            ),
+            TextButton.icon(
+              onPressed: () async {
+                final pickedFiles = await ImagePicker().pickMultiImage();
+                if (pickedFiles.isNotEmpty) {
+                  setState(() {
+                    variation.galleryImages.addAll(
+                      pickedFiles.map((file) => File(file.path)),
+                    );
+                  });
+                }
+              },
+              icon: Icon(Icons.add_photo_alternate, size: 16),
+              label: Text('Add', style: TextStyle(fontSize: 12)),
+            ),
+          ],
+        ),
+        if (variation.galleryImages.isNotEmpty)
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: List.generate(variation.galleryImages.length, (imgIndex) {
+              return Stack(
+                children: [
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.lightGray),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.file(
+                        variation.galleryImages[imgIndex],
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: -8,
+                    right: -8,
+                    child: IconButton(
+                      icon: Container(
+                        padding: EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: AppColors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Icons.close, size: 12, color: Colors.white),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          variation.galleryImages.removeAt(imgIndex);
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              );
+            }),
+          ),
+      ],
     );
   }
 
@@ -563,38 +750,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  Widget _buildEmptyDropdown(String message) {
-    return Container(
-      padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-      decoration: BoxDecoration(
-        color: Colors.orange.shade50,
-        borderRadius: BorderRadius.circular(
-          ResponsiveUI.borderRadius(context, 12),
-        ),
-        border: Border.all(color: Colors.orange.shade200),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.info_outline,
-            color: AppColors.warningOrange,
-            size: ResponsiveUI.iconSize(context, 20),
-          ),
-          SizedBox(width: ResponsiveUI.spacing(context, 8)),
-          Expanded(
-            child: Text(
-              message,
-              style: TextStyle(
-                fontSize: ResponsiveUI.fontSize(context, 12),
-                color: Colors.orange[900],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildCategoriesDropdown(List<CategoryFilter> categories) {
     return Container(
       decoration: BoxDecoration(
@@ -603,13 +758,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
         borderRadius: BorderRadius.circular(
           ResponsiveUI.borderRadius(context, 12),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: ResponsiveUI.borderRadius(context, 6),
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: DropdownSearch<CategoryFilter>.multiSelection(
         popupProps: PopupPropsMultiSelection.menu(
@@ -617,14 +765,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
           searchFieldProps: TextFieldProps(
             decoration: InputDecoration(
               hintText: 'Search categories...',
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: ResponsiveUI.padding(context, 12),
-                vertical: ResponsiveUI.padding(context, 8),
-              ),
+              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(
-                  ResponsiveUI.borderRadius(context, 8),
-                ),
+                borderRadius: BorderRadius.circular(8),
               ),
               prefixIcon: Icon(Icons.search, color: AppColors.darkGray),
             ),
@@ -634,10 +777,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         itemAsString: (CategoryFilter item) => item.name,
         dropdownDecoratorProps: DropDownDecoratorProps(
           dropdownSearchDecoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(
-              horizontal: ResponsiveUI.padding(context, 12),
-              vertical: ResponsiveUI.padding(context, 10),
-            ),
+            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             border: InputBorder.none,
             hintText: 'Select categories',
             suffixIcon: Icon(Icons.arrow_drop_down, color: AppColors.darkGray),
@@ -658,13 +798,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
         borderRadius: BorderRadius.circular(
           ResponsiveUI.borderRadius(context, 12),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: ResponsiveUI.borderRadius(context, 6),
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: DropdownSearch<BrandFilter>(
         popupProps: PopupProps.menu(
@@ -672,14 +805,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
           searchFieldProps: TextFieldProps(
             decoration: InputDecoration(
               hintText: 'Search brands...',
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: ResponsiveUI.padding(context, 12),
-                vertical: ResponsiveUI.padding(context, 8),
-              ),
+              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(
-                  ResponsiveUI.borderRadius(context, 8),
-                ),
+                borderRadius: BorderRadius.circular(8),
               ),
               prefixIcon: Icon(Icons.search, color: AppColors.darkGray),
             ),
@@ -689,10 +817,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         itemAsString: (BrandFilter item) => item.name,
         dropdownDecoratorProps: DropDownDecoratorProps(
           dropdownSearchDecoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(
-              horizontal: ResponsiveUI.padding(context, 12),
-              vertical: ResponsiveUI.padding(context, 10),
-            ),
+            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             border: InputBorder.none,
             hintText: 'Select brand',
             suffixIcon: Icon(Icons.arrow_drop_down, color: AppColors.darkGray),
@@ -705,61 +830,126 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  void _saveProduct() {
-    // Validation
+  // Only the _saveProduct() method is updated — rest of your file stays the same
+
+  void _saveProduct() async {
+    // === Validation ===
     if (_nameController.text.trim().isEmpty) {
-      _showError('Please enter product name');
+      CustomSnackbar.showError(context, 'Please enter product name (EN)');
+      return;
+    }
+    if (_arNameController.text.trim().isEmpty) {
+      CustomSnackbar.showError(context, 'Please enter product name (AR)');
       return;
     }
     if (_mainImage == null) {
-      _showError('Please select main product image');
+      CustomSnackbar.showError(context, 'Please select main product image');
       return;
     }
     if (_selectedCategories == null || _selectedCategories!.isEmpty) {
-      _showError('Please select at least one category');
+      CustomSnackbar.showError(context, 'Please select at least one category');
       return;
     }
     if (_selectedBrand == null) {
-      _showError('Please select a brand');
-      return;
-    }
-    if (_priceController.text.trim().isEmpty) {
-      _showError('Please enter product price');
+      CustomSnackbar.showError(context, 'Please select a brand');
       return;
     }
     if (_unitController.text.trim().isEmpty) {
-      _showError('Please enter product unit');
+      CustomSnackbar.showError(context, 'Please enter unit (e.g. piece)');
       return;
     }
 
-    // TODO: Implement actual save logic with ProductsCubit
-    // This will require updating the cubit method to accept parameters
-    context.read<ProductsCubit>().addProduct();
-  }
+    // Parse numeric fields safely
+    final double mainPrice = double.tryParse(_priceController.text) ?? 0.0;
+    final double wholePrice =
+        double.tryParse(_wholePriceController.text) ?? 0.0;
+    final int startQuantity = int.tryParse(_quantityController.text) ?? 0;
+    final int minQtySale = int.tryParse(_minQuantityController.text) ?? 1;
+    final int lowStock = int.tryParse(_lowStockController.text) ?? 10;
+    final int maxToShow = _showQuantity
+        ? (int.tryParse(_maxToShowController.text) ?? 100)
+        : 0;
 
-  void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14)),
-        ),
-        backgroundColor: AppColors.red,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(
-            ResponsiveUI.borderRadius(context, 8),
-          ),
-        ),
-        margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
-      ),
+    // === Build Price Variations ===
+    List<Map<String, dynamic>> pricesJson = [];
+
+    if (_differentPrice && _priceVariations.isNotEmpty) {
+      for (int i = 0; i < _priceVariations.length; i++) {
+        final v = _priceVariations[i];
+
+        if (v.priceController.text.trim().isEmpty) {
+          CustomSnackbar.showError(
+            context,
+            'Enter price for price item ${i + 1}',
+          );
+          return;
+        }
+        if (v.codeController.text.trim().isEmpty) {
+          CustomSnackbar.showError(
+            context,
+            'Enter product code for price item ${i + 1}',
+          );
+          return;
+        }
+        if (v.selectedOptions.isEmpty) {
+          CustomSnackbar.showError(
+            context,
+            'Select at least one option for price item ${i + 1}',
+          );
+          return;
+        }
+
+        pricesJson.add({
+          "price": double.tryParse(v.priceController.text.trim()) ?? 0.0,
+          "code": v.codeController.text.trim(),
+          "quantity": int.tryParse(v.quantityController.text) ?? 0,
+          "gallery": v.galleryImages
+              .map((img) => ImageHelper.encodeImageToBase64(img))
+              .toList(),
+          "options": v.selectedOptions,
+        });
+      }
+    }
+
+    // === Encode Images ===
+    final String mainImageBase64 = ImageHelper.encodeImageToBase64(_mainImage!);
+    final List<String> galleryBase64 = _galleryImages
+        .map((img) => ImageHelper.encodeImageToBase64(img))
+        .toList();
+
+    // === Call Cubit ===
+    context.read<ProductsCubit>().addProductWithData(
+      name: _nameController.text.trim(),
+      arName: _arNameController.text.trim(),
+      description: _descriptionController.text.trim(),
+      arDescription: _arDescriptionController.text.trim(),
+      image: mainImageBase64,
+      categoryIds: _selectedCategories!.map((c) => c.id).toList(),
+      brandId: _selectedBrand!.id,
+      unit: _unitController.text.trim(),
+      price: _differentPrice ? 0.0 : mainPrice, // MUST be 0 if variations used
+      expAbility: _hasExpiry,
+      minimumQuantitySale: minQtySale,
+      lowStock: lowStock,
+      wholePrice: wholePrice,
+      startQuantity: startQuantity,
+      taxesId:
+          '67056d0a3b233c5c1b36a7ae', // Replace later with dynamic tax selection
+      productHasImei: _hasIMEI,
+      differentPrice: _differentPrice,
+      showQuantity: _showQuantity,
+      maximumToShow: maxToShow,
+      galleryProduct: galleryBase64,
+      prices: pricesJson,
     );
   }
 
   @override
   void dispose() {
     _nameController.dispose();
+    _arNameController.dispose();
     _descriptionController.dispose();
+    _arDescriptionController.dispose();
     _priceController.dispose();
     _wholePriceController.dispose();
     _quantityController.dispose();
@@ -767,6 +957,33 @@ class _AddProductScreenState extends State<AddProductScreen> {
     _minQuantityController.dispose();
     _maxToShowController.dispose();
     _unitController.dispose();
+    _tabController.dispose();
+    for (var variation in _priceVariations) {
+      variation.dispose();
+    }
     super.dispose();
+  }
+}
+
+// Models
+class PriceVariation {
+  final TextEditingController priceController;
+  final TextEditingController codeController;
+  final TextEditingController quantityController;
+  final List<String> selectedOptions;
+  final List<File> galleryImages;
+
+  PriceVariation({
+    required this.priceController,
+    required this.codeController,
+    required this.quantityController,
+    required this.selectedOptions,
+    required this.galleryImages,
+  });
+
+  void dispose() {
+    priceController.dispose();
+    codeController.dispose();
+    quantityController.dispose();
   }
 }

@@ -8,7 +8,7 @@ import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
 import 'package:systego/features/admin/product/cubit/get_products_cubit/product_cubit.dart';
 import 'package:systego/features/admin/product/cubit/get_products_cubit/product_state.dart';
-import 'package:systego/features/admin/product/cubit/product_filter_cubit.dart';
+import 'package:systego/features/admin/product/cubit/filter_product_cubit/product_filter_cubit.dart';
 import 'package:systego/features/admin/product/cubit/product_filter_state.dart';
 import 'package:systego/features/admin/product/models/product_model.dart';
 import 'package:systego/features/admin/product/presentation/screens/add_product_screen.dart';

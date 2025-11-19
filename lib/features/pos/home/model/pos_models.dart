@@ -67,7 +67,8 @@ class Product {
       id: json['_id'] as String,
       name: json['name'] as String,
       image: json['image'] as String?,
-      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      price: //(json['price'] as num?)?.toDouble() ?? 
+      0.0,
     );
   }
 }

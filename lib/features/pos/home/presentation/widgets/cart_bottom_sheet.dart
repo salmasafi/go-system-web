@@ -117,7 +117,7 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
                             widget.onRemove(0);
                           }
                           setSheetState(() {});
-                          Navigator.pop(context);
+                          //Navigator.pop(context);
                         },
                         child: const Text(
                           'Clear All',

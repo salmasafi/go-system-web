@@ -15,7 +15,6 @@ Widget buildTextField(
   final fontSizeLabel = ResponsiveUI.fontSize(context, 14);
   final spacing8 = ResponsiveUI.spacing(context, 8);
   final borderRadius12 = ResponsiveUI.borderRadius(context, 12);
-  final value3 = ResponsiveUI.value(context, 3);
   final iconSize22 = ResponsiveUI.iconSize(context, 22);
   final padding16 = ResponsiveUI.padding(context, 16);
   final padding14 = ResponsiveUI.padding(context, 14);
@@ -52,14 +51,14 @@ Widget buildTextField(
             borderRadius: BorderRadius.circular(borderRadius12),
             borderSide: BorderSide(
               color: AppColors.shadowGray[300]!,
-              width: value3,
+              width: value2,
             ),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(borderRadius12),
             borderSide: BorderSide(
               color: AppColors.shadowGray[300]!,
-              width: value3,
+              width: value2,
             ),
           ),
           focusedBorder: OutlineInputBorder(
@@ -84,6 +83,7 @@ Widget buildTextField(
         validator: validator,
         keyboardType: keyboardType,
         maxLines: maxLines,
+        
         style: TextStyle(fontSize: fontSizeHint),
       ),
     ],

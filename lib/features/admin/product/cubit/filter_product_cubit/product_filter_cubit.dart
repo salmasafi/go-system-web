@@ -2,15 +2,17 @@
 import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/services/endpoints.dart';
-import '../../../../../core/services/dio_helper.dart';
-import '../../../../../core/utils/error_handler.dart';
-import '../models/filter_models.dart';
-import 'product_filter_state.dart';
+import '../../../../../../core/services/dio_helper.dart';
+import '../../../../../../core/utils/error_handler.dart';
+import '../../models/filter_models.dart';
+import '../product_filter_state.dart';
 
 class ProductFiltersCubit extends Cubit<ProductFiltersState> {
   ProductFiltersCubit() : super(ProductFiltersInitial());
 
   static ProductFiltersCubit get(context) => BlocProvider.of(context);
+
+  List<VariationFilter> variations = [];
 
   Future<void> getFilters() async {
     emit(ProductFiltersLoading());
@@ -26,6 +28,7 @@ class ProductFiltersCubit extends Cubit<ProductFiltersState> {
         final data = response.data;
         if (data['success'] == true && data['data'] != null) {
           final filtersModel = ProductFiltersModel.fromJson(data);
+          variations = filtersModel.data?.variations ?? [];
           log('Filters fetch successful');
           emit(ProductFiltersSuccess(filtersModel));
         } else {

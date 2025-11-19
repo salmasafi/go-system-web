@@ -12,7 +12,7 @@ import 'package:systego/features/admin/currency/cubit/currency_cubit.dart';
 import 'package:systego/features/admin/payment_methods/cubit/payment_method_cubit.dart';
 import 'package:systego/features/admin/product/cubit/get_products_cubit/product_cubit.dart';
 import 'package:systego/features/admin/product/cubit/product_details_cubit/product_details_cubit.dart';
-import 'package:systego/features/admin/product/cubit/product_filter_cubit.dart';
+import 'package:systego/features/admin/product/cubit/filter_product_cubit/product_filter_cubit.dart';
 import 'package:systego/features/admin/zone/cubit/zone_cubit.dart';
 import 'core/services/cache_helper.dart';
 import 'core/services/dio_helper.dart';

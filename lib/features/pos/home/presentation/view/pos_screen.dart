@@ -5,6 +5,7 @@ import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
+import 'package:systego/core/widgets/custom_snck_bar/custom_snackbar.dart';
 import '../../../../admin/product/presentation/screens/barcode_scanner_screen.dart';
 import '../../cubit/pos_home_cubit.dart';
 import '../../cubit/pos_home_state.dart';
@@ -40,13 +41,14 @@ class _POSScreenState extends State<POSScreen> {
   }
 
   double get _total => context.read<PosCubit>().cartItems.fold(
-        0,
-        (s, i) => s + i.product.price * i.quantity,
-      );
+    0,
+    (s, i) => s + i.product.price * i.quantity,
+  );
 
   List<Product> _filterProducts(List<Product> products) {
     return products.where((product) {
-      bool matchesSearch = _searchQuery.isEmpty ||
+      bool matchesSearch =
+          _searchQuery.isEmpty ||
           product.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           product.price.toString().contains(_searchQuery.toLowerCase());
       return matchesSearch;
@@ -84,13 +86,7 @@ class _POSScreenState extends State<POSScreen> {
     final product = await cubit.getProductByCode(code);
     if (product != null && mounted) {
       cubit.addToCart(product);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${product.name} added to cart'),
-          backgroundColor: AppColors.successGreen,
-          duration: const Duration(seconds: 2),
-        ),
-      );
+      CustomSnackbar.showSuccess(context, '${product.name} added to cart');
     }
   }
 
@@ -129,9 +125,12 @@ class _POSScreenState extends State<POSScreen> {
                         ),
                       );
 
-                      if (result != null && result is String && result != '-1') {
+                      if (result != null &&
+                          result is String &&
+                          result != '-1') {
                         _handleBarcodeScan(result);
                       }
+                      // _handleBarcodeScan('6225000571365');
                     },
                   ),
 
@@ -148,12 +147,13 @@ class _POSScreenState extends State<POSScreen> {
                         if (state is PosProductsLoading) {
                           return const CustomLoadingState();
                         }
-                        if (state is PosDataLoaded && state.displayedProducts.isNotEmpty) {
+                        if (state is PosDataLoaded &&
+                            state.displayedProducts.isNotEmpty) {
                           return POSProductGrid(
                             products: _filterProducts(state.displayedProducts),
                             onProductTap: _addToCart,
                           );
-                    }
+                        }
                         return CustomEmptyState(
                           icon: Icons.inventory_2_outlined,
                           title: 'No Products Found',

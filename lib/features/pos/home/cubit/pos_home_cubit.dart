@@ -267,29 +267,34 @@ class PosCubit extends Cubit<PosState> {
   Future<Product?> getProductByCode(String code) async {
     emit(PosLoading());
     try {
-      final response = await DioHelper.getData(
-        url:  EndPoint.productByCode,
-        
+      final response = await DioHelper.postData(
+        url: EndPoint.productByCode,
+        data: {'code': code},
       );
 
       if (response.statusCode == 200) {
         final data = response.data['data']['product'];
         if (data != null) {
           final product = Product.fromJson(data);
-          emit(PosLoaded());
           return product;
         } else {
           emit(PosError('Product not found'));
+          selectTab();
+
           return null;
         }
       } else {
         final msg = _extractErrorMessage(response);
         emit(PosError(msg));
+        selectTab();
+
         return null;
       }
     } catch (e) {
       final msg = _extractErrorMessage(e);
       emit(PosError(msg));
+      selectTab();
+
       return null;
     }
   }
@@ -298,19 +303,23 @@ class PosCubit extends Cubit<PosState> {
   //  Cart Management
   // ────────────────────────────────────────────────────────────────
   void addToCart(Product product) {
-    final existingIndex = cartItems.indexWhere((i) => i.product.id == product.id);
+    final existingIndex = cartItems.indexWhere(
+      (i) => i.product.id == product.id,
+    );
     if (existingIndex >= 0) {
       cartItems[existingIndex].quantity++;
     } else {
       cartItems.add(CartItem(product: product, quantity: 1));
     }
     emit(PosCartUpdated(cartItems));
+    selectTab();
   }
 
   void removeFromCart(int index) {
     if (index >= 0 && index < cartItems.length) {
       cartItems.removeAt(index);
       emit(PosCartUpdated(cartItems));
+      selectTab();
     }
   }
 
@@ -323,5 +332,6 @@ class PosCubit extends Cubit<PosState> {
       cartItems.removeAt(index);
     }
     emit(PosCartUpdated(cartItems));
+    selectTab();
   }
 }
