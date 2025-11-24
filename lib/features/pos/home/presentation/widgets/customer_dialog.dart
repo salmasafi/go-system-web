@@ -21,7 +21,7 @@ class POSCustomerDialog extends StatelessWidget {
       ),
       title: Row(
         children: [
-          const Icon(Icons.payment, color: AppColors.primaryBlue),
+          const Icon(Icons.person, color: AppColors.primaryBlue),
           SizedBox(width: ResponsiveUI.spacing(context, 12)),
           Text(
             'Select Customer',

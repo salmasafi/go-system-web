@@ -11,9 +11,9 @@ import '../../../../admin/product/presentation/screens/barcode_scanner_screen.da
 import '../../cubit/pos_home_cubit.dart';
 import '../../cubit/pos_home_state.dart';
 import '../widgets/appbar.dart';
-import '../widgets/cart_bottom_sheet.dart';
-import '../widgets/cart_fab.dart';
-import '../widgets/cart_summary.dart';
+import '../../../checkout/presentation/widgets/cart_bottom_sheet.dart';
+import '../../../checkout/presentation/widgets/cart_fab.dart';
+import '../../../checkout/presentation/widgets/cart_summary.dart';
 import '../widgets/filter_by_category_brand_widgets.dart';
 import '../widgets/header_section.dart';
 import '../widgets/product_grid.dart';

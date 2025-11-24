@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:systego/core/services/session_helper.dart';
+import 'package:systego/features/POS/checkout/cubit/checkout_cubit.dart';
 import 'package:systego/features/admin/auth/cubit/login_cubit.dart';
 import 'package:systego/features/admin/brands/cubit/brand_cubit.dart';
 import 'package:systego/features/admin/categories/cubit/categories_cubit.dart';
@@ -18,8 +19,8 @@ import 'core/services/cache_helper.dart';
 import 'core/services/dio_helper.dart';
 import 'features/admin/auth/presentation/view/login_screen.dart';
 import 'features/admin/country/cubit/country_cubit.dart';
-import 'features/Home/cubit/notifications_cubit.dart';
-import 'features/Home/presentation/view/home_screen.dart';
+import 'features/home/cubit/notifications_cubit.dart';
+import 'features/home/presentation/view/home_screen.dart';
 import 'features/admin/suppliers/cubit/supplier_cubit.dart';
 import 'features/admin/warehouses/cubit/warehouse_cubit.dart';
 import 'features/POS/home/cubit/pos_home_cubit.dart';
@@ -77,6 +78,7 @@ class _MainAppState extends State<MainApp> {
       providers: [
         BlocProvider<LoginCubit>(create: (context) => LoginCubit()),
         BlocProvider<PosCubit>(create: (context) => PosCubit()..loadPosData()),
+        BlocProvider<CheckoutCubit>(create: (context) => CheckoutCubit()),
         BlocProvider<WareHouseCubit>(create: (context) => WareHouseCubit()),
         BlocProvider<ProductsCubit>(create: (context) => ProductsCubit()),
         BlocProvider<CategoriesCubit>(create: (context) => CategoriesCubit()),

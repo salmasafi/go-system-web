@@ -7,6 +7,7 @@ import 'package:systego/features/POS/home/presentation/widgets/customer_dialog.d
 import 'package:systego/features/POS/home/presentation/widgets/warhouse_dialog.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
+import 'bank_account_dialog.dart';
 import 'info_chip.dart';
 import 'search_bar.dart';
 
@@ -56,17 +57,47 @@ class _POSHeaderSectionState extends State<POSHeaderSection> {
                 onTap: widget.onTap,
               ),
               SizedBox(height: ResponsiveUI.spacing(context, 12)),
+              // Row(
+              //   children: [
+              //     Expanded(
+              //       child: InkWell(
+              //         onTap: () {
+              //           _showWarhouseDialog();
+              //         },
+              //         child: POSInfoChip(
+              //           icon: Icons.warehouse_outlined,
+              //           label: 'Warehouse',
+              //           value: cubit.selectedWarhouse?.name ?? '',
+              //           color: AppColors.primaryBlue,
+              //         ),
+              //       ),
+              //     ),
+              //     SizedBox(width: ResponsiveUI.spacing(context, 8)),
+              //     Expanded(
+              //       child: InkWell(
+              //         onTap: () {
+              //           _showCustomerDialog();
+              //         },
+              //         child: POSInfoChip(
+              //           icon: Icons.person_outline,
+              //           label: 'Customer',
+              //           value: cubit.selectedCustomer?.name ?? '',
+              //           color: AppColors.successGreen,
+              //         ),
+              //       ),
+              //     ),
+              //   ],
+              // ),
+              // // داخل الـ Row في POSHeaderSection
               Row(
                 children: [
                   Expanded(
                     child: InkWell(
-                      onTap: () {
-                        _showWarhouseDialog();
-                      },
+                      onTap: () => _showWarhouseDialog(),
                       child: POSInfoChip(
                         icon: Icons.warehouse_outlined,
                         label: 'Warehouse',
-                        value: cubit.selectedWarhouse?.name ?? '',
+                        value: cubit.selectedWarhouse?.name ?? 'Select',
                         color: AppColors.primaryBlue,
                       ),
                     ),
@@ -74,14 +105,24 @@ class _POSHeaderSectionState extends State<POSHeaderSection> {
                   SizedBox(width: ResponsiveUI.spacing(context, 8)),
                   Expanded(
                     child: InkWell(
-                      onTap: () {
-                        _showCustomerDialog();
-                      },
+                      onTap: () => _showCustomerDialog(),
                       child: POSInfoChip(
                         icon: Icons.person_outline,
                         label: 'Customer',
-                        value: cubit.selectedCustomer?.name ?? '',
+                        value: cubit.selectedCustomer?.name ?? 'Walk-in',
                         color: AppColors.successGreen,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: ResponsiveUI.spacing(context, 8)),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () => _showBankAccountDialog(),
+                      child: POSInfoChip(
+                        icon: Icons.account_balance_wallet_outlined,
+                        label: 'Bank Account',
+                        value: cubit.selectedAccount?.name ?? 'Default Account',
+                        color: AppColors.categoryPurple,
                       ),
                     ),
                   ),
@@ -91,6 +132,13 @@ class _POSHeaderSectionState extends State<POSHeaderSection> {
           ),
         );
       },
+    );
+  }
+
+  void _showBankAccountDialog() {
+    showDialog(
+      context: context,
+      builder: (_) => POSBankAccountDialog(), // هنعملها دلوقتي
     );
   }
 

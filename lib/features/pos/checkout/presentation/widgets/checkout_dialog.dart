@@ -1,9 +1,14 @@
 // lib/features/pos/home/presentation/widgets/checkout_dialog.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_textfield/build_text_field.dart';
-import '../../model/pos_models.dart';
+import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
+import '../../../home/cubit/pos_home_cubit.dart';
+import '../../../home/cubit/pos_home_state.dart';
+import '../../../home/model/pos_models.dart';
+import '../../cubit/checkout_cubit.dart';
 import 'receipt_dialog.dart';
 
 class POSCheckoutDialog extends StatefulWidget {
@@ -661,23 +666,60 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   // --------------------------------------------------------------
   //  SUBMIT
   // --------------------------------------------------------------
-  void _submit() {
-    // if (!_formKey.currentState!.validate()) return;
+  void _submit() async {
+    if (_due > 0 &&
+        !widget.selectedPaymentMethod.name.toLowerCase().contains('cash')) {
+      CustomSnackbar.showError(context, 'Please pay full amount');
+      return;
+    }
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => POSReceiptDialog(
-        totalAmount: widget.totalAmount,
-        paymentMethod: widget.selectedPaymentMethod,
-        paymentReceiver: _paymentReceiverCtrl.text.trim(),
-        paymentNote: _paymentNoteCtrl.text.trim(),
-        saleNote: _saleNoteCtrl.text.trim(),
-        staffNote: _staffNoteCtrl.text.trim(),
-        // For cash payment only:
-        cashReceived: double.tryParse(_paymentReceiverCtrl.text.trim()),
-        change: _change,
-      ),
+    final paidAmount = _totalPaying >= widget.totalAmount
+        ? _totalPaying
+        : widget.totalAmount;
+    final posCubit = context.read<PosCubit>();
+
+    final success = await context.read<CheckoutCubit>().createSale(
+      cartItems: widget.cartItems,
+      totalAmount: widget.totalAmount,
+      paidAmount: paidAmount,
+      customer: posCubit.selectedCustomer!,
+      warehouse: posCubit.selectedWarhouse!,
+      paymentMethod: widget.selectedPaymentMethod,
+      account: posCubit.selectedAccount!,
+      currency:
+          posCubit.selectedCurrency ??
+          Currency.fromJson({
+            "_id": "68e617af2c4fc1f8db2f267a",
+            "name": "EGP",
+            "createdAt": "2025-10-08T07:50:07.831Z",
+            "updatedAt": "2025-11-02T10:44:53.086Z",
+            "__v": 0,
+            "ar_name": "جنيه مصري",
+          }),
+      tax: posCubit.selectedTax,
+      paymentNote: _paymentNoteCtrl.text.isEmpty ? null : _paymentNoteCtrl.text,
     );
+
+    if (success && mounted) {
+      Navigator.pop(context); // close checkout
+      posCubit.cartItems.clear();
+      posCubit.emit(PosCartUpdated([]));
+
+      // اعرض الإيصال
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => POSReceiptDialog(
+          totalAmount: widget.totalAmount,
+          paidAmount: paidAmount,
+          change: _change,
+          reference: (context.read<CheckoutCubit>().state as CheckoutSuccess)
+              .reference,
+          pointsEarned: (context.read<CheckoutCubit>().state as CheckoutSuccess)
+              .pointsEarned,
+          paymentMethod: widget.selectedPaymentMethod,
+        ),
+      );
+    }
   }
 }

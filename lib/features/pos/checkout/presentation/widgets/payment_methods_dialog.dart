@@ -1,15 +1,19 @@
-// lib/features/pos/home/presentation/widgets/warhouse_dialog.dart
+// Updated Payment Methods Dialog with callback
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
-import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
-import 'package:systego/features/POS/home/cubit/pos_home_state.dart';
+
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
-import 'selection_option.dart';
+import '../../../../../core/widgets/custom_error/custom_empty_state.dart';
+import '../../../home/cubit/pos_home_cubit.dart';
+import '../../../home/cubit/pos_home_state.dart';
+import '../../../home/model/pos_models.dart';
+import '../../../home/presentation/widgets/selection_option.dart';
 
-class POSWarhouseDialog extends StatelessWidget {
-  const POSWarhouseDialog({super.key});
+class POSPaymentMethodsDialog extends StatelessWidget {
+  final Function(PaymentMethod) onMethodSelected;
+
+  const POSPaymentMethodsDialog({super.key, required this.onMethodSelected});
 
   @override
   Widget build(BuildContext context) {
@@ -21,30 +25,29 @@ class POSWarhouseDialog extends StatelessWidget {
       ),
       title: Row(
         children: [
-          const Icon(Icons.warehouse, color: AppColors.primaryBlue),
+          const Icon(Icons.payment, color: AppColors.primaryBlue),
           SizedBox(width: ResponsiveUI.spacing(context, 12)),
           Text(
-            'Select Warehouse',
+            'Select Payment Method',
             style: TextStyle(
-              fontSize: ResponsiveUI.fontSize(context, 20),
+              fontSize: ResponsiveUI.fontSize(context, 18),
               fontWeight: FontWeight.bold,
             ),
           ),
         ],
       ),
       content: SizedBox(
-        // <-- Constrain height
         width: double.maxFinite,
-        height: MediaQuery.of(context).size.height * 0.5, // 50% of screen
+        height: MediaQuery.of(context).size.height * 0.5,
         child: BlocBuilder<PosCubit, PosState>(
           builder: (context, state) {
             final cubit = context.read<PosCubit>();
-            final warehouses = cubit.warehouses;
+            final paymentMethods = cubit.paymentMethods;
 
-            if (warehouses.isEmpty) {
+            if (paymentMethods.isEmpty) {
               return CustomEmptyState(
-                icon: Icons.inventory_2_outlined,
-                title: 'No Warehouses Found',
+                icon: Icons.attach_money_rounded,
+                title: 'No Payment Methods Found',
                 message: 'Pull to refresh or check your connection',
                 actionLabel: 'Retry',
                 onAction: () => cubit.loadPosData(),
@@ -52,15 +55,15 @@ class POSWarhouseDialog extends StatelessWidget {
             }
 
             return ListView.builder(
-              itemCount: warehouses.length,
+              itemCount: paymentMethods.length,
               itemBuilder: (context, index) {
-                final warehouse = warehouses[index];
+                final paymentMethod = paymentMethods[index];
                 return POSSelectionOption(
-                  label: warehouse.name,
-                  icon: Icons.warehouse,
+                  label: paymentMethod.name,
+                  icon: Icons.attach_money_rounded,
                   onTap: () {
-                    cubit.changeWarhouseValue(warehouse);
-                    Navigator.pop(context);
+                    cubit.changePaymentMethodValue(paymentMethod);
+                    onMethodSelected(paymentMethod);
                   },
                 );
               },

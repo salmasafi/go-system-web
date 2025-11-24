@@ -130,3 +130,53 @@ class PaymentMethod {
     );
   }
 }
+
+class BankAccount {
+  final String id;
+  final String name;
+  final String? accountNumber;
+
+  BankAccount({required this.id, required this.name, this.accountNumber});
+
+  factory BankAccount.fromJson(Map<String, dynamic> json) {
+    return BankAccount(
+      id: json['_id'] ?? json['id'],
+      name: json['name'] ?? 'Cash Register',
+      accountNumber: json['account_number'],
+    );
+  }
+}
+
+class Tax {
+  final String id;
+  final String name;
+  final double rate;
+
+  Tax({required this.id, required this.name, required this.rate});
+
+  factory Tax.fromJson(Map<String, dynamic> json) {
+    return Tax(
+      id: json['_id'] ?? json['id'],
+      name: json['name'] ?? 'No Tax',
+      rate: (json['rate'] ?? 0).toDouble(),
+    );
+  }
+}
+
+class Currency {
+  final String id;
+  final String name;
+  final String code;
+  final String symbol;
+
+  Currency({required this.id, required this.name, required this.code, required this.symbol});
+
+  factory Currency.fromJson(Map<String, dynamic> json) {
+    return Currency(
+      id: json['_id'] ?? json['id'],
+      name: json['name'] ?? 'USD',
+      code: json['code'] ?? 'USD',
+      symbol: json['symbol'] ?? '\$',
+    );
+  }
+}

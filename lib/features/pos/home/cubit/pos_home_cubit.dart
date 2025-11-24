@@ -2,11 +2,11 @@
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:systego/features/POS/home/cubit/pos_home_state.dart';
+import 'package:systego/features/POS/home/model/pos_models.dart';
 import '../../../../core/services/dio_helper.dart';
 import '../../../../core/services/endpoints.dart';
 import '../../../../core/utils/error_handler.dart';
-import '../model/pos_models.dart';
-import 'pos_home_state.dart';
 
 class PosCubit extends Cubit<PosState> {
   PosCubit() : super(PosInitial());
@@ -27,6 +27,14 @@ class PosCubit extends Cubit<PosState> {
   List<Warehouse> warehouses = [];
   List<Customer> customers = [];
   List<PaymentMethod> paymentMethods = [];
+  List<BankAccount> accounts = [];
+  BankAccount? selectedAccount;
+
+  List<Tax> taxes = [];
+  Tax? selectedTax;
+
+  List<Currency> currencies = [];
+  Currency? selectedCurrency;
 
   // Selected filters
   String? selectedCategoryId;
@@ -123,23 +131,60 @@ class PosCubit extends Cubit<PosState> {
     try {
       final response = await DioHelper.getData(url: EndPoint.posSelections);
       if (response.statusCode == 200) {
+        // في pos_home_cubit.dart → داخل getSelections()
         final json = response.data['data'];
+
         warehouses = (json['warehouses'] as List)
             .map((e) => Warehouse.fromJson(e))
             .toList();
-        selectedWarhouse = warehouses.first;
+        selectedWarhouse = warehouses.isNotEmpty ? warehouses.first : null;
+
         customers = (json['customers'] as List)
             .map((e) => Customer.fromJson(e))
             .toList();
-        selectedCustomer = customers.first;
+        selectedCustomer = customers.isNotEmpty ? customers.first : null;
+
         paymentMethods = (json['paymentMethods'] as List)
             .map((e) => PaymentMethod.fromJson(e))
             .toList();
-        selectedPaymentMethod = paymentMethods.first;
+        selectedPaymentMethod = paymentMethods.isNotEmpty
+            ? paymentMethods.first
+            : null;
+
+        // ←←← الجديد: نضيف Account + Tax + Currency
+        accounts = (json['accounts'] as List? ?? [])
+            .map((e) => BankAccount.fromJson(e))
+            .toList();
+        selectedAccount = accounts.isNotEmpty ? accounts.first : null;
+
+        taxes = (json['taxes'] as List? ?? [])
+            .map((e) => Tax.fromJson(e))
+            .toList();
+        selectedTax = taxes.isNotEmpty ? taxes.first : null;
+
+        currencies = (json['currencies'] as List? ?? [])
+            .map((e) => Currency.fromJson(e))
+            .toList();
+        selectedCurrency = currencies.isNotEmpty ? currencies.first : null;
       }
     } catch (e) {
       log('Selections error: $e');
     }
+  }
+
+  void changeAccount(BankAccount account) {
+    selectedAccount = account;
+    emit(PosDataLoaded(featuredProducts)); // أو أي state
+  }
+
+  void changeTax(Tax? tax) {
+    selectedTax = tax;
+    emit(PosDataLoaded(featuredProducts));
+  }
+
+  void changeCurrency(Currency currency) {
+    selectedCurrency = currency;
+    emit(PosDataLoaded(featuredProducts));
   }
 
   Future<void> changeWarhouseValue(Warehouse warehouse) async {
@@ -284,7 +329,6 @@ class PosCubit extends Cubit<PosState> {
           return null;
         }
       } else {
-
         final msg = _extractErrorMessage(response);
         emit(PosError(msg));
         selectTab();
