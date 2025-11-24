@@ -7,9 +7,9 @@ import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:systego/core/widgets/custom_error/custom_error_state.dart';
-import 'package:systego/features/pos/home/cubit/pos_home_cubit.dart';
-import 'package:systego/features/pos/home/cubit/pos_home_state.dart';
-import 'package:systego/features/pos/home/model/pos_models.dart';
+import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
+import 'package:systego/features/POS/home/cubit/pos_home_state.dart';
+import 'package:systego/features/POS/home/model/pos_models.dart';
 
 enum FilterType { categories, brands }
 

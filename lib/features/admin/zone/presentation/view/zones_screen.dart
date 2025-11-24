@@ -8,7 +8,7 @@ import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
 import 'package:systego/features/admin/city/cubit/city_cubit.dart';
 import 'package:systego/features/admin/zone/cubit/zone_cubit.dart';
-import '../../../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
+import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../cubit/zone_state.dart';
 import '../widgets/zone_form_dialog.dart';
 import '../widgets/zones_list.dart';

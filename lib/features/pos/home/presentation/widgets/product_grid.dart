@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:systego/features/POS/home/model/pos_models.dart';
 import '../../../../../core/utils/responsive_ui.dart';
 import '../../../../../core/widgets/animation/animated_element.dart';
-import '../../model/pos_models.dart';
 import 'product_card.dart';
 
 class POSProductGrid extends StatelessWidget {

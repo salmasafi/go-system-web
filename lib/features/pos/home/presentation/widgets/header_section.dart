@@ -1,10 +1,10 @@
 // ── Header (search + chips) ───────────────────────────────────────────────
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/features/pos/home/cubit/pos_home_cubit.dart';
-import 'package:systego/features/pos/home/cubit/pos_home_state.dart';
-import 'package:systego/features/pos/home/presentation/widgets/customer_dialog.dart';
-import 'package:systego/features/pos/home/presentation/widgets/warhouse_dialog.dart';
+import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
+import 'package:systego/features/POS/home/cubit/pos_home_state.dart';
+import 'package:systego/features/POS/home/presentation/widgets/customer_dialog.dart';
+import 'package:systego/features/POS/home/presentation/widgets/warhouse_dialog.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
 import 'info_chip.dart';

@@ -10,7 +10,7 @@ import 'package:systego/core/widgets/app_bar_widgets.dart';
 import 'package:systego/core/widgets/custom_button_widget.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:systego/core/widgets/custom_textfield/build_text_field.dart';
-import 'package:systego/core/widgets/custom_snck_bar/custom_snackbar.dart';
+import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:systego/features/admin/product/cubit/get_products_cubit/product_cubit.dart';
 import 'package:systego/features/admin/product/cubit/get_products_cubit/product_state.dart';
 import 'package:systego/features/admin/product/cubit/product_filter_state.dart';

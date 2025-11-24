@@ -18,11 +18,11 @@ import 'core/services/cache_helper.dart';
 import 'core/services/dio_helper.dart';
 import 'features/admin/auth/presentation/view/login_screen.dart';
 import 'features/admin/country/cubit/country_cubit.dart';
-import 'features/home/cubit/notifications_cubit.dart';
-import 'features/home/presentation/view/home_screen.dart';
+import 'features/Home/cubit/notifications_cubit.dart';
+import 'features/Home/presentation/view/home_screen.dart';
 import 'features/admin/suppliers/cubit/supplier_cubit.dart';
 import 'features/admin/warehouses/cubit/warehouse_cubit.dart';
-import 'features/pos/home/cubit/pos_home_cubit.dart';
+import 'features/POS/home/cubit/pos_home_cubit.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 

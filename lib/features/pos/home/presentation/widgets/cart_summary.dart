@@ -1,7 +1,7 @@
 // ── Cart summary (bottom sheet) ───────────────────────────────────────────
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/features/pos/home/cubit/pos_home_cubit.dart';
+import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
 

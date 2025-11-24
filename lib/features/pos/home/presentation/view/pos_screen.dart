@@ -5,11 +5,11 @@ import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
-import 'package:systego/core/widgets/custom_snck_bar/custom_snackbar.dart';
+import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:systego/features/POS/home/model/pos_models.dart';
 import '../../../../admin/product/presentation/screens/barcode_scanner_screen.dart';
 import '../../cubit/pos_home_cubit.dart';
 import '../../cubit/pos_home_state.dart';
-import '../../model/pos_models.dart';
 import '../widgets/appbar.dart';
 import '../widgets/cart_bottom_sheet.dart';
 import '../widgets/cart_fab.dart';
@@ -130,7 +130,7 @@ class _POSScreenState extends State<POSScreen> {
                           result != '-1') {
                         _handleBarcodeScan(result);
                       }
-                      // _handleBarcodeScan('6225000571365');
+                      //_handleBarcodeScan('6225000571365');
                     },
                   ),
 

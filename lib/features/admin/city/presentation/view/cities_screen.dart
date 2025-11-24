@@ -7,7 +7,7 @@ import 'package:systego/core/widgets/app_bar_widgets.dart';
 import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
 import 'package:systego/features/admin/city/presentation/widgets/cities_list.dart';
-import '../../../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
+import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../cubit/city_cubit.dart';
 import '../../cubit/city_state.dart';
 import '../widgets/city_form_dialog.dart';

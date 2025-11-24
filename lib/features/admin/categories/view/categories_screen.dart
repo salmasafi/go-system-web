@@ -10,7 +10,7 @@ import 'package:systego/features/admin/categories/view/widgets/category_card_wid
 import 'package:systego/features/admin/categories/view/widgets/delete_category_dialog.dart';
 import 'package:systego/features/admin/categories/view/create_category_screen.dart';
 import 'package:systego/features/admin/categories/view/edit_category_screen.dart';
-import '../../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
+import '../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../product/presentation/widgets/search_bar_widget.dart';
 import '../cubit/categories_cubit.dart';
 import '../cubit/categories_states.dart';

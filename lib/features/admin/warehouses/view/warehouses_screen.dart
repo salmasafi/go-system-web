@@ -8,7 +8,7 @@ import '../../../../core/utils/responsive_ui.dart';
 import '../../../../core/widgets/app_bar_widgets.dart';
 import '../../../../core/widgets/custom_error/custom_empty_state.dart';
 import '../../../../core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
-import '../../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
+import '../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../../../core/widgets/custom_warehouse_details_sheet.dart';
 import '../../product/presentation/widgets/search_bar_widget.dart';
 import '../cubit/warehouse_cubit.dart';

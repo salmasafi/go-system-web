@@ -14,7 +14,7 @@ import 'package:systego/features/admin/product/models/product_model.dart';
 import 'package:systego/features/admin/product/presentation/screens/add_product_screen.dart';
 import 'package:systego/features/admin/product/presentation/widgets/filter_by_category_brand_widgets.dart';
 import 'package:systego/features/admin/product/presentation/widgets/product_list.dart';
-import '../../../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
+import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../widgets/search_bar_widget.dart';
 import 'barcode_scanner_screen.dart';
 

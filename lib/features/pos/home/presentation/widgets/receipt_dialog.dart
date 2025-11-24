@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:intl/intl.dart';
-import 'package:systego/features/pos/home/cubit/pos_home_cubit.dart';
+import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
 import '../../model/pos_models.dart';
 
 class POSReceiptDialog extends StatefulWidget {

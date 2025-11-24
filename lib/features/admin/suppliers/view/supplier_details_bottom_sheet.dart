@@ -6,7 +6,7 @@ import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:systego/features/admin/suppliers/cubit/supplier_cubit.dart';
 import 'package:systego/features/admin/suppliers/cubit/supplier_state.dart';
 import 'package:systego/features/admin/suppliers/view/widgets_supplier_detalis/supplier_details_content.dart';
-import '../../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
+import '../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 
 class SupplierDetailsBottomSheet extends StatelessWidget {
   final String supplierId;

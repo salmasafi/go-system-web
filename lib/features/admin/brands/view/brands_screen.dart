@@ -9,7 +9,7 @@ import 'package:systego/features/admin/product/presentation/widgets/search_bar_w
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/custom_error/custom_empty_state.dart';
 import '../../../../core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
-import '../../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
+import '../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../cubit/brand_cubit.dart';
 import '../cubit/brand_states.dart';
 import '../model/get_brands_model.dart';

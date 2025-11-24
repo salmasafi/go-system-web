@@ -91,7 +91,7 @@ class ProductsCubit extends Cubit<ProductsState> {
       'minimum_quantity_sale': minimumQuantitySale,
       'low_stock': lowStock,
       'whole_price': wholePrice,
-      'start_quantaty': startQuantity, // Note: API has typo "quantaty"
+      'quantaty': startQuantity, // Note: API has typo "quantaty"
       'taxesId': taxesId,
       'product_has_imei': productHasImei,
       'different_price': differentPrice,

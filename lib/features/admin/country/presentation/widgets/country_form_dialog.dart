@@ -4,7 +4,7 @@ import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
 import '../../../../../core/utils/validators.dart';
 import '../../../../../core/widgets/custom_loading/build_overlay_loading.dart';
-import '../../../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
+import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../../../../core/widgets/custom_textfield/build_text_field.dart';
 import '../../cubit/Country_state.dart';
 import '../../cubit/country_cubit.dart';

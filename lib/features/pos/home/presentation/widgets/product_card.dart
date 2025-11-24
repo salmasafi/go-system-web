@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
-import 'package:systego/features/pos/home/model/pos_models.dart';
+import 'package:systego/features/POS/home/model/pos_models.dart';
 import '../../../../../core/constants/app_colors.dart';
 
 class POSProductCard extends StatelessWidget {

@@ -275,7 +275,7 @@ class PosCubit extends Cubit<PosState> {
       if (response.statusCode == 200) {
         final data = response.data['data']['product'];
         if (data != null) {
-          final product = Product.fromJson(data);
+          final product = Product.fromJson2(data);
           return product;
         } else {
           emit(PosError('Product not found'));
@@ -284,6 +284,7 @@ class PosCubit extends Cubit<PosState> {
           return null;
         }
       } else {
+
         final msg = _extractErrorMessage(response);
         emit(PosError(msg));
         selectTab();

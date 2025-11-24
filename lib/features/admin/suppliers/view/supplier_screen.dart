@@ -11,7 +11,7 @@ import 'suppplier_add_edit/supplier_dialog.dart';
 import '../../../../core/widgets/custom_error/custom_empty_state.dart';
 import '../../../../core/widgets/custom_error/custom_error_state.dart';
 import '../../../../core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
-import '../../../../core/widgets/custom_snck_bar/custom_snackbar.dart';
+import '../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../model/supplier_model.dart';
 
 class SupplierScreen extends StatefulWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/custom_snck_bar/custom_snackbar.dart';
+import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:systego/features/admin/suppliers/view/suppplier_add_edit/supplier_dialog_button.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../cubit/supplier_cubit.dart';
