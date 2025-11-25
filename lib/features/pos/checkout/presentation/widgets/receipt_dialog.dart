@@ -5,29 +5,28 @@ import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
-import '../../../home/cubit/pos_home_state.dart';
 import '../../../home/model/pos_models.dart';
 
 class POSReceiptDialog extends StatefulWidget {
-  final double totalAmount;
+  final double totalAmount; // هنا بيبقى Subtotal فقط
+  final double taxAmount; // قيمة الضريبة
+  final Tax? selectedTax; // الضريبة المختارة (لعرض الاسم)
   final double paidAmount;
   final double change;
   final String reference;
   final int pointsEarned;
   final PaymentMethod paymentMethod;
-  final String? saleNote;
-  final String? staffNote;
 
   const POSReceiptDialog({
     super.key,
     required this.totalAmount,
+    required this.taxAmount,
+    this.selectedTax,
     required this.paidAmount,
     required this.change,
     required this.reference,
     required this.pointsEarned,
     required this.paymentMethod,
-    this.saleNote,
-    this.staffNote,
   });
 
   @override
@@ -36,9 +35,7 @@ class POSReceiptDialog extends StatefulWidget {
 
 class _POSReceiptDialogState extends State<POSReceiptDialog> {
   String _formatDateTime() {
-    final now = DateTime.now();
-    final format = DateFormat('yyyy-MM-dd HH:mm:ss');
-    return format.format(now);
+    return DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
   }
 
   String _amountInWords(double amount) {
@@ -46,17 +43,46 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
     int cents = ((amount - dollars) * 100).round();
 
     const ones = [
-      '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
-      'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen',
-      'Seventeen', 'Eighteen', 'Nineteen'
+      '',
+      'One',
+      'Two',
+      'Three',
+      'Four',
+      'Five',
+      'Six',
+      'Seven',
+      'Eight',
+      'Nine',
+      'Ten',
+      'Eleven',
+      'Twelve',
+      'Thirteen',
+      'Fourteen',
+      'Fifteen',
+      'Sixteen',
+      'Seventeen',
+      'Eighteen',
+      'Nineteen',
     ];
-    const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+    const tens = [
+      '',
+      '',
+      'Twenty',
+      'Thirty',
+      'Forty',
+      'Fifty',
+      'Sixty',
+      'Seventy',
+      'Eighty',
+      'Ninety',
+    ];
 
     String convert(int n) {
       if (n == 0) return '';
       if (n < 20) return ones[n];
       if (n < 100) return '${tens[n ~/ 10]} ${ones[n % 10]}'.trim();
-      if (n < 1000) return '${ones[n ~/ 100]} Hundred ${convert(n % 100)}'.trim();
+      if (n < 1000)
+        return '${ones[n ~/ 100]} Hundred ${convert(n % 100)}'.trim();
       return '$n';
     }
 
@@ -67,23 +93,22 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
     return result.trim();
   }
 
+  double get grandTotal => widget.totalAmount + widget.taxAmount;
+
   @override
   Widget build(BuildContext context) {
     final isCash = widget.paymentMethod.name.toLowerCase().contains('cash');
 
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: EdgeInsets.symmetric(
-        horizontal: ResponsiveUI.padding(context, 16),
-        vertical: ResponsiveUI.padding(context, 24),
-      ),
+      insetPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: Container(
         constraints: BoxConstraints(
-          maxHeight: ResponsiveUI.screenHeight(context) * 0.9,
+          maxHeight: MediaQuery.of(context).size.height * 0.9,
         ),
         decoration: BoxDecoration(
           color: AppColors.white,
-          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -91,27 +116,29 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
             _buildHeader(),
             Flexible(
               child: SingleChildScrollView(
-                padding: EdgeInsets.all(ResponsiveUI.padding(context, 24)),
+                padding: EdgeInsets.all(24),
                 child: Column(
                   children: [
                     _buildReceiptHeader(),
-                    SizedBox(height: ResponsiveUI.spacing(context, 20)),
+                    SizedBox(height: 20),
                     _buildDivider(),
-                    SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                    SizedBox(height: 16),
                     _buildItemsTable(),
-                    SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                    SizedBox(height: 16),
                     _buildDivider(),
-                    SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                    SizedBox(height: 16),
                     _buildTotalSection(),
-                    if (isCash) ...[
-                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                    if (isCash && widget.paidAmount > 0) ...[
+                      SizedBox(height: 16),
                       _buildCashDetails(),
                     ],
-                    SizedBox(height: ResponsiveUI.spacing(context, 20)),
-                    _buildPointsEarned(),
-                    SizedBox(height: ResponsiveUI.spacing(context, 20)),
+                    if (widget.pointsEarned > 0) ...[
+                      SizedBox(height: 20),
+                      _buildPointsEarned(),
+                    ],
+                    SizedBox(height: 20),
                     _buildDivider(),
-                    SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                    SizedBox(height: 16),
                     _buildFooter(),
                   ],
                 ),
@@ -126,24 +153,27 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
 
   Widget _buildHeader() {
     return Container(
-      padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.successGreen, AppColors.successGreen.withOpacity(0.8)],
+          colors: [
+            AppColors.successGreen,
+            AppColors.successGreen.withOpacity(0.8),
+          ],
         ),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(ResponsiveUI.borderRadius(context, 20))),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(ResponsiveUI.padding(context, 10)),
+            padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: AppColors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(Icons.receipt_long, color: AppColors.white, size: ResponsiveUI.iconSize(context, 28)),
+            child: Icon(Icons.receipt_long, color: AppColors.white, size: 28),
           ),
-          SizedBox(width: ResponsiveUI.spacing(context, 16)),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,13 +182,16 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
                   'Sale Completed',
                   style: TextStyle(
                     color: AppColors.white,
-                    fontSize: ResponsiveUI.fontSize(context, 22),
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
                   'Reference: ${widget.reference}',
-                  style: TextStyle(color: AppColors.white.withOpacity(0.9), fontSize: ResponsiveUI.fontSize(context, 13)),
+                  style: TextStyle(
+                    color: AppColors.white.withOpacity(0.9),
+                    fontSize: 13,
+                  ),
                 ),
               ],
             ),
@@ -175,14 +208,28 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
   Widget _buildReceiptHeader() {
     return Column(
       children: [
-        Text('SYSTEGO', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: AppColors.primaryBlue)),
-        Text('The Solution', style: TextStyle(fontSize: 16, color: AppColors.shadowGray, fontStyle: FontStyle.italic)),
-        SizedBox(height: ResponsiveUI.spacing(context, 12)),
-        _buildInfoRow(Icons.location_on_outlined, 'Address:', 'London'),
-        _buildInfoRow(Icons.phone_outlined, 'Phone:', '+970 599 123456'),
-        SizedBox(height: ResponsiveUI.spacing(context, 12)),
+        Text(
+          'SYSTEGO',
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: AppColors.primaryBlue,
+          ),
+        ),
+        Text(
+          'The Solution',
+          style: TextStyle(
+            fontSize: 16,
+            color: AppColors.shadowGray,
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+        SizedBox(height: 12),
+        //_buildInfoRow(Icons.location_on_outlined, 'Address:', 'London'),
+        //_buildInfoRow(Icons.phone_outlined, 'Phone:', '+970 599 123456'),
+        SizedBox(height: 12),
         Container(
-          padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
+          padding: EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: AppColors.lightBlueBackground,
             borderRadius: BorderRadius.circular(12),
@@ -206,8 +253,22 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
       children: [
         Icon(icon, size: 16, color: AppColors.primaryBlue),
         SizedBox(width: 6),
-        Text('$label ', style: TextStyle(fontSize: 13, color: AppColors.shadowGray, fontWeight: FontWeight.w600)),
-        Text(value, style: TextStyle(fontSize: 13, color: AppColors.darkGray, fontWeight: FontWeight.w600)),
+        Text(
+          '$label ',
+          style: TextStyle(
+            fontSize: 13,
+            color: AppColors.shadowGray,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 13,
+            color: AppColors.darkGray,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ],
     );
   }
@@ -218,30 +279,84 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontSize: 13, color: AppColors.shadowGray, fontWeight: FontWeight.w600)),
-          Text(value, style: TextStyle(fontSize: 13, color: AppColors.darkGray, fontWeight: FontWeight.bold)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              color: AppColors.shadowGray,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 13,
+              color: AppColors.darkGray,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildDivider() {
-    return Container(height: 1, color: AppColors.primaryBlue.withOpacity(0.3));
-  }
+  Widget _buildDivider() =>
+      Container(height: 1, color: AppColors.primaryBlue.withOpacity(0.3));
 
   Widget _buildItemsTable() {
     final items = context.read<PosCubit>().cartItems;
+     context.read<PosCubit>().updateCartWithEmptyList();
+
     return Column(
       children: [
         Container(
           padding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-          decoration: BoxDecoration(color: AppColors.primaryBlue.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+          decoration: BoxDecoration(
+            color: AppColors.primaryBlue.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
           child: Row(
             children: [
-              Expanded(flex: 3, child: Text('Product', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryBlue))),
-              Expanded(child: Text('Qty', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryBlue))),
-              Expanded(child: Text('Price', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryBlue))),
-              Expanded(child: Text('Total', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryBlue))),
+              Expanded(
+                flex: 3,
+                child: Text(
+                  'Product',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primaryBlue,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  'Qty',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primaryBlue,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  'Price',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primaryBlue,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  'Total',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primaryBlue,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -250,13 +365,40 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
           final isEven = e.key % 2 == 0;
           return Container(
             padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-            color: isEven ? AppColors.lightBlueBackground.withOpacity(0.3) : null,
+            color: isEven
+                ? AppColors.lightBlueBackground.withOpacity(0.3)
+                : null,
             child: Row(
               children: [
-                Expanded(flex: 3, child: Text(item.product.name, style: TextStyle(fontSize: 12), maxLines: 2, overflow: TextOverflow.ellipsis)),
-                Expanded(child: Text('${item.quantity}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.w600))),
-                Expanded(child: Text('\$${item.product.price.toStringAsFixed(2)}', textAlign: TextAlign.right)),
-                Expanded(child: Text('\$${(item.product.price * item.quantity).toStringAsFixed(2)}', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold))),
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    item.product.name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 12),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    '${item.quantity}',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    '\$${item.product.price.toStringAsFixed(2)}',
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    '\$${(item.product.price * item.quantity).toStringAsFixed(2)}',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
               ],
             ),
           );
@@ -269,23 +411,60 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [AppColors.primaryBlue.withOpacity(0.05), AppColors.linkBlue.withOpacity(0.02)]),
+        gradient: LinearGradient(
+          colors: [
+            AppColors.primaryBlue.withOpacity(0.05),
+            AppColors.linkBlue.withOpacity(0.02),
+          ],
+        ),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.primaryBlue.withOpacity(0.3), width: 1.5),
+        border: Border.all(
+          color: AppColors.primaryBlue.withOpacity(0.3),
+          width: 1.5,
+        ),
       ),
       child: Column(
         children: [
-          _totalRow('Grand Total:', widget.totalAmount, true),
-          SizedBox(height: 16),
+          _totalRow('Subtotal:', widget.totalAmount, false),
+          if (widget.taxAmount > 0) ...[
+            SizedBox(height: 8),
+            _totalRow(
+              '${widget.selectedTax?.name ?? 'Tax'} (${widget.selectedTax?.rate ?? widget.taxAmount}\$):',
+              widget.taxAmount,
+              false,
+            ),
+          ],
+          SizedBox(height: 12),
           Container(height: 1, color: AppColors.primaryBlue.withOpacity(0.2)),
+          SizedBox(height: 12),
+          _totalRow('Grand Total:', grandTotal, true),
           SizedBox(height: 16),
           Container(
             padding: EdgeInsets.all(12),
-            decoration: BoxDecoration(color: AppColors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppColors.primaryBlue.withOpacity(0.2))),
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: AppColors.primaryBlue.withOpacity(0.2)),
+            ),
             child: Row(
               children: [
-                Text('In Words: ', style: TextStyle(color: AppColors.shadowGray, fontWeight: FontWeight.w600)),
-                Expanded(child: Text(_amountInWords(widget.totalAmount), style: TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic))),
+                Text(
+                  'In Words: ',
+                  style: TextStyle(
+                    color: AppColors.shadowGray,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    _amountInWords(grandTotal),
+                    style: TextStyle(
+                      color: AppColors.primaryBlue,
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -298,8 +477,22 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: TextStyle(fontSize: bold ? 16 : 14, fontWeight: bold ? FontWeight.bold : FontWeight.w600, color: AppColors.darkGray)),
-        Text('\$${amount.toStringAsFixed(2)}', style: TextStyle(fontSize: bold ? 18 : 15, fontWeight: FontWeight.bold, color: bold ? AppColors.primaryBlue : AppColors.darkGray)),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: bold ? 16 : 14,
+            fontWeight: bold ? FontWeight.bold : FontWeight.w600,
+            color: AppColors.darkGray,
+          ),
+        ),
+        Text(
+          '\$${amount.toStringAsFixed(2)}',
+          style: TextStyle(
+            fontSize: bold ? 18 : 15,
+            fontWeight: FontWeight.bold,
+            color: bold ? AppColors.primaryBlue : AppColors.darkGray,
+          ),
+        ),
       ],
     );
   }
@@ -307,19 +500,44 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
   Widget _buildCashDetails() {
     return Container(
       padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(color: AppColors.successGreen.withOpacity(0.05), borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.successGreen.withOpacity(0.3))),
+      decoration: BoxDecoration(
+        color: AppColors.successGreen.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.successGreen.withOpacity(0.3)),
+      ),
       child: Column(
         children: [
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text('Paid Amount:', style: TextStyle(color: AppColors.shadowGray)),
-            Text('\$${widget.paidAmount.toStringAsFixed(2)}', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.successGreen)),
-          ]),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Paid Amount:',
+                style: TextStyle(color: AppColors.shadowGray),
+              ),
+              Text(
+                '\$${widget.paidAmount.toStringAsFixed(2)}',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.successGreen,
+                ),
+              ),
+            ],
+          ),
           if (widget.change > 0) ...[
             SizedBox(height: 8),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Text('Change:', style: TextStyle(color: AppColors.shadowGray)),
-              Text('\$${widget.change.toStringAsFixed(2)}', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.warningOrange)),
-            ]),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Change:', style: TextStyle(color: AppColors.shadowGray)),
+                Text(
+                  '\$${widget.change.toStringAsFixed(2)}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.warningOrange,
+                  ),
+                ),
+              ],
+            ),
           ],
         ],
       ),
@@ -327,16 +545,48 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
   }
 
   Widget _buildPointsEarned() {
-    if (widget.pointsEarned <= 0) return SizedBox.shrink();
     return Container(
       padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(color: AppColors.holdBeige.withOpacity(0.1), borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.holdBeige.withOpacity(0.3))),
+      decoration: BoxDecoration(
+        color: AppColors.holdBeige.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.holdBeige.withOpacity(0.3)),
+      ),
       child: Row(
         children: [
           Icon(Icons.star, color: AppColors.holdBeige),
           SizedBox(width: 12),
-          Text('Congratulations! You earned ', style: TextStyle(fontSize: 14)),
-          Text('${widget.pointsEarned} points', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.holdBeige, fontSize: 16)),
+          Expanded(
+            child: Text.rich(
+              
+              TextSpan(
+                
+                children: [
+                  TextSpan(
+                    text: 'Congratulations! You earned ',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  TextSpan(
+                    text: '${widget.pointsEarned} points',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.holdBeige,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          //Text('Congratulations! You earned ', style: TextStyle(fontSize: 14)),
+          // Text(
+          //   '${widget.pointsEarned} points',
+          //   style: TextStyle(
+          //     fontWeight: FontWeight.bold,
+          //     color: AppColors.holdBeige,
+          //     fontSize: 16,
+          //   ),
+          // ),
         ],
       ),
     );
@@ -347,8 +597,22 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
       children: [
         Icon(Icons.check_circle, color: AppColors.successGreen, size: 48),
         SizedBox(height: 12),
-        Text('Thank You For Shopping With Us!', textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primaryBlue)),
-        Text('Powered by SYSTEGO POS', style: TextStyle(color: AppColors.shadowGray, fontStyle: FontStyle.italic)),
+        Text(
+          'Thank You For Shopping With Us!',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: AppColors.primaryBlue,
+          ),
+        ),
+        Text(
+          'Powered by SYSTEGO POS',
+          style: TextStyle(
+            color: AppColors.shadowGray,
+            fontStyle: FontStyle.italic,
+          ),
+        ),
       ],
     );
   }
@@ -356,32 +620,39 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
   Widget _buildActionButtons() {
     return Container(
       padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(color: AppColors.shadowGray[50], borderRadius: BorderRadius.vertical(bottom: Radius.circular(20))),
+      decoration: BoxDecoration(
+        color: AppColors.shadowGray[50],
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+      ),
       child: Row(
         children: [
           Expanded(
             child: OutlinedButton.icon(
-              onPressed: () {
-                // TODO: Print receipt
-              },
+              onPressed: () {},
               icon: Icon(Icons.print),
               label: Text('Print'),
-              style: OutlinedButton.styleFrom(foregroundColor: AppColors.primaryBlue, side: BorderSide(color: AppColors.primaryBlue, width: 1.5)),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.primaryBlue,
+                side: BorderSide(color: AppColors.primaryBlue, width: 1.5),
+              ),
             ),
           ),
           SizedBox(width: 12),
           Expanded(
             child: ElevatedButton.icon(
               onPressed: () {
-                final cubit = context.read<PosCubit>();
-                cubit.cartItems.clear();
-                cubit.emit(PosCartUpdated([]));
-                Navigator.pop(context); // Close receipt
-                Navigator.pop(context); // Close checkout (if still open)
+                //context.read<PosCubit>().updateCartWithEmptyList();
+                Navigator.pop(context);
+                Navigator.pop(context);
               },
               icon: Icon(Icons.done_all),
-              label: Text('Done', style: TextStyle(fontWeight: FontWeight.bold)),
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.successGreen),
+              label: Text(
+                'Done',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.successGreen,
+              ),
             ),
           ),
         ],

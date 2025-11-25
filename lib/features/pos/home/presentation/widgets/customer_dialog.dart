@@ -1,11 +1,11 @@
 // ── Checkout dialog ───────────────────────────────────────────────────────
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
+import 'package:systego/features/POS/home/cubit/pos_home_state.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
 import '../../../../../core/widgets/custom_error/custom_empty_state.dart';
-import '../../cubit/pos_home_cubit.dart';
-import '../../cubit/pos_home_state.dart';
 import 'selection_option.dart';
 
 class POSCustomerDialog extends StatelessWidget {

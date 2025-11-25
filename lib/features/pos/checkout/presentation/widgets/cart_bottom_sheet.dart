@@ -281,6 +281,8 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
               totalAmount: total,
               cartItems: cartItems,
               selectedPaymentMethod: method,
+              selectedTax: cubit.selectedTax,
+              taxes: cubit.taxes,
             ),
           );
         },

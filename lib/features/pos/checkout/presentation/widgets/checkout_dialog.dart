@@ -4,10 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_textfield/build_text_field.dart';
+import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
+import 'package:systego/features/POS/home/model/pos_models.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
-import '../../../home/cubit/pos_home_cubit.dart';
-import '../../../home/cubit/pos_home_state.dart';
-import '../../../home/model/pos_models.dart';
 import '../../cubit/checkout_cubit.dart';
 import 'receipt_dialog.dart';
 
@@ -15,12 +14,16 @@ class POSCheckoutDialog extends StatefulWidget {
   final double totalAmount;
   final List<CartItem> cartItems;
   final PaymentMethod selectedPaymentMethod;
+  final List<Tax> taxes;
+  final Tax? selectedTax;
 
   const POSCheckoutDialog({
     super.key,
     required this.totalAmount,
     required this.cartItems,
     required this.selectedPaymentMethod,
+    required this.taxes,
+    required this.selectedTax,
   });
 
   @override
@@ -43,23 +46,30 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
 
   // ---------- Runtime values ----------
   double _totalPaying = 0.0;
+  double _subTotal = 0.0;
   double _change = 0.0;
   double _due = 0.0;
   String _selectedCardType = 'Visa';
   final List<String> _cardTypes = ['Visa', 'MasterCard'];
+  List<Tax> _taxes = [];
+  Tax? _selectedTax;
 
   @override
   void initState() {
     super.initState();
+    _subTotal = widget.totalAmount;
     _due = widget.totalAmount;
+    _selectedTax = widget.selectedTax ?? Tax(id: 'id', name: 'none', rate: 0.0);
+    _taxes = widget.taxes;
     _totalPayingCtrl.addListener(_calc);
   }
 
   void _calc() {
     setState(() {
       _totalPaying = double.tryParse(_totalPayingCtrl.text) ?? 0.0;
-      if (_totalPaying >= widget.totalAmount) {
-        _change = _totalPaying - widget.totalAmount;
+      if (_totalPaying >= (widget.totalAmount + (_selectedTax?.rate ?? 0))) {
+        _change =
+            _totalPaying - (widget.totalAmount + (_selectedTax?.rate ?? 0));
         _due = 0.0;
       } else {
         _change = 0.0;
@@ -120,6 +130,8 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
                       _dynamicFields(),
                       SizedBox(height: ResponsiveUI.spacing(context, 16)),
                       _notesSection(),
+                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                      _taxDropdown(),
                     ],
                   ),
                 ),
@@ -242,7 +254,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
       children: [
         _row(
           'Total Payable',
-          widget.totalAmount,
+          (widget.totalAmount + (_selectedTax?.rate ?? 0)),
           AppColors.darkGray,
           bold: true,
         ),
@@ -250,6 +262,10 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
           color: AppColors.shadowGray.withOpacity(0.3),
           height: ResponsiveUI.spacing(context, 20),
         ),
+        _row('Sub total', _subTotal, AppColors.categoryPurple),
+        SizedBox(height: ResponsiveUI.spacing(context, 8)),
+        _row('Taxes', _selectedTax?.rate ?? 0, AppColors.clearPink),
+        SizedBox(height: ResponsiveUI.spacing(context, 8)),
         _row('Total Paying', _totalPaying, AppColors.successGreen),
         SizedBox(height: ResponsiveUI.spacing(context, 8)),
         _row('Change', _change, AppColors.warningOrange),
@@ -364,15 +380,15 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   Widget _notesSection() => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(
-        'Additional Notes',
-        style: TextStyle(
-          fontSize: ResponsiveUI.fontSize(context, 16),
-          fontWeight: FontWeight.bold,
-          color: AppColors.darkGray,
-        ),
-      ),
-      SizedBox(height: ResponsiveUI.spacing(context, 12)),
+      // Text(
+      //   'Additional Notes',
+      //   style: TextStyle(
+      //     fontSize: ResponsiveUI.fontSize(context, 16),
+      //     fontWeight: FontWeight.bold,
+      //     color: AppColors.darkGray,
+      //   ),
+      // ),
+      // SizedBox(height: ResponsiveUI.spacing(context, 12)),
       Row(
         children: [
           Expanded(
@@ -385,17 +401,17 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
               maxLines: 3,
             ),
           ),
-          SizedBox(width: ResponsiveUI.spacing(context, 12)),
-          Expanded(
-            child: buildTextField(
-              context,
-              controller: _staffNoteCtrl,
-              label: 'Staff Note',
-              icon: Icons.badge_outlined,
-              hint: 'Enter staff note',
-              maxLines: 3,
-            ),
-          ),
+          // SizedBox(width: ResponsiveUI.spacing(context, 12)),
+          // Expanded(
+          //   child: buildTextField(
+          //     context,
+          //     controller: _staffNoteCtrl,
+          //     label: 'Staff Note',
+          //     icon: Icons.badge_outlined,
+          //     hint: 'Enter staff note',
+          //     maxLines: 3,
+          //   ),
+          // ),
         ],
       ),
     ],
@@ -663,6 +679,46 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     ],
   );
 
+  Widget _taxDropdown() => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        'Select Tax',
+        style: TextStyle(
+          fontSize: ResponsiveUI.fontSize(context, 14),
+          fontWeight: FontWeight.w600,
+          color: AppColors.darkGray,
+        ),
+      ),
+      SizedBox(height: ResponsiveUI.spacing(context, 8)),
+      Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: ResponsiveUI.padding(context, 12),
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.lightBlueBackground,
+          borderRadius: BorderRadius.circular(
+            ResponsiveUI.borderRadius(context, 12),
+          ),
+          border: Border.all(color: AppColors.shadowGray.withOpacity(0.3)),
+        ),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<Tax>(
+            value: _selectedTax,
+            isExpanded: true,
+            icon: Icon(Icons.arrow_drop_down, color: AppColors.primaryBlue),
+            items: _taxes
+                .map(
+                  (t) => DropdownMenuItem<Tax>(value: t, child: Text(t.name)),
+                )
+                .toList(),
+            onChanged: (v) => setState(() => _selectedTax = v!),
+          ),
+        ),
+      ),
+    ],
+  );
+
   // --------------------------------------------------------------
   //  SUBMIT
   // --------------------------------------------------------------
@@ -673,44 +729,33 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
       return;
     }
 
-    final paidAmount = _totalPaying >= widget.totalAmount
+    double paidAmount =
+        _totalPaying >= (widget.totalAmount + (_selectedTax?.rate ?? 0))
         ? _totalPaying
-        : widget.totalAmount;
+        : (widget.totalAmount + (_selectedTax?.rate ?? 0));
+
+    //paidAmount = paidAmount - ((_selectedTax != null) ? _selectedTax!.rate : 0);
+
     final posCubit = context.read<PosCubit>();
 
     final success = await context.read<CheckoutCubit>().createSale(
       cartItems: widget.cartItems,
-      totalAmount: widget.totalAmount,
-      paidAmount: paidAmount,
-      customer: posCubit.selectedCustomer!,
-      warehouse: posCubit.selectedWarhouse!,
-      paymentMethod: widget.selectedPaymentMethod,
-      account: posCubit.selectedAccount!,
-      currency:
-          posCubit.selectedCurrency ??
-          Currency.fromJson({
-            "_id": "68e617af2c4fc1f8db2f267a",
-            "name": "EGP",
-            "createdAt": "2025-10-08T07:50:07.831Z",
-            "updatedAt": "2025-11-02T10:44:53.086Z",
-            "__v": 0,
-            "ar_name": "جنيه مصري",
-          }),
-      tax: posCubit.selectedTax,
+      totalAmount: (widget.totalAmount + (_selectedTax?.rate ?? 0)),
+      posCubit: posCubit,
       paymentNote: _paymentNoteCtrl.text.isEmpty ? null : _paymentNoteCtrl.text,
     );
 
     if (success && mounted) {
       Navigator.pop(context); // close checkout
-      posCubit.cartItems.clear();
-      posCubit.emit(PosCartUpdated([]));
-
+      //posCubit.updateCartWithEmptyList();
       // اعرض الإيصال
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (_) => POSReceiptDialog(
-          totalAmount: widget.totalAmount,
+          totalAmount: widget.totalAmount, // Subtotal فقط
+          taxAmount: _selectedTax?.rate ?? 0.0, // قيمة الضريبة
+          selectedTax: _selectedTax, // عشان يظهر اسم الضريبة
           paidAmount: paidAmount,
           change: _change,
           reference: (context.read<CheckoutCubit>().state as CheckoutSuccess)

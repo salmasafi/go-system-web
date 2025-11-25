@@ -379,4 +379,9 @@ class PosCubit extends Cubit<PosState> {
     emit(PosCartUpdated(cartItems));
     selectTab();
   }
+
+  void updateCartWithEmptyList() {
+    cartItems.clear();
+    emit(PosCartUpdated([]));
+  }
 }

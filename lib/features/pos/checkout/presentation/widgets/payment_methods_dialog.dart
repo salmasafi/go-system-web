@@ -1,13 +1,12 @@
 // Updated Payment Methods Dialog with callback
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
+import 'package:systego/features/POS/home/cubit/pos_home_state.dart';
+import 'package:systego/features/POS/home/model/pos_models.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
 import '../../../../../core/widgets/custom_error/custom_empty_state.dart';
-import '../../../home/cubit/pos_home_cubit.dart';
-import '../../../home/cubit/pos_home_state.dart';
-import '../../../home/model/pos_models.dart';
 import '../../../home/presentation/widgets/selection_option.dart';
 
 class POSPaymentMethodsDialog extends StatelessWidget {
