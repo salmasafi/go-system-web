@@ -248,16 +248,19 @@ class PosCubit extends Cubit<PosState> {
     }
   }
 
-  Future<void> selectTab({String tab = 'featured'}) async {
+  Future<void> selectTab({
+    String tab = 'featured',
+    bool noFliterRefresh = false,
+  }) async {
     selectedTab = tab;
     if (tab == 'featured') {
       hideFilterPanels();
       emit(PosDataLoaded(featuredProducts));
     } else if (tab == 'category') {
-      showFilterPanel(isCategory: true);
+      if (!noFliterRefresh) showFilterPanel(isCategory: true);
       emit(PosDataLoaded(categoryProducts));
     } else if (tab == 'brand') {
-      showFilterPanel(isCategory: false);
+      if (!noFliterRefresh) showFilterPanel(isCategory: false);
       emit(PosDataLoaded(brandProducts));
     } else {
       emit(PosDataLoaded([]));
@@ -357,7 +360,8 @@ class PosCubit extends Cubit<PosState> {
       cartItems.add(CartItem(product: product, quantity: 1));
     }
     emit(PosCartUpdated(cartItems));
-    selectTab();
+
+    selectTab(tab: selectedTab, noFliterRefresh: true);
   }
 
   void removeFromCart(int index) {

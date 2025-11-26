@@ -144,6 +144,7 @@ class _POSScreenState extends State<POSScreen> {
                   Expanded(
                     child: BlocBuilder<PosCubit, PosState>(
                       builder: (context, state) {
+                        final cubit = context.read<PosCubit>();
                         if (state is PosProductsLoading) {
                           return const CustomLoadingState();
                         }
@@ -153,7 +154,11 @@ class _POSScreenState extends State<POSScreen> {
                             products: _filterProducts(state.displayedProducts),
                             onProductTap: _addToCart,
                           );
+                        } else if (cubit.showBrandFilters ||
+                            cubit.showCategoryFilters) {
+                          return SizedBox();
                         }
+
                         return CustomEmptyState(
                           icon: Icons.inventory_2_outlined,
                           title: 'No Products Found',

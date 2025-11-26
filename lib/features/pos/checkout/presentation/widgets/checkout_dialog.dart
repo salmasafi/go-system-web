@@ -58,9 +58,9 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   void initState() {
     super.initState();
     _subTotal = widget.totalAmount;
-    _due = widget.totalAmount;
     _selectedTax = widget.selectedTax ?? Tax(id: 'id', name: 'none', rate: 0.0);
     _taxes = widget.taxes;
+    _due = _subTotal + _selectedTax!.rate;
     _totalPayingCtrl.addListener(_calc);
   }
 
@@ -73,7 +73,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
         _due = 0.0;
       } else {
         _change = 0.0;
-        _due = widget.totalAmount - _totalPaying;
+        _due = (widget.totalAmount + (_selectedTax?.rate ?? 0)) - _totalPaying;
       }
     });
   }
@@ -752,18 +752,24 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (_) => POSReceiptDialog(
-          totalAmount: widget.totalAmount, // Subtotal فقط
-          taxAmount: _selectedTax?.rate ?? 0.0, // قيمة الضريبة
-          selectedTax: _selectedTax, // عشان يظهر اسم الضريبة
-          paidAmount: paidAmount,
-          change: _change,
-          reference: (context.read<CheckoutCubit>().state as CheckoutSuccess)
-              .reference,
-          pointsEarned: (context.read<CheckoutCubit>().state as CheckoutSuccess)
-              .pointsEarned,
-          paymentMethod: widget.selectedPaymentMethod,
-        ),
+        builder: (_) {
+          final posCubit = context.read<PosCubit>();
+          final cartItems = posCubit.cartItems;
+          return POSReceiptDialog(
+            totalAmount: widget.totalAmount, // Subtotal فقط
+            taxAmount: _selectedTax?.rate ?? 0.0, // قيمة الضريبة
+            selectedTax: _selectedTax, // عشان يظهر اسم الضريبة
+            paidAmount: paidAmount,
+            change: _change,
+            reference: (context.read<CheckoutCubit>().state as CheckoutSuccess)
+                .reference,
+            pointsEarned:
+                (context.read<CheckoutCubit>().state as CheckoutSuccess)
+                    .pointsEarned,
+            paymentMethod: widget.selectedPaymentMethod,
+            cartItems: cartItems,
+          );
+        },
       );
     }
   }

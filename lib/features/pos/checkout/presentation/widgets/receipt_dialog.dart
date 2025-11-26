@@ -1,13 +1,11 @@
 // lib/features/pos/home/presentation/widgets/receipt_dialog.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:intl/intl.dart';
-import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
 import '../../../home/model/pos_models.dart';
 
 class POSReceiptDialog extends StatefulWidget {
+  final List<CartItem> cartItems;
   final double totalAmount; // هنا بيبقى Subtotal فقط
   final double taxAmount; // قيمة الضريبة
   final Tax? selectedTax; // الضريبة المختارة (لعرض الاسم)
@@ -19,9 +17,10 @@ class POSReceiptDialog extends StatefulWidget {
 
   const POSReceiptDialog({
     super.key,
+    required this.cartItems,
     required this.totalAmount,
     required this.taxAmount,
-    this.selectedTax,
+    required this.selectedTax,
     required this.paidAmount,
     required this.change,
     required this.reference,
@@ -38,60 +37,60 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
     return DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
   }
 
-  String _amountInWords(double amount) {
-    int dollars = amount.floor();
-    int cents = ((amount - dollars) * 100).round();
+  // String _amountInWords(double amount) {
+  //   int dollars = amount.floor();
+  //   int cents = ((amount - dollars) * 100).round();
 
-    const ones = [
-      '',
-      'One',
-      'Two',
-      'Three',
-      'Four',
-      'Five',
-      'Six',
-      'Seven',
-      'Eight',
-      'Nine',
-      'Ten',
-      'Eleven',
-      'Twelve',
-      'Thirteen',
-      'Fourteen',
-      'Fifteen',
-      'Sixteen',
-      'Seventeen',
-      'Eighteen',
-      'Nineteen',
-    ];
-    const tens = [
-      '',
-      '',
-      'Twenty',
-      'Thirty',
-      'Forty',
-      'Fifty',
-      'Sixty',
-      'Seventy',
-      'Eighty',
-      'Ninety',
-    ];
+  //   const ones = [
+  //     '',
+  //     'One',
+  //     'Two',
+  //     'Three',
+  //     'Four',
+  //     'Five',
+  //     'Six',
+  //     'Seven',
+  //     'Eight',
+  //     'Nine',
+  //     'Ten',
+  //     'Eleven',
+  //     'Twelve',
+  //     'Thirteen',
+  //     'Fourteen',
+  //     'Fifteen',
+  //     'Sixteen',
+  //     'Seventeen',
+  //     'Eighteen',
+  //     'Nineteen',
+  //   ];
+  //   const tens = [
+  //     '',
+  //     '',
+  //     'Twenty',
+  //     'Thirty',
+  //     'Forty',
+  //     'Fifty',
+  //     'Sixty',
+  //     'Seventy',
+  //     'Eighty',
+  //     'Ninety',
+  //   ];
 
-    String convert(int n) {
-      if (n == 0) return '';
-      if (n < 20) return ones[n];
-      if (n < 100) return '${tens[n ~/ 10]} ${ones[n % 10]}'.trim();
-      if (n < 1000)
-        return '${ones[n ~/ 100]} Hundred ${convert(n % 100)}'.trim();
-      return '$n';
-    }
+  //   String convert(int n) {
+  //     if (n == 0) return '';
+  //     if (n < 20) return ones[n];
+  //     if (n < 100) return '${tens[n ~/ 10]} ${ones[n % 10]}'.trim();
+  //     if (n < 1000)
+  //       return '${ones[n ~/ 100]} Hundred ${convert(n % 100)}'.trim();
+  //     return '$n';
+  //   }
 
-    String result = convert(dollars);
-    if (result.isEmpty) result = 'Zero';
-    result += ' USD';
-    if (cents > 0) result += ' and ${convert(cents)} Cents';
-    return result.trim();
-  }
+  //   String result = convert(dollars);
+  //   if (result.isEmpty) result = 'Zero';
+  //   result += ' USD';
+  //   if (cents > 0) result += ' and ${convert(cents)} Cents';
+  //   return result.trim();
+  // }
 
   double get grandTotal => widget.totalAmount + widget.taxAmount;
 
@@ -216,15 +215,15 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
             color: AppColors.primaryBlue,
           ),
         ),
-        Text(
-          'The Solution',
-          style: TextStyle(
-            fontSize: 16,
-            color: AppColors.shadowGray,
-            fontStyle: FontStyle.italic,
-          ),
-        ),
-        SizedBox(height: 12),
+        // Text(
+        //   'The Solution',
+        //   style: TextStyle(
+        //     fontSize: 16,
+        //     color: AppColors.shadowGray,
+        //     fontStyle: FontStyle.italic,
+        //   ),
+        // ),
+        //SizedBox(height: 12),
         //_buildInfoRow(Icons.location_on_outlined, 'Address:', 'London'),
         //_buildInfoRow(Icons.phone_outlined, 'Phone:', '+970 599 123456'),
         SizedBox(height: 12),
@@ -247,31 +246,31 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(icon, size: 16, color: AppColors.primaryBlue),
-        SizedBox(width: 6),
-        Text(
-          '$label ',
-          style: TextStyle(
-            fontSize: 13,
-            color: AppColors.shadowGray,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 13,
-            color: AppColors.darkGray,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget _buildInfoRow(IconData icon, String label, String value) {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: [
+  //       Icon(icon, size: 16, color: AppColors.primaryBlue),
+  //       SizedBox(width: 6),
+  //       Text(
+  //         '$label ',
+  //         style: TextStyle(
+  //           fontSize: 13,
+  //           color: AppColors.shadowGray,
+  //           fontWeight: FontWeight.w600,
+  //         ),
+  //       ),
+  //       Text(
+  //         value,
+  //         style: TextStyle(
+  //           fontSize: 13,
+  //           color: AppColors.darkGray,
+  //           fontWeight: FontWeight.w600,
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _buildRow(String label, String value) {
     return Padding(
@@ -304,9 +303,6 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
       Container(height: 1, color: AppColors.primaryBlue.withOpacity(0.3));
 
   Widget _buildItemsTable() {
-    final items = context.read<PosCubit>().cartItems;
-     context.read<PosCubit>().updateCartWithEmptyList();
-
     return Column(
       children: [
         Container(
@@ -360,7 +356,7 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
             ],
           ),
         ),
-        ...items.asMap().entries.map((e) {
+        ...widget.cartItems.asMap().entries.map((e) {
           final item = e.value;
           final isEven = e.key % 2 == 0;
           return Container(
@@ -438,36 +434,37 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
           Container(height: 1, color: AppColors.primaryBlue.withOpacity(0.2)),
           SizedBox(height: 12),
           _totalRow('Grand Total:', grandTotal, true),
-          SizedBox(height: 16),
-          Container(
-            padding: EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppColors.primaryBlue.withOpacity(0.2)),
-            ),
-            child: Row(
-              children: [
-                Text(
-                  'In Words: ',
-                  style: TextStyle(
-                    color: AppColors.shadowGray,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    _amountInWords(grandTotal),
-                    style: TextStyle(
-                      color: AppColors.primaryBlue,
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // SizedBox(height: 16),
+          // Container(
+          //   padding: EdgeInsets.all(12),
+          //   decoration: BoxDecoration(
+          //     color: AppColors.white,
+          //     borderRadius: BorderRadius.circular(8),
+          //     border: Border.all(color: AppColors.primaryBlue.withOpacity(0.2)),
+          //   ),
+          //   child: Row(
+          //     children: [
+          //       Text(
+          //         'In Words: ',
+          //         style: TextStyle(
+          //           color: AppColors.shadowGray,
+          //           fontWeight: FontWeight.w600,
+          //         ),
+          //       ),
+          //       Expanded(
+          //         child: Text(
+          //           _amountInWords(grandTotal),
+          //           style: TextStyle(
+          //             color: AppColors.primaryBlue,
+          //             fontWeight: FontWeight.bold,
+          //             fontStyle: FontStyle.italic,
+          //           ),
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
+       
         ],
       ),
     );
@@ -558,9 +555,7 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
           SizedBox(width: 12),
           Expanded(
             child: Text.rich(
-              
               TextSpan(
-                
                 children: [
                   TextSpan(
                     text: 'Congratulations! You earned ',
@@ -652,6 +647,7 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.successGreen,
+                foregroundColor: AppColors.white,
               ),
             ),
           ),

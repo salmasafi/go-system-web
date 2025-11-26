@@ -34,11 +34,7 @@ class Brand {
   final String name;
   final String? logo;
 
-  Brand({
-    required this.id,
-    required this.name,
-    this.logo,
-  });
+  Brand({required this.id, required this.name, this.logo});
 
   factory Brand.fromJson(Map<String, dynamic> json) {
     return Brand(
@@ -67,16 +63,15 @@ class Product {
       id: json['_id'] as String,
       name: json['name'] as String,
       image: json['image'] as String?,
-      price: (json['price'] as num?)?.toDouble() ?? 
-      0.0,
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
     );
-  }   factory Product.fromJson2(Map<String, dynamic> json) {
+  }
+  factory Product.fromJson2(Map<String, dynamic> json) {
     return Product(
       id: json['_id'] as String,
       name: json['name'] as String,
       image: json['image'] as String?,
-      price: (json['price']['price'] as num?)?.toDouble() ?? 
-      0.0,
+      price: (json['price']['price'] as num?)?.toDouble() ?? 0.0,
     );
   }
 }
@@ -96,10 +91,7 @@ class Warehouse {
   Warehouse({required this.id, required this.name});
 
   factory Warehouse.fromJson(Map<String, dynamic> json) {
-    return Warehouse(
-      id: json['_id'] as String,
-      name: json['name'] as String,
-    );
+    return Warehouse(id: json['_id'] as String, name: json['name'] as String);
   }
 }
 
@@ -110,10 +102,7 @@ class Customer {
   Customer({required this.id, required this.name});
 
   factory Customer.fromJson(Map<String, dynamic> json) {
-    return Customer(
-      id: json['_id'] as String,
-      name: json['name'] as String,
-    );
+    return Customer(id: json['_id'] as String, name: json['name'] as String);
   }
 }
 
@@ -158,7 +147,7 @@ class Tax {
     return Tax(
       id: json['_id'] ?? json['id'],
       name: json['name'] ?? 'No Tax',
-      rate: (json['rate'] ?? 0).toDouble(),
+      rate: (json['amount'] ?? 10).toDouble(),
     );
   }
 }
@@ -166,17 +155,21 @@ class Tax {
 class Currency {
   final String id;
   final String name;
-  final String code;
-  final String symbol;
+  //final String code;
+  //final String symbol;
 
-  Currency({required this.id, required this.name, required this.code, required this.symbol});
+  Currency({
+    required this.id,
+    required this.name,
+    //required this.code, required this.symbol
+  });
 
   factory Currency.fromJson(Map<String, dynamic> json) {
     return Currency(
       id: json['_id'] ?? json['id'],
       name: json['name'] ?? 'USD',
-      code: json['code'] ?? 'USD',
-      symbol: json['symbol'] ?? '\$',
+      //code: json['code'] ?? 'USD',
+      //symbol: json['symbol'] ?? '\$',
     );
   }
 }
