@@ -97,4 +97,12 @@ class EndPoint {
 
   /// POS checkout
   static String posCreateSale = '/api/admin/pos/sales';
+
+
+  /// Tax
+  static const String getAllTaxes = '/api/admin/taxes';
+  static String selectTax(String id) => '/api/admin/taxes/$id';
+  static String createTax = '/api/admin/taxes';
+  static String updateTax(String id) => '/api/admin/taxes/$id';
+  static String deleteTax(String id) => '/api/admin/taxes/$id';
 }

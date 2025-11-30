@@ -6,6 +6,7 @@ import 'package:systego/features/admin/country/presentation/view/countries_scree
 import 'package:systego/features/admin/currency/presentation/view/currencies_screen.dart';
 import 'package:systego/features/admin/purchase/view/purchase_screen.dart';
 import 'package:systego/features/admin/suppliers/view/supplier_screen.dart';
+import 'package:systego/features/admin/taxes/presentation/view/taxes_screen.dart';
 import 'package:systego/features/admin/warehouses/view/warehouses_screen.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/app_bar_widgets.dart';
@@ -46,6 +47,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     {'icon': Icons.location_city_rounded, 'label': 'Cities'},
     {'icon': Icons.gps_fixed, 'label': 'Zones'},
     {'icon': Icons.attach_money_rounded, 'label': 'Payment Methods'},
+    {'icon': Icons.receipt_long, 'label': 'Taxes'},
   ];
 
   void _navigateToPage(String label) {
@@ -124,6 +126,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const PaymentMethodsScreen()),
+        );
+        break;
+
+      case 'Taxes':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const TaxesScreen()),
         );
         break;
 
