@@ -250,14 +250,14 @@ class _TaxFormDialogState extends State<TaxFormDialog>
         cubit.updateTax(
           taxId: widget.tax!.id,
           name: _nameController.text.trim(),
-          arName: _nameController.text.trim(),
+          arName: _arNameController.text.trim(),
           taxType: selectedtaxType!.toLowerCase(),
           amount: double.parse(_amountController.text),
         );
       } else {
         cubit.createTax(
           name: _nameController.text.trim(),
-          arName: _nameController.text.trim(),
+          arName: _arNameController.text.trim(),
           taxType: selectedtaxType!.toLowerCase(),
           amount: double.parse(_amountController.text),
         );

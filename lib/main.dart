@@ -4,6 +4,7 @@ import 'package:device_preview/device_preview.dart';
 import 'package:systego/core/services/session_helper.dart';
 import 'package:systego/features/POS/checkout/cubit/checkout_cubit.dart';
 import 'package:systego/features/admin/auth/cubit/login_cubit.dart';
+import 'package:systego/features/admin/bank_account/cubit/bank_account_cubit.dart';
 import 'package:systego/features/admin/brands/cubit/brand_cubit.dart';
 import 'package:systego/features/admin/categories/cubit/categories_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -90,6 +91,7 @@ class _MainAppState extends State<MainApp> {
         BlocProvider<CityCubit>(create: (context) => CityCubit()),
         BlocProvider<ZoneCubit>(create: (context) => ZoneCubit()),
         BlocProvider<TaxesCubit>(create: (context) => TaxesCubit()),
+        BlocProvider<BankAccountCubit>(create: (context) => BankAccountCubit()),
         BlocProvider<PaymentMethodCubit>(
           create: (context) => PaymentMethodCubit(),
         ),

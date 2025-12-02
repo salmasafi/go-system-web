@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/features/admin/bank_account/presentation/view/bank_accounts_screen.dart';
 import 'package:systego/features/admin/city/presentation/view/cities_screen.dart';
 import 'package:systego/features/admin/country/presentation/view/countries_screen.dart';
 import 'package:systego/features/admin/currency/presentation/view/currencies_screen.dart';
@@ -48,6 +49,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     {'icon': Icons.gps_fixed, 'label': 'Zones'},
     {'icon': Icons.attach_money_rounded, 'label': 'Payment Methods'},
     {'icon': Icons.receipt_long, 'label': 'Taxes'},
+    {'icon': Icons.account_balance, 'label': 'Bank Accounts'},
   ];
 
   void _navigateToPage(String label) {
@@ -133,6 +135,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const TaxesScreen()),
+        );
+        break;
+
+      case 'Bank Accounts':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const BankAccountsScreen()),
         );
         break;
 
