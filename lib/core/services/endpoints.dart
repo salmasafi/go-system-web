@@ -113,4 +113,11 @@ class EndPoint {
   static String updateBankAccount(String id) => '/api/admin/bank_account/$id';
   static String deleteBankAccount(String id) => '/api/admin/bank_account/$id';
 
+  /// popups
+  static const String getAllPopups = '/api/admin/popup';
+  static String getPopup(String id) => '/api/admin/popup/$id';
+  static String addPopup = '/api/admin/popup';
+  static String updatePopup(String id) => '/api/admin/popup/$id';
+  static String deletePopup(String id) => '/api/admin/popup/$id';
+
 }

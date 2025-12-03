@@ -12,6 +12,7 @@ import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/features/admin/city/cubit/city_cubit.dart';
 import 'package:systego/features/admin/currency/cubit/currency_cubit.dart';
 import 'package:systego/features/admin/payment_methods/cubit/payment_method_cubit.dart';
+import 'package:systego/features/admin/popup/cubit/popup_cubit.dart';
 import 'package:systego/features/admin/product/cubit/get_products_cubit/product_cubit.dart';
 import 'package:systego/features/admin/product/cubit/product_details_cubit/product_details_cubit.dart';
 import 'package:systego/features/admin/product/cubit/filter_product_cubit/product_filter_cubit.dart';
@@ -92,6 +93,7 @@ class _MainAppState extends State<MainApp> {
         BlocProvider<ZoneCubit>(create: (context) => ZoneCubit()),
         BlocProvider<TaxesCubit>(create: (context) => TaxesCubit()),
         BlocProvider<BankAccountCubit>(create: (context) => BankAccountCubit()),
+        BlocProvider<PopupCubit>(create: (context) => PopupCubit()),
         BlocProvider<PaymentMethodCubit>(
           create: (context) => PaymentMethodCubit(),
         ),

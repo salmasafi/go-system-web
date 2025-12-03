@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ class BankAccountFormDialog extends StatefulWidget {
 
 class _BankAccountFormDialogState extends State<BankAccountFormDialog>
     with SingleTickerProviderStateMixin {
-  XFile? _selectedImage;
+  File? _selectedImage;
   final _nameController = TextEditingController();
   final _accountNoController = TextEditingController();
   final _initialBalanceController = TextEditingController();
@@ -38,22 +39,16 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
   bool get isEditMode => widget.account != null;
   bool status = true;
 
-  Future<void> _pickImage() async {
-    try {
-      final XFile? image = await ImagePicker().pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 85,
-      );
+  final _picker = ImagePicker();
 
-      if (image != null) {
-        setState(() {
-          _selectedImage = image;
-        });
-      }
-    } catch (e) {
-      CustomSnackbar.showError(context, 'Failed to pick image');
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null && mounted) {
+      setState(() {
+        final pickedFileAsFile = File(pickedFile.path);
+
+        _selectedImage = pickedFileAsFile;
+      });
     }
   }
 
@@ -355,59 +350,109 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
             widget.existingImageUrl!.isNotEmpty)
           // else if (widget.existingImageUrl != null &&
           //     widget.existingImageUrl!.isNotEmpty)
-          Stack(
-            alignment: Alignment.topRight,
-            children: [
-              Container(
-                width: double.infinity,
-                height: height120,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(borderRadius12),
-                  border: Border.all(color: Colors.grey[300]!, width: 2),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(borderRadius12 - 2),
-                  child: Image.network(
-                    widget.existingImageUrl!,
-                    fit: BoxFit.cover,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Center(
-                        child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes!
-                              : null,
-                          color: AppColors.primaryBlue,
-                        ),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) {
-                      return _buildErrorPlaceholder();
-                    },
+          Builder(
+            builder: (context) {
+              final isBase64 = widget.existingImageUrl!.startsWith('data:');
+
+              Widget imageWidget;
+
+              if (isBase64) {
+
+                final parts = widget.existingImageUrl!.split(',');
+
+                if (parts.length == 2) {
+                  try {
+                    final bytes = base64Decode(parts[1]);
+
+                    imageWidget = Image.memory(
+                      bytes,
+
+                      fit: BoxFit.cover,
+
+                      errorBuilder: (context, error, stackTrace) =>
+                          _buildErrorPlaceholder(),
+                    );
+                  } catch (_) {
+                    imageWidget = _buildErrorPlaceholder();
+                  }
+                } else {
+                  imageWidget = _buildErrorPlaceholder();
+                }
+              } else {
+                // Handle regular Network URL
+
+                imageWidget = Image.network(
+                  widget.existingImageUrl!,
+
+                  fit: BoxFit.cover,
+
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                            : null,
+
+                        color: AppColors.primaryBlue,
+                      ),
+                    );
+                  },
+
+                  errorBuilder: (context, error, stackTrace) {
+                    return _buildErrorPlaceholder();
+                  },
+                );
+              }
+
+              return Stack(
+                alignment: Alignment.topRight,
+
+                children: [
+                  Container(
+                    width: double.infinity,
+
+                    height: height120,
+
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(borderRadius12),
+
+                      border: Border.all(color: Colors.grey[300]!, width: 2),
+                    ),
+
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(borderRadius12 - 2),
+
+                      child:
+                          imageWidget,
+                    ),
+                  ),
+
+                   Positioned(
+              top: 8,
+              right: 8,
+              child: GestureDetector(
+                onTap: _pickImage,
+                child: Container(
+                  padding: EdgeInsets.all(padding8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Icon(
+                    Icons.edit,
+                    color: Colors.white,
+                    size: iconSize24,
                   ),
                 ),
               ),
-              // Positioned(
-              //   top: 8,
-              //   right: 8,
-              //   child: GestureDetector(
-              //     onTap: _pickImage,
-              //     child: Container(
-              //       padding: EdgeInsets.all(padding8),
-              //       decoration: BoxDecoration(
-              //         color: AppColors.shadowGray[500],
-              //         borderRadius: BorderRadius.circular(20),
-              //       ),
-              //       child: Icon(
-              //         Icons.edit,
-              //         color: Colors.white,
-              //         size: iconSize24,
-              //       ),
-              //     ),
-              //   ),
-              // ),
-            ],
+            ),
+
+                ],
+              );
+            },
           )
         else
           GestureDetector(
@@ -492,14 +537,15 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
 
       if (isEditMode) {
         cubit.updateBankAccount(
-            accountId: widget.account!.id,
-            name: name,
-            arName: _arNameController.text.trim(),
-            accountNumber: accountNo,
-            initialBalance: balance,
-            note: note,
-            status: status,
-          );
+          accountId: widget.account!.id,
+          name: name,
+          arName: _arNameController.text.trim(),
+          accountNumber: accountNo,
+          initialBalance: balance,
+          note: note,
+          status: status,
+          icon: _selectedImage,
+        );
       } else {
         cubit.addBankAccount(
           name: name,

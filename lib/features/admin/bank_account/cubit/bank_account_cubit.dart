@@ -1,4 +1,5 @@
 import 'dart:developer' as dev;
+import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
@@ -72,14 +73,14 @@ class BankAccountCubit extends Cubit<BankAccountState> {
     required String accountNumber,
     required double initialBalance,
     required String note,
-    required XFile? icon,
+    required File? icon,
     required bool status,
   }) async {
     emit(CreateBankAccountLoading());
     try {
       String? base64Image;
       if (icon != null) {
-        base64Image = await convertImageToBase64(icon);
+        base64Image = await _convertFileToBase64(icon);
       }
 
       final data = {
@@ -120,9 +121,16 @@ class BankAccountCubit extends Cubit<BankAccountState> {
     required double initialBalance,
     required String note,
     required bool status,
+    required File? icon,
   }) async {
     emit(UpdateBankAccountLoading());
     try {
+
+      String? base64Icon;
+
+      if (icon != null) {
+        base64Icon = await _convertFileToBase64(icon);
+      }
       
 
       final data = <String, dynamic>{
@@ -132,6 +140,7 @@ class BankAccountCubit extends Cubit<BankAccountState> {
         'initial_balance': initialBalance,
         'is_default': status,
         'note': note,
+        if (base64Icon != null) "icon": base64Icon,
       };
 
       dev.log('Sending data: $data');
@@ -175,24 +184,21 @@ class BankAccountCubit extends Cubit<BankAccountState> {
     }
   }
 
-  // Future<String?> convertImageToBase64(XFile imageFile) async {
-  //   try {
-  //     final bytes = await imageFile.readAsBytes();
-  //     final base64Image = 'data:image/png;base64,${base64Encode(bytes)}';
-  //     return base64Image;
-  //   } catch (e) {
-  //     log('Error converting image: $e');
-  //     return null;
-  //   }
-  // }
 
-  Future<String?> convertImageToBase64(XFile imageFile) async {
+
+   Future<String?> _convertFileToBase64(File imageFile) async {
     try {
       final bytes = await imageFile.readAsBytes();
-
-      final mimeType = imageFile.path.endsWith(".png")
-          ? "image/png"
-          : "image/jpeg";
+      
+      String? mimeType;
+      final ext = imageFile.path.toLowerCase().split('.').last;
+      if (ext == 'png') {
+        mimeType = "image/png";
+      } else if (ext == 'jpg' || ext == 'jpeg') {
+        mimeType = "image/jpeg";
+      } else {
+        mimeType = "application/octet-stream";
+      }
 
       return "data:$mimeType;base64,${base64Encode(bytes)}";
     } catch (e) {
@@ -201,41 +207,4 @@ class BankAccountCubit extends Cubit<BankAccountState> {
     }
   }
 
-  // Future<String?> convertImageToBase64(XFile imageFile) async {
-  //   try {
-  //     dev.log("Converting image: ${imageFile.path}");
-  //     dev.log("File size: ${await imageFile.length()}");
-
-  //     final bytes = await imageFile.readAsBytes();
-  //     dev.log("Bytes length: ${bytes.length}");
-
-  //     // Determine mime type properly
-  //     String mimeType;
-  //     if (imageFile.path.toLowerCase().endsWith('.png')) {
-  //       mimeType = 'image/png';
-  //     } else if (imageFile.path.toLowerCase().endsWith('.jpg') ||
-  //         imageFile.path.toLowerCase().endsWith('.jpeg')) {
-  //       mimeType = 'image/jpeg';
-  //     } else if (imageFile.path.toLowerCase().endsWith('.gif')) {
-  //       mimeType = 'image/gif';
-  //     } else if (imageFile.path.toLowerCase().endsWith('.webp')) {
-  //       mimeType = 'image/webp';
-  //     } else {
-  //       mimeType = 'image/jpeg'; // default
-  //     }
-
-  //     final base64String = base64Encode(bytes);
-  //     final fullBase64 = 'data:$mimeType;base64,$base64String';
-
-  //     dev.log(
-  //       "Base64 string created (first 100 chars): ${fullBase64.substring(0, math.min(100, fullBase64.length))}...",
-  //     );
-
-  //     return fullBase64;
-  //   } catch (e, stackTrace) {
-  //     dev.log("Error converting image: $e");
-  //     dev.log("Stack trace: $stackTrace");
-  //     return null;
-  //   }
-  // }
 }
