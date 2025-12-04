@@ -1,3 +1,4 @@
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../utils/responsive_ui.dart';
@@ -7,7 +8,7 @@ Widget buildDropdownField<T>(
   required T? value,
   required List<T> items,
   required String label,
-  required IconData icon,
+  IconData? icon,
   required String hint,
   required void Function(T?) onChanged,
   required String Function(T) itemLabel,
@@ -44,11 +45,9 @@ Widget buildDropdownField<T>(
             color: AppColors.shadowGray[400],
             fontSize: fontSizeHint,
           ),
-          prefixIcon: Icon(
-            icon,
-            color: AppColors.primaryBlue,
-            size: iconSize22,
-          ),
+          prefixIcon: icon != null
+              ? Icon(icon, color: AppColors.primaryBlue, size: iconSize22)
+              : null,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(borderRadius12),
             borderSide: BorderSide(
@@ -97,19 +96,96 @@ Widget buildDropdownField<T>(
         }).toList(),
         onChanged: onChanged,
         validator: validator,
-        style: TextStyle(
-          fontSize: fontSizeHint,
-          fontFamily: 'Rubik',
-          color: Colors.grey[800],
-        ),
         icon: Icon(
           Icons.keyboard_arrow_down_rounded,
           color: AppColors.primaryBlue,
           size: iconSize22,
         ),
+        style: TextStyle(
+          fontSize: fontSizeHint,
+          fontFamily: 'Rubik',
+          color: Colors.grey[800],
+        ),
+
         dropdownColor: AppColors.white,
         isExpanded: true,
       ),
     ],
+  );
+}
+
+Widget buildMultiSelectDropdownField<T>(
+  BuildContext context, {
+  required List<T> items,
+  required String label,
+  required String hint,
+  required void Function(List<T>)? onChanged,
+  required String Function(T) itemLabel,
+}) {
+  return DropdownSearch<T>.multiSelection(
+    onChanged: onChanged,
+    items: items,
+    itemAsString: itemLabel,
+    //dropdownButtonProps: DropdownButtonProps(color: AppColors.lightBlueBackground),
+    popupProps: PopupPropsMultiSelection.menu(
+      
+      menuProps: MenuProps(
+        
+        backgroundColor: AppColors.white,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      
+      // showSearchBox: true,
+      // searchFieldProps: TextFieldProps(
+      //   decoration: InputDecoration(
+      //     hintText: hint,
+      //     contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      //     border: OutlineInputBorder(
+      //       borderRadius: BorderRadius.circular(15),
+      //       borderSide: BorderSide(color: AppColors.white),
+      //     ),
+      //   ),
+      // ),
+    ),
+    dropdownDecoratorProps: DropDownDecoratorProps(
+
+      dropdownSearchDecoration: InputDecoration(
+        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: AppColors.shadowGray[300]!, width: 2),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: AppColors.shadowGray[300]!, width: 2),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: AppColors.primaryBlue, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: AppColors.red, width: 2),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: AppColors.red, width: 2),
+        ),
+        filled: true,
+        fillColor: AppColors.white,
+        hintText: hint,
+        
+        // suffixIcon: Icon(
+        //   Icons.keyboard_arrow_down_rounded,
+        //   color: AppColors.primaryBlue,
+        // ),
+      ),
+    ),
+    dropdownButtonProps: DropdownButtonProps(
+      icon: Icon(
+        Icons.keyboard_arrow_down_rounded,
+        color: AppColors.primaryBlue,
+      ),
+    ),
   );
 }

@@ -110,6 +110,24 @@ class _MainAppState extends State<MainApp> {
           fontFamily: 'Rubik',
           scaffoldBackgroundColor: AppColors.lightBlueBackground,
           primarySwatch: AppColors.mediumBlue700,
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ButtonStyle(
+              foregroundColor: WidgetStatePropertyAll(AppColors.black),
+              backgroundColor: WidgetStatePropertyAll(
+                AppColors.mediumBlue700.shade200,
+              ),
+            ),
+          ),
+          checkboxTheme: CheckboxThemeData(
+            fillColor: MaterialStateColor.resolveWith((states) {
+              if (states.contains(MaterialState.selected)) {
+                return AppColors
+                    .mediumBlue700; // the color when checkbox is selected;
+              }
+              return AppColors.white; //the color when checkbox is unselected;
+            }),
+          ),
+          dropdownMenuTheme: DropdownMenuThemeData(menuStyle: MenuStyle()),
           dialogTheme: DialogThemeData(backgroundColor: Colors.white),
           textButtonTheme: TextButtonThemeData(
             style: ButtonStyle(
