@@ -6,62 +6,56 @@ import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/app_bar_widgets.dart';
 import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
-import 'package:systego/features/admin/taxes/cubit/taxes_cubit.dart';
-import 'package:systego/features/admin/taxes/presentation/widgets/taxes_list.dart';
-import 'package:systego/features/admin/taxes/presentation/widgets/tax_form_dialog.dart';
+import 'package:systego/features/admin/coupon/cubit/coupon_cubit.dart';
+import 'package:systego/features/admin/coupon/presentation/widgets/coupon_form_dialog.dart';
+import 'package:systego/features/admin/coupon/presentation/widgets/coupons_list.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 
-class TaxesScreen extends StatefulWidget {
-  const TaxesScreen({super.key});
+class CouponsScreen extends StatefulWidget {
+  const CouponsScreen({super.key});
 
   @override
-  State<TaxesScreen> createState() => _TaxesScreenState();
+  State<CouponsScreen> createState() => _CouponsScreenState();
 }
 
-class _TaxesScreenState extends State<TaxesScreen> {
-  void taxesInit() async {
-    context.read<TaxesCubit>().getTaxes();
+class _CouponsScreenState extends State<CouponsScreen> {
+  void couponsInit() async {
+    context.read<CouponsCubit>().getCoupons();
   }
 
   @override
   void initState() {
     super.initState();
-    taxesInit();
+    couponsInit();
   }
 
   Future<void> _refresh() async {
-    taxesInit();
+    couponsInit();
   }
 
   Widget _buildListContent() {
-    return BlocConsumer<TaxesCubit, TaxesState>(
+    return BlocConsumer<CouponsCubit, CouponsState>(
       listener: (context, state) {
-        if (state is GetTaxesError) {
+        if (state is GetCouponsError) {
           CustomSnackbar.showError(context, state.error);
-        } else if (state is DeleteTaxError) {
+        } else if (state is DeleteCouponError) {
           CustomSnackbar.showError(context, state.error);
-          taxesInit();
-        } else if (state is DeleteTaxSuccess) {
+          couponsInit();
+        } else if (state is DeleteCouponSuccess) {
           CustomSnackbar.showSuccess(context, state.message);
-          taxesInit();
-        } else if (state is ChangeTaxStatusError) {
-          CustomSnackbar.showError(context, state.error);
-          taxesInit();
-        } else if (state is ChangeTaxStatusSuccess) {
+          couponsInit();
+        } else if (state is CreateCouponSuccess) {
           CustomSnackbar.showSuccess(context, state.message);
-          taxesInit();
-        } else if (state is CreateTaxSuccess) {
+          couponsInit();
+        } else if (state is UpdateCouponSuccess) {
           CustomSnackbar.showSuccess(context, state.message);
-          taxesInit();
-        } else if (state is UpdateTaxSuccess) {
-          CustomSnackbar.showSuccess(context, state.message);
-          taxesInit();
+          couponsInit();
         }
       },
       builder: (context, state) {
-        if (state is GetTaxesLoading ||
-            state is DeleteTaxLoading ||
-            state is ChangeTaxStatusLoading) {
+        if (state is GetCouponsLoading ||
+            state is DeleteCouponLoading 
+            ) {
           return RefreshIndicator(
             onRefresh: _refresh,
             color: AppColors.primaryBlue,
@@ -69,14 +63,14 @@ class _TaxesScreenState extends State<TaxesScreen> {
               padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
             ),
           );
-        } else if (state is GetTaxesSuccess) {
-          final taxes = state.taxes;
+        } else if (state is GetCouponsSuccess) {
+          final coupons = state.coupons;
 
-          if (taxes.isEmpty) {
-            String title = taxes.isEmpty
-                ? 'No taxes'
-                : 'No Matching taxes';
-            String message = taxes.isEmpty
+          if (coupons.isEmpty) {
+            String title = coupons.isEmpty
+                ? 'No coupons'
+                : 'No Matching coupons';
+            String message = coupons.isEmpty
                 ? 'You\'re all caught up!'
                 : 'Try adjusting your filters';
             return CustomEmptyState(
@@ -91,13 +85,13 @@ class _TaxesScreenState extends State<TaxesScreen> {
             return RefreshIndicator(
               onRefresh: _refresh,
               color: AppColors.primaryBlue,
-              child: TaxesList(taxes: taxes),
+              child: CouponsList(coupons: coupons),
             );
           }
         } else {
           return CustomEmptyState(
             icon: Icons.monetization_on_rounded,
-            title: 'No taxes',
+            title: 'No coupons',
             message: 'Pull to refresh or check your connection',
             onRefresh: _refresh,
             actionLabel: 'Retry',
@@ -113,11 +107,11 @@ class _TaxesScreenState extends State<TaxesScreen> {
     return Scaffold(
       appBar: appBarWithActions(
         context,
-        title: 'Taxes',
+        title: 'Coupons',
         showActions: true,
         onPressed: () => showDialog(
           context: context,
-          builder: (context) => TaxFormDialog(),
+          builder: (context) => CouponFormDialog(),
         ),
       ),
       body: Center(

@@ -165,27 +165,69 @@ class _AnimatedCountryCardState extends State<AnimatedTaxCard> {
 
   Widget _buildFooter(TaxModel tax) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          'Type: ${tax.type}',
-          style: TextStyle(
-            fontSize: ResponsiveUI.fontSize(context, 13),
-            // color: AppColors.gray,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Type:',
+                style: TextStyle(
+                  fontSize: ResponsiveUI.fontSize(context, 12),
+                  color: AppColors.darkGray.withOpacity(0.6),
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+          
+              SizedBox(height: ResponsiveUI.spacing(context, 2)),
+          
+              Text(
+                tax.type[0].toUpperCase() + tax.type.substring(1).toLowerCase(),
+                style: TextStyle(
+                  fontSize: ResponsiveUI.fontSize(context, 14),
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.darkGray,
+                ),
+                maxLines: 2,
+                softWrap: true,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ),
         ),
-        Spacer(),
-        Spacer(),
-        SizedBox(height: ResponsiveUI.spacing(context, 4)),
-        Text(
-          'Amount: ${tax.amount.toStringAsFixed(2)}',
-          style: TextStyle(
-            fontSize: ResponsiveUI.fontSize(context, 13),
-            // color: AppColors.gray,
+        SizedBox(width: ResponsiveUI.spacing(context, 84)),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Amount:',
+                style: TextStyle(
+                  fontSize: ResponsiveUI.fontSize(context, 12),
+                  color: AppColors.darkGray.withOpacity(0.6),
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+          
+              SizedBox(height: ResponsiveUI.spacing(context, 2)),
+          
+              Text(
+                tax.amount.toStringAsFixed(2),
+                style: TextStyle(
+                  fontSize: ResponsiveUI.fontSize(context, 14),
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.darkGray,
+                ),
+                maxLines: 2,
+                softWrap: true,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ),
         ),
 
-        Spacer()
       ],
     );
   }

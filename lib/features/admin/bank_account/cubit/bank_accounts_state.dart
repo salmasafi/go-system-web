@@ -10,7 +10,8 @@ final class GetBankAccountsLoading extends BankAccountState {}
 
 final class GetBankAccountsSuccess extends BankAccountState {
   final List<BankAccountModel> accounts;
-  GetBankAccountsSuccess(this.accounts);
+  final int totalBalance;
+  GetBankAccountsSuccess(this.accounts, this.totalBalance);
 }
 
 final class GetBankAccountsError extends BankAccountState {

@@ -180,7 +180,6 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
         image = _buildErrorPlaceholder();
       }
     } else {
-      // Existing logic for network images
 
       image = Image.network(
         account.icon,
@@ -225,7 +224,7 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
 
           backgroundColor: AppColors.primaryBlue.withOpacity(0.8),
 
-          child: _buildImageWidget(account), // USED THE NEW HELPER WIDGET
+          child: _buildImageWidget(account),
         ),
 
         SizedBox(width: ResponsiveUI.spacing(context, 14)),
