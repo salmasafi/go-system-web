@@ -97,4 +97,27 @@ class EndPoint {
 
   /// POS checkout
   static String posCreateSale = '/api/admin/pos/sales';
+
+
+  /// Tax
+  static const String getAllTaxes = '/api/admin/taxes';
+  static String selectTax(String id) => '/api/admin/taxes/$id';
+  static String createTax = '/api/admin/taxes';
+  static String updateTax(String id) => '/api/admin/taxes/$id';
+  static String deleteTax(String id) => '/api/admin/taxes/$id';
+
+  /// Bank Accounts
+  static const String getAllBankAccounts = '/api/admin/bank_account';
+  static String getBankAccount(String id) => '/api/admin/bank_account/$id';
+  static String addBankAccount = '/api/admin/bank_account';
+  static String updateBankAccount(String id) => '/api/admin/bank_account/$id';
+  static String deleteBankAccount(String id) => '/api/admin/bank_account/$id';
+
+  /// popups
+  static const String getAllPopups = '/api/admin/popup';
+  static String getPopup(String id) => '/api/admin/popup/$id';
+  static String addPopup = '/api/admin/popup';
+  static String updatePopup(String id) => '/api/admin/popup/$id';
+  static String deletePopup(String id) => '/api/admin/popup/$id';
+
 }

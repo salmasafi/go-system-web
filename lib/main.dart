@@ -4,6 +4,7 @@ import 'package:device_preview/device_preview.dart';
 import 'package:systego/core/services/session_helper.dart';
 import 'package:systego/features/POS/checkout/cubit/checkout_cubit.dart';
 import 'package:systego/features/admin/auth/cubit/login_cubit.dart';
+import 'package:systego/features/admin/bank_account/cubit/bank_account_cubit.dart';
 import 'package:systego/features/admin/brands/cubit/brand_cubit.dart';
 import 'package:systego/features/admin/categories/cubit/categories_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,9 +12,11 @@ import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/features/admin/city/cubit/city_cubit.dart';
 import 'package:systego/features/admin/currency/cubit/currency_cubit.dart';
 import 'package:systego/features/admin/payment_methods/cubit/payment_method_cubit.dart';
+import 'package:systego/features/admin/popup/cubit/popup_cubit.dart';
 import 'package:systego/features/admin/product/cubit/get_products_cubit/product_cubit.dart';
 import 'package:systego/features/admin/product/cubit/product_details_cubit/product_details_cubit.dart';
 import 'package:systego/features/admin/product/cubit/filter_product_cubit/product_filter_cubit.dart';
+import 'package:systego/features/admin/taxes/cubit/taxes_cubit.dart';
 import 'package:systego/features/admin/zone/cubit/zone_cubit.dart';
 import 'core/services/cache_helper.dart';
 import 'core/services/dio_helper.dart';
@@ -88,6 +91,9 @@ class _MainAppState extends State<MainApp> {
         BlocProvider<CountryCubit>(create: (context) => CountryCubit()),
         BlocProvider<CityCubit>(create: (context) => CityCubit()),
         BlocProvider<ZoneCubit>(create: (context) => ZoneCubit()),
+        BlocProvider<TaxesCubit>(create: (context) => TaxesCubit()),
+        BlocProvider<BankAccountCubit>(create: (context) => BankAccountCubit()),
+        BlocProvider<PopupCubit>(create: (context) => PopupCubit()),
         BlocProvider<PaymentMethodCubit>(
           create: (context) => PaymentMethodCubit(),
         ),
