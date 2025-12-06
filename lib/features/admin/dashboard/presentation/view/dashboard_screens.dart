@@ -6,6 +6,7 @@ import 'package:systego/features/admin/city/presentation/view/cities_screen.dart
 import 'package:systego/features/admin/country/presentation/view/countries_screen.dart';
 import 'package:systego/features/admin/coupon/presentation/view/coupons_screen.dart';
 import 'package:systego/features/admin/currency/presentation/view/currencies_screen.dart';
+import 'package:systego/features/admin/department/presentation/view/departments_screen.dart';
 import 'package:systego/features/admin/popup/presentation/view/popup_screen.dart';
 import 'package:systego/features/admin/purchase/view/purchase_screen.dart';
 import 'package:systego/features/admin/suppliers/view/supplier_screen.dart';
@@ -54,6 +55,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     {'icon': Icons.account_balance, 'label': 'Bank Accounts'},
     {'icon': Icons.open_in_new, 'label': 'Pop Ups'},
     {'icon': Icons.local_offer, 'label': 'Coupons'},
+    {'icon': Icons.business, 'label': 'Departments'},
   ];
 
   void _navigateToPage(String label) {
@@ -160,6 +162,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const CouponsScreen()),
+        );
+        break;
+
+      case 'Departments':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const DepartmentScreen()),
         );
         break;
 
