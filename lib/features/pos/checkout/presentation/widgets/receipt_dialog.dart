@@ -1,31 +1,38 @@
 // lib/features/pos/home/presentation/widgets/receipt_dialog.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:intl/intl.dart';
-import '../../../home/model/pos_models.dart';
+import 'package:systego/features/POS/checkout/cubit/checkout_cubit/checkout_cubit.dart';
+import 'package:systego/features/POS/checkout/model/reciept_data.dart';
+import 'package:systego/features/POS/checkout/presentation/view/reciept_screen.dart';
+import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
+import '../../model/checkout_models.dart';
 
 class POSReceiptDialog extends StatefulWidget {
   final List<CartItem> cartItems;
-  final double totalAmount; // هنا بيبقى Subtotal فقط
-  final double taxAmount; // قيمة الضريبة
-  final Tax? selectedTax; // الضريبة المختارة (لعرض الاسم)
-  final double paidAmount;
-  final double change;
-  final String reference;
-  final int pointsEarned;
-  final PaymentMethod paymentMethod;
+  final RecieptData recieptData;
+  // final double totalAmount; // هنا بيبقى Subtotal فقط
+  // final double taxAmount; // قيمة الضريبة
+  // final Tax? selectedTax; // الضريبة المختارة (لعرض الاسم)
+  // final double paidAmount;
+  // final double change;
+  // final String reference;
+  // final int pointsEarned;
+  // final PaymentMethod paymentMethod;
 
   const POSReceiptDialog({
     super.key,
+    required this.recieptData,
     required this.cartItems,
-    required this.totalAmount,
-    required this.taxAmount,
-    required this.selectedTax,
-    required this.paidAmount,
-    required this.change,
-    required this.reference,
-    required this.pointsEarned,
-    required this.paymentMethod,
+    // required this.totalAmount,
+    // required this.taxAmount,
+    // required this.selectedTax,
+    // required this.paidAmount,
+    // required this.change,
+    // required this.reference,
+    // required this.pointsEarned,
+    // required this.paymentMethod,
   });
 
   @override
@@ -92,11 +99,21 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
   //   return result.trim();
   // }
 
-  double get grandTotal => widget.totalAmount + widget.taxAmount;
+  double get grandTotal =>
+      widget.recieptData.totalAmount + widget.recieptData.taxAmount;
+  @override
+  void initState() {
+    // needs to clear cart list
+    context.read<CheckoutCubit>().updateCartWithEmptyList();
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final isCash = widget.paymentMethod.name.toLowerCase().contains('cash');
+    final isCash = widget.recieptData.paymentMethod.name.toLowerCase().contains(
+      'cash',
+    );
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -127,11 +144,11 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
                     _buildDivider(),
                     SizedBox(height: 16),
                     _buildTotalSection(),
-                    if (isCash && widget.paidAmount > 0) ...[
+                    if (isCash && widget.recieptData.paidAmount > 0) ...[
                       SizedBox(height: 16),
                       _buildCashDetails(),
                     ],
-                    if (widget.pointsEarned > 0) ...[
+                    if (widget.recieptData.pointsEarned > 0) ...[
                       SizedBox(height: 20),
                       _buildPointsEarned(),
                     ],
@@ -186,7 +203,7 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
                   ),
                 ),
                 Text(
-                  'Reference: ${widget.reference}',
+                  'Reference: ${widget.recieptData.reference}',
                   style: TextStyle(
                     color: AppColors.white.withOpacity(0.9),
                     fontSize: 13,
@@ -237,8 +254,11 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
           child: Column(
             children: [
               _buildRow('Date:', _formatDateTime()),
-              _buildRow('Reference:', widget.reference),
-              _buildRow('Payment Method:', widget.paymentMethod.name),
+              _buildRow('Reference:', widget.recieptData.reference),
+              _buildRow(
+                'Payment Method:',
+                widget.recieptData.paymentMethod.name,
+              ),
             ],
           ),
         ),
@@ -421,12 +441,12 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
       ),
       child: Column(
         children: [
-          _totalRow('Subtotal:', widget.totalAmount, false),
-          if (widget.taxAmount > 0) ...[
+          _totalRow('Subtotal:', widget.recieptData.totalAmount, false),
+          if (widget.recieptData.taxAmount > 0) ...[
             SizedBox(height: 8),
             _totalRow(
-              '${widget.selectedTax?.name ?? 'Tax'} (${widget.selectedTax?.rate ?? widget.taxAmount}\$):',
-              widget.taxAmount,
+              '${widget.recieptData.selectedTax?.name ?? 'Tax'} (${widget.recieptData.selectedTax?.amount ?? widget.recieptData.taxAmount}\$):',
+              widget.recieptData.taxAmount,
               false,
             ),
           ],
@@ -434,6 +454,7 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
           Container(height: 1, color: AppColors.primaryBlue.withOpacity(0.2)),
           SizedBox(height: 12),
           _totalRow('Grand Total:', grandTotal, true),
+
           // SizedBox(height: 16),
           // Container(
           //   padding: EdgeInsets.all(12),
@@ -464,7 +485,6 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
           //     ],
           //   ),
           // ),
-       
         ],
       ),
     );
@@ -512,7 +532,7 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
                 style: TextStyle(color: AppColors.shadowGray),
               ),
               Text(
-                '\$${widget.paidAmount.toStringAsFixed(2)}',
+                '\$${widget.recieptData.paidAmount.toStringAsFixed(2)}',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: AppColors.successGreen,
@@ -520,14 +540,14 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
               ),
             ],
           ),
-          if (widget.change > 0) ...[
+          if (widget.recieptData.change > 0) ...[
             SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Change:', style: TextStyle(color: AppColors.shadowGray)),
                 Text(
-                  '\$${widget.change.toStringAsFixed(2)}',
+                  '\$${widget.recieptData.change.toStringAsFixed(2)}',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: AppColors.warningOrange,
@@ -562,7 +582,7 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
                     style: TextStyle(fontSize: 14),
                   ),
                   TextSpan(
-                    text: '${widget.pointsEarned} points',
+                    text: '${widget.recieptData.pointsEarned} points',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: AppColors.holdBeige,
@@ -623,7 +643,21 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
         children: [
           Expanded(
             child: OutlinedButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                context.read<CheckoutCubit>().updateCartWithEmptyList();
+                context.read<PosCubit>().refreshCartProducts();
+
+                Navigator.pop(context);
+                Navigator.pop(context);
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        ReceiptPreviewScreen(recieptData: widget.recieptData),
+                  ),
+                );
+              },
               icon: Icon(Icons.print),
               label: Text('Print'),
               style: OutlinedButton.styleFrom(
@@ -636,7 +670,9 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
           Expanded(
             child: ElevatedButton.icon(
               onPressed: () {
-                //context.read<PosCubit>().updateCartWithEmptyList();
+                context.read<CheckoutCubit>().updateCartWithEmptyList();
+                context.read<PosCubit>().refreshCartProducts();
+
                 Navigator.pop(context);
                 Navigator.pop(context);
               },

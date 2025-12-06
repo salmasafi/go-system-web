@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:systego/core/services/session_helper.dart';
-import 'package:systego/features/POS/checkout/cubit/checkout_cubit.dart';
+import 'package:systego/features/POS/checkout/cubit/checkout_cubit/checkout_cubit.dart';
 import 'package:systego/features/admin/auth/cubit/login_cubit.dart';
 import 'package:systego/features/admin/bank_account/cubit/bank_account_cubit.dart';
 import 'package:systego/features/admin/brands/cubit/brand_cubit.dart';
@@ -120,6 +120,24 @@ class _MainAppState extends State<MainApp> {
           fontFamily: 'Rubik',
           scaffoldBackgroundColor: AppColors.lightBlueBackground,
           primarySwatch: AppColors.mediumBlue700,
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ButtonStyle(
+              foregroundColor: WidgetStatePropertyAll(AppColors.black),
+              backgroundColor: WidgetStatePropertyAll(
+                AppColors.mediumBlue700.shade200,
+              ),
+            ),
+          ),
+          checkboxTheme: CheckboxThemeData(
+            fillColor: MaterialStateColor.resolveWith((states) {
+              if (states.contains(MaterialState.selected)) {
+                return AppColors
+                    .mediumBlue700; // the color when checkbox is selected;
+              }
+              return AppColors.white; //the color when checkbox is unselected;
+            }),
+          ),
+          dropdownMenuTheme: DropdownMenuThemeData(menuStyle: MenuStyle()),
           dialogTheme: DialogThemeData(backgroundColor: Colors.white),
           textButtonTheme: TextButtonThemeData(
             style: ButtonStyle(

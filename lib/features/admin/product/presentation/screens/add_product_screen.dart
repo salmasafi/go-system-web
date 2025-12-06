@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/app_bar_widgets.dart';
 import 'package:systego/core/widgets/custom_button_widget.dart';
+import 'package:systego/core/widgets/custom_drop_down_menu.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:systego/core/widgets/custom_textfield/build_text_field.dart';
 import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
@@ -246,7 +246,7 @@ class _AddProductScreenState extends State<AddProductScreen>
                           );
                         },
                       ),
-                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                      //SizedBox(height: ResponsiveUI.spacing(context, 12)),
                       BlocBuilder<ProductFiltersCubit, ProductFiltersState>(
                         builder: (context, filtersState) {
                           if (filtersState is ProductFiltersLoading) {
@@ -751,82 +751,36 @@ class _AddProductScreenState extends State<AddProductScreen>
   }
 
   Widget _buildCategoriesDropdown(List<CategoryFilter> categories) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        border: Border.all(color: AppColors.lightGray, width: 1.5),
-        borderRadius: BorderRadius.circular(
-          ResponsiveUI.borderRadius(context, 12),
-        ),
-      ),
-      child: DropdownSearch<CategoryFilter>.multiSelection(
-        popupProps: PopupPropsMultiSelection.menu(
-          showSearchBox: true,
-          searchFieldProps: TextFieldProps(
-            decoration: InputDecoration(
-              hintText: 'Search categories...',
-              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              prefixIcon: Icon(Icons.search, color: AppColors.darkGray),
-            ),
-          ),
-        ),
-        items: categories,
-        itemAsString: (CategoryFilter item) => item.name,
-        dropdownDecoratorProps: DropDownDecoratorProps(
-          dropdownSearchDecoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            border: InputBorder.none,
-            hintText: 'Select categories',
-            suffixIcon: Icon(Icons.arrow_drop_down, color: AppColors.darkGray),
-          ),
-        ),
-        onChanged: (List<CategoryFilter> value) {
-          setState(() => _selectedCategories = value);
-        },
-      ),
+    return buildMultiSelectDropdownField<CategoryFilter>(
+      context,
+      items: categories,
+      hint: 'Search categories...',
+      onChanged: (value) {
+        // setState(() {
+        //   selectedCountry = value;
+        // });
+      },
+
+      itemLabel: (category) => category.name,
+      //value: null,
+      label: '',
     );
   }
 
   Widget _buildBrandDropdown(List<BrandFilter> brands) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        border: Border.all(color: AppColors.lightGray, width: 1.5),
-        borderRadius: BorderRadius.circular(
-          ResponsiveUI.borderRadius(context, 12),
-        ),
-      ),
-      child: DropdownSearch<BrandFilter>(
-        popupProps: PopupProps.menu(
-          showSearchBox: true,
-          searchFieldProps: TextFieldProps(
-            decoration: InputDecoration(
-              hintText: 'Search brands...',
-              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              prefixIcon: Icon(Icons.search, color: AppColors.darkGray),
-            ),
-          ),
-        ),
-        items: brands,
-        itemAsString: (BrandFilter item) => item.name,
-        dropdownDecoratorProps: DropDownDecoratorProps(
-          dropdownSearchDecoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            border: InputBorder.none,
-            hintText: 'Select brand',
-            suffixIcon: Icon(Icons.arrow_drop_down, color: AppColors.darkGray),
-          ),
-        ),
-        onChanged: (BrandFilter? value) {
-          setState(() => _selectedBrand = value);
-        },
-      ),
+    return buildDropdownField<BrandFilter>(
+      context,
+      items: brands,
+      hint: 'Search brands...',
+      onChanged: (value) {
+        // setState(() {
+        //   selectedCountry = value;
+        // });
+      },
+      itemLabel: (brand) => brand.name,
+      value: null,
+      label: '',
+      //icon: Icons.keyboard_arrow_down_rounded,
     );
   }
 

@@ -76,13 +76,6 @@ class Product {
   }
 }
 
-class CartItem {
-  final Product product;
-  int quantity;
-
-  CartItem({required this.product, required this.quantity});
-}
-
 // Selection Models
 class Warehouse {
   final String id;
@@ -123,15 +116,34 @@ class PaymentMethod {
 class BankAccount {
   final String id;
   final String name;
+  final String? arName;
   final String? accountNumber;
+  final num? initialBalance;
+  final bool isDefault;
+  final String note;
+  String icon;
 
-  BankAccount({required this.id, required this.name, this.accountNumber});
+  BankAccount({
+    required this.id,
+    required this.name,
+    required this.arName,
+    required this.accountNumber,
+    required this.initialBalance,
+    required this.isDefault,
+    required this.note,
+    required this.icon,
+  });
 
   factory BankAccount.fromJson(Map<String, dynamic> json) {
     return BankAccount(
       id: json['_id'] ?? json['id'],
       name: json['name'] ?? 'Cash Register',
+      arName: json['ar_name'] ?? '',
       accountNumber: json['account_number'],
+      initialBalance: json['initial_balance'] ?? 0,
+      isDefault: json['is_default'] ?? false,
+      icon: json['icon'] ?? '',
+      note: json['note'] ?? '',
     );
   }
 }
@@ -139,15 +151,25 @@ class BankAccount {
 class Tax {
   final String id;
   final String name;
-  final double rate;
+  final double amount;
+  final bool status;
+  final String type;
 
-  Tax({required this.id, required this.name, required this.rate});
+  Tax({
+    required this.id,
+    required this.name,
+    required this.amount,
+    required this.type,
+    required this.status,
+  });
 
   factory Tax.fromJson(Map<String, dynamic> json) {
     return Tax(
       id: json['_id'] ?? json['id'],
       name: json['name'] ?? 'No Tax',
-      rate: (json['amount'] ?? 10).toDouble(),
+      amount: (json['amount'] ?? 10).toDouble(),
+      type: json['type'] ?? 'fixed',
+      status: json['status'] ?? false,
     );
   }
 }

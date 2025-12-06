@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
-import '../../../home/cubit/pos_home_cubit.dart';
-import '../../../home/model/pos_models.dart';
+import 'package:systego/features/POS/checkout/cubit/checkout_cubit/checkout_cubit.dart';
+import '../../model/checkout_models.dart';
 import 'action_botton.dart';
 import 'checkout_dialog.dart';
 import 'payment_methods_dialog.dart'; // Import the checkout dialog
@@ -24,14 +24,14 @@ class POSCartBottomSheet extends StatefulWidget {
 }
 
 class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
-  late PosCubit cubit;
+  late CheckoutCubit cubit;
   late List<CartItem> cartItems;
   late double total;
 
   @override
   void initState() {
     super.initState();
-    cubit = context.read<PosCubit>();
+    cubit = context.read<CheckoutCubit>();
     cartItems = List.from(
       cubit.cartItems,
     ); // نسخة محلية عشان ما يتغيرش أثناء السكرول
@@ -316,8 +316,6 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
               totalAmount: total,
               cartItems: cartItems,
               selectedPaymentMethod: method,
-              selectedTax: cubit.selectedTax,
-              taxes: cubit.taxes,
             ),
           );
         },

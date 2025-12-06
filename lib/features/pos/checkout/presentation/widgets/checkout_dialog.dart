@@ -4,26 +4,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_textfield/build_text_field.dart';
+import 'package:systego/features/POS/checkout/model/reciept_data.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
 import 'package:systego/features/POS/home/model/pos_models.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
-import '../../cubit/checkout_cubit.dart';
+import '../../cubit/checkout_cubit/checkout_cubit.dart';
+import '../../model/checkout_models.dart';
 import 'receipt_dialog.dart';
 
 class POSCheckoutDialog extends StatefulWidget {
   final double totalAmount;
   final List<CartItem> cartItems;
   final PaymentMethod selectedPaymentMethod;
-  final List<Tax> taxes;
-  final Tax? selectedTax;
 
   const POSCheckoutDialog({
     super.key,
     required this.totalAmount,
     required this.cartItems,
     required this.selectedPaymentMethod,
-    required this.taxes,
-    required this.selectedTax,
   });
 
   @override
@@ -53,27 +51,32 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   final List<String> _cardTypes = ['Visa', 'MasterCard'];
   List<Tax> _taxes = [];
   Tax? _selectedTax;
+  PosCubit? posCubit;
 
   @override
   void initState() {
     super.initState();
+    posCubit = context.read<PosCubit>();
     _subTotal = widget.totalAmount;
-    _selectedTax = widget.selectedTax ?? Tax(id: 'id', name: 'none', rate: 0.0);
-    _taxes = widget.taxes;
-    _due = _subTotal + _selectedTax!.rate;
+    _selectedTax =
+        posCubit?.selectedTax ??
+        Tax(id: 'id', name: 'none', amount: 0.0, type: '', status: false);
+    _taxes = posCubit?.taxes ?? [];
+    _due = _subTotal + _selectedTax!.amount;
     _totalPayingCtrl.addListener(_calc);
   }
 
   void _calc() {
     setState(() {
       _totalPaying = double.tryParse(_totalPayingCtrl.text) ?? 0.0;
-      if (_totalPaying >= (widget.totalAmount + (_selectedTax?.rate ?? 0))) {
+      if (_totalPaying >= (widget.totalAmount + (_selectedTax?.amount ?? 0))) {
         _change =
-            _totalPaying - (widget.totalAmount + (_selectedTax?.rate ?? 0));
+            _totalPaying - (widget.totalAmount + (_selectedTax?.amount ?? 0));
         _due = 0.0;
       } else {
         _change = 0.0;
-        _due = (widget.totalAmount + (_selectedTax?.rate ?? 0)) - _totalPaying;
+        _due =
+            (widget.totalAmount + (_selectedTax?.amount ?? 0)) - _totalPaying;
       }
     });
   }
@@ -254,7 +257,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
       children: [
         _row(
           'Total Payable',
-          (widget.totalAmount + (_selectedTax?.rate ?? 0)),
+          (widget.totalAmount + (_selectedTax?.amount ?? 0)),
           AppColors.darkGray,
           bold: true,
         ),
@@ -264,7 +267,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
         ),
         _row('Sub total', _subTotal, AppColors.categoryPurple),
         SizedBox(height: ResponsiveUI.spacing(context, 8)),
-        _row('Taxes', _selectedTax?.rate ?? 0, AppColors.clearPink),
+        _row('Taxes', _selectedTax?.amount ?? 0, AppColors.clearPink),
         SizedBox(height: ResponsiveUI.spacing(context, 8)),
         _row('Total Paying', _totalPaying, AppColors.successGreen),
         SizedBox(height: ResponsiveUI.spacing(context, 8)),
@@ -428,15 +431,15 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Cash Received',
-            style: TextStyle(
-              fontSize: ResponsiveUI.fontSize(context, 16),
-              fontWeight: FontWeight.bold,
-              color: AppColors.darkGray,
-            ),
-          ),
-          SizedBox(height: ResponsiveUI.spacing(context, 12)),
+          // Text(
+          //   'Cash Received',
+          //   style: TextStyle(
+          //     fontSize: ResponsiveUI.fontSize(context, 16),
+          //     fontWeight: FontWeight.bold,
+          //     color: AppColors.darkGray,
+          //   ),
+          // ),
+          // SizedBox(height: ResponsiveUI.spacing(context, 12)),
           buildTextField(
             context,
             controller: _totalPayingCtrl,
@@ -730,17 +733,18 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     }
 
     double paidAmount =
-        _totalPaying >= (widget.totalAmount + (_selectedTax?.rate ?? 0))
+        _totalPaying >= (widget.totalAmount + (_selectedTax?.amount ?? 0))
         ? _totalPaying
-        : (widget.totalAmount + (_selectedTax?.rate ?? 0));
+        : (widget.totalAmount + (_selectedTax?.amount ?? 0));
 
-    //paidAmount = paidAmount - ((_selectedTax != null) ? _selectedTax!.rate : 0);
+    //paidAmount = paidAmount - ((_selectedTax != null) ? _selectedTax!.amount : 0);
 
     final posCubit = context.read<PosCubit>();
+    final checkOutCubit = context.read<CheckoutCubit>();
 
-    final success = await context.read<CheckoutCubit>().createSale(
+    final success = await checkOutCubit.createSale(
       cartItems: widget.cartItems,
-      totalAmount: (widget.totalAmount + (_selectedTax?.rate ?? 0)),
+      totalAmount: (widget.totalAmount + (_selectedTax?.amount ?? 0)),
       posCubit: posCubit,
       paymentNote: _paymentNoteCtrl.text.isEmpty ? null : _paymentNoteCtrl.text,
     );
@@ -753,20 +757,25 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
         context: context,
         barrierDismissible: false,
         builder: (_) {
-          final posCubit = context.read<PosCubit>();
-          final cartItems = posCubit.cartItems;
+          final checkOutCubit = context.read<CheckoutCubit>();
+          final cartItems = checkOutCubit.cartItems;
           return POSReceiptDialog(
-            totalAmount: widget.totalAmount, // Subtotal فقط
-            taxAmount: _selectedTax?.rate ?? 0.0, // قيمة الضريبة
-            selectedTax: _selectedTax, // عشان يظهر اسم الضريبة
-            paidAmount: paidAmount,
-            change: _change,
-            reference: (context.read<CheckoutCubit>().state as CheckoutSuccess)
-                .reference,
-            pointsEarned:
-                (context.read<CheckoutCubit>().state as CheckoutSuccess)
-                    .pointsEarned,
-            paymentMethod: widget.selectedPaymentMethod,
+            recieptData: RecieptData(
+              cartItems: cartItems,
+              totalAmount: widget.totalAmount, // Subtotal فقط
+              taxAmount: _selectedTax?.amount ?? 0.0, // قيمة الضريبة
+              selectedTax: _selectedTax, // عشان يظهر اسم الضريبة
+
+              paidAmount: paidAmount,
+              change: _change,
+              reference:
+                  (context.read<CheckoutCubit>().state as CheckoutSuccess)
+                      .reference,
+              pointsEarned:
+                  (context.read<CheckoutCubit>().state as CheckoutSuccess)
+                      .pointsEarned,
+              paymentMethod: widget.selectedPaymentMethod,
+            ),
             cartItems: cartItems,
           );
         },

@@ -6,6 +6,7 @@ import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:systego/features/POS/checkout/cubit/checkout_cubit/checkout_cubit.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_state.dart';
 import 'package:systego/features/POS/home/model/pos_models.dart';
@@ -37,10 +38,16 @@ class _POSScreenState extends State<POSScreen> {
   }
 
   void _addToCart(Product product) {
-    context.read<PosCubit>().addToCart(product);
+    context.read<CheckoutCubit>().addToCart(product);
+    PosCubit posCubit = context.read<PosCubit>();
+
+    posCubit.selectTab(
+      tab: context.read<PosCubit>().selectedTab,
+      noFliterRefresh: true,
+    );
   }
 
-  double get _total => context.read<PosCubit>().cartItems.fold(
+  double get _total => context.read<CheckoutCubit>().cartItems.fold(
     0,
     (s, i) => s + i.product.price * i.quantity,
   );
@@ -56,16 +63,21 @@ class _POSScreenState extends State<POSScreen> {
   }
 
   void _showCartDialog() {
+    final posCubit = context.read<PosCubit>();
+    final checkoutCubit = context.read<CheckoutCubit>();
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => POSCartBottomSheet(
         onQuantityChanged: (index, delta) {
-          context.read<PosCubit>().updateQuantity(index, delta);
+          checkoutCubit.updateQuantity(index, delta);
+          context.read<PosCubit>().selectTab();
         },
         onRemove: (index) {
-          context.read<PosCubit>().removeFromCart(index);
+          checkoutCubit.removeFromCart(index);
+          posCubit.selectTab();
         },
       ),
     );
@@ -75,7 +87,9 @@ class _POSScreenState extends State<POSScreen> {
   //  Handle barcode scan → API → add to cart
   // ────────────────────────────────────────────────────────────────
   void _handleBarcodeScan(String code) async {
-    final cubit = context.read<PosCubit>();
+    final posCubit = context.read<PosCubit>();
+
+    final checkoutCubit = context.read<CheckoutCubit>();
 
     // Clear search bar
     setState(() {
@@ -83,9 +97,13 @@ class _POSScreenState extends State<POSScreen> {
       _searchController.clear();
     });
 
-    final product = await cubit.getProductByCode(code);
+    final product = await posCubit.getProductByCode(code);
     if (product != null && mounted) {
-      cubit.addToCart(product);
+      checkoutCubit.addToCart(product);
+      posCubit.selectTab(
+        tab: context.read<PosCubit>().selectedTab,
+        noFliterRefresh: true,
+      );
       CustomSnackbar.showSuccess(context, '${product.name} added to cart');
     }
   }
@@ -94,7 +112,7 @@ class _POSScreenState extends State<POSScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<PosCubit, PosState>(
       builder: (context, state) {
-        final cubit = context.read<PosCubit>();
+        final cubit = context.read<CheckoutCubit>();
         final cartItems = cubit.cartItems;
 
         return Scaffold(

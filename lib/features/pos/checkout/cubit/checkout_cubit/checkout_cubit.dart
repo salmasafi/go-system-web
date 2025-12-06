@@ -1,28 +1,57 @@
 import 'dart:developer';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/services/dio_helper.dart';
 import 'package:systego/core/services/endpoints.dart';
-import 'package:systego/features/POS/home/model/pos_models.dart';
-
-import '../../home/cubit/pos_home_cubit.dart';
-
+import '../../../home/cubit/pos_home_cubit.dart';
+import '../../../home/model/pos_models.dart';
+import '../../model/checkout_models.dart';
 part 'checkout_state.dart';
 
 class CheckoutCubit extends Cubit<CheckoutState> {
   CheckoutCubit() : super(CheckoutInitial());
 
+  List<CartItem> cartItems = [];
+  //RecieptData? recieptData;
+
+  void addToCart(Product product) {
+    final existingIndex = cartItems.indexWhere(
+      (i) => i.product.id == product.id,
+    );
+    if (existingIndex >= 0) {
+      cartItems[existingIndex].quantity++;
+    } else {
+      cartItems.add(CartItem(product: product, quantity: 1));
+    }
+    emit(PosCartUpdated(cartItems));
+  }
+
+  void removeFromCart(int index) {
+    if (index >= 0 && index < cartItems.length) {
+      cartItems.removeAt(index);
+      emit(PosCartUpdated(cartItems));
+    }
+  }
+
+  void updateQuantity(int index, int delta) {
+    if (index < 0 || index >= cartItems.length) return;
+    final newQty = cartItems[index].quantity + delta;
+    if (newQty > 0) {
+      cartItems[index].quantity = newQty;
+    } else {
+      cartItems.removeAt(index);
+    }
+    emit(PosCartUpdated(cartItems));
+  }
+
+  void updateCartWithEmptyList() {
+    cartItems.clear();
+    emit(PosCartUpdated([]));
+  }
+
   Future<bool> createSale({
     required PosCubit posCubit,
     required List<CartItem> cartItems,
     required double totalAmount,
-    // required double paidAmount,
-    // required Customer customer,
-    // required Warehouse warehouse,
-    //required PaymentMethod paymentMethod,
-    // required BankAccount account,
-    //required Currency currency,
-    //Tax? tax,
     String? paymentNote,
   }) async {
     emit(CheckoutLoading());
@@ -39,9 +68,11 @@ class CheckoutCubit extends Cubit<CheckoutState> {
         .toList();
 
     final body = {
-      "customer_id": posCubit.selectedCustomer?.id,
+      "customer_id": //posCubit.selectedCustomer?.id ??
+          '68f4bd26a6017b1543773cf6',
       "warehouse_id": posCubit.selectedWarhouse?.id,
-      "currency_id": posCubit.selectedCurrency?.id,
+      "currency_id":
+          '68e617af2c4fc1f8db2f267a', // posCubit.selectedCurrency?.id,
       "account_id": posCubit.selectedAccount?.id,
       "order_tax": posCubit.selectedTax?.id,
       "shipping_cost": 0,
@@ -86,4 +117,8 @@ class CheckoutCubit extends Cubit<CheckoutState> {
       return false;
     }
   }
+
+  // void setRecieptData(RecieptData recieptData2) {
+  //   recieptData = recieptData2;
+  // }
 }
