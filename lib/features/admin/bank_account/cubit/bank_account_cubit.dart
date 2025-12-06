@@ -1,7 +1,6 @@
 import 'dart:developer' as dev;
 import 'dart:io';
 import 'package:bloc/bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
 import 'package:systego/core/services/dio_helper.dart';
 import 'package:systego/core/services/endpoints.dart';
@@ -16,6 +15,7 @@ class BankAccountCubit extends Cubit<BankAccountState> {
   BankAccountCubit() : super(BankAccountInitial());
 
   List<BankAccountModel> allAccounts = [];
+  int totalBalance = 0;
 
   Future<void> getBankAccounts() async {
     emit(GetBankAccountsLoading());
@@ -28,7 +28,8 @@ class BankAccountCubit extends Cubit<BankAccountState> {
         final model = BankAccountResponse.fromJson(response.data);
         if (model.success) {
           allAccounts = model.data.accounts;
-          emit(GetBankAccountsSuccess(model.data.accounts));
+          totalBalance = model.data.totalBalance;
+          emit(GetBankAccountsSuccess(allAccounts, totalBalance));
         } else {
           final errorMessage = ErrorHandler.handleError(response);
           emit(GetBankAccountsError(errorMessage));

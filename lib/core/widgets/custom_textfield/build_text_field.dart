@@ -11,6 +11,8 @@ Widget buildTextField(
   String? Function(String?)? validator,
   TextInputType? keyboardType,
   int maxLines = 1,
+  bool readOnly = false,
+  void Function()? onTap,
 }) {
   final fontSizeLabel = ResponsiveUI.fontSize(context, 14);
   final spacing8 = ResponsiveUI.spacing(context, 8);
@@ -35,6 +37,8 @@ Widget buildTextField(
       ),
       SizedBox(height: spacing8),
       TextFormField(
+        readOnly: readOnly,
+        onTap: onTap,
         controller: controller,
         decoration: InputDecoration(
           hintText: hint,

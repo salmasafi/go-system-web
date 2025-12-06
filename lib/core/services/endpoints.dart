@@ -120,4 +120,11 @@ class EndPoint {
   static String updatePopup(String id) => '/api/admin/popup/$id';
   static String deletePopup(String id) => '/api/admin/popup/$id';
 
+  /// coupons
+  static const String getAllCoupons = '/api/admin/coupon';
+  static String getCoupon(String id) => '/api/admin/coupon/$id';
+  static String addCoupon = '/api/admin/coupon';
+  static String updateCoupon(String id) => '/api/admin/coupon/$id';
+  static String deleteCoupon(String id) => '/api/admin/coupon/$id';
+
 }

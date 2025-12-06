@@ -19,8 +19,9 @@ class BankAccountResponse {
 class BankAccountData {
   final String message;
   final List<BankAccountModel> accounts;
+  final int totalBalance;
 
-  BankAccountData({required this.message, required this.accounts});
+  BankAccountData({required this.message, required this.accounts, required this.totalBalance});
 
   factory BankAccountData.fromJson(Map<String, dynamic> json) {
     return BankAccountData(
@@ -28,13 +29,15 @@ class BankAccountData {
       accounts: (json['accounts'] as List<dynamic>)
           .map((item) => BankAccountModel.fromJson(item as Map<String, dynamic>))
           .toList(),
+     totalBalance: (json['total'] as num?)?.toInt() ?? 0,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'message': message,
-      'taxes': accounts.map((item) => item.toJson()).toList(),
+      'accounts': accounts.map((item) => item.toJson()).toList(),
+      'total': totalBalance,
     };
   }
 }

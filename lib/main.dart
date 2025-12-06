@@ -10,6 +10,7 @@ import 'package:systego/features/admin/categories/cubit/categories_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/features/admin/city/cubit/city_cubit.dart';
+import 'package:systego/features/admin/coupon/cubit/coupon_cubit.dart';
 import 'package:systego/features/admin/currency/cubit/currency_cubit.dart';
 import 'package:systego/features/admin/payment_methods/cubit/payment_method_cubit.dart';
 import 'package:systego/features/admin/popup/cubit/popup_cubit.dart';
@@ -94,6 +95,7 @@ class _MainAppState extends State<MainApp> {
         BlocProvider<TaxesCubit>(create: (context) => TaxesCubit()),
         BlocProvider<BankAccountCubit>(create: (context) => BankAccountCubit()),
         BlocProvider<PopupCubit>(create: (context) => PopupCubit()),
+        BlocProvider<CouponsCubit>(create: (context) => CouponsCubit()),
         BlocProvider<PaymentMethodCubit>(
           create: (context) => PaymentMethodCubit(),
         ),
