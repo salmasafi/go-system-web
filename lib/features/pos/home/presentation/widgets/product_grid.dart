@@ -8,17 +8,26 @@ class POSProductGrid extends StatelessWidget {
   final List<Product> products;
   final ValueChanged<Product> onProductTap;
 
-  const POSProductGrid({required this.products, required this.onProductTap, super.key});
+  const POSProductGrid({
+    required this.products,
+    required this.onProductTap,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return AnimatedElement(
       delay: const Duration(milliseconds: 100),
       child: GridView.builder(
-        padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+        padding: EdgeInsets.only(
+          right: ResponsiveUI.padding(context, 16),
+          left: ResponsiveUI.padding(context, 16),
+          top: ResponsiveUI.padding(context, 16),
+          bottom: ResponsiveUI.padding(context, 75),
+        ),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio:  1,
+          childAspectRatio: 1,
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
         ),

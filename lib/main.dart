@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:systego/core/services/session_helper.dart';
-import 'package:systego/features/POS/checkout/cubit/checkout_cubit.dart';
+import 'package:systego/features/POS/checkout/cubit/checkout_cubit/checkout_cubit.dart';
 import 'package:systego/features/admin/auth/cubit/login_cubit.dart';
 import 'package:systego/features/admin/bank_account/cubit/bank_account_cubit.dart';
 import 'package:systego/features/admin/brands/cubit/brand_cubit.dart';

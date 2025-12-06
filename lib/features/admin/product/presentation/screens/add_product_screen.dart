@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/app_bar_widgets.dart';

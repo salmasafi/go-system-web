@@ -11,8 +11,6 @@ import '../../../../core/utils/error_handler.dart';
 class PosCubit extends Cubit<PosState> {
   PosCubit() : super(PosInitial());
 
-  List<CartItem> cartItems = [];
-
   String selectedTab = 'featured';
   bool showCategoryFilters = false;
   bool showBrandFilters = false;
@@ -155,11 +153,15 @@ class PosCubit extends Cubit<PosState> {
         accounts = (json['accounts'] as List? ?? [])
             .map((e) => BankAccount.fromJson(e))
             .toList();
-        selectedAccount = accounts.isNotEmpty ? accounts.first : null;
+        selectedAccount = accounts.isNotEmpty
+            ? accounts.where((element) => element.isDefault) as BankAccount
+            : null;
 
         taxes = (json['taxes'] as List? ?? [])
             .map((e) => Tax.fromJson(e))
             .toList();
+
+        taxes = taxes.takeWhile((value) => value.status).toList();
         selectedTax = taxes.isNotEmpty ? taxes.first : null;
 
         currencies = (json['currencies'] as List? ?? [])
@@ -268,7 +270,6 @@ class PosCubit extends Cubit<PosState> {
   }
 
   Future<void> refreshCartProducts() async {
-    cartItems = [];
     if (selectedTab == 'featured') {
       hideFilterPanels();
       emit(PosDataLoaded(featuredProducts));
@@ -345,47 +346,5 @@ class PosCubit extends Cubit<PosState> {
 
       return null;
     }
-  }
-
-  // ────────────────────────────────────────────────────────────────
-  //  Cart Management
-  // ────────────────────────────────────────────────────────────────
-  void addToCart(Product product) {
-    final existingIndex = cartItems.indexWhere(
-      (i) => i.product.id == product.id,
-    );
-    if (existingIndex >= 0) {
-      cartItems[existingIndex].quantity++;
-    } else {
-      cartItems.add(CartItem(product: product, quantity: 1));
-    }
-    emit(PosCartUpdated(cartItems));
-
-    selectTab(tab: selectedTab, noFliterRefresh: true);
-  }
-
-  void removeFromCart(int index) {
-    if (index >= 0 && index < cartItems.length) {
-      cartItems.removeAt(index);
-      emit(PosCartUpdated(cartItems));
-      selectTab();
-    }
-  }
-
-  void updateQuantity(int index, int delta) {
-    if (index < 0 || index >= cartItems.length) return;
-    final newQty = cartItems[index].quantity + delta;
-    if (newQty > 0) {
-      cartItems[index].quantity = newQty;
-    } else {
-      cartItems.removeAt(index);
-    }
-    emit(PosCartUpdated(cartItems));
-    selectTab();
-  }
-
-  void updateCartWithEmptyList() {
-    cartItems.clear();
-    emit(PosCartUpdated([]));
   }
 }

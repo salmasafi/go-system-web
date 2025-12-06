@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
-import '../../../home/model/pos_models.dart';
+import '../../model/checkout_models.dart';
 
 class POSCartItemCard extends StatelessWidget {
   final CartItem item;

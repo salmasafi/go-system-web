@@ -17,9 +17,3 @@ class PosError extends PosState {
   final String message;
   PosError(this.message);
 }
-
-// NEW: Cart update state
-class PosCartUpdated extends PosState {
-  final List<CartItem> cartItems;
-  PosCartUpdated(this.cartItems);
-}

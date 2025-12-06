@@ -1,7 +1,7 @@
 // ── Cart summary (bottom sheet) ───────────────────────────────────────────
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
+import 'package:systego/features/POS/checkout/cubit/checkout_cubit/checkout_cubit.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
 
@@ -44,8 +44,8 @@ class _POSCartSummaryState extends State<POSCartSummary> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Items: ${context.read<PosCubit>().cartItems.length} '
-                      '(${context.read<PosCubit>().cartItems.fold(0, (s, i) => s + i.quantity)})',
+                      'Items: ${context.read<CheckoutCubit>().cartItems.length} '
+                      '(${context.read<CheckoutCubit>().cartItems.fold(0, (s, i) => s + i.quantity)})',
                       style: TextStyle(
                         fontSize: ResponsiveUI.fontSize(context, 14),
                         color: AppColors.shadowGray,
