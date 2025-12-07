@@ -1,10 +1,12 @@
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_textfield/custom_text_field_widget.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../core/widgets/custom_loading/custom_loading_state.dart';
 import '../../categories/view/widgets/build_image_placeholder_widget.dart';
 import '../cubit/brand_cubit.dart';
@@ -51,7 +53,7 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
     if (_nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Please enter brand name'),
+          content: Text(LocaleKeys.please_enter_brand_name.tr()),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -168,7 +170,7 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
                 ),
                 SizedBox(height: ResponsiveUI.spacing(context, 12)),
                 Text(
-                  'Edit Brand',
+                  LocaleKeys.edit_brand.tr(),
                   style: TextStyle(
                     fontSize: ResponsiveUI.fontSize(context, 20),
                     fontWeight: FontWeight.bold,
@@ -178,8 +180,8 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
                 SizedBox(height: ResponsiveUI.spacing(context, 16)),
                 CustomTextField(
                   controller: _nameController,
-                  labelText: 'Brand Name',
-                  hintText: 'Enter brand name',
+                  labelText: LocaleKeys.brand_name.tr(),
+                  hintText: LocaleKeys.enter_brand_name.tr(),
                   prefixIcon: Icons.branding_watermark,
                   hasBoxDecoration: false,
                   hasBorder: true,
@@ -187,7 +189,7 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
                 ),
                 SizedBox(height: ResponsiveUI.spacing(context, 12)),
                 Text(
-                  'Brand Logo',
+                  LocaleKeys.brand_logo.tr(),
                   style: TextStyle(
                     fontSize: ResponsiveUI.fontSize(context, 14),
                     fontWeight: FontWeight.w500,
@@ -234,7 +236,7 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
                 SizedBox(height: ResponsiveUI.spacing(context, 8)),
                 if (_selectedImage == null && (_brand?.logo?.isEmpty ?? true))
                   Text(
-                    'Tap to select a logo',
+                    LocaleKeys.tap_to_select_logo.tr(),
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 12),
                       color: Colors.orange[700],
@@ -253,7 +255,7 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
                       ),
                       SizedBox(width: ResponsiveUI.spacing(context, 4)),
                       Text(
-                        'New logo selected',
+                        LocaleKeys.new_logo_selected.tr(),
                         style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 12),
                           color: Colors.green[700],
@@ -282,7 +284,7 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
                     ),
                   )
                       : Text(
-                    'Update Brand',
+                    LocaleKeys.update_brand.tr(),
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 16),
                       fontWeight: FontWeight.w600,

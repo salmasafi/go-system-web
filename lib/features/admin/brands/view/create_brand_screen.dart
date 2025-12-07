@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,6 +8,7 @@ import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/app_bar_widgets.dart';
 import 'package:systego/core/widgets/custom_button_widget.dart';
 import 'package:systego/core/widgets/custom_textfield/custom_text_field_widget.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../core/widgets/custom_error/custom_error_state.dart';
 import '../cubit/brand_cubit.dart';
 import '../cubit/brand_states.dart';
@@ -68,7 +70,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
       builder: (context, state) {
         if (state is CreateBrandError) {
           return Scaffold(
-            appBar: appBarWithActions(context, title: "New Brand"),
+            appBar: appBarWithActions(context, title: LocaleKeys.new_brand.tr()),
             body: CustomErrorState(
               message: state.error,
               onRetry: () {
@@ -86,7 +88,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
         }
 
         return Scaffold(
-          appBar: appBarWithActions(context, title: "New Brand"),
+          appBar: appBarWithActions(context, title: LocaleKeys.new_brand.tr()),
           body: SafeArea(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(
@@ -97,7 +99,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                 children: [
                   SizedBox(height: ResponsiveUI.spacing(context, 16)),
                   Text(
-                    'Brand Name',
+                    LocaleKeys.brand_name.tr(),
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 14),
                       color: AppColors.darkGray,
@@ -108,7 +110,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                   CustomTextField(
                     controller: _nameController,
                     labelText: '',
-                    hintText: 'Enter brand name',
+                    hintText: LocaleKeys.enter_brand_name.tr(),
                     hasBoxDecoration: false,
                     hasBorder: true,
                     prefixIcon: Icons.branding_watermark,
@@ -119,7 +121,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Brand Logo ',
+                        LocaleKeys.brand_logo.tr(),
                         style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 14),
                           color: AppColors.darkGray,
@@ -134,7 +136,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                             size: ResponsiveUI.iconSize(context, 18),
                           ),
                           label: Text(
-                            'Remove',
+                            LocaleKeys.remove.tr(),
                             style: TextStyle(
                               color: AppColors.red,
                               fontSize: ResponsiveUI.fontSize(context, 12),
@@ -191,7 +193,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                                   height: ResponsiveUI.spacing(context, 8),
                                 ),
                                 Text(
-                                  'Tap to upload',
+                                  LocaleKeys.tap_to_upload.tr(),
                                   style: TextStyle(
                                     color: AppColors.darkGray.withOpacity(0.7),
                                     fontSize: ResponsiveUI.fontSize(
@@ -215,8 +217,8 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                               if (_nameController.text.trim().isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: const Text(
-                                      'Please enter brand name',
+                                    content:  Text(
+                                      LocaleKeys.please_enter_brand_name.tr(),
                                     ),
                                     backgroundColor: Colors.red,
                                     behavior: SnackBarBehavior.floating,
@@ -233,7 +235,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                               if (_selectedImage == null) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: const Text('Please select a logo'),
+                                    content:  Text(LocaleKeys.please_select_logo.tr()),
                                     backgroundColor: Colors.red,
                                     behavior: SnackBarBehavior.floating,
                                     shape: RoundedRectangleBorder(
@@ -259,8 +261,8 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                       //   elevation: 2,
                       // ),
                       text: state is CreateBrandLoading
-                          ? 'Saving Brand'
-                          : 'Save Brand',
+                          ? LocaleKeys.saving_brand.tr()
+                          : LocaleKeys.save_brand.tr(),
                       // child: state is CreateBrandLoading
                       //     ? SizedBox(
                       //   height: ResponsiveUI.iconSize(context, 24),

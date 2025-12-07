@@ -1,15 +1,13 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/generated/locale_keys.g.dart';
 
-class DeleteBrandDialog extends StatelessWidget {
-  final String brandName;
+class DeleteVariationDialog extends StatelessWidget {
+  final String variationName;
   final VoidCallback onDelete;
 
-  const DeleteBrandDialog({
+  const DeleteVariationDialog({
     super.key,
-    required this.brandName,
+    required this.variationName,
     required this.onDelete,
   });
 
@@ -57,7 +55,7 @@ class DeleteBrandDialog extends StatelessWidget {
 
   Widget _buildTitle(BuildContext context) {
     return Text(
-      LocaleKeys.delete_brand.tr(),
+      'Delete Variation',
       style: TextStyle(
         fontSize: ResponsiveUI.fontSize(context, 20),
         fontWeight: FontWeight.bold,
@@ -68,7 +66,7 @@ class DeleteBrandDialog extends StatelessWidget {
 
   Widget _buildMessage(BuildContext context) {
     return Text(
-      '${LocaleKeys.delete_confirmation.tr()} $brandName? ${LocaleKeys.this_action_cannot_be_undone.tr()}',
+      'Are you sure you want to delete "$variationName"?\nThis action cannot be undone.',
       textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: ResponsiveUI.fontSize(context, 14),
@@ -105,7 +103,7 @@ class DeleteBrandDialog extends StatelessWidget {
         ),
       ),
       child: Text(
-        LocaleKeys.cancel.tr(),
+        'Cancel',
         style: TextStyle(
           fontSize: ResponsiveUI.fontSize(context, 15),
           color: Colors.grey[700],
@@ -129,7 +127,7 @@ class DeleteBrandDialog extends StatelessWidget {
         ),
       ),
       child: Text(
-        LocaleKeys.delete.tr(),
+        'Delete',
         style: TextStyle(
           fontSize: ResponsiveUI.fontSize(context, 15),
           color: Colors.white,

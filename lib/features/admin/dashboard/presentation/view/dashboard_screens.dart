@@ -6,10 +6,12 @@ import 'package:systego/features/admin/city/presentation/view/cities_screen.dart
 import 'package:systego/features/admin/country/presentation/view/countries_screen.dart';
 import 'package:systego/features/admin/coupon/presentation/view/coupons_screen.dart';
 import 'package:systego/features/admin/currency/presentation/view/currencies_screen.dart';
+import 'package:systego/features/admin/department/presentation/view/departments_screen.dart';
 import 'package:systego/features/admin/popup/presentation/view/popup_screen.dart';
 import 'package:systego/features/admin/purchase/view/purchase_screen.dart';
 import 'package:systego/features/admin/suppliers/view/supplier_screen.dart';
 import 'package:systego/features/admin/taxes/presentation/view/taxes_screen.dart';
+import 'package:systego/features/admin/variations/presentation/view/variation_screen.dart';
 import 'package:systego/features/admin/warehouses/view/warehouses_screen.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/app_bar_widgets.dart';
@@ -44,7 +46,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     {'icon': Icons.warehouse_rounded, 'label': 'Warehouses'},
     {'icon': Icons.shopping_cart_rounded, 'label': 'Purchase'},
     {'icon': Icons.factory, 'label': 'Suppliers'},
-    {'icon': Icons.type_specimen, 'label': 'Variations'},
+    {'icon': Icons.list_alt, 'label': 'Variations'},
     {'icon': Icons.monetization_on_rounded, 'label': 'Currencies'},
     {'icon': Icons.location_on_rounded, 'label': 'Countries'},
     {'icon': Icons.location_city_rounded, 'label': 'Cities'},
@@ -54,6 +56,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     {'icon': Icons.account_balance, 'label': 'Bank Accounts'},
     {'icon': Icons.open_in_new, 'label': 'Pop Ups'},
     {'icon': Icons.local_offer, 'label': 'Coupons'},
+    {'icon': Icons.business, 'label': 'Departments'},
   ];
 
   void _navigateToPage(String label) {
@@ -160,6 +163,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const CouponsScreen()),
+        );
+        break;
+
+      case 'Departments':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const DepartmentScreen()),
+        );
+        break;
+
+      case 'Variations':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const VariationScreen()),
         );
         break;
 

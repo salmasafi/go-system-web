@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -6,6 +7,7 @@ import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_textfield/custom_text_field_widget.dart';
 import 'package:systego/features/admin/categories/view/widgets/build_image_placeholder_widget.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../core/widgets/custom_loading/custom_loading_state.dart';
 import '../cubit/categories_cubit.dart';
 import '../cubit/categories_states.dart';
@@ -60,7 +62,7 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Please enter category name in English & Arabic',
+            LocaleKeys.please_enter_category_name_en_ar.tr(),
             style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14)),
           ),
           backgroundColor: AppColors.red,
@@ -201,7 +203,7 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                       ),
                       SizedBox(height: ResponsiveUI.spacing(context, 12)),
                       Text(
-                        'Edit Category',
+                       LocaleKeys.edit_category.tr(),
                         style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 20),
                           fontWeight: FontWeight.bold,
@@ -211,8 +213,8 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                       SizedBox(height: ResponsiveUI.spacing(context, 25)),
                       CustomTextField(
                         controller: _nameController,
-                        labelText: 'Category Name (EN)',
-                        hintText: 'Enter category name in English',
+                        labelText: LocaleKeys.category_name_en.tr(),
+                        hintText: LocaleKeys.enter_category_name_en.tr(),
                         prefixIcon: Icons.category,
                         hasBoxDecoration: false,
                         hasBorder: true,
@@ -221,8 +223,8 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                       SizedBox(height: ResponsiveUI.spacing(context, 25)),
                       CustomTextField(
                         controller: _arNameController,
-                        labelText: 'Category Name (AR)',
-                        hintText: 'Enter category name in Arabic',
+                        labelText: LocaleKeys.category_name_ar.tr(),
+                        hintText: LocaleKeys.enter_category_name_ar.tr(),
                         prefixIcon: Icons.category,
                         hasBoxDecoration: false,
                         hasBorder: true,
@@ -235,7 +237,7 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                         child: DropdownButtonFormField<String>(
                           value: _selectedParentId,
                           decoration: InputDecoration(
-                            labelText: 'Parent Category (Optional)',
+                            labelText: LocaleKeys.parent_category_optional.tr(),
                             prefixIcon: Icon(
                               Icons.folder,
                               color: AppColors.darkGray,
@@ -278,7 +280,7 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                             DropdownMenuItem(
                               value: null,
                               child: Text(
-                                'None',
+                                LocaleKeys.note.tr(),
                                 style: TextStyle(
                                   fontSize: ResponsiveUI.fontSize(context, 14),
                                 ),
@@ -363,7 +365,7 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                       ),
                       SizedBox(height: ResponsiveUI.spacing(context, 12)),
                       Text(
-                        'Category Image',
+                        LocaleKeys.category_image.tr(),
                         style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 14),
                           fontWeight: FontWeight.w500,
@@ -422,7 +424,7 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                       SizedBox(height: ResponsiveUI.spacing(context, 8)),
                       _selectedImage == null && widget.category.image.isEmpty
                           ? Text(
-                              'Tap to select an image',
+                              LocaleKeys.tap_to_select_image.tr(),
                               style: TextStyle(
                                 fontSize: ResponsiveUI.fontSize(context, 12),
                                 color: Colors.orange[700],
@@ -443,7 +445,7 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                                   width: ResponsiveUI.spacing(context, 4),
                                 ),
                                 Text(
-                                  'New image selected',
+                                  LocaleKeys.new_image_selected.tr(),
                                   style: TextStyle(
                                     fontSize: ResponsiveUI.fontSize(
                                       context,
@@ -482,7 +484,7 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                                 ),
                               )
                             : Text(
-                                'Update Category',
+                                LocaleKeys.update_category.tr(),
                                 style: TextStyle(
                                   fontSize: ResponsiveUI.fontSize(context, 16),
                                   fontWeight: FontWeight.w600,

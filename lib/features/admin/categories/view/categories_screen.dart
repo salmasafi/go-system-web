@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
@@ -10,6 +11,7 @@ import 'package:systego/features/admin/categories/view/widgets/category_card_wid
 import 'package:systego/features/admin/categories/view/widgets/delete_category_dialog.dart';
 import 'package:systego/features/admin/categories/view/create_category_screen.dart';
 import 'package:systego/features/admin/categories/view/edit_category_screen.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../product/presentation/widgets/search_bar_widget.dart';
 import '../cubit/categories_cubit.dart';
@@ -52,7 +54,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     if (state is GetCategoriesError) {
       return CustomEmptyState(
         icon: Icons.category,
-        title: 'Error Occurred',
+        title: LocaleKeys.error_occurred.tr(),
         message: state.error,
         onRefresh: _refresh,
       );
@@ -70,11 +72,11 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
     if (filteredCategories.isEmpty) {
       String title = categories.isEmpty
-          ? 'No Categories Available'
-          : 'No Matching Categories';
+          ? LocaleKeys.no_categories_available.tr()
+          : LocaleKeys.no_matching_categories.tr();
       String message = categories.isEmpty
-          ? 'Add your first category to get started'
-          : 'Try adjusting your search terms';
+          ? LocaleKeys.add_first_category_message.tr()
+          : LocaleKeys.try_adjusting_search_terms.tr();
       return CustomEmptyState(
         icon: Icons.category,
         title: title,
@@ -142,7 +144,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     return Scaffold(
       appBar: appBarWithActions(
         context,
-        title: "Categories",
+        title: LocaleKeys.categories_title.tr(),
         onPressed: () async {
           final result = await Navigator.push(
             context,
@@ -182,7 +184,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                         });
                       },
                       controller: controller,
-                      text: 'categories',
+                      text: LocaleKeys.categories_title.tr(),
                     ),
                   ),
                   Expanded(

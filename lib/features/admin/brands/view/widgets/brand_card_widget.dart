@@ -1,9 +1,11 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
 import 'package:systego/core/widgets/custom_popup_menu.dart';
 import 'package:systego/core/widgets/custom_image_card.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../warehouses/view/widgets/custom_stat_chip.dart';
 import '../../model/get_brands_model.dart';
 
@@ -150,7 +152,7 @@ class _AnimatedBrandCardState extends State<AnimatedBrandCard>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                widget.brand.name ?? 'Brand',
+                widget.brand.name ?? LocaleKeys.brand.tr(),
                 style: TextStyle(
                   fontSize: 19,
                   fontWeight: FontWeight.bold,
@@ -194,7 +196,7 @@ class _AnimatedBrandCardState extends State<AnimatedBrandCard>
         Expanded(
           child: CustomStatChip(
             icon: Icons.branding_watermark,
-            label: 'Created: ${widget.brand.createdAt}',
+            label: '${LocaleKeys.created.tr()} ${widget.brand.createdAt}',
             color: AppColors.successGreen,
           ),
         ),
@@ -202,7 +204,7 @@ class _AnimatedBrandCardState extends State<AnimatedBrandCard>
         Expanded(
           child: CustomStatChip(
             icon: Icons.update,
-            label: 'Updated: ${_formatDate(widget.brand.updatedAt)}',
+            label: '${LocaleKeys.updated.tr()} ${_formatDate(widget.brand.updatedAt)}',
             color: AppColors.linkBlue,
           ),
         ),
@@ -231,12 +233,12 @@ class _AnimatedBrandCardState extends State<AnimatedBrandCard>
   // }
 
   String _formatDate(String? date) {
-    if (date == null) return 'N/A';
+    if (date == null) return LocaleKeys.not_available.tr();
     try {
       final dateTime = DateTime.parse(date);
       return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
     } catch (e) {
-      return 'N/A';
+      return LocaleKeys.not_available.tr();
     }
   }
 }

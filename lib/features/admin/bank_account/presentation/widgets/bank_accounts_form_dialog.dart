@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:systego/features/admin/bank_account/cubit/bank_account_cubit.dart';
 import 'package:systego/features/admin/bank_account/model/bank_account_model.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
 import '../../../../../core/utils/validators.dart';
@@ -152,13 +154,13 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _nameController,
-                                  label: 'Bank Name (En)',
+                                  label: LocaleKeys.bank_name_en.tr(),
                                   icon: Icons.account_balance,
-                                  hint: 'Enter bank name in english',
+                                  hint: LocaleKeys.hint_bank_name_en,
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'bank name',
+                                        LocaleKeys.bank_name_en.tr()
                                       ),
                                 ),
                                 SizedBox(
@@ -167,13 +169,13 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _arNameController,
-                                  label: 'Bank Name (AR)',
+                                  label: LocaleKeys.bank_name_ar.tr(),
                                   icon: Icons.account_balance,
-                                  hint: 'Enter bank name in arabic',
+                                  hint: LocaleKeys.hint_bank_name_ar,
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'bank name',
+                                        LocaleKeys.bank_name_ar.tr(),
                                       ),
                                 ),
                                 SizedBox(
@@ -182,13 +184,13 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _accountNoController,
-                                  label: 'Account Number',
+                                  label: LocaleKeys.account_number.tr(),
                                   icon: Icons.numbers,
-                                  hint: 'Enter account number',
+                                  hint: LocaleKeys.hint_account_number.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'account number',
+                                        LocaleKeys.account_number.tr(),
                                       ),
                                   keyboardType: TextInputType.number,
                                 ),
@@ -198,13 +200,13 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _initialBalanceController,
-                                  label: 'Initial Balance',
+                                  label: LocaleKeys.initial_balance.tr(),
                                   icon: Icons.attach_money_rounded,
-                                  hint: 'Enter initial balance',
+                                  hint: LocaleKeys.hint_initial_balance.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'initial balance',
+                                        LocaleKeys.initial_balance.tr(),
                                       ),
                                   keyboardType: TextInputType.number,
                                 ),
@@ -214,9 +216,9 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _noteController,
-                                  label: 'Note',
+                                  label: LocaleKeys.note.tr(),
                                   icon: Icons.note_alt_rounded,
-                                  hint: 'Add a note (optional)',
+                                  hint: LocaleKeys.hint_note.tr(),
                                 ),
                                 SizedBox(
                                   height: ResponsiveUI.spacing(context, 12),
@@ -224,7 +226,7 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
                                 Row(
                                   children: [
                                     Text(
-                                      'Active',
+                                      LocaleKeys.active.tr(),
                                       style: TextStyle(
                                         fontSize: ResponsiveUI.fontSize(
                                           context,
@@ -298,7 +300,7 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Bank Icon',
+          LocaleKeys.bank_icon.tr(),
           style: TextStyle(
             fontSize: fontSize14,
             fontWeight: FontWeight.w600,
@@ -475,7 +477,7 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
                   ),
                   SizedBox(height: spacing8),
                   Text(
-                    'Tap to select image',
+                    LocaleKeys.tap_to_select_image.tr(),
                     style: TextStyle(
                       fontSize: fontSize14,
                       color: Colors.grey[600],
@@ -505,7 +507,7 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
           Icon(Icons.broken_image_outlined, size: 40, color: Colors.grey[400]),
           SizedBox(height: 8),
           Text(
-            'Failed to load image',
+            LocaleKeys.failed_to_load_image.tr(),
             style: TextStyle(color: Colors.grey[500], fontSize: 12),
           ),
         ],
@@ -625,7 +627,7 @@ class BankAccountDialogHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isEditMode ? 'Edit Bank Account' : 'New Bank Account',
+                  isEditMode ? LocaleKeys.edit_bank_account.tr() : LocaleKeys.new_bank_account.tr(),
                   style: TextStyle(
                     color: AppColors.white,
                     fontSize: fontSize22,
@@ -634,8 +636,8 @@ class BankAccountDialogHeader extends StatelessWidget {
                 ),
                 Text(
                   isEditMode
-                      ? 'Update account details'
-                      : 'Add a new bank account',
+                      ? LocaleKeys.update_account_details.tr()
+                      : LocaleKeys.add_new_bank_account.tr(),
                   style: TextStyle(
                     color: AppColors.white.withOpacity(0.9),
                     fontSize: fontSize13,
@@ -718,7 +720,7 @@ class BankAccountDialogButtons extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'Cancel',
+                LocaleKeys.cancel.tr(),
                 style: TextStyle(
                   fontSize: fontSize16,
                   fontWeight: FontWeight.w600,
@@ -757,7 +759,7 @@ class BankAccountDialogButtons extends StatelessWidget {
                   SizedBox(width: spacing8),
                   Flexible(
                     child: Text(
-                      isEditMode ? 'Update Account' : 'Create Account',
+                      isEditMode ? LocaleKeys.update_account.tr() : LocaleKeys.create_account.tr(),
                       style: TextStyle(
                         fontSize: value14,
                         fontWeight: FontWeight.bold,

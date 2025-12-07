@@ -127,4 +127,18 @@ class EndPoint {
   static String updateCoupon(String id) => '/api/admin/coupon/$id';
   static String deleteCoupon(String id) => '/api/admin/coupon/$id';
 
+  /// department
+  static const String getAllDepartments = '/api/admin/department';
+  static String getDepartment(String id) => '/api/admin/department/$id';
+  static String addDepartment = '/api/admin/department';
+  static String updateDepartment(String id) => '/api/admin/department/$id';
+  static String deleteDepartment(String id) => '/api/admin/department/$id';
+
+  /// variation
+  static const String getAllVariations = '/api/admin/variation';
+  static String getVariation(String id) => '/api/admin/variation/$id';
+  static String addVariation = '/api/admin/variation';
+  static String updateVariation(String id) => '/api/admin/variation/$id';
+  static String deleteVariation(String id) => '/api/admin/variation/$id';
+
 }

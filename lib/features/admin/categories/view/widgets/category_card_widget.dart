@@ -1,8 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
 import 'package:systego/core/widgets/custom_popup_menu.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_image_card.dart';
 import '../../../warehouses/view/widgets/custom_stat_chip.dart';
 import '../../model/get_categories_model.dart';
@@ -190,7 +192,7 @@ class _AnimatedCategoryCardState extends State<AnimatedCategoryCard>
         Expanded(
           child: CustomStatChip(
             icon: Icons.inventory_2_outlined,
-            label: '${widget.category.productQuantity} Products',
+            label: '${widget.category.productQuantity} ${LocaleKeys.products.tr()}',
             color: AppColors.successGreen,
           ),
         ),
@@ -199,7 +201,7 @@ class _AnimatedCategoryCardState extends State<AnimatedCategoryCard>
             ? Expanded(
                 child: CustomStatChip(
                   icon: Icons.folder,
-                  label: 'Parent: ${widget.category.parentId!.name}',
+                  label: '${LocaleKeys.parent.tr()} ${widget.category.parentId!.name}',
                   color: AppColors.linkBlue,
                 ),
               )

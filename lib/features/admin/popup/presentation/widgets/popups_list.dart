@@ -60,9 +60,9 @@ class _PopupsListState extends State<PopupsList> {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => CustomDeleteDialog(
-        title: 'Delete Bank Account',
+        title: 'Delete Pop Up',
         message:
-            'Are you sure you want to delete this account?\n"${popup.titleEn}"',
+            'Are you sure you want to delete this popup?\n"${popup.titleEn}"',
         onDelete: () {
           Navigator.pop(dialogContext);
           context.read<PopupCubit>().deletePopup(popup.id);
