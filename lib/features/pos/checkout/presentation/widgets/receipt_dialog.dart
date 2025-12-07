@@ -646,8 +646,7 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
                 context.read<CheckoutCubit>().updateCartWithEmptyList();
                 context.read<PosCubit>().refreshCartProducts();
 
-                Navigator.pop(context);
-                Navigator.pop(context);
+                Navigator.popUntil(context, (route) => route.isFirst);
 
                 Navigator.push(
                   context,
@@ -672,8 +671,7 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
                 context.read<CheckoutCubit>().updateCartWithEmptyList();
                 context.read<PosCubit>().refreshCartProducts();
 
-                Navigator.pop(context);
-                Navigator.pop(context);
+                Navigator.popUntil(context, (route) => route.isFirst);
               },
               icon: Icon(Icons.done_all),
               label: Text(

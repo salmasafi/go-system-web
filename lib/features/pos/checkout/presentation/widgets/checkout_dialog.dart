@@ -740,7 +740,6 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     );
 
     if (success && mounted) {
-      Navigator.pop(context); // close checkout
       //posCubit.updateCartWithEmptyList();
       // اعرض الإيصال
       showDialog(
@@ -758,12 +757,8 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
 
               paidAmount: paidAmount,
               change: _change,
-              reference:
-                  (context.read<CheckoutCubit>().state as CheckoutSuccess)
-                      .reference,
-              pointsEarned:
-                  (context.read<CheckoutCubit>().state as CheckoutSuccess)
-                      .pointsEarned,
+              reference: context.read<CheckoutCubit>().reference ?? '',
+              pointsEarned: context.read<CheckoutCubit>().pointsEarned ?? 0,
               paymentMethod: widget.selectedPaymentMethod,
             ),
           );

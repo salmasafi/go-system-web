@@ -87,8 +87,9 @@ class PrinterCubit extends Cubit<PrinterState> {
               child: Center(
                 child: Container(
                   color: Colors.white,
+                  padding: const EdgeInsets.only(left: 100, right: 20),
                   // Ensure container matches target width exactly
-                  width: 384, // targetWidth.toDouble(),
+                  width: 560, // targetWidth.toDouble(),
                   child: Center(child: PrintableReceipt(recieptData: receipt)),
                 ),
               ),

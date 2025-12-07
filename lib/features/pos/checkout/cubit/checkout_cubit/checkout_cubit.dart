@@ -9,6 +9,9 @@ part 'checkout_state.dart';
 
 class CheckoutCubit extends Cubit<CheckoutState> {
   CheckoutCubit() : super(CheckoutInitial());
+  String? reference;
+  int? pointsEarned;
+  Map<String, dynamic>? sale;
 
   List<CartItem> cartItems = [];
   //RecieptData? recieptData;
@@ -90,18 +93,15 @@ class CheckoutCubit extends Cubit<CheckoutState> {
       log('${response.data}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final sale = response.data['data']['sale'];
+        final saleData = response.data['data']['sale'];
         final points = response.data['data']['pointsEarned'] ?? 0;
 
-        emit(
-          CheckoutSuccess(
-            reference:
-                sale['reference'] ??
-                'SALE-${DateTime.now().millisecondsSinceEpoch}',
-            pointsEarned: points,
-            sale: sale,
-          ),
-        );
+        emit(CheckoutSuccess());
+        reference =
+            saleData['reference'] ??
+            'SALE-${DateTime.now().millisecondsSinceEpoch}';
+        pointsEarned = points;
+        sale = saleData;
         return true;
       } else {
         emit(

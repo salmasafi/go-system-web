@@ -30,49 +30,44 @@ class PrintableReceipt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // Larger horizontal padding (24) to match the photo's spacing
-      padding: const EdgeInsets.only(left:  40),
-      color: Colors.white,
-      child: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 30),
-            _header(),
-            const SizedBox(height: 10),
+    return Center(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 30),
+          _header(),
+          const SizedBox(height: 10),
+          _divider(),
+          const SizedBox(height: 15),
+          _info(),
+          const SizedBox(height: 15),
+          _divider(),
+          const SizedBox(height: 15),
+          _itemsHeader(),
+          const SizedBox(height: 10),
+          _thickDivider(),
+          const SizedBox(height: 5),
+          _itemsList(),
+          const SizedBox(height: 5),
+          _thickDivider(),
+          const SizedBox(height: 15),
+          _totals(),
+          const SizedBox(height: 15),
+          _grandTotal(),
+          if (recieptData.paidAmount > 0) ...[
+            const SizedBox(height: 15),
             _divider(),
             const SizedBox(height: 15),
-            _info(),
-            const SizedBox(height: 15),
-            _divider(),
-            const SizedBox(height: 15),
-            _itemsHeader(),
-            const SizedBox(height: 10),
-            _thickDivider(),
-            const SizedBox(height: 5),
-            _itemsList(),
-            const SizedBox(height: 5),
-            _thickDivider(),
-            const SizedBox(height: 15),
-            _totals(),
-            const SizedBox(height: 15),
-            _grandTotal(),
-            if (recieptData.paidAmount > 0) ...[
-              const SizedBox(height: 15),
-              _divider(),
-              const SizedBox(height: 15),
-              _cashSection(),
-            ],
-            if (recieptData.pointsEarned > 0) ...[
-              const SizedBox(height: 12),
-              _loyalty(),
-            ],
-            const SizedBox(height: 15),
-            _footer(),
+            _cashSection(),
           ],
-        ),
+          if (recieptData.pointsEarned > 0) ...[
+            const SizedBox(height: 12),
+            _loyalty(),
+          ],
+          const SizedBox(height: 15),
+          _footer(),
+        ],
       ),
     );
   }

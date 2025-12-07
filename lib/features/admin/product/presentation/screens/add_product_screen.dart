@@ -506,7 +506,9 @@ class _AddProductScreenState extends State<AddProductScreen>
           onChanged: (value) {
             setState(() {
               _selectedVariations = value;
-              _selectedOptionsPerVariation.removeWhere((key, value) => !_selectedVariations.contains(key));
+              _selectedOptionsPerVariation.removeWhere(
+                (key, value) => !_selectedVariations.contains(key),
+              );
             });
           },
           itemLabel: (variation) => variation.name,
@@ -542,7 +544,12 @@ class _AddProductScreenState extends State<AddProductScreen>
             );
           }),
           CustomElevatedButton(
-            onPressed: _selectedVariations.every((v) => (_selectedOptionsPerVariation[v] ?? []).isNotEmpty) ? _generateVariations : null,
+            onPressed:
+                _selectedVariations.every(
+                  (v) => (_selectedOptionsPerVariation[v] ?? []).isNotEmpty,
+                )
+                ? _generateVariations
+                : null,
             text: 'Generate Combinations',
           ),
         ],
@@ -742,8 +749,8 @@ class _AddProductScreenState extends State<AddProductScreen>
       },
 
       itemLabel: (category) => category.name,
+
       //value: null,
-    
     );
   }
 
@@ -839,7 +846,7 @@ class _AddProductScreenState extends State<AddProductScreen>
     }
 
     // === Encode Images ===
-    // final String mainImageBase64 = ImageHelper.encodeImageToBase64(_mainImage!);
+    final String mainImageBase64 = ImageHelper.encodeImageToBase64(_mainImage!);
     final List<String> galleryBase64 = _galleryImages
         .map((img) => ImageHelper.encodeImageToBase64(img))
         .toList();
@@ -850,7 +857,7 @@ class _AddProductScreenState extends State<AddProductScreen>
       arName: _arNameController.text.trim(),
       description: _descriptionController.text.trim(),
       arDescription: _arDescriptionController.text.trim(),
-      image: _mainImage.toString(),
+      image: mainImageBase64,
       categoryIds: _selectedCategories!.map((c) => c.id).toList(),
       brandId: _selectedBrand!.id,
       unit: _unitController.text.trim(),

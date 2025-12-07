@@ -88,7 +88,7 @@ class ProductsCubit extends Cubit<ProductsState> {
       'unit': unit,
       'price': price,
       'exp_ability': expAbility,
-      'date_of_expiery': expiryDate.toString(),
+      if (expAbility) 'date_of_expiery': expiryDate.toString(),
       'minimum_quantity_sale': minimumQuantitySale,
       'low_stock': lowStock,
       'whole_price': wholePrice,

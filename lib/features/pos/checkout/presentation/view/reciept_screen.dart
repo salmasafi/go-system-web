@@ -28,6 +28,12 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
     _findPrinter();
   }
 
+  @override
+  void dispose() {
+    printerCubit.disconnect();
+    super.dispose();
+  }
+
   void _findPrinter() async {
     device = await printerCubit.findPrinter();
     setState(
@@ -66,12 +72,12 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
               SizedBox(height: 10),
               Text(status, style: TextStyle(fontSize: 20)),
               SizedBox(height: 10),
-              CustomElevatedButton(
-                onPressed: _findPrinter,
-                // icon: Icon(Icons.print, size: 30),
-                text: status.contains('Searching....') ? ' Searching' : "Retry",
-              ),
-              SizedBox(height: 10),
+              // CustomElevatedButton(
+              //   onPressed: _findPrinter,
+              //   // icon: Icon(Icons.print, size: 30),
+              //   text: status.contains('Searching....') ? ' Searching' : "Retry",
+              // ),
+              // SizedBox(height: 10),
               CustomElevatedButton(
                 onPressed: (printing || device == null) ? null : _print,
                 // icon: Icon(Icons.print, size: 30),

@@ -6,17 +6,7 @@ class CheckoutInitial extends CheckoutState {}
 
 class CheckoutLoading extends CheckoutState {}
 
-class CheckoutSuccess extends CheckoutState {
-  final String reference;
-  final int pointsEarned;
-  final Map<String, dynamic> sale;
-
-  CheckoutSuccess({
-    required this.reference,
-    required this.pointsEarned,
-    required this.sale,
-  });
-}
+class CheckoutSuccess extends CheckoutState {}
 
 class CheckoutError extends CheckoutState {
   final String message;
