@@ -776,10 +776,10 @@ class _AddProductScreenState extends State<AddProductScreen>
       CustomSnackbar.showError(context, 'Please enter product name (AR)');
       return;
     }
-    // if (_mainImage == null) {
-    //   CustomSnackbar.showError(context, 'Please select main product image');
-    //   return;
-    // }
+    if (_mainImage == null) {
+      CustomSnackbar.showError(context, 'Please select main product image');
+      return;
+    }
     if (_selectedCategories == null || _selectedCategories!.isEmpty) {
       CustomSnackbar.showError(context, 'Please select at least one category');
       return;
