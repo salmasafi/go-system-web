@@ -1,4 +1,5 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
@@ -6,6 +7,7 @@ import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/app_bar_widgets.dart';
 import 'package:systego/features/admin/brands/view/create_brand_screen.dart';
 import 'package:systego/features/admin/product/presentation/widgets/search_bar_widget.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/custom_error/custom_empty_state.dart';
 import '../../../../core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
@@ -74,17 +76,17 @@ class _BrandsScreenState extends State<BrandsScreen> {
 
     if (filteredBrands.isEmpty) {
       String title = brands.isEmpty
-          ? 'No Brands Available'
-          : 'No Matching Brands';
+          ? LocaleKeys.no_brands_available.tr()
+          : LocaleKeys.no_matching_brands.tr();
       String message = brands.isEmpty
-          ? 'Add your first brand to get started'
-          : 'Try adjusting your search terms';
+          ? LocaleKeys.add_first_brand_message.tr()
+          : LocaleKeys.try_adjusting_search.tr();
       return CustomEmptyState(
         icon: Icons.branding_watermark,
         title: title,
         message: message,
         onRefresh: _refresh,
-        actionLabel: 'Retry',
+        actionLabel: LocaleKeys.retry.tr(),
         onAction: _refresh,
       );
     }
@@ -146,7 +148,7 @@ class _BrandsScreenState extends State<BrandsScreen> {
       backgroundColor: AppColors.lightBlueBackground,
       appBar: appBarWithActions(
         context,
-        title: "Brands",
+        title: LocaleKeys.brands_title.tr(),
         onPressed: () async {
           final result = await Navigator.push(
             context,
@@ -186,7 +188,7 @@ class _BrandsScreenState extends State<BrandsScreen> {
                         });
                       },
                       controller: controller,
-                      text: 'brands',
+                      text: LocaleKeys.brands_title.tr(),
                     ),
                   ),
                   Expanded(
@@ -210,7 +212,7 @@ class _BrandsScreenState extends State<BrandsScreen> {
       behavior: SnackBarBehavior.floating,
       backgroundColor: Colors.transparent,
       content: AwesomeSnackbarContent(
-        title: 'Success!',
+        title: LocaleKeys.success.tr(),
         message: message,
         contentType: ContentType.success,
       ),

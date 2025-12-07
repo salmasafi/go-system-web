@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
@@ -5,6 +6,7 @@ import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/features/admin/bank_account/cubit/bank_account_cubit.dart';
 import 'package:systego/features/admin/bank_account/model/bank_account_model.dart';
 import 'package:systego/features/admin/bank_account/presentation/widgets/bank_accounts_form_dialog.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../../warehouses/view/widgets/custom_delete_dialog.dart';
 import 'animated_bank_account_card.dart';
@@ -53,7 +55,7 @@ class _BankAccountsListState extends State<BankAccountsList> {
 
   void _showSelectDialog(BuildContext context, BankAccountModel account) {
     if (account.id.isEmpty) {
-      CustomSnackbar.showError(context, 'Invalid Bank Account ID');
+      CustomSnackbar.showError(context, LocaleKeys.invalid_bank_account_id.tr());
       return;
     }
 
@@ -61,12 +63,12 @@ class _BankAccountsListState extends State<BankAccountsList> {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => CustomDeleteDialog(
-        title: 'Select Bank Account',
+        title: LocaleKeys.select_bank_account.tr(),
         message:
-            'Are you sure you want to select this bank Account as the default?\n"${account.name}"',
+            '${LocaleKeys.select_bank_account_message.tr()} ${account.name}',
         icon: Icons.check_circle_rounded,
         iconColor: AppColors.primaryBlue,
-        deleteText: 'Select',
+        deleteText: LocaleKeys.select.tr(),
         onDelete: () {
           Navigator.pop(dialogContext);
           context.read<BankAccountCubit>().selectBankAccount(account.id, account.name);
@@ -77,7 +79,7 @@ class _BankAccountsListState extends State<BankAccountsList> {
 
   void _showDeleteDialog(BuildContext context, BankAccountModel account) {
     if (account.id.isEmpty) {
-      CustomSnackbar.showError(context, 'Invalid Account ID');
+      CustomSnackbar.showError(context, LocaleKeys.invalid_account_id.tr());
       return;
     }
 
@@ -85,9 +87,9 @@ class _BankAccountsListState extends State<BankAccountsList> {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => CustomDeleteDialog(
-        title: 'Delete Bank Account',
+        title: LocaleKeys.delete_bank_account.tr(),
         message:
-            'Are you sure you want to delete this account?\n"${account.name}"',
+            '${LocaleKeys.delete_bank_account_message.tr()} ${account.name}',
         onDelete: () {
           Navigator.pop(dialogContext);
           context.read<BankAccountCubit>().deleteBankAccount(account.id);

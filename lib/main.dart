@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:systego/core/services/session_helper.dart';
@@ -19,7 +20,9 @@ import 'package:systego/features/admin/product/cubit/get_products_cubit/product_
 import 'package:systego/features/admin/product/cubit/product_details_cubit/product_details_cubit.dart';
 import 'package:systego/features/admin/product/cubit/filter_product_cubit/product_filter_cubit.dart';
 import 'package:systego/features/admin/taxes/cubit/taxes_cubit.dart';
+import 'package:systego/features/admin/variations/cubit/variation_cubit.dart';
 import 'package:systego/features/admin/zone/cubit/zone_cubit.dart';
+import 'package:systego/translations/codegen_loader.g.dart';
 import 'core/services/cache_helper.dart';
 import 'core/services/dio_helper.dart';
 import 'features/admin/auth/presentation/view/login_screen.dart';
@@ -35,6 +38,7 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   // Ensure Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
 
   // Initialize CacheHelper for local storage
   await CacheHelper.init();
@@ -49,9 +53,15 @@ void main() async {
   log(token ?? '');
 
   runApp(
-    DevicePreview(
-      enabled: true,
-      builder: (context) => MainApp(isLoggedIn: isLoggedIn),
+    EasyLocalization(
+      supportedLocales: [Locale('en'), Locale('ar')],
+      path: 'assets/translations',
+      fallbackLocale: Locale('en'),
+      assetLoader: CodegenLoader(),
+      child: DevicePreview(
+        enabled: true,
+        builder: (context) => MainApp(isLoggedIn: isLoggedIn),
+      ),
     ),
   );
 }
@@ -98,6 +108,7 @@ class _MainAppState extends State<MainApp> {
         BlocProvider<PopupCubit>(create: (context) => PopupCubit()),
         BlocProvider<CouponsCubit>(create: (context) => CouponsCubit()),
         BlocProvider<DepartmentCubit>(create: (context) => DepartmentCubit()),
+        BlocProvider<VariationCubit>(create: (context) => VariationCubit()),
         BlocProvider<PaymentMethodCubit>(
           create: (context) => PaymentMethodCubit(),
         ),
@@ -114,8 +125,11 @@ class _MainAppState extends State<MainApp> {
       child: MaterialApp(
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
-        locale: DevicePreview.locale(context),
+        // locale: DevicePreview.locale(context),
         builder: DevicePreview.appBuilder,
+        localizationsDelegates: context.localizationDelegates,
+        supportedLocales: context.supportedLocales,
+        locale: context.locale,
         theme: ThemeData(
           fontFamily: 'Rubik',
           scaffoldBackgroundColor: AppColors.lightBlueBackground,

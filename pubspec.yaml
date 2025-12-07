@@ -27,6 +27,7 @@ dependencies:
   socket_io_client: ^3.1.2
   flutter_blue_plus: ^1.32.11
   screenshot: ^3.0.0
+  easy_localization: ^3.0.8
   esc_pos_utils_plus: ^2.0.3  # التغيير الأساسي
   image: ^4.0.0  # مطلوب لمعالجة الصور
 
@@ -40,6 +41,7 @@ flutter:
   assets:
     - assets/fonts/Rubik/
     - assets/images/default.png
+    - assets/translations/
   fonts:
     - family: Rubik
       fonts:

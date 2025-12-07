@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/animation/simple_fadein_animation_widget.dart';
@@ -34,8 +36,8 @@ class LogoAndTitleWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            "SysteGo",
+           Text(
+            LocaleKeys.app_name.tr(),
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,

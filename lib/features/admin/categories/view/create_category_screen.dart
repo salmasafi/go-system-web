@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,6 +10,7 @@ import 'package:systego/core/widgets/app_bar_widgets.dart';
 import 'package:systego/core/widgets/custom_button_widget.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:systego/core/widgets/custom_textfield/custom_text_field_widget.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../cubit/categories_cubit.dart';
 import '../cubit/categories_states.dart';
 import '../model/get_categories_model.dart';
@@ -88,7 +90,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
 
         return Scaffold(
           backgroundColor: AppColors.white,
-          appBar: appBarWithActions(context, title: "New Category"),
+          appBar: appBarWithActions(context, title: LocaleKeys.new_category.tr()),
           body: SafeArea(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(
@@ -101,7 +103,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
 
                   CustomTextField(
                     controller: _nameController,
-                    labelText: 'Enter Category Name (EN)',
+                    labelText: LocaleKeys.enter_category_name_en.tr(),
                     hasBoxDecoration: false,
                     hasBorder: true,
                     prefixIcon: Icons.category,
@@ -109,7 +111,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                   SizedBox(height: ResponsiveUI.spacing(context, 16)),
                   CustomTextField(
                     controller: _arNameController,
-                    labelText: 'Enter Category Name (AR)',
+                    labelText: LocaleKeys.enter_category_name_ar.tr(),
                     hasBoxDecoration: false,
                     hasBorder: true,
                     prefixIcon: Icons.category,
@@ -124,7 +126,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                       });
                     },
                     title: Text(
-                      'Set as an independent (or parent) category',
+                      LocaleKeys.set_as_parent_category.tr(),
                       style: TextStyle(
                         fontSize: ResponsiveUI.fontSize(context, 14),
                       ),
@@ -136,7 +138,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                   if (!_makeParentCategory) ...[
                     SizedBox(height: ResponsiveUI.spacing(context, 16)),
                     Text(
-                      'Parent Category',
+                      LocaleKeys.parent_category.tr(),
                       style: TextStyle(
                         fontSize: ResponsiveUI.fontSize(context, 14),
                         color: AppColors.darkGray,
@@ -150,7 +152,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                           ResponsiveUI.padding(context, 20),
                         ),
                         child: CustomLoadingState(
-                          message: 'Loading Parent Categories...',
+                          message: LocaleKeys.loading_parent_categories.tr(),
                           color: AppColors.primaryBlue,
                           size: ResponsiveUI.iconSize(context, 60),
                         ),
@@ -177,7 +179,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                             SizedBox(width: ResponsiveUI.spacing(context, 8)),
                             Expanded(
                               child: Text(
-                                'No parent categories available. Create a parent category first.',
+                                LocaleKeys.no_parent_categories.tr(),
                                 style: TextStyle(
                                   fontSize: ResponsiveUI.fontSize(context, 12),
                                   color: Colors.orange[900],
@@ -211,7 +213,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                             showSearchBox: true,
                             searchFieldProps: TextFieldProps(
                               decoration: InputDecoration(
-                                hintText: 'Search categories...',
+                                hintText: LocaleKeys.search_categories.tr(),
                                 contentPadding: EdgeInsets.symmetric(
                                   horizontal: ResponsiveUI.padding(context, 12),
                                   vertical: ResponsiveUI.padding(context, 8),
@@ -325,7 +327,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                                 ),
                                 child: item == null
                                     ? Text(
-                                        'Select parent category',
+                                        LocaleKeys.select_parent_category.tr(),
                                         style: TextStyle(
                                           color: AppColors.darkGray,
                                           fontSize: ResponsiveUI.fontSize(
@@ -408,7 +410,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Category Image*',
+                        LocaleKeys.category_image.tr(),
                         style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 14),
                           color: AppColors.darkGray,
@@ -423,7 +425,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                             size: ResponsiveUI.iconSize(context, 18),
                           ),
                           label: Text(
-                            'Remove',
+                            LocaleKeys.remove.tr(),
                             style: TextStyle(
                               color: AppColors.red,
                               fontSize: ResponsiveUI.fontSize(context, 12),
@@ -473,7 +475,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                                   height: ResponsiveUI.spacing(context, 8),
                                 ),
                                 Text(
-                                  'Tap to upload',
+                                  LocaleKeys.tap_to_upload.tr(),
                                   style: TextStyle(
                                     color: AppColors.darkGray,
                                     fontSize: ResponsiveUI.fontSize(
@@ -499,7 +501,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                      'Please enter category name',
+                                      LocaleKeys.please_enter_category_name.tr(),
                                       style: TextStyle(
                                         fontSize: ResponsiveUI.fontSize(
                                           context,
@@ -525,7 +527,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                      'Please select an image',
+                                      LocaleKeys.please_select_image.tr(),
                                       style: TextStyle(
                                         fontSize: ResponsiveUI.fontSize(
                                           context,
@@ -552,7 +554,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                      'Please select a parent category',
+                                      LocaleKeys.please_select_parent_category.tr(),
                                       style: TextStyle(
                                         fontSize: ResponsiveUI.fontSize(
                                           context,
@@ -591,8 +593,8 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                       //   elevation: 2,
                       // ),
                       text: state is CreateCategoryLoading
-                          ? 'Saving Category'
-                          : 'Save Category',
+                          ? LocaleKeys.saving_category.tr()
+                          : LocaleKeys.save_category.tr(),
                     ),
                     // child: state is CreateCategoryLoading
                     //     ? SizedBox(

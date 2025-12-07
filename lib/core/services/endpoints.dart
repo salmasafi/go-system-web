@@ -134,4 +134,11 @@ class EndPoint {
   static String updateDepartment(String id) => '/api/admin/department/$id';
   static String deleteDepartment(String id) => '/api/admin/department/$id';
 
+  /// variation
+  static const String getAllVariations = '/api/admin/variation';
+  static String getVariation(String id) => '/api/admin/variation/$id';
+  static String addVariation = '/api/admin/variation';
+  static String updateVariation(String id) => '/api/admin/variation/$id';
+  static String deleteVariation(String id) => '/api/admin/variation/$id';
+
 }

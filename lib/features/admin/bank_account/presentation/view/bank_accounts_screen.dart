@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:systego/generated/locale_keys.g.dart';
+
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/animation/animated_element.dart';
@@ -71,15 +74,15 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
           );
         } else if (state is GetBankAccountsSuccess) {
           final accounts = state.accounts;
-
           final totalBalance = state.totalBalance;
+
           if (accounts.isEmpty) {
             return CustomEmptyState(
               icon: Icons.account_balance_rounded,
-              title: 'No bank accounts',
-              message: 'You\'re all caught up!',
+              title: LocaleKeys.bank_accounts_no_accounts.tr(),
+              message: LocaleKeys.bank_accounts_no_accounts_message.tr(),
               onRefresh: _refresh,
-              actionLabel: 'Retry',
+              actionLabel: LocaleKeys.retry.tr(),
               onAction: _refresh,
             );
           } else {
@@ -89,7 +92,7 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
               child: Column(
                 children: [
                   SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                  _buildTotalBalanceCard(context, totalBalance),                  // SizedBox(height: ResponsiveUI.spacing(context, 4)),
+                  _buildTotalBalanceCard(context, totalBalance),
                   Expanded(child: BankAccountsList(accounts: accounts)),
                 ],
               ),
@@ -98,10 +101,10 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
         } else {
           return CustomEmptyState(
             icon: Icons.account_balance_rounded,
-            title: 'No bank accounts',
-            message: 'Pull to refresh or check your connection',
+            title: LocaleKeys.bank_accounts_no_accounts.tr(),
+            message: LocaleKeys.empty_message_connection.tr(),
             onRefresh: _refresh,
-            actionLabel: 'Retry',
+            actionLabel: LocaleKeys.retry.tr(),
             onAction: _refresh,
           );
         }
@@ -126,8 +129,6 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
             AppColors.primaryBlue.withOpacity(0.75),
             AppColors.primaryBlue.withOpacity(0.75),
           ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
         ),
         boxShadow: [
           BoxShadow(
@@ -141,7 +142,7 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Total Balance",
+            LocaleKeys.bank_accounts_total_balance.tr(),
             style: TextStyle(
               fontSize: fontSize16,
               color: Colors.white70,
@@ -167,7 +168,7 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
     return Scaffold(
       appBar: appBarWithActions(
         context,
-        title: 'Bank Accounts',
+        title: LocaleKeys.bank_accounts_title.tr(),
         showActions: true,
         onPressed: () => showDialog(
           context: context,
