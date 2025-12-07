@@ -152,7 +152,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   //  COMMON PARTS
   // --------------------------------------------------------------
   Widget _header() => Container(
-    padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
+    padding: EdgeInsets.all(ResponsiveUI.padding(context, 15)),
     decoration: BoxDecoration(
       gradient: LinearGradient(
         colors: [AppColors.primaryBlue, AppColors.primaryBlue.withOpacity(0.8)],
@@ -164,7 +164,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     child: Row(
       children: [
         Container(
-          padding: EdgeInsets.all(ResponsiveUI.padding(context, 10)),
+          padding: EdgeInsets.all(ResponsiveUI.padding(context, 8)),
           decoration: BoxDecoration(
             color: AppColors.white.withOpacity(0.2),
             borderRadius: BorderRadius.circular(12),
@@ -175,27 +175,14 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
             size: ResponsiveUI.iconSize(context, 28),
           ),
         ),
-        SizedBox(width: ResponsiveUI.spacing(context, 16)),
+        SizedBox(width: ResponsiveUI.spacing(context, 18)),
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Finalize Sale',
-                style: TextStyle(
-                  color: AppColors.white,
-                  fontSize: ResponsiveUI.fontSize(context, 22),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                'Complete payment',
-                style: TextStyle(
-                  color: AppColors.white.withOpacity(0.9),
-                  fontSize: ResponsiveUI.fontSize(context, 13),
-                ),
-              ),
-            ],
+          child: Text(
+            'Complete payment',
+            style: TextStyle(
+              color: AppColors.white,
+              fontSize: ResponsiveUI.fontSize(context, 20),
+            ),
           ),
         ),
         IconButton(
@@ -401,7 +388,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
               label: 'Sale Note',
               icon: Icons.shopping_bag_outlined,
               hint: 'Enter sale note',
-              maxLines: 3,
+              maxLines: 1,
             ),
           ),
           // SizedBox(width: ResponsiveUI.spacing(context, 12)),
@@ -543,15 +530,15 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Points',
-            style: TextStyle(
-              fontSize: ResponsiveUI.fontSize(context, 16),
-              fontWeight: FontWeight.bold,
-              color: AppColors.darkGray,
-            ),
-          ),
-          SizedBox(height: ResponsiveUI.spacing(context, 12)),
+          //Text(
+          //   'Points',
+          //   style: TextStyle(
+          //     fontSize: ResponsiveUI.fontSize(context, 16),
+          //     fontWeight: FontWeight.bold,
+          //     color: AppColors.darkGray,
+          //   ),
+          // ),
+          // SizedBox(height: ResponsiveUI.spacing(context, 12)),
           buildTextField(
             context,
             controller: _totalPayingCtrl,
@@ -715,7 +702,10 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
                   (t) => DropdownMenuItem<Tax>(value: t, child: Text(t.name)),
                 )
                 .toList(),
-            onChanged: (v) => setState(() => _selectedTax = v!),
+            onChanged: (v) => setState(() {
+              _selectedTax = v!;
+              _calc();
+            }),
           ),
         ),
       ),
@@ -757,11 +747,11 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
         context: context,
         barrierDismissible: false,
         builder: (_) {
-          final checkOutCubit = context.read<CheckoutCubit>();
-          final cartItems = checkOutCubit.cartItems;
+          // final checkOutCubit = context.read<CheckoutCubit>();
+          // final cartItems = checkOutCubit.cartItems;
           return POSReceiptDialog(
             recieptData: RecieptData(
-              cartItems: cartItems,
+              cartItems: widget.cartItems,
               totalAmount: widget.totalAmount, // Subtotal فقط
               taxAmount: _selectedTax?.amount ?? 0.0, // قيمة الضريبة
               selectedTax: _selectedTax, // عشان يظهر اسم الضريبة
@@ -776,7 +766,6 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
                       .pointsEarned,
               paymentMethod: widget.selectedPaymentMethod,
             ),
-            cartItems: cartItems,
           );
         },
       );

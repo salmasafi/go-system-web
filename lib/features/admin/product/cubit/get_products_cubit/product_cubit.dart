@@ -62,6 +62,7 @@ class ProductsCubit extends Cubit<ProductsState> {
     required String unit,
     required double price,
     required bool expAbility,
+    required DateTime? expiryDate,
     required int minimumQuantitySale,
     required int lowStock,
     required double wholePrice,
@@ -82,17 +83,18 @@ class ProductsCubit extends Cubit<ProductsState> {
       'ar_name': arName,
       'description': description,
       'ar_description': arDescription,
-      'image': image,
+      'image': 'uefueiruiergvuerhfuiefuieuifgr3uigf3ru', // image,
       'categoryId': categoryIds,
       'brandId': brandId,
       'unit': unit,
       'price': price,
-      'exp_ability': expAbility,
+      //'exp_ability': expAbility,
+      'date_of_expiery': expiryDate.toString(),
       'minimum_quantity_sale': minimumQuantitySale,
       'low_stock': lowStock,
       'whole_price': wholePrice,
-      'quantaty': startQuantity, // Note: API has typo "quantaty"
-      'taxesId': taxesId,
+      'quantity': startQuantity, // Note: API has typo "quantaty"
+      //'taxesId': taxesId,
       'product_has_imei': productHasImei,
       'different_price': differentPrice,
       'show_quantity': showQuantity,
@@ -119,7 +121,8 @@ class ProductsCubit extends Cubit<ProductsState> {
           log('Product add successful');
           emit(ProductAddSuccess(message));
         } else {
-          final errorMessage = data['message']?.toString() ?? 'Failed to add product';
+          final errorMessage =
+              data['message']?.toString() ?? 'Failed to add product';
           log('Product add failed: $errorMessage');
           emit(ProductsError(errorMessage));
         }
@@ -194,7 +197,8 @@ class ProductsCubit extends Cubit<ProductsState> {
           log('Product add successful');
           emit(ProductAddSuccess(message));
         } else {
-          final errorMessage = data['message']?.toString() ?? 'Failed to add product';
+          final errorMessage =
+              data['message']?.toString() ?? 'Failed to add product';
           log('Product add failed: $errorMessage');
           emit(ProductsError(errorMessage));
         }

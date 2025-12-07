@@ -131,7 +131,7 @@ class PosCubit extends Cubit<PosState> {
       if (response.statusCode == 200) {
         // في pos_home_cubit.dart → داخل getSelections()
         final json = response.data['data'];
-
+        log('$json');
         warehouses = (json['warehouses'] as List)
             .map((e) => Warehouse.fromJson(e))
             .toList();
@@ -153,15 +153,15 @@ class PosCubit extends Cubit<PosState> {
         accounts = (json['accounts'] as List? ?? [])
             .map((e) => BankAccount.fromJson(e))
             .toList();
-        selectedAccount = accounts.isNotEmpty
-            ? accounts.where((element) => element.isDefault) as BankAccount
+        var filteredAccounts = accounts.isNotEmpty
+            ? accounts.where((element) => element.isDefault)
             : null;
+        selectedAccount = filteredAccounts?.first;
 
         taxes = (json['taxes'] as List? ?? [])
             .map((e) => Tax.fromJson(e))
             .toList();
-
-        taxes = taxes.takeWhile((value) => value.status).toList();
+        taxes = taxes.where((value) => value.status).toList();
         selectedTax = taxes.isNotEmpty ? taxes.first : null;
 
         currencies = (json['currencies'] as List? ?? [])

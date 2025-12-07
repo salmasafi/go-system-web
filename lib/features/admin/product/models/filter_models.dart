@@ -3,23 +3,19 @@ class ProductFiltersModel {
   final bool success;
   final ProductFiltersData? data;
 
-  ProductFiltersModel({
-    required this.success,
-    this.data,
-  });
+  ProductFiltersModel({required this.success, this.data});
 
   factory ProductFiltersModel.fromJson(Map<String, dynamic> json) {
     return ProductFiltersModel(
       success: json['success'] ?? false,
-      data: json['data'] != null ? ProductFiltersData.fromJson(json['data']) : null,
+      data: json['data'] != null
+          ? ProductFiltersData.fromJson(json['data'])
+          : null,
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'success': success,
-      'data': data?.toJson(),
-    };
+    return {'success': success, 'data': data?.toJson()};
   }
 }
 
@@ -149,7 +145,7 @@ class BrandFilter {
 class VariationFilter {
   final String id;
   final String name;
-  final List<Option> options;
+  final List<FilterOption> options;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -166,7 +162,7 @@ class VariationFilter {
       id: json['_id'] ?? '',
       name: json['name'] ?? '',
       options: (json['options'] as List<dynamic>? ?? [])
-          .map((e) => Option.fromJson(e as Map<String, dynamic>))
+          .map((e) => FilterOption.fromJson(e as Map<String, dynamic>))
           .toList(),
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
@@ -177,14 +173,14 @@ class VariationFilter {
     return {
       '_id': id,
       'name': name,
-      'options': options.map((e) => e.toJson()).toList(),
+      'options': options.map((FilterOption e) => e.toJson()).toList(),
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };
   }
 }
 
-class Option {
+class FilterOption {
   final String id;
   final String variationId;
   final String name;
@@ -192,7 +188,7 @@ class Option {
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  Option({
+  FilterOption({
     required this.id,
     required this.variationId,
     required this.name,
@@ -201,8 +197,8 @@ class Option {
     required this.updatedAt,
   });
 
-  factory Option.fromJson(Map<String, dynamic> json) {
-    return Option(
+  factory FilterOption.fromJson(Map<String, dynamic> json) {
+    return FilterOption(
       id: json['_id'] ?? '',
       variationId: json['variationId'] ?? '',
       name: json['name'] ?? '',

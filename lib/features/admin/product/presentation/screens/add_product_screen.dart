@@ -17,6 +17,7 @@ import 'package:systego/features/admin/product/cubit/product_filter_state.dart';
 import 'package:systego/features/admin/product/models/filter_models.dart';
 import '../../../../../core/utils/image_handler.dart';
 import '../../cubit/filter_product_cubit/product_filter_cubit.dart';
+import '../../models/product_to_add.dart';
 import '../widgets/add_product_custom_widgets.dart';
 
 class AddProductScreen extends StatefulWidget {
@@ -58,17 +59,15 @@ class _AddProductScreenState extends State<AddProductScreen>
   // Expiry Date
   DateTime? _expiryDate;
 
-  // Tab Controller for variations
-  late TabController _tabController;
-  List<PriceVariation> _priceVariations = [];
-
   // Variations & Options (from API)
   List<VariationFilter> _variations = [];
+  List<VariationFilter> _selectedVariations = [];
+  Map<VariationFilter, List<FilterOption>> _selectedOptionsPerVariation = {};
+  List<PriceVariation> _priceVariations = [];
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 0, vsync: this);
     context.read<ProductFiltersCubit>().getFilters();
     _variations = context.read<ProductFiltersCubit>().variations;
 
@@ -126,32 +125,42 @@ class _AddProductScreenState extends State<AddProductScreen>
     }
   }
 
-  void _addPriceVariation() {
+  List<List<String>> _generateOptionCombinations() {
+    if (_selectedVariations.isEmpty) return [];
+
+    List<List<String>> result = [[]];
+
+    for (var variation in _selectedVariations) {
+      final selectedOpts = _selectedOptionsPerVariation[variation] ?? [];
+      if (selectedOpts.isEmpty) continue; // Skip if no options selected
+
+      List<List<String>> newResult = [];
+      for (var combo in result) {
+        for (var option in selectedOpts) {
+          newResult.add([...combo, option.id]);
+        }
+      }
+      result = newResult;
+    }
+
+    return result;
+  }
+
+  void _generateVariations() {
+    final combos = _generateOptionCombinations();
     setState(() {
-      _priceVariations.add(
-        PriceVariation(
+      for (var variation in _priceVariations) {
+        variation.dispose();
+      }
+      _priceVariations = combos.map((combo) {
+        return PriceVariation(
           priceController: TextEditingController(),
           codeController: TextEditingController(),
           quantityController: TextEditingController(text: '0'),
-          selectedOptions: [],
+          selectedOptions: combo,
           galleryImages: [],
-        ),
-      );
-      _tabController = TabController(
-        length: _priceVariations.length,
-        vsync: this,
-      );
-    });
-  }
-
-  void _removePriceVariation(int index) {
-    setState(() {
-      _priceVariations[index].dispose();
-      _priceVariations.removeAt(index);
-      _tabController = TabController(
-        length: _priceVariations.length,
-        vsync: this,
-      );
+        );
+      }).toList();
     });
   }
 
@@ -418,10 +427,8 @@ class _AddProductScreenState extends State<AddProductScreen>
                                 variation.dispose();
                               }
                               _priceVariations.clear();
-                              _tabController = TabController(
-                                length: 0,
-                                vsync: this,
-                              );
+                              _selectedVariations.clear();
+                              _selectedOptionsPerVariation.clear();
                             }
                           });
                         },
@@ -483,52 +490,74 @@ class _AddProductScreenState extends State<AddProductScreen>
       title: 'Price Variations',
       icon: Icons.price_change,
       children: [
-        if (_priceVariations.isEmpty)
-          Center(
-            child: TextButton.icon(
-              onPressed: _addPriceVariation,
-              icon: Icon(Icons.add_circle, color: AppColors.primaryBlue),
-              label: Text(
-                'Add Price Variation',
-                style: TextStyle(color: AppColors.primaryBlue),
-              ),
-            ),
-          )
-        else ...[
-          TabBar(
-            controller: _tabController,
-            isScrollable: true,
-            labelColor: AppColors.primaryBlue,
-            unselectedLabelColor: AppColors.shadowGray,
-            indicatorColor: AppColors.primaryBlue,
-            tabs: List.generate(_priceVariations.length, (index) {
-              return Tab(text: 'Price Item ${index + 1}');
-            }),
+        Text(
+          'Select Variations',
+          style: TextStyle(
+            fontSize: ResponsiveUI.fontSize(context, 16),
+            fontWeight: FontWeight.bold,
+            color: AppColors.darkGray,
           ),
-          SizedBox(height: 16),
-          SizedBox(
-            height: 400,
-            child: TabBarView(
-              controller: _tabController,
-              children: List.generate(_priceVariations.length, (index) {
-                return _buildPriceVariationForm(index);
-              }),
-            ),
-          ),
-          SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: _addPriceVariation,
-                  icon: Icon(Icons.add),
-                  label: Text('Add More'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.primaryBlue,
+        ),
+        SizedBox(height: ResponsiveUI.spacing(context, 12)),
+        buildMultiSelectDropdownField<VariationFilter>(
+          context,
+          items: _variations,
+          hint: 'Select variations...',
+          onChanged: (value) {
+            setState(() {
+              _selectedVariations = value;
+              _selectedOptionsPerVariation.removeWhere((key, value) => !_selectedVariations.contains(key));
+            });
+          },
+          itemLabel: (variation) => variation.name,
+        ),
+        if (_selectedVariations.isNotEmpty) ...[
+          SizedBox(height: ResponsiveUI.spacing(context, 16)),
+          ..._selectedVariations.map((var variation) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Select Options for ${variation.name}',
+                  style: TextStyle(
+                    fontSize: ResponsiveUI.fontSize(context, 14),
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.darkGray,
                   ),
                 ),
-              ),
-            ],
+                SizedBox(height: ResponsiveUI.spacing(context, 8)),
+                buildMultiSelectDropdownField<FilterOption>(
+                  context,
+                  items: variation.options,
+                  hint: 'Select options...',
+                  onChanged: (selectedOpts) {
+                    setState(() {
+                      _selectedOptionsPerVariation[variation] = selectedOpts;
+                    });
+                  },
+                  itemLabel: (option) => option.name,
+                ),
+                SizedBox(height: ResponsiveUI.spacing(context, 16)),
+              ],
+            );
+          }),
+          CustomElevatedButton(
+            onPressed: _selectedVariations.every((v) => (_selectedOptionsPerVariation[v] ?? []).isNotEmpty) ? _generateVariations : null,
+            text: 'Generate Combinations',
+          ),
+        ],
+        if (_priceVariations.isNotEmpty) ...[
+          SizedBox(height: ResponsiveUI.spacing(context, 20)),
+          Column(
+            children: List.generate(_priceVariations.length, (index) {
+              return Column(
+                children: [
+                  _buildPriceVariationForm(index),
+                  if (index < _priceVariations.length - 1)
+                    Divider(height: ResponsiveUI.spacing(context, 20)),
+                ],
+              );
+            }),
           ),
         ],
       ],
@@ -537,10 +566,47 @@ class _AddProductScreenState extends State<AddProductScreen>
 
   Widget _buildPriceVariationForm(int index) {
     final variation = _priceVariations[index];
+    final label = variation.selectedOptions
+        .map((optionId) {
+          for (var v in _variations) {
+            final opt = v.options.firstWhere(
+              (o) => o.id == optionId,
+              orElse: () => FilterOption(
+                id: '',
+                variationId: '',
+                name: 'Unknown',
+                status: false,
+                createdAt: DateTime.now(),
+                updatedAt: DateTime.now(),
+              ),
+            );
+            if (opt.id != '') return opt.name;
+          }
+          return 'Unknown';
+        })
+        .join(' - ');
 
-    return SingleChildScrollView(
+    return Container(
+      padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(
+          ResponsiveUI.borderRadius(context, 12),
+        ),
+        border: Border.all(color: AppColors.lightGray),
+      ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: ResponsiveUI.fontSize(context, 16),
+              fontWeight: FontWeight.bold,
+              color: AppColors.primaryBlue,
+            ),
+          ),
+          SizedBox(height: ResponsiveUI.spacing(context, 12)),
           buildTextField(
             context,
             controller: variation.priceController,
@@ -549,7 +615,7 @@ class _AddProductScreenState extends State<AddProductScreen>
             hint: '0.00',
             keyboardType: TextInputType.number,
           ),
-          SizedBox(height: 12),
+          SizedBox(height: ResponsiveUI.spacing(context, 12)),
           buildTextField(
             context,
             controller: variation.codeController,
@@ -557,7 +623,7 @@ class _AddProductScreenState extends State<AddProductScreen>
             icon: Icons.qr_code,
             hint: 'Enter unique code',
           ),
-          SizedBox(height: 12),
+          SizedBox(height: ResponsiveUI.spacing(context, 12)),
           buildTextField(
             context,
             controller: variation.quantityController,
@@ -566,94 +632,8 @@ class _AddProductScreenState extends State<AddProductScreen>
             hint: '0',
             keyboardType: TextInputType.number,
           ),
-          SizedBox(height: 12),
-          // Options Selection (Multi-select from variations)
-          Text(
-            'Select Options',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.darkGray,
-            ),
-          ),
-          SizedBox(height: 8),
-          ..._variations.map((v) {
-            return _buildVariationOptionsSelector(v, variation);
-          }).toList(),
-          SizedBox(height: 12),
-          // Gallery for this variation
+          SizedBox(height: ResponsiveUI.spacing(context, 12)),
           _buildVariationGallery(variation),
-          SizedBox(height: 12),
-          OutlinedButton.icon(
-            onPressed: () => _removePriceVariation(index),
-            icon: Icon(Icons.delete),
-            label: Text('Remove Variation'),
-            style: OutlinedButton.styleFrom(foregroundColor: AppColors.red),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildVariationOptionsSelector(
-    VariationFilter variation,
-    PriceVariation priceVariation,
-  ) {
-    // Find currently selected option ID for this variation
-    final String? selectedOptionId = priceVariation.selectedOptions
-        .cast<String?>()
-        .firstWhere(
-          (id) => variation.options.any((opt) => opt.id == id),
-          orElse: () => null,
-        );
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColors.lightBlueBackground,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.primaryBlue.withOpacity(0.2)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            variation.name,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppColors.primaryBlue,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: variation.options.map((option) {
-              final bool isSelected = selectedOptionId == option.id;
-
-              return SingleVariationOptionChip(
-                label: option.name,
-                isSelected: isSelected,
-                onTap: () {
-                  setState(() {
-                    // Remove any existing option from this variation
-                    priceVariation.selectedOptions.removeWhere(
-                      (id) => variation.options.any((opt) => opt.id == id),
-                    );
-
-                    // If tapped again on same → deselect (allow zero)
-                    if (!isSelected) {
-                      priceVariation.selectedOptions.add(option.id);
-                    }
-                    // else: do nothing → already removed above → now unselected
-                  });
-                },
-              );
-            }).toList(),
-          ),
         ],
       ),
     );
@@ -756,14 +736,14 @@ class _AddProductScreenState extends State<AddProductScreen>
       items: categories,
       hint: 'Search categories...',
       onChanged: (value) {
-        // setState(() {
-        //   selectedCountry = value;
-        // });
+        setState(() {
+          _selectedCategories = value;
+        });
       },
 
       itemLabel: (category) => category.name,
       //value: null,
-      label: '',
+    
     );
   }
 
@@ -773,9 +753,9 @@ class _AddProductScreenState extends State<AddProductScreen>
       items: brands,
       hint: 'Search brands...',
       onChanged: (value) {
-        // setState(() {
-        //   selectedCountry = value;
-        // });
+        setState(() {
+          _selectedBrand = value;
+        });
       },
       itemLabel: (brand) => brand.name,
       value: null,
@@ -796,10 +776,10 @@ class _AddProductScreenState extends State<AddProductScreen>
       CustomSnackbar.showError(context, 'Please enter product name (AR)');
       return;
     }
-    if (_mainImage == null) {
-      CustomSnackbar.showError(context, 'Please select main product image');
-      return;
-    }
+    // if (_mainImage == null) {
+    //   CustomSnackbar.showError(context, 'Please select main product image');
+    //   return;
+    // }
     if (_selectedCategories == null || _selectedCategories!.isEmpty) {
       CustomSnackbar.showError(context, 'Please select at least one category');
       return;
@@ -834,21 +814,14 @@ class _AddProductScreenState extends State<AddProductScreen>
         if (v.priceController.text.trim().isEmpty) {
           CustomSnackbar.showError(
             context,
-            'Enter price for price item ${i + 1}',
+            'Enter price for variation ${i + 1}',
           );
           return;
         }
         if (v.codeController.text.trim().isEmpty) {
           CustomSnackbar.showError(
             context,
-            'Enter product code for price item ${i + 1}',
-          );
-          return;
-        }
-        if (v.selectedOptions.isEmpty) {
-          CustomSnackbar.showError(
-            context,
-            'Select at least one option for price item ${i + 1}',
+            'Enter product code for variation ${i + 1}',
           );
           return;
         }
@@ -866,7 +839,7 @@ class _AddProductScreenState extends State<AddProductScreen>
     }
 
     // === Encode Images ===
-    final String mainImageBase64 = ImageHelper.encodeImageToBase64(_mainImage!);
+    // final String mainImageBase64 = ImageHelper.encodeImageToBase64(_mainImage!);
     final List<String> galleryBase64 = _galleryImages
         .map((img) => ImageHelper.encodeImageToBase64(img))
         .toList();
@@ -877,7 +850,7 @@ class _AddProductScreenState extends State<AddProductScreen>
       arName: _arNameController.text.trim(),
       description: _descriptionController.text.trim(),
       arDescription: _arDescriptionController.text.trim(),
-      image: mainImageBase64,
+      image: _mainImage.toString(),
       categoryIds: _selectedCategories!.map((c) => c.id).toList(),
       brandId: _selectedBrand!.id,
       unit: _unitController.text.trim(),
@@ -895,6 +868,7 @@ class _AddProductScreenState extends State<AddProductScreen>
       maximumToShow: maxToShow,
       galleryProduct: galleryBase64,
       prices: pricesJson,
+      expiryDate: _expiryDate,
     );
   }
 
@@ -911,33 +885,9 @@ class _AddProductScreenState extends State<AddProductScreen>
     _minQuantityController.dispose();
     _maxToShowController.dispose();
     _unitController.dispose();
-    _tabController.dispose();
     for (var variation in _priceVariations) {
       variation.dispose();
     }
     super.dispose();
-  }
-}
-
-// Models
-class PriceVariation {
-  final TextEditingController priceController;
-  final TextEditingController codeController;
-  final TextEditingController quantityController;
-  final List<String> selectedOptions;
-  final List<File> galleryImages;
-
-  PriceVariation({
-    required this.priceController,
-    required this.codeController,
-    required this.quantityController,
-    required this.selectedOptions,
-    required this.galleryImages,
-  });
-
-  void dispose() {
-    priceController.dispose();
-    codeController.dispose();
-    quantityController.dispose();
   }
 }

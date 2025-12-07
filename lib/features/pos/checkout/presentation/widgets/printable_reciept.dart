@@ -18,58 +18,61 @@ class PrintableReceipt extends StatelessWidget {
     height: 0.8,
   );
   TextStyle get _headerSubStyle =>
-      const TextStyle(fontSize: 14, color: Colors.black87);
+      const TextStyle(fontSize: 11, color: Colors.black87);
   TextStyle get _columnHeaderStyle =>
-      const TextStyle(fontSize: 14, fontWeight: FontWeight.bold);
+      const TextStyle(fontSize: 12, fontWeight: FontWeight.bold);
   TextStyle get _itemStyle =>
-      const TextStyle(fontSize: 14, fontWeight: FontWeight.w500);
+      const TextStyle(fontSize: 12, fontWeight: FontWeight.w500);
   TextStyle get _totalLabelStyle =>
-      const TextStyle(fontSize: 10, fontWeight: FontWeight.bold);
+      const TextStyle(fontSize: 9, fontWeight: FontWeight.bold);
   TextStyle get _grandTotalNumStyle =>
-      const TextStyle(fontSize: 18, fontWeight: FontWeight.w900);
+      const TextStyle(fontSize: 12, fontWeight: FontWeight.w900);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       // Larger horizontal padding (24) to match the photo's spacing
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+      padding: const EdgeInsets.only(left:  40),
       color: Colors.white,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _header(),
-          const SizedBox(height: 10),
-          _divider(),
-          const SizedBox(height: 15),
-          _info(),
-          const SizedBox(height: 15),
-          _divider(),
-          const SizedBox(height: 15),
-          _itemsHeader(),
-          const SizedBox(height: 10),
-          _thickDivider(),
-          const SizedBox(height: 5),
-          _itemsList(),
-          const SizedBox(height: 5),
-          _thickDivider(),
-          const SizedBox(height: 15),
-          _totals(),
-          const SizedBox(height: 15),
-          _grandTotal(),
-          if (recieptData.paidAmount > 0) ...[
+      child: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 30),
+            _header(),
+            const SizedBox(height: 10),
+            _divider(),
+            const SizedBox(height: 15),
+            _info(),
             const SizedBox(height: 15),
             _divider(),
             const SizedBox(height: 15),
-            _cashSection(),
+            _itemsHeader(),
+            const SizedBox(height: 10),
+            _thickDivider(),
+            const SizedBox(height: 5),
+            _itemsList(),
+            const SizedBox(height: 5),
+            _thickDivider(),
+            const SizedBox(height: 15),
+            _totals(),
+            const SizedBox(height: 15),
+            _grandTotal(),
+            if (recieptData.paidAmount > 0) ...[
+              const SizedBox(height: 15),
+              _divider(),
+              const SizedBox(height: 15),
+              _cashSection(),
+            ],
+            if (recieptData.pointsEarned > 0) ...[
+              const SizedBox(height: 12),
+              _loyalty(),
+            ],
+            const SizedBox(height: 15),
+            _footer(),
           ],
-          if (recieptData.pointsEarned > 0) ...[
-            const SizedBox(height: 12),
-            _loyalty(),
-          ],
-          const SizedBox(height: 15),
-          _footer(),
-        ],
+        ),
       ),
     );
   }
@@ -237,12 +240,12 @@ class PrintableReceipt extends StatelessWidget {
 
   Widget _loyalty() {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(border: Border.all(color: Colors.black)),
       child: Center(
         child: Text(
           "Points Earned: ${recieptData.pointsEarned}",
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 9),
         ),
       ),
     );
@@ -253,11 +256,11 @@ class PrintableReceipt extends StatelessWidget {
       children: [
         Text(
           "Thank You!",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 2),
-        Text("Powered by SYSTEGO POS", style: TextStyle(fontSize: 12)),
-        Text("www.systego.com", style: TextStyle(fontSize: 10)),
+        Text("Powered by SYSTEGO POS", style: TextStyle(fontSize: 10)),
+        Text("www.systego.com", style: TextStyle(fontSize: 9)),
       ],
     );
   }
@@ -273,7 +276,7 @@ class PrintableReceipt extends StatelessWidget {
           left,
           style: TextStyle(
             fontWeight: bold ? FontWeight.bold : FontWeight.w500,
-            fontSize: 12,
+            fontSize: 11,
           ),
         ),
         Text(

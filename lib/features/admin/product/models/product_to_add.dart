@@ -2,6 +2,10 @@
 // Assuming this is the existing or new model file. I've extended it to include all fields from the API body,
 // with fromJson and toJson methods. Adjust if you have an existing partial model.
 
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+
 class ProductToAdd {
   final String name;
   final String image;
@@ -128,4 +132,34 @@ class PriceItem {
       'options': options,
     };
   }
+}
+
+// Models
+class PriceVariation {
+  final TextEditingController priceController;
+  final TextEditingController codeController;
+  final TextEditingController quantityController;
+  final List<String> selectedOptions;
+  final List<File> galleryImages;
+
+  PriceVariation({
+    required this.priceController,
+    required this.codeController,
+    required this.quantityController,
+    required this.selectedOptions,
+    required this.galleryImages,
+  });
+
+  void dispose() {
+    priceController.dispose();
+    codeController.dispose();
+    quantityController.dispose();
+  }
+}
+// Assume Option class (adjust based on your actual model in filter_models.dart)
+class Option {
+  final String id;
+  final String name;
+
+  Option({required this.id, required this.name});
 }

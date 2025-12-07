@@ -7,10 +7,9 @@ import 'package:systego/features/POS/checkout/cubit/checkout_cubit/checkout_cubi
 import 'package:systego/features/POS/checkout/model/reciept_data.dart';
 import 'package:systego/features/POS/checkout/presentation/view/reciept_screen.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
-import '../../model/checkout_models.dart';
 
 class POSReceiptDialog extends StatefulWidget {
-  final List<CartItem> cartItems;
+  //final List<CartItem> cartItems;
   final RecieptData recieptData;
   // final double totalAmount; // هنا بيبقى Subtotal فقط
   // final double taxAmount; // قيمة الضريبة
@@ -24,7 +23,7 @@ class POSReceiptDialog extends StatefulWidget {
   const POSReceiptDialog({
     super.key,
     required this.recieptData,
-    required this.cartItems,
+    //required this.cartItems,
     // required this.totalAmount,
     // required this.taxAmount,
     // required this.selectedTax,
@@ -376,7 +375,7 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
             ],
           ),
         ),
-        ...widget.cartItems.asMap().entries.map((e) {
+        ...widget.recieptData.cartItems.asMap().entries.map((e) {
           final item = e.value;
           final isEven = e.key % 2 == 0;
           return Container(

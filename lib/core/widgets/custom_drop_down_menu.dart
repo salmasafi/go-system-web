@@ -117,7 +117,6 @@ Widget buildDropdownField<T>(
 Widget buildMultiSelectDropdownField<T>(
   BuildContext context, {
   required List<T> items,
-  required String label,
   required String hint,
   required void Function(List<T>)? onChanged,
   required String Function(T) itemLabel,

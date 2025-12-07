@@ -167,7 +167,7 @@ class Tax {
     return Tax(
       id: json['_id'] ?? json['id'],
       name: json['name'] ?? 'No Tax',
-      amount: (json['amount'] ?? 10).toDouble(),
+      amount: (json['amount'] ?? 0).toDouble(),
       type: json['type'] ?? 'fixed',
       status: json['status'] ?? false,
     );

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:systego/core/widgets/app_bar_widgets.dart';
+import 'package:systego/core/widgets/custom_button_widget.dart';
 import 'package:systego/features/POS/checkout/model/reciept_data.dart';
 import 'dart:async';
 import '../../cubit/printer_cubit/printer_cubit.dart';
@@ -14,8 +17,10 @@ class ReceiptPreviewScreen extends StatefulWidget {
 
 class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
   final PrinterCubit printerCubit = PrinterCubit();
-  String status = 'Searching for your printer';
+  String status =
+      'Searching for your printer....\nMake sure your Bluetouth is on';
   bool printing = false;
+  BluetoothDevice? device;
 
   @override
   void initState() {
@@ -24,10 +29,10 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
   }
 
   void _findPrinter() async {
-    final device = await printerCubit.findPrinter();
+    device = await printerCubit.findPrinter();
     setState(
       () => status = device != null
-          ? 'Your printer is found'
+          ? 'Your printer is found! Press now'
           : "Your printer is not connected",
     );
   }
@@ -50,29 +55,27 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("SYSTEGO Thermal Printer")),
+      appBar: appBarWithActions(context, title: 'Reciept Preview'),
       body: Center(
         child: SingleChildScrollView(
+          padding: EdgeInsets.all(20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              PrintableReceipt(recieptData: widget.recieptData),
+              SizedBox(height: 10),
               Text(status, style: TextStyle(fontSize: 20)),
-              SizedBox(height: 40),
-              SingleChildScrollView(
-                padding: EdgeInsets.all(24),
-                child: Center(
-                  child: Container(
-                    width: 384,
-                    color: Colors.white,
-                    child: PrintableReceipt(recieptData: widget.recieptData),
-                  ),
-                ),
+              SizedBox(height: 10),
+              CustomElevatedButton(
+                onPressed: _findPrinter,
+                // icon: Icon(Icons.print, size: 30),
+                text: status.contains('Searching....') ? ' Searching' : "Retry",
               ),
-              SizedBox(height: 40),
-              ElevatedButton.icon(
-                onPressed: printing ? null : _print,
-                icon: Icon(Icons.print, size: 30),
-                label: Text("Reciept Printing", style: TextStyle(fontSize: 24)),
+              SizedBox(height: 10),
+              CustomElevatedButton(
+                onPressed: (printing || device == null) ? null : _print,
+                // icon: Icon(Icons.print, size: 30),
+                text: "Print Reciept",
               ),
             ],
           ),

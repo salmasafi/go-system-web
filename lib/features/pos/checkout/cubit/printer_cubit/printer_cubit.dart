@@ -69,7 +69,8 @@ class PrinterCubit extends Cubit<PrinterState> {
     BuildContext context, {
     required RecieptData receipt,
   }) async {
-    // INCREASED WIDTH: 576 is standard for 80mm printers (Bigger receipt)
+    // FIX 1: Set Target Width to 384 (Standard for 58mm printers)
+    // 576 is too big and causes the "Cut off" bug on small printers.
     const int targetWidth = 576;
 
     final GlobalKey repaintKey = GlobalKey();
@@ -83,10 +84,13 @@ class PrinterCubit extends Cubit<PrinterState> {
           body: SingleChildScrollView(
             child: RepaintBoundary(
               key: repaintKey,
-              child: Container(
-                color: Colors.white,
-                width: targetWidth.toDouble(), // 576px Width
-                child: PrintableReceipt(recieptData: receipt),
+              child: Center(
+                child: Container(
+                  color: Colors.white,
+                  // Ensure container matches target width exactly
+                  width: 384, // targetWidth.toDouble(),
+                  child: Center(child: PrintableReceipt(recieptData: receipt)),
+                ),
               ),
             ),
           ),
@@ -100,8 +104,8 @@ class PrinterCubit extends Cubit<PrinterState> {
       final render =
           repaintKey.currentContext!.findRenderObject()
               as RenderRepaintBoundary;
-      // High Quality Capture (3x resolution)
-      final image = await render.toImage(pixelRatio: 3.0);
+      // FIX 2: Capture at 2x or 3x resolution for sharpness, then we resize down
+      final image = await render.toImage(pixelRatio: 3);
       completer.complete(image);
       Navigator.of(context).pop();
     } catch (e) {
@@ -117,10 +121,11 @@ class PrinterCubit extends Cubit<PrinterState> {
     img.Image? processed = img.decodePng(pngBytes);
     if (processed == null) return [];
 
-    // Resize to the larger target width (576)
+    // FIX 3: Resize DOWN to 384px.
+    // Capturing high (3x) and resizing down makes text very crisp.
     processed = img.copyResize(processed, width: targetWidth);
 
-    // Grayscale & Binarization (Making text black and crisp)
+    // Grayscale & Binarization
     processed = img.grayscale(processed);
     for (int y = 0; y < processed.height; y++) {
       for (int x = 0; x < processed.width; x++) {
@@ -131,7 +136,7 @@ class PrinterCubit extends Cubit<PrinterState> {
       }
     }
 
-    // --- SMART CROP (BOTTOM ONLY) ---
+    // Smart Crop (Bottom Only)
     int lastRow = processed.height - 1;
     for (int y = processed.height - 1; y >= 0; y--) {
       bool hasBlack = false;
@@ -147,8 +152,7 @@ class PrinterCubit extends Cubit<PrinterState> {
       }
     }
 
-    // Add padding at the bottom for the paper cutter
-    int cropHeight = lastRow + 30;
+    int cropHeight = lastRow + 10; // Minimal bottom padding
     if (cropHeight > processed.height) cropHeight = processed.height;
 
     img.Image cropped = img.copyCrop(
@@ -160,7 +164,6 @@ class PrinterCubit extends Cubit<PrinterState> {
     );
 
     final profile = await CapabilityProfile.load();
-    // Use PaperSize.mm80 for bigger receipts, or stick to mm58 but print the larger image
     final generator = Generator(PaperSize.mm58, profile);
 
     return [
