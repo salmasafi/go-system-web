@@ -212,7 +212,7 @@ class _AddProductScreenState extends State<AddProductScreen>
                       buildTextField(
                         context,
                         controller: _descriptionController,
-                        label: 'Description (EN)',
+                        label: 'Description (EN) *',
                         icon: Icons.description,
                         hint: 'Enter product description',
                         maxLines: 3,
@@ -221,7 +221,7 @@ class _AddProductScreenState extends State<AddProductScreen>
                       buildTextField(
                         context,
                         controller: _arDescriptionController,
-                        label: 'Description (AR)',
+                        label: 'Description (AR) *',
                         icon: Icons.description,
                         hint: 'أدخل وصف المنتج',
                         maxLines: 3,
@@ -695,7 +695,7 @@ class _AddProductScreenState extends State<AddProductScreen>
                       borderRadius: BorderRadius.circular(8),
                       child: Image.file(
                         variation.galleryImages[imgIndex],
-                        fit: BoxFit.cover,
+                        fit: BoxFit.fill,
                       ),
                     ),
                   ),

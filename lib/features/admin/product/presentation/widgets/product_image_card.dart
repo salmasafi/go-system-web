@@ -26,7 +26,7 @@ class ProductImageCard extends StatelessWidget {
       //   ),
       child: Image.network(
         imageUrl,
-        fit: BoxFit.cover,
+        fit: BoxFit.fill,
         errorBuilder: (context, error, stackTrace) {
           return Center(
             child: Icon(

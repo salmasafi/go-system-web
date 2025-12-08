@@ -24,21 +24,26 @@ class EditBrandBottomSheet extends StatefulWidget {
 
 class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
   late TextEditingController _nameController;
+  late TextEditingController _arNameController;
+
   File? _selectedImage;
   final _picker = ImagePicker();
-  bool _isLoading = true; // Start with loading true to show loading state immediately
+  bool _isLoading =
+      true; // Start with loading true to show loading state immediately
   BrandById? _brand;
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController();
+    _arNameController = TextEditingController();
     BrandsCubit.get(context).getBrandById(widget.brandId);
   }
 
   @override
   void dispose() {
     _nameController.dispose();
+    _arNameController.dispose();
     super.dispose();
   }
 
@@ -56,9 +61,18 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
           content: Text(LocaleKeys.please_enter_brand_name.tr()),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
+        ),
+      );
+      return;
+    } else if (_arNameController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(LocaleKeys.please_enter_brand_ar_name.tr()),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
         ),
       );
@@ -67,6 +81,7 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
     BrandsCubit.get(context).updateBrand(
       brandId: widget.brandId,
       name: _nameController.text.trim(),
+      arName: _arNameController.text.trim(),
       logoFile: _selectedImage,
     );
   }
@@ -78,7 +93,11 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
     final image = _selectedImage != null
         ? Image.file(_selectedImage!, fit: BoxFit.cover)
         : _brand?.logo?.isNotEmpty ?? false
-        ? Image.network(_brand!.logo!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const CustomImagePlaceholder())
+        ? Image.network(
+            _brand!.logo!,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const CustomImagePlaceholder(),
+          )
         : const CustomImagePlaceholder();
 
     return BlocListener<BrandsCubit, BrandsState>(
@@ -89,6 +108,7 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
           setState(() {
             _brand = state.brand;
             _nameController.text = _brand?.name ?? '';
+            _arNameController.text = _brand?.arName ?? '';
             _isLoading = false;
           });
         } else if (state is GetBrandByIdError) {
@@ -138,163 +158,201 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
       },
       child: Container(
         constraints: BoxConstraints(maxWidth: maxWidth),
-        margin: EdgeInsets.symmetric(horizontal: isDesktop ? ResponsiveUI.padding(context, 20) : 0),
+        margin: EdgeInsets.symmetric(
+          horizontal: isDesktop ? ResponsiveUI.padding(context, 20) : 0,
+        ),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(ResponsiveUI.borderRadius(context, 24))),
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(ResponsiveUI.borderRadius(context, 24)),
+          ),
         ),
         child: SafeArea(
-          child: _isLoading || _brand == null // Show loading if _isLoading or _brand is null
+          child:
+              _isLoading ||
+                  _brand ==
+                      null // Show loading if _isLoading or _brand is null
               ? Container(
-            height: ResponsiveUI.value(context, 300),
-            padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-            child: const Center(
-              child: CustomLoadingState(size: 60),
-            ),
-          )
+                  height: ResponsiveUI.value(context, 300),
+                  padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+                  child: const Center(child: CustomLoadingState(size: 60)),
+                )
               : SingleChildScrollView(
-            padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Center(
-                  child: Container(
-                    width: ResponsiveUI.value(context, 40),
-                    height: ResponsiveUI.value(context, 4),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.all(Radius.circular(ResponsiveUI.borderRadius(context, 2))),
-                    ),
-                  ),
-                ),
-                SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                Text(
-                  LocaleKeys.edit_brand.tr(),
-                  style: TextStyle(
-                    fontSize: ResponsiveUI.fontSize(context, 20),
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                CustomTextField(
-                  controller: _nameController,
-                  labelText: LocaleKeys.brand_name.tr(),
-                  hintText: LocaleKeys.enter_brand_name.tr(),
-                  prefixIcon: Icons.branding_watermark,
-                  hasBoxDecoration: false,
-                  hasBorder: true,
-                  prefixIconColor: AppColors.darkGray.withOpacity(0.7),
-                ),
-                SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                Text(
-                  LocaleKeys.brand_logo.tr(),
-                  style: TextStyle(
-                    fontSize: ResponsiveUI.fontSize(context, 14),
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[700],
-                  ),
-                ),
-                SizedBox(height: ResponsiveUI.spacing(context, 8)),
-                GestureDetector(
-                  onTap: _isLoading ? null : _pickImage,
-                  child: Container(
-                    height: ResponsiveUI.value(context, 300),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey[300]!, width: 1),
-                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
-                      color: Colors.grey[50],
-                    ),
-                    child: Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
-                          child: image,
-                        ),
-                        if (_selectedImage != null || (_brand?.logo?.isNotEmpty ?? false))
-                          Positioned(
-                            top: ResponsiveUI.padding(context, 8),
-                            right: ResponsiveUI.padding(context, 8),
-                            child: Container(
-                              padding: EdgeInsets.all(ResponsiveUI.padding(context, 6)),
-                              decoration: BoxDecoration(
-                                color: Colors.black54,
-                                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 6)),
-                              ),
-                              child: Icon(
-                                Icons.edit,
-                                color: Colors.white,
-                                size: ResponsiveUI.iconSize(context, 18),
+                  padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Center(
+                        child: Container(
+                          width: ResponsiveUI.value(context, 40),
+                          height: ResponsiveUI.value(context, 4),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(
+                                ResponsiveUI.borderRadius(context, 2),
                               ),
                             ),
                           ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(height: ResponsiveUI.spacing(context, 8)),
-                if (_selectedImage == null && (_brand?.logo?.isEmpty ?? true))
-                  Text(
-                    LocaleKeys.tap_to_select_logo.tr(),
-                    style: TextStyle(
-                      fontSize: ResponsiveUI.fontSize(context, 12),
-                      color: Colors.orange[700],
-                      fontStyle: FontStyle.italic,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                if (_selectedImage != null)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
-                        size: ResponsiveUI.iconSize(context, 16),
-                      ),
-                      SizedBox(width: ResponsiveUI.spacing(context, 4)),
-                      Text(
-                        LocaleKeys.new_logo_selected.tr(),
-                        style: TextStyle(
-                          fontSize: ResponsiveUI.fontSize(context, 12),
-                          color: Colors.green[700],
-                          fontWeight: FontWeight.w500,
                         ),
+                      ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                      Text(
+                        LocaleKeys.edit_brand.tr(),
+                        style: TextStyle(
+                          fontSize: ResponsiveUI.fontSize(context, 20),
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                      CustomTextField(
+                        controller: _nameController,
+                        labelText: LocaleKeys.brand_name.tr(),
+                        hintText: LocaleKeys.enter_brand_name.tr(),
+                        prefixIcon: Icons.branding_watermark,
+                        hasBoxDecoration: false,
+                        hasBorder: true,
+                        prefixIconColor: AppColors.darkGray.withOpacity(0.7),
+                      ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                      CustomTextField(
+                        controller: _arNameController,
+                        labelText: LocaleKeys.brand_ar_name.tr(),
+                        hintText: LocaleKeys.enter_brand_ar_name.tr(),
+                        prefixIcon: Icons.branding_watermark,
+                        hasBoxDecoration: false,
+                        hasBorder: true,
+                        prefixIconColor: AppColors.darkGray.withOpacity(0.7),
+                      ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                      Text(
+                        LocaleKeys.brand_logo.tr(),
+                        style: TextStyle(
+                          fontSize: ResponsiveUI.fontSize(context, 14),
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 8)),
+                      GestureDetector(
+                        onTap: _isLoading ? null : _pickImage,
+                        child: Container(
+                          height: ResponsiveUI.value(context, 300),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.grey[300]!,
+                              width: 1,
+                            ),
+                            borderRadius: BorderRadius.circular(
+                              ResponsiveUI.borderRadius(context, 12),
+                            ),
+                            color: Colors.grey[50],
+                          ),
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(
+                                  ResponsiveUI.borderRadius(context, 12),
+                                ),
+                                child: image,
+                              ),
+                              if (_selectedImage != null ||
+                                  (_brand?.logo?.isNotEmpty ?? false))
+                                Positioned(
+                                  top: ResponsiveUI.padding(context, 8),
+                                  right: ResponsiveUI.padding(context, 8),
+                                  child: Container(
+                                    padding: EdgeInsets.all(
+                                      ResponsiveUI.padding(context, 6),
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black54,
+                                      borderRadius: BorderRadius.circular(
+                                        ResponsiveUI.borderRadius(context, 6),
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.edit,
+                                      color: Colors.white,
+                                      size: ResponsiveUI.iconSize(context, 18),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 8)),
+                      if (_selectedImage == null &&
+                          (_brand?.logo?.isEmpty ?? true))
+                        Text(
+                          LocaleKeys.tap_to_select_logo.tr(),
+                          style: TextStyle(
+                            fontSize: ResponsiveUI.fontSize(context, 12),
+                            color: Colors.orange[700],
+                            fontStyle: FontStyle.italic,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      if (_selectedImage != null)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.check_circle,
+                              color: Colors.green,
+                              size: ResponsiveUI.iconSize(context, 16),
+                            ),
+                            SizedBox(width: ResponsiveUI.spacing(context, 4)),
+                            Text(
+                              LocaleKeys.new_logo_selected.tr(),
+                              style: TextStyle(
+                                fontSize: ResponsiveUI.fontSize(context, 12),
+                                color: Colors.green[700],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                      ElevatedButton(
+                        onPressed: _isLoading ? null : _submitUpdate,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryBlue,
+                          padding: EdgeInsets.symmetric(
+                            vertical: ResponsiveUI.padding(context, 14),
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              ResponsiveUI.borderRadius(context, 12),
+                            ),
+                          ),
+                        ),
+                        child: _isLoading
+                            ? SizedBox(
+                                height: ResponsiveUI.iconSize(context, 20),
+                                width: ResponsiveUI.iconSize(context, 20),
+                                child: const CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              )
+                            : Text(
+                                LocaleKeys.update_brand.tr(),
+                                style: TextStyle(
+                                  fontSize: ResponsiveUI.fontSize(context, 16),
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
                       ),
                     ],
                   ),
-                SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _submitUpdate,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryBlue,
-                    padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 14)),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
-                    ),
-                  ),
-                  child: _isLoading
-                      ? SizedBox(
-                    height: ResponsiveUI.iconSize(context, 20),
-                    width: ResponsiveUI.iconSize(context, 20),
-                    child: const CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  )
-                      : Text(
-                    LocaleKeys.update_brand.tr(),
-                    style: TextStyle(
-                      fontSize: ResponsiveUI.fontSize(context, 16),
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
                 ),
-              ],
-            ),
-          ),
         ),
       ),
     );

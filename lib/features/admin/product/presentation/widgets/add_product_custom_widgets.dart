@@ -367,7 +367,7 @@ class MainImagePicker extends StatelessWidget {
                         child: Image.file(
                           image!,
                           width: double.infinity,
-                          fit: BoxFit.cover,
+                          fit: BoxFit.fill,
                         ),
                       ),
                       Positioned(
@@ -557,7 +557,7 @@ class ImageThumbnail extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: Image.file(image, fit: BoxFit.cover),
+            child: Image.file(image, fit: BoxFit.fill),
           ),
         ),
         Positioned(

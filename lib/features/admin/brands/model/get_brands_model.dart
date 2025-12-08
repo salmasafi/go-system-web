@@ -1,7 +1,5 @@
 class GeBrandsModel {
-  GeBrandsModel({
-      this.success, 
-      this.data,});
+  GeBrandsModel({this.success, this.data});
 
   GeBrandsModel.fromJson(dynamic json) {
     success = json['success'];
@@ -18,13 +16,10 @@ class GeBrandsModel {
     }
     return map;
   }
-
 }
 
 class Data {
-  Data({
-      this.message, 
-      this.brands,});
+  Data({this.message, this.brands});
 
   Data.fromJson(dynamic json) {
     message = json['message'];
@@ -46,21 +41,23 @@ class Data {
     }
     return map;
   }
-
 }
 
 class Brands {
   Brands({
-      this.id, 
-      this.name, 
-      this.logo, 
-      this.createdAt, 
-      this.updatedAt, 
-      this.v,});
+    this.id,
+    this.name,
+    this.arName,
+    this.logo,
+    this.createdAt,
+    this.updatedAt,
+    this.v,
+  });
 
   Brands.fromJson(dynamic json) {
     id = json['_id'];
     name = json['name'];
+    name = json['ar_name'];
     logo = json['logo'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
@@ -68,6 +65,7 @@ class Brands {
   }
   String? id;
   String? name;
+  String? arName;
   String? logo;
   String? createdAt;
   String? updatedAt;
@@ -77,11 +75,11 @@ class Brands {
     final map = <String, dynamic>{};
     map['_id'] = id;
     map['name'] = name;
+    map['ar_name'] = arName;
     map['logo'] = logo;
     map['createdAt'] = createdAt;
     map['updatedAt'] = updatedAt;
     map['__v'] = v;
     return map;
   }
-
 }

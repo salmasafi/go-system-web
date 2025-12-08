@@ -22,6 +22,7 @@ class AddBrandScreen extends StatefulWidget {
 
 class _AddBrandScreenState extends State<AddBrandScreen> {
   final _nameController = TextEditingController();
+  final _arNameController = TextEditingController();
   File? _selectedImage;
 
   Future<void> _pickImage() async {
@@ -70,16 +71,21 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
       builder: (context, state) {
         if (state is CreateBrandError) {
           return Scaffold(
-            appBar: appBarWithActions(context, title: LocaleKeys.new_brand.tr()),
+            appBar: appBarWithActions(
+              context,
+              title: LocaleKeys.new_brand.tr(),
+            ),
             body: CustomErrorState(
               message: state.error,
               onRetry: () {
                 if (_nameController.text.trim().isEmpty ||
+                    _arNameController.text.trim().isEmpty ||
                     _selectedImage == null) {
                   return;
                 }
                 BrandsCubit.get(context).createBrand(
                   name: _nameController.text.trim(),
+                  arName: _arNameController.text.trim(),
                   logoFile: _selectedImage!,
                 );
               },
@@ -98,19 +104,29 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                  Text(
-                    LocaleKeys.brand_name.tr(),
-                    style: TextStyle(
-                      fontSize: ResponsiveUI.fontSize(context, 14),
-                      color: AppColors.darkGray,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 8)),
+                  // Text(
+                  //   LocaleKeys.brand_name.tr(),
+                  //   style: TextStyle(
+                  //     fontSize: ResponsiveUI.fontSize(context, 14),
+                  //     color: AppColors.darkGray,
+                  //     fontWeight: FontWeight.w500,
+                  //   ),
+                  // ),
+                  //SizedBox(height: ResponsiveUI.spacing(context, 8)),
                   CustomTextField(
                     controller: _nameController,
-                    labelText: '',
+                    labelText: LocaleKeys.brand_name.tr(),
                     hintText: LocaleKeys.enter_brand_name.tr(),
+                    hasBoxDecoration: false,
+                    hasBorder: true,
+                    prefixIcon: Icons.branding_watermark,
+                    prefixIconColor: AppColors.darkGray.withOpacity(0.7),
+                  ),
+                  SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                  CustomTextField(
+                    controller: _arNameController,
+                    labelText: LocaleKeys.brand_ar_name.tr(),
+                    hintText: LocaleKeys.enter_brand_ar_name.tr(),
                     hasBoxDecoration: false,
                     hasBorder: true,
                     prefixIcon: Icons.branding_watermark,
@@ -217,8 +233,28 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                               if (_nameController.text.trim().isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content:  Text(
+                                    content: Text(
                                       LocaleKeys.please_enter_brand_name.tr(),
+                                    ),
+                                    backgroundColor: Colors.red,
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    margin: EdgeInsets.all(
+                                      ResponsiveUI.padding(context, 12),
+                                    ),
+                                  ),
+                                );
+                                return;
+                              } else if (_arNameController.text
+                                  .trim()
+                                  .isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      LocaleKeys.please_enter_brand_ar_name
+                                          .tr(),
                                     ),
                                     backgroundColor: Colors.red,
                                     behavior: SnackBarBehavior.floating,
@@ -235,7 +271,9 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                               if (_selectedImage == null) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content:  Text(LocaleKeys.please_select_logo.tr()),
+                                    content: Text(
+                                      LocaleKeys.please_select_logo.tr(),
+                                    ),
                                     backgroundColor: Colors.red,
                                     behavior: SnackBarBehavior.floating,
                                     shape: RoundedRectangleBorder(
@@ -250,6 +288,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                               }
                               BrandsCubit.get(context).createBrand(
                                 name: _nameController.text.trim(),
+                                arName: _arNameController.text.trim(),
                                 logoFile: _selectedImage!,
                               );
                             },
@@ -295,6 +334,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
   @override
   void dispose() {
     _nameController.dispose();
+    _arNameController.dispose();
     super.dispose();
   }
 }

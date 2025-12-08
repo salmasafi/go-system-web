@@ -51,7 +51,7 @@ class CustomImageContainer extends StatelessWidget {
               width: ResponsiveUI.value(context, size ?? 60),
               child: Image.network(
                 image!,
-                fit: BoxFit.cover,
+                fit: BoxFit.fill,
                 errorBuilder: (context, error, stackTrace) {
                   return Icon(
                     icon ?? Icons.inventory_2,

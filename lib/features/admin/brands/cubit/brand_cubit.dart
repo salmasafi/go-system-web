@@ -23,9 +23,7 @@ class BrandsCubit extends Cubit<BrandsState> {
   Future<void> getBrands() async {
     emit(GetBrandsLoading());
     try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getBrands,
-      );
+      final response = await DioHelper.getData(url: EndPoint.getBrands);
 
       if (response.statusCode == 200) {
         final model = GeBrandsModel.fromJson(response.data);
@@ -74,6 +72,7 @@ class BrandsCubit extends Cubit<BrandsState> {
 
   Future<void> createBrand({
     required String name,
+    required String arName,
     required File logoFile,
   }) async {
     emit(CreateBrandLoading());
@@ -83,28 +82,27 @@ class BrandsCubit extends Cubit<BrandsState> {
         return;
       }
 
-  //    final token = CacheHelper.getData(key: 'token') as String?;
+      //    final token = CacheHelper.getData(key: 'token') as String?;
       final bytes = await logoFile.readAsBytes();
       final base64Logo = base64Encode(bytes);
 
-      final data = {
-        'name': name,
-        'logo': base64Logo,
-      };
+      final data = {'name': name, 'ar_name': arName, 'logo': base64Logo};
 
       final response = await DioHelper.postData(
         url: EndPoint.createBrand,
         data: data,
-     //   token: token,
+        //   token: token,
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         brandModel = CreateBrandModel.fromJson(response.data);
         if (brandModel?.success == true) {
           await getBrands();
-          emit(CreateBrandSuccess(
-            brandModel?.data?.message ?? 'Brand created successfully',
-          ));
+          emit(
+            CreateBrandSuccess(
+              brandModel?.data?.message ?? 'Brand created successfully',
+            ),
+          );
         } else {
           final errorMessage = ErrorHandler.handleError(response);
           emit(CreateBrandError(errorMessage));
@@ -122,12 +120,13 @@ class BrandsCubit extends Cubit<BrandsState> {
   Future<void> updateBrand({
     required String brandId,
     required String name,
+    required String arName,
     File? logoFile,
   }) async {
     emit(UpdateBrandLoading());
     try {
-   //   final token = CacheHelper.getData(key: 'token') as String?;
-      final data = <String, dynamic>{'name': name};
+      //   final token = CacheHelper.getData(key: 'token') as String?;
+      final data = <String, dynamic>{'name': name, 'ar_name': arName};
 
       if (logoFile != null) {
         if (await logoFile.length() > 5 * 1024 * 1024) {
@@ -141,16 +140,18 @@ class BrandsCubit extends Cubit<BrandsState> {
       final response = await DioHelper.putData(
         url: EndPoint.updateBrand(brandId),
         data: data,
-    //    token: token,
+        //    token: token,
       );
 
       if (response.statusCode == 200) {
         brandModel = CreateBrandModel.fromJson(response.data);
         if (brandModel?.success == true) {
           await getBrands();
-          emit(UpdateBrandSuccess(
-            brandModel?.data?.message ?? 'Brand updated successfully',
-          ));
+          emit(
+            UpdateBrandSuccess(
+              brandModel?.data?.message ?? 'Brand updated successfully',
+            ),
+          );
         } else {
           final errorMessage = ErrorHandler.handleError(response);
           emit(UpdateBrandError(errorMessage));
@@ -171,7 +172,7 @@ class BrandsCubit extends Cubit<BrandsState> {
       //final token = CacheHelper.getData(key: 'token') as String?;
       final response = await DioHelper.deleteData(
         url: EndPoint.deleteBrand(brandId),
-       // token: token,
+        // token: token,
       );
 
       if (response.statusCode == 200) {
@@ -181,9 +182,11 @@ class BrandsCubit extends Cubit<BrandsState> {
           if (selectedBrand?.id == brandId) {
             selectedBrand = null;
           }
-          emit(DeleteBrandSuccess(
-            model.data?.message ?? 'Brand deleted successfully',
-          ));
+          emit(
+            DeleteBrandSuccess(
+              model.data?.message ?? 'Brand deleted successfully',
+            ),
+          );
         } else {
           final errorMessage = ErrorHandler.handleError(response);
           emit(DeleteBrandError(errorMessage));
