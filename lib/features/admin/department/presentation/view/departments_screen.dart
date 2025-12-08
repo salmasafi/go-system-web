@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
@@ -9,6 +10,7 @@ import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_sh
 import 'package:systego/features/admin/department/cubit/department_cubit.dart';
 import 'package:systego/features/admin/department/presentation/widgets/department_form_dialog.dart';
 import 'package:systego/features/admin/department/presentation/widgets/departments_list.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 
 class DepartmentScreen extends StatefulWidget {
@@ -68,17 +70,17 @@ class _DepartmentScreenState extends State<DepartmentScreen> {
 
           if (departments.isEmpty) {
             String title = departments.isEmpty
-                ? 'No departments'
-                : 'No Matching taxes';
+                ? LocaleKeys.no_departments.tr()
+                : LocaleKeys.no_matching_departments.tr();
             String message = departments.isEmpty
-                ? 'You\'re all caught up!'
-                : 'Try adjusting your filters';
+                ? LocaleKeys.cities_all_caught_up.tr()
+                : LocaleKeys.cities_try_adjusting_filters.tr();
             return CustomEmptyState(
               icon: Icons.monetization_on_rounded,
               title: title,
               message: message,
               onRefresh: _refresh,
-              actionLabel: 'Retry',
+              actionLabel: LocaleKeys.retry.tr(),
               onAction: _refresh,
             );
           } else {
@@ -91,10 +93,10 @@ class _DepartmentScreenState extends State<DepartmentScreen> {
         } else {
           return CustomEmptyState(
             icon: Icons.monetization_on_rounded,
-            title: 'No departments',
-            message: 'Pull to refresh or check your connection',
+            title: LocaleKeys.no_departments.tr(),
+            message: LocaleKeys.empty_connection.tr(),
             onRefresh: _refresh,
-            actionLabel: 'Retry',
+            actionLabel: LocaleKeys.retry.tr(),
             onAction: _refresh,
           );
         }
@@ -107,7 +109,7 @@ class _DepartmentScreenState extends State<DepartmentScreen> {
     return Scaffold(
       appBar: appBarWithActions(
         context,
-        title: 'Departments',
+        title: LocaleKeys.departments_title.tr(),
         showActions: true,
         onPressed: () => showDialog(
           context: context,

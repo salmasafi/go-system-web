@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
@@ -8,6 +9,7 @@ import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
 import 'package:systego/features/admin/currency/cubit/currency_cubit.dart';
 import 'package:systego/features/admin/currency/presentation/widgets/currrency_form_dialog.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../widgets/currencies_list.dart';
 
@@ -66,17 +68,17 @@ class _CurrenciesScreenState extends State<CurrenciesScreen> {
 
           if (currencies.isEmpty) {
             String title = currencies.isEmpty
-                ? 'No Currencies'
-                : 'No Matching Currencies';
+                ? LocaleKeys.no_currencies.tr()
+                : LocaleKeys.no_matching_currencies.tr();
             String message = currencies.isEmpty
-                ? 'You\'re all caught up!'
-                : 'Try adjusting your filters';
+                ? LocaleKeys.cities_all_caught_up.tr()
+                : LocaleKeys.cities_try_adjusting_filters.tr();
             return CustomEmptyState(
               icon: Icons.monetization_on_rounded,
               title: title,
               message: message,
               onRefresh: _refresh,
-              actionLabel: 'Retry',
+              actionLabel: LocaleKeys.retry.tr(),
               onAction: _refresh,
             );
           } else {
@@ -89,10 +91,10 @@ class _CurrenciesScreenState extends State<CurrenciesScreen> {
         } else {
           return CustomEmptyState(
             icon: Icons.monetization_on_rounded,
-            title: 'No Currencies',
-            message: 'Pull to refresh or check your connection',
+            title: LocaleKeys.no_currencies.tr(),
+            message: LocaleKeys.empty_connection.tr(),
             onRefresh: _refresh,
-            actionLabel: 'Retry',
+            actionLabel: LocaleKeys.retry.tr(),
             onAction: _refresh,
           );
         }
@@ -105,7 +107,7 @@ class _CurrenciesScreenState extends State<CurrenciesScreen> {
     return Scaffold(
       appBar: appBarWithActions(
         context,
-        title: 'Currencies',
+        title: LocaleKeys.currencies_title.tr(),
         showActions: true,
         onPressed: () => showDialog(
           context: context,

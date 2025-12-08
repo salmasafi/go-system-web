@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
@@ -5,6 +6,7 @@ import 'package:systego/features/admin/coupon/cubit/coupon_cubit.dart';
 import 'package:systego/features/admin/coupon/model/coupon_model.dart';
 import 'package:systego/features/admin/coupon/presentation/widgets/animated_coupon_card.dart';
 import 'package:systego/features/admin/coupon/presentation/widgets/coupon_form_dialog.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../../warehouses/view/widgets/custom_delete_dialog.dart';
 
@@ -41,7 +43,7 @@ class CouponsList extends StatelessWidget {
 
   void _showDeleteDialog(BuildContext context, CouponModel coupon) {
     if (coupon.id.isEmpty) {
-      CustomSnackbar.showError(context, 'Invalid Coupon ID');
+      CustomSnackbar.showError(context, LocaleKeys.invalid_coupon_id.tr());
       return;
     }
 
@@ -49,9 +51,9 @@ class CouponsList extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => CustomDeleteDialog(
-        title: 'Delete Coupon',
+        title: LocaleKeys.delete_coupon.tr(),
         message:
-            'Are you sure you want to delete this Coupon?\n"${coupon.couponCode}"',
+            '${LocaleKeys.delete_coupon_message.tr()} \n"${coupon.couponCode}"',
         onDelete: () {
           Navigator.pop(dialogContext);
           context.read<CouponsCubit>().deleteCoupon(coupon.id);

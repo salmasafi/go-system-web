@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
@@ -10,6 +11,7 @@ import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/features/admin/coupon/cubit/coupon_cubit.dart';
 import 'package:systego/features/admin/coupon/model/coupon_model.dart';
 import 'package:systego/features/admin/taxes/presentation/widgets/tax_form_dialog.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 
 class CouponFormDialog extends StatefulWidget {
@@ -122,41 +124,41 @@ class _CouponFormDialogState extends State<CouponFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _codeController,
-                                  label: 'Coupon Code',
+                                  label: LocaleKeys.coupon_code.tr(),
                                   icon: Icons.local_offer,
-                                  hint: 'Enter coupon code',
+                                  hint: LocaleKeys.hint_coupon_code.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
-                                          v, 'coupon code'),
+                                          v, LocaleKeys.coupon_code.tr()),
                                 ),
                                 SizedBox(height: 12),
                                 buildDropdownField<String>(
                                   context,
                                   value: selectedType,
                                   items: ["Flat", "Percentage"],
-                                  label: 'Coupon Type',
+                                  label: LocaleKeys.coupon_type.tr(),
                                   icon: Icons.price_change_rounded,
-                                  hint: 'Select coupon type',
+                                  hint: LocaleKeys.select_coupon_type.tr(),
                                   itemLabel: (item) => item,
                                   onChanged: (val) {
                                     setState(() => selectedType = val);
                                   },
                                   validator: (v) =>
-                                      v == null ? "Please select type" : null,
+                                      v == null ? LocaleKeys.please_select_type.tr() : null,
                                 ),
                                 SizedBox(height: 12),
                                 buildTextField(
                                   context,
                                   controller: _amountController,
-                                  label: 'Amount',
+                                  label: LocaleKeys.coupon_amount.tr(),
                                   icon: Icons.attach_money,
-                                  hint: 'Enter amount (number)',
+                                  hint: LocaleKeys.please_enter_minimum_amount.tr(),
                                   validator: (v) {
                                     if (v == null || v.isEmpty) {
-                                      return "Enter amount";
+                                      return LocaleKeys.enter_amount.tr();
                                     }
                                     if (double.tryParse(v) == null) {
-                                      return "Invalid number";
+                                      return LocaleKeys.invalid_number.tr();
                                     }
                                     return null;
                                   },
@@ -165,12 +167,12 @@ class _CouponFormDialogState extends State<CouponFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _minAmountController,
-                                  label: 'Minimum Order Amount',
+                                  label: LocaleKeys.minimum_order_amount.tr(),
                                   icon: Icons.shopping_cart_checkout,
-                                  hint: 'Minimum amount to apply coupon',
+                                  hint: LocaleKeys.minimum_amount_to_apply_coupon_hint.tr(),
                                   validator: (v) {
                                     if (v == null || v.isEmpty) {
-                                      return "Enter minimum amount";
+                                      return LocaleKeys.please_enter_minimum_amount.tr();
                                     }
                                     return null;
                                   },
@@ -179,15 +181,15 @@ class _CouponFormDialogState extends State<CouponFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _quantityController,
-                                  label: 'Quantity',
+                                  label: LocaleKeys.coupon_quantity.tr(),
                                   icon: Icons.numbers,
-                                  hint: "Total coupon quantity",
+                                  hint: LocaleKeys.total_coupon_quantity_hint.tr(),
                                   validator: (v) {
                                     if (v == null || v.isEmpty) {
-                                      return "Enter quantity";
+                                      return LocaleKeys.enter_quantity.tr();
                                     }
                                     if (int.tryParse(v) == null) {
-                                      return "Invalid number";
+                                      return LocaleKeys.invalid_number.tr();
                                     }
                                     return null;
                                   },
@@ -196,15 +198,15 @@ class _CouponFormDialogState extends State<CouponFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _availableController,
-                                  label: 'Available',
+                                  label: LocaleKeys.coupon_available.tr(),
                                   icon: Icons.numbers,
-                                  hint: "Total available coupons",
+                                  hint: LocaleKeys.total_available_coupons_hint.tr(),
                                   validator: (v) {
                                     if (v == null || v.isEmpty) {
-                                      return "Enter available count";
+                                      return LocaleKeys.enter_available_count_validation.tr();
                                     }
                                     if (int.tryParse(v) == null) {
-                                      return "Invalid number";
+                                      return LocaleKeys.invalid_number.tr();
                                     }
                                     return null;
                                   },
@@ -213,14 +215,14 @@ class _CouponFormDialogState extends State<CouponFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _expiredDateController,
-                                  label: 'Expired Date',
+                                  label: LocaleKeys.expired_date_label.tr(),
                                   icon: Icons.date_range,
                                   readOnly: true,
-                                  hint: 'Pick expiration date',
+                                  hint: LocaleKeys.pick_expiration_date.tr(),
                                   onTap: _pickDate,
                                   validator: (v) {
                                     if (v == null || v.isEmpty) {
-                                      return "Pick expiration date";
+                                      return LocaleKeys.pick_expiration_date.tr();
                                     }
                                     return null;
                                   },
@@ -280,7 +282,7 @@ class _CouponFormDialogState extends State<CouponFormDialog>
           Icon(Icons.local_offer, color: Colors.white, size: 28),
           SizedBox(width: 15),
           Text(
-            isEditMode ? "Edit Coupon" : "New Coupon",
+            isEditMode ? LocaleKeys.edit_coupon.tr() : LocaleKeys.new_coupon.tr(),
             style: TextStyle(
               fontSize: 22,
               color: Colors.white,

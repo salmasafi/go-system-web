@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
@@ -5,6 +6,7 @@ import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
 import 'package:systego/core/widgets/custom_popup_menu.dart';
 import 'package:systego/features/admin/department/model/department_model.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 class AnimatedDepartmentCard extends StatefulWidget {
   final DepartmentModel department;
@@ -138,7 +140,7 @@ class _AnimatedDepartmentCardState extends State<AnimatedDepartmentCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Department Description',
+                    LocaleKeys.department_description.tr(),
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 12),
                       color: AppColors.darkGray.withOpacity(0.6),

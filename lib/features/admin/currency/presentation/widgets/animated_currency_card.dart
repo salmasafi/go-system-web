@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
@@ -5,6 +6,7 @@ import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
 import 'package:systego/core/widgets/custom_popup_menu.dart';
 import 'package:intl/intl.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../model/currency_model.dart';
 
 class AnimatedCurrencyCard extends StatefulWidget {
@@ -134,7 +136,7 @@ class _AnimatedCurrencyCardState extends State<AnimatedCurrencyCard> {
         //   size: ResponsiveUI.fontSize(context, 18),
         // ),
         Text(
-          'Created at: $createdAt',
+          '${LocaleKeys.created_at.tr()}: $createdAt',
           style: TextStyle(
             fontSize: ResponsiveUI.fontSize(context, 13),
             color: AppColors.darkGray.withOpacity(0.6),

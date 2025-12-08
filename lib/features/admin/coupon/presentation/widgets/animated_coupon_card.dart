@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
@@ -5,6 +6,7 @@ import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
 import 'package:systego/core/widgets/custom_popup_menu.dart';
 import 'package:systego/features/admin/coupon/model/coupon_model.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 class AnimatedCouponCard extends StatelessWidget {
   final CouponModel coupon;
@@ -120,29 +122,29 @@ class AnimatedCouponCard extends StatelessWidget {
         _footerRow(
           _footerItem(
             context,
-            'Type',
+            LocaleKeys.coupon_type.tr(),
             coupon.type[0].toUpperCase() +
                 coupon.type.substring(1).toLowerCase(),
           ),
-          _footerItem(context, 'Amount', coupon.amount.toString()),
+          _footerItem(context, LocaleKeys.coupon_amount.tr(), coupon.amount.toString()),
           context,
         ),
         SizedBox(height: ResponsiveUI.spacing(context, 12)),
         _footerRow(
           _footerItem(
             context,
-            'Minimum Amount',
+            LocaleKeys.coupon_minimum_amount.tr(),
             coupon.minimumAmount.toString(),
           ),
-          _footerItem(context, 'Quantity', coupon.quantity.toString()),
+          _footerItem(context, LocaleKeys.coupon_quantity.tr(), coupon.quantity.toString()),
           context,
         ),
 
         SizedBox(height: ResponsiveUI.spacing(context, 12)),
 
         _footerRow(
-          _footerItem(context, 'Available', coupon.available.toString()),
-          _footerItem(context, 'Expiry', coupon.expiredDate.split("T")[0]),
+          _footerItem(context, LocaleKeys.coupon_available.tr(), coupon.available.toString()),
+          _footerItem(context, LocaleKeys.coupon_expiry.tr(), coupon.expiredDate.split("T")[0]),
           context,
         ),
       ],

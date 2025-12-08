@@ -1,8 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/features/admin/currency/cubit/currency_cubit.dart';
 import 'package:systego/features/admin/currency/model/currency_model.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../../warehouses/view/widgets/custom_delete_dialog.dart';
 import 'animated_currency_card.dart';
@@ -44,7 +46,7 @@ class CurrenciesList extends StatelessWidget {
 
   void _showDeleteDialog(BuildContext context, CurrencyModel currency) {
     if (currency.id.isEmpty) {
-      CustomSnackbar.showError(context, 'Invalid Currency ID');
+      CustomSnackbar.showError(context, LocaleKeys.invalid_currency_id.tr());
       return;
     }
 
@@ -52,9 +54,9 @@ class CurrenciesList extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => CustomDeleteDialog(
-        title: 'Delete Currency',
+        title: LocaleKeys.delete_currency.tr(),
         message:
-            'Are you sure you want to delete this currency?\n"${currency.name}"',
+            '${LocaleKeys.delete_currency_message.tr()} \n"${currency.name}"',
         onDelete: () {
           Navigator.pop(dialogContext);
           context.read<CurrencyCubit>().deleteCurrency(currency.id);

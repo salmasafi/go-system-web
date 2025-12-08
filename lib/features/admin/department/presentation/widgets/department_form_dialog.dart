@@ -1,7 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/features/admin/department/cubit/department_cubit.dart';
 import 'package:systego/features/admin/department/model/department_model.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
 import '../../../../../core/utils/validators.dart';
@@ -113,13 +115,13 @@ class _DepartmentFormDialogState extends State<DepartmentFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _nameController,
-                                  label: 'Department Name (En)',
+                                  label: LocaleKeys.department_name_en.tr(),
                                   icon: Icons.business,
-                                  hint: 'Enter department name in english',
+                                  hint: LocaleKeys.hint_department_name_en.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'department name in english',
+                                        LocaleKeys.department_name_en.tr(),
                                       ),
                                 ),
                                 SizedBox(
@@ -129,13 +131,13 @@ class _DepartmentFormDialogState extends State<DepartmentFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _arNameController,
-                                  label: 'Department Name (AR)',
+                                  label: LocaleKeys.department_name_ar.tr(),
                                   icon: Icons.business,
-                                  hint: 'Enter department name in Arabic',
+                                  hint: LocaleKeys.hint_department_name_ar.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'department name in arabic',
+                                        LocaleKeys.department_name_ar.tr(),
                                       ),
                                 ),
                                 SizedBox(
@@ -144,14 +146,14 @@ class _DepartmentFormDialogState extends State<DepartmentFormDialog>
                                buildTextField(
                                   context,
                                   controller: _descriptionController,
-                                  label: 'Department Description (En)',
+                                  label: LocaleKeys.department_description_en.tr(),
                                   icon: Icons.description,
                                   maxLines: 3,
-                                  hint: 'Enter department description in english',
+                                  hint: LocaleKeys.hint_department_description_en.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'department description in english',
+                                        LocaleKeys.department_description_en.tr(),
                                       ),
                                 ),
                                 SizedBox(
@@ -161,14 +163,14 @@ class _DepartmentFormDialogState extends State<DepartmentFormDialog>
                                  buildTextField(
                                   context,
                                   controller: _arDescriptionController,
-                                  label: 'Department Description (AR)',
+                                  label: LocaleKeys.department_description_ar.tr(),
                                   icon: Icons.description,
-                                  hint: 'Enter Department Description in Arabic',
+                                  hint:  LocaleKeys.hint_department_description_ar.tr(),
                                   maxLines: 3,
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'department description in arabic',
+                                         LocaleKeys.department_description_ar.tr(),
                                       ),
                                 ),
                                 
@@ -311,7 +313,7 @@ class DepartmentDialogHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isEditMode ? 'Edit Department' : 'New Department',
+                  isEditMode ?  LocaleKeys.edit_department.tr() :  LocaleKeys.new_department.tr(),
                   style: TextStyle(
                     color: AppColors.white,
                     fontSize: fontSize22,
@@ -319,7 +321,7 @@ class DepartmentDialogHeader extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  isEditMode ? 'Update Department details' : 'Add a new Department',
+                  isEditMode ?  LocaleKeys.update_department_details.tr() : LocaleKeys.add_new_department.tr(),
                   style: TextStyle(
                     color: AppColors.white.withOpacity(0.9),
                     fontSize: fontSize13,
@@ -402,7 +404,7 @@ class DepartmentDialogButtons extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'Cancel',
+                LocaleKeys.cancel.tr(),
                 style: TextStyle(
                   fontSize: fontSize16,
                   fontWeight: FontWeight.w600,
@@ -441,7 +443,7 @@ class DepartmentDialogButtons extends StatelessWidget {
                   SizedBox(width: spacing8),
                   Flexible(
                     child: Text(
-                      isEditMode ? 'Update Department' : 'Create Department',
+                      isEditMode ? LocaleKeys.update_department_button.tr() : LocaleKeys.create_department_button.tr(),
                       style: TextStyle(
                         fontSize: value14,
                         fontWeight: FontWeight.bold,

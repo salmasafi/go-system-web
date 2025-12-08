@@ -1,8 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:systego/features/admin/currency/model/currency_model.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/validators.dart';
 import '../../../../../core/widgets/custom_loading/build_overlay_loading.dart';
@@ -108,13 +110,13 @@ class _CurrencyFormDialogState extends State<CurrencyFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _nameController,
-                                  label: 'Currency Name (EN)',
+                                  label: LocaleKeys.currency_name_en_label.tr(),
                                   icon: Icons.monetization_on_rounded,
-                                  hint: 'Enter currency name (AR)',
+                                  hint: LocaleKeys.hint_currency_name_en.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'currency name in english',
+                                        LocaleKeys.currency_name_en_label.tr(),
                                       ),
                                 ),
                                 SizedBox(
@@ -123,13 +125,13 @@ class _CurrencyFormDialogState extends State<CurrencyFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _arNameController,
-                                  label: 'Currency Name (AR)',
+                                  label: LocaleKeys.currency_name_ar_label.tr(),
                                   icon: Icons.monetization_on_rounded,
-                                  hint: 'Enter currency name in Arabic',
+                                  hint: LocaleKeys.hint_currency_name_ar_dialog.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'currency name in arabic',
+                                        LocaleKeys.currency_name_ar_label.tr(),
                                       ),
                                 ),
                               ],
@@ -267,7 +269,7 @@ class CurrencyDialogHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isEditMode ? 'Edit Currency' : 'New Currency',
+                  isEditMode ? LocaleKeys.edit_currency.tr() : LocaleKeys.new_currency.tr(),
                   style: TextStyle(
                     color: AppColors.white,
                     fontSize: fontSize22,
@@ -275,7 +277,7 @@ class CurrencyDialogHeader extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  isEditMode ? 'Update currency details' : 'Add a new currency',
+                  isEditMode ? LocaleKeys.update_currency_details.tr() : LocaleKeys.add_new_currency.tr(),
                   style: TextStyle(
                     color: AppColors.white.withOpacity(0.9),
                     fontSize: fontSize13,
@@ -359,7 +361,7 @@ class CurrencyDialogButtons extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'Cancel',
+                LocaleKeys.cancel.tr(),
                 style: TextStyle(
                   fontSize: fontSize16,
                   fontWeight: FontWeight.w600,
@@ -398,7 +400,7 @@ class CurrencyDialogButtons extends StatelessWidget {
                   SizedBox(width: spacing8),
                   Flexible(
                     child: Text(
-                      isEditMode ? 'Update Currency' : 'Create Currency',
+                      isEditMode ? LocaleKeys.update_currency_button.tr() : LocaleKeys.create_currency_button.tr(),
                       style: TextStyle(
                         fontSize: value14,
                         fontWeight: FontWeight.bold,

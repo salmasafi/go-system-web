@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
@@ -9,6 +10,7 @@ import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_sh
 import 'package:systego/features/admin/coupon/cubit/coupon_cubit.dart';
 import 'package:systego/features/admin/coupon/presentation/widgets/coupon_form_dialog.dart';
 import 'package:systego/features/admin/coupon/presentation/widgets/coupons_list.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 
 class CouponsScreen extends StatefulWidget {
@@ -68,17 +70,17 @@ class _CouponsScreenState extends State<CouponsScreen> {
 
           if (coupons.isEmpty) {
             String title = coupons.isEmpty
-                ? 'No coupons'
-                : 'No Matching coupons';
+                ? LocaleKeys.no_coupons.tr()
+                : LocaleKeys.no_matching_coupons.tr();
             String message = coupons.isEmpty
-                ? 'You\'re all caught up!'
-                : 'Try adjusting your filters';
+                ? LocaleKeys.cities_all_caught_up.tr()
+                : LocaleKeys.coupons_try_adjusting_filters.tr();
             return CustomEmptyState(
               icon: Icons.monetization_on_rounded,
               title: title,
               message: message,
               onRefresh: _refresh,
-              actionLabel: 'Retry',
+              actionLabel: LocaleKeys.retry.tr(),
               onAction: _refresh,
             );
           } else {
@@ -91,10 +93,10 @@ class _CouponsScreenState extends State<CouponsScreen> {
         } else {
           return CustomEmptyState(
             icon: Icons.monetization_on_rounded,
-            title: 'No coupons',
-            message: 'Pull to refresh or check your connection',
+            title: LocaleKeys.no_coupons.tr(),
+            message: LocaleKeys.empty_connection.tr(),
             onRefresh: _refresh,
-            actionLabel: 'Retry',
+            actionLabel: LocaleKeys.retry.tr(),
             onAction: _refresh,
           );
         }
@@ -107,7 +109,7 @@ class _CouponsScreenState extends State<CouponsScreen> {
     return Scaffold(
       appBar: appBarWithActions(
         context,
-        title: 'Coupons',
+        title: LocaleKeys.coupons_title.tr(),
         showActions: true,
         onPressed: () => showDialog(
           context: context,

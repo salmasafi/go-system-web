@@ -1,8 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/features/admin/department/cubit/department_cubit.dart';
 import 'package:systego/features/admin/department/model/department_model.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../../warehouses/view/widgets/custom_delete_dialog.dart';
 import 'animated_department_card.dart';
@@ -41,7 +43,7 @@ class DepartmentsList extends StatelessWidget {
 
   void _showDeleteDialog(BuildContext context, DepartmentModel department) {
     if (department.id.isEmpty) {
-      CustomSnackbar.showError(context, 'Invalid Department ID');
+      CustomSnackbar.showError(context, LocaleKeys.invalid_department_id.tr());
       return;
     }
 
@@ -49,9 +51,9 @@ class DepartmentsList extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => CustomDeleteDialog(
-        title: 'Delete Department',
+        title: LocaleKeys.delete_department_title.tr(),
         message:
-            'Are you sure you want to delete this Department?\n"${department.name}"',
+            '${LocaleKeys.delete_department_message.tr()} \n"${department.name}"',
         onDelete: () {
           Navigator.pop(dialogContext);
           context.read<DepartmentCubit>().deleteDepartment(department.id);

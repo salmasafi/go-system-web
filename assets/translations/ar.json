@@ -212,5 +212,154 @@
   "select_country_title": "اختيار الدولة",
 
   "add_new_country": "إضافة دولة جديدة",
-  "update_country_details": "تحديث بيانات الدولة"
+  "update_country_details": "تحديث بيانات الدولة",
+
+
+    "coupons_title": "الكوبونات",
+  "no_coupons": "لا توجد كوبونات",
+  "no_matching_coupons": "لا توجد كوبونات مطابقة",
+  "coupons_try_adjusting_filters": "جرّب تعديل عوامل التصفية",
+  "empty_coupons_connection": "اسحب للتحديث أو تحقق من الاتصال",
+
+  "create_coupon": "إنشاء كوبون",
+  "edit_coupon": "تعديل الكوبون",
+  "update_coupon": "تحديث الكوبون",
+  "new_coupon": "كوبون جديد",
+
+  "delete_coupon": "حذف الكوبون",
+  "delete_coupon_message": "هل أنت متأكد أنك تريد حذف هذا الكوبون؟",
+
+  "invalid_coupon_id": "معرّف كوبون غير صالح",
+
+  "success_creating_coupon": "تم إنشاء الكوبون بنجاح",
+  "success_updating_coupon": "تم تحديث الكوبون بنجاح",
+  "success_deleting_coupon": "تم حذف الكوبون بنجاح",
+
+  "error_creating_coupon": "فشل في إنشاء الكوبون",
+  "error_updating_coupon": "فشل في تحديث الكوبون",
+  "error_deleting_coupon": "فشل في حذف الكوبون",
+  "error_fetching_coupons": "فشل في تحميل الكوبونات",
+
+  "coupon_code": "رمز الكوبون",
+  "discount_type": "نوع الخصم",
+  "discount_value": "قيمة الخصم",
+  "minimum_order_value": "الحد الأدنى للطلب",
+  "expiration_date": "تاريخ الانتهاء",
+
+  "hint_coupon_code": "أدخل رمز الكوبون",
+  "hint_discount_value": "أدخل قيمة الخصم",
+  "hint_minimum_order_value": "أدخل الحد الأدنى للطلب",
+
+  "validation_coupon_code": "يرجى إدخال رمز الكوبون",
+  "validation_discount_value": "يرجى إدخال قيمة الخصم",
+  "validation_expiration_date": "يرجى اختيار تاريخ الانتهاء",
+
+  "save_coupon": "حفظ الكوبون",
+  "updating_coupon": "جارٍ تحديث الكوبون...",
+  "creating_coupon": "جارٍ إنشاء الكوبون...",
+
+
+    "type": "النوع",
+  "coupon_amount": "المبلغ",
+  "coupon_minimum_amount": "الحد الأدنى للمبلغ",
+  "coupon_quantity": "الكمية",
+  "coupon_available": "متاح",
+  "coupon_expiry": "تاريخ الانتهاء",
+
+  "coupon_type": "نوع الكوبون",
+
+
+   "select_coupon_type": "اختر نوع الكوبون",
+  "enter_minimum_order_amount": "أدخل الحد الأدنى لمبلغ الطلب",
+  "enter_total_coupon_quantity": "أدخل إجمالي كمية الكوبونات",
+  "enter_total_available_coupons": "أدخل إجمالي الكوبونات المتاحة",
+  "pick_expiration_date": "اختر تاريخ الانتهاء",
+  "please_enter_minimum_amount": "يرجى إدخال الحد الأدنى للمبلغ",
+  "please_enter_quantity": "يرجى إدخال الكمية",
+  "please_enter_available_count": "يرجى إدخال عدد الكوبونات المتاحة",
+  "invalid_number": "رقم غير صالح",
+
+    "please_select_type": "يرجى اختيار النوع",
+
+      "enter_amount": "أدخل المبلغ",
+
+      "minimum_order_amount": "الحد الأدنى لمبلغ الطلب",
+
+      "minimum_amount_to_apply_coupon": "الحد الأدنى للمبلغ لتطبيق الكوبون",
+
+  "minimum_amount_to_apply_coupon_hint": "الحد الأدنى للمبلغ لتطبيق الكوبون",
+  "enter_quantity": "أدخل الكمية",
+  "total_coupon_quantity_hint": "إجمالي كمية الكوبونات",
+  "enter_available_count": "أدخل عدد الكوبونات المتاحة",
+  "total_available_coupons_hint": "إجمالي الكوبونات المتاحة",
+  "expired_date_label": "تاريخ الانتهاء",
+  "pick_expiration_date_hint": "اختر تاريخ الانتهاء",
+  "pick_expiration_date_validation": "يرجى اختيار تاريخ الانتهاء",
+  "invalid_available_number": "رقم غير صالح",
+  "enter_available_count_validation": "يرجى إدخال عدد الكوبونات المتاحة",
+
+   "currencies_title": "العملات",
+  "no_currencies": "لا توجد عملات",
+  "no_matching_currencies": "لا توجد عملات مطابقة",
+
+  "created_at": "تاريخ الإنشاء",
+
+  "delete_currency": "حذف العملة",
+  "delete_currency_message": "هل أنت متأكد أنك تريد حذف هذه العملة؟",
+  "invalid_currency_id": "معرّف العملة غير صالح",
+
+
+    "currency_name_en_label": "اسم العملة (بالإنجليزية)",
+  "currency_name_ar_label": "اسم العملة (بالعربية)",
+  "hint_currency_name_en": "أدخل اسم العملة بالإنجليزية",
+  "hint_currency_name_ar_dialog": "أدخل اسم العملة بالعربية",
+  
+  "edit_currency": "تعديل العملة",
+  "new_currency": "عملة جديدة",
+  "update_currency_details": "تحديث بيانات العملة",
+  "add_new_currency": "إضافة عملة جديدة",
+  
+  "update_currency_button": "تحديث العملة",
+  "create_currency_button": "إنشاء العملة",
+
+  "validation_currency_name_en": "يرجى إدخال اسم العملة بالإنجليزية",
+  "validation_currency_name_ar": "يرجى إدخال اسم العملة بالعربية",
+
+
+  "departments_title": "الأقسام",
+  "no_departments": "لا توجد أقسام",
+  "no_matching_departments": "لا توجد أقسام مطابقة",
+
+  "department_description": "وصف القسم",
+
+
+    "department_name_en": "اسم القسم (بالإنجليزية)",
+  "department_name_ar": "اسم القسم (بالعربية)",
+  "hint_department_name_en": "أدخل اسم القسم بالإنجليزية",
+  "hint_department_name_ar": "أدخل اسم القسم بالعربية",
+  
+  "department_description_en": "وصف القسم (بالإنجليزية)",
+  "department_description_ar": "وصف القسم (بالعربية)",
+  "hint_department_description_en": "أدخل وصف القسم بالإنجليزية",
+  "hint_department_description_ar": "أدخل وصف القسم بالعربية",
+  
+  "edit_department": "تعديل القسم",
+  "new_department": "قسم جديد",
+  "update_department_details": "تحديث بيانات القسم",
+  "add_new_department": "إضافة قسم جديد",
+  
+  "update_department_button": "تحديث القسم",
+  "create_department_button": "إنشاء القسم",
+
+  "validation_department_name_en": "يرجى إدخال اسم القسم بالإنجليزية",
+  "validation_department_name_ar": "يرجى إدخال اسم القسم بالعربية",
+  "validation_department_description_en": "يرجى إدخال وصف القسم بالإنجليزية",
+  "validation_department_description_ar": "يرجى إدخال وصف القسم بالعربية",
+
+    "invalid_department_id": "معرّف القسم غير صالح",
+  "delete_department_title": "حذف القسم",
+  "delete_department_message": "هل أنت متأكد أنك تريد حذف هذا القسم؟"
+
+
+
 }
