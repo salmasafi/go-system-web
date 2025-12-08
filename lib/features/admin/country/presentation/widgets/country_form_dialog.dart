@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
 import '../../../../../core/utils/validators.dart';
@@ -268,7 +270,7 @@ class CountryDialogHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isEditMode ? 'Edit Country' : 'New Country',
+                  isEditMode ? LocaleKeys.edit_country.tr() : LocaleKeys.new_country.tr(),
                   style: TextStyle(
                     color: AppColors.white,
                     fontSize: fontSize22,
@@ -276,7 +278,7 @@ class CountryDialogHeader extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  isEditMode ? 'Update Country details' : 'Add a new Country',
+                  isEditMode ? LocaleKeys.update_country_details.tr() : LocaleKeys.add_new_country.tr(),
                   style: TextStyle(
                     color: AppColors.white.withOpacity(0.9),
                     fontSize: fontSize13,
@@ -360,7 +362,7 @@ class CountryDialogButtons extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'Cancel',
+                LocaleKeys.cancel.tr(),
                 style: TextStyle(
                   fontSize: fontSize16,
                   fontWeight: FontWeight.w600,
@@ -399,7 +401,7 @@ class CountryDialogButtons extends StatelessWidget {
                   SizedBox(width: spacing8),
                   Flexible(
                     child: Text(
-                      isEditMode ? 'Update Country' : 'Create Country',
+                      isEditMode ? LocaleKeys.update_country.tr() : LocaleKeys.create_country.tr(),
                       style: TextStyle(
                         fontSize: value14,
                         fontWeight: FontWeight.bold,

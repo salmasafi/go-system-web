@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/features/admin/country/model/country_model.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
 import '../../../../../core/utils/validators.dart';
@@ -162,13 +164,13 @@ class _CityFormDialogState extends State<CityFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _nameController,
-                                  label: 'City Name (EN)',
+                                  label: LocaleKeys.city_name_en.tr(),
                                   icon: Icons.location_city_rounded,
-                                  hint: 'Enter city name in English',
+                                  hint: LocaleKeys.hint_city_name_en.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'city name in english',
+                                        LocaleKeys.city_name_en.tr(),
                                       ),
                                 ),
                                 SizedBox(
@@ -177,13 +179,13 @@ class _CityFormDialogState extends State<CityFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _arNameController,
-                                  label: 'City Name (AR)',
+                                  label: LocaleKeys.city_name_ar.tr(),
                                   icon: Icons.location_city_rounded,
-                                  hint: 'Enter city name in Arabic',
+                                  hint: LocaleKeys.hint_city_name_ar.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'city name in arabic',
+                                        LocaleKeys.city_name_ar.tr(),
                                       ),
                                 ),
                                 SizedBox(
@@ -194,9 +196,9 @@ class _CityFormDialogState extends State<CityFormDialog>
                                   context,
                                   value: selectedCountry,
                                   items: countries,
-                                  label: 'Country',
+                                  label: LocaleKeys.country.tr(),
                                   icon: Icons.public_rounded,
-                                  hint: 'Select a country',
+                                  hint: LocaleKeys.hint_select_country.tr(),
                                   onChanged: (value) {
                                     setState(() {
                                       selectedCountry = value;
@@ -205,7 +207,7 @@ class _CityFormDialogState extends State<CityFormDialog>
                                   itemLabel: (country) => country.name,
                                   validator: (value) {
                                     if (value == null) {
-                                      return 'Please select a country';
+                                      return LocaleKeys.validation_select_country.tr();
                                     }
                                     return null;
                                   },
@@ -217,13 +219,13 @@ class _CityFormDialogState extends State<CityFormDialog>
                                   context,
                                   controller: _shipingCostController,
                                   keyboardType: TextInputType.number,
-                                  label: 'Shiping cost',
+                                  label: LocaleKeys.shipping_cost.tr(),
                                   icon: Icons.local_shipping,
-                                  hint: 'Enter shiping cost',
+                                  hint: LocaleKeys.hint_shipping_cost.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'Shiping cost',
+                                        LocaleKeys.shipping_cost.tr(),
                                       ),
                                 ),
                               ],
@@ -365,7 +367,7 @@ class CityDialogHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isEditMode ? 'Edit City' : 'New City',
+                  isEditMode ? LocaleKeys.edit_city.tr() : LocaleKeys.new_city.tr(),
                   style: TextStyle(
                     color: AppColors.white,
                     fontSize: fontSize22,
@@ -373,7 +375,7 @@ class CityDialogHeader extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  isEditMode ? 'Update City details' : 'Add a new City',
+                  isEditMode ? LocaleKeys.city_dialog_update_city_details.tr() : LocaleKeys.city_dialog_add_new_city.tr(),
                   style: TextStyle(
                     color: AppColors.white.withOpacity(0.9),
                     fontSize: fontSize13,
@@ -456,7 +458,7 @@ class CityDialogButtons extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'Cancel',
+                LocaleKeys.cancel.tr(),
                 style: TextStyle(
                   fontSize: fontSize16,
                   fontWeight: FontWeight.w600,
@@ -495,7 +497,7 @@ class CityDialogButtons extends StatelessWidget {
                   SizedBox(width: spacing8),
                   Flexible(
                     child: Text(
-                      isEditMode ? 'Update City' : 'Create City',
+                      isEditMode ? LocaleKeys.update_city.tr() : LocaleKeys.create_city.tr(),
                       style: TextStyle(
                         fontSize: value14,
                         fontWeight: FontWeight.bold,

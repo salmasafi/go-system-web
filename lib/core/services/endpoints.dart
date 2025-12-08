@@ -140,5 +140,6 @@ class EndPoint {
   static String addVariation = '/api/admin/variation';
   static String updateVariation(String id) => '/api/admin/variation/$id';
   static String deleteVariation(String id) => '/api/admin/variation/$id';
+  static String deleteOption(String id) => '/api/admin/variation/option/$id';
 
 }

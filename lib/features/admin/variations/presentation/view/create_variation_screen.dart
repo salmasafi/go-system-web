@@ -19,10 +19,8 @@ class _CreateVariationScreenState extends State<CreateVariationScreen> {
   final _nameEnController = TextEditingController();
   final _nameArController = TextEditingController();
 
-  // Options list
   List<Map<String, dynamic>> _options = [];
 
-  // Add new empty option
   void _addOption() {
     setState(() {
       _options.add({"name": "", "status": true});

@@ -69,3 +69,16 @@ final class DeleteVariationError extends VariationState {
   final String error;
   DeleteVariationError(this.error);
 }
+
+
+final class DeleteOptionLoading extends VariationState {}
+
+final class DeleteOptionSuccess extends VariationState {
+  final String message;
+  DeleteOptionSuccess(this.message);
+}
+
+final class DeleteOptionError extends VariationState {
+  final String error;
+  DeleteOptionError(this.error);
+}

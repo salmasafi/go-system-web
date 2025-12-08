@@ -94,38 +94,7 @@ class VariationCubit extends Cubit<VariationState> {
     }
   }
 
-  // Update variation
-  // Future<void> updateVariation({
-  //   required String variationId,
-  //   required String name,
-  //   required String arName,
-  //   required List<Map<String, dynamic>> options,
-  // }) async {
-  //   emit(UpdateVariationLoading());
-  //   try {
-  //     final data = {
-  //       "name": name,
-  //       "ar_name": arName,
-  //       "options": options,
-  //     };
-
-  //     final response = await DioHelper.putData(
-  //       url: EndPoint.updateVariation(variationId),
-  //       data: data,
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       emit(UpdateVariationSuccess("Variation updated successfully"));
-  //     } else {
-  //       final errorMessage = ErrorHandler.handleError(response);
-  //       emit(UpdateVariationError(errorMessage));
-  //     }
-  //   } catch (e) {
-  //     final errorMessage = ErrorHandler.handleError(e);
-  //     emit(UpdateVariationError(errorMessage));
-  //   }
-  // }
-
+ 
 
   Future<void> updateVariation({
   required String variationId,
@@ -137,7 +106,7 @@ class VariationCubit extends Cubit<VariationState> {
   try {
     final data = {
       "name": name,
-      "ar_name": arName, // Changed from "arName" to "ar_name" to match backend
+      "ar_name": arName,
       "options": options,
     };
 
@@ -147,8 +116,6 @@ class VariationCubit extends Cubit<VariationState> {
     );
 
     if (response.statusCode == 200) {
-      // You might want to refetch variations here
-      // await getVariations(); // Uncomment if you want to refresh the list
       emit(UpdateVariationSuccess("Variation updated successfully"));
     } else {
       final errorMessage = ErrorHandler.handleError(response);
@@ -160,7 +127,29 @@ class VariationCubit extends Cubit<VariationState> {
   }
 }
 
-  // Delete variation
+Future<void> deleteOption(String optionId) async {
+
+    emit(DeleteOptionLoading());
+    try {
+      final response = await DioHelper.deleteData(
+        url: EndPoint.deleteOption(optionId),
+      );
+
+      
+
+      if (response.statusCode == 200) {
+        allVariations.removeWhere((v) => v.id == optionId);
+        emit(DeleteOptionSuccess("Option deleted successfully"));
+      } else {
+        final errorMessage = ErrorHandler.handleError(response);
+        emit(DeleteOptionError(errorMessage));
+      }
+    } catch (e) {
+      final errorMessage = ErrorHandler.handleError(e);
+      emit(DeleteOptionError(errorMessage));
+    }
+  }
+
   Future<void> deleteVariation(String variationId) async {
     emit(DeleteVariationLoading());
     try {

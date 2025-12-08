@@ -24,6 +24,7 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
   late final TextEditingController _nameArController;
 
   List<VariationOption> _options = [];
+  List<String> _optionsToDelete = [];
 
   @override
   void initState() {
@@ -44,7 +45,7 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
     setState(() {
       _options.add(
         VariationOption(
-          id: '', // will be generated on backend
+          id: '',
           variationId: widget.variation.id,
           name: '',
           status: true,
@@ -56,8 +57,12 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
     });
   }
 
-  void _removeOption(int index) {
+  void _removeOption(int index, String optionId) {
     setState(() {
+      if (optionId.isNotEmpty) {
+        _optionsToDelete.add(optionId);
+      }
+
       _options.removeAt(index);
     });
   }
@@ -74,24 +79,21 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
     );
   }
 
-
-
   void _toggleOptionStatus(int index, bool value) {
-  setState(() {
-    _options[index] = VariationOption(
-      id: _options[index].id,
-      variationId: _options[index].variationId,
-      name: _options[index].name,
-      status: value,
-      createdAt: _options[index].createdAt,
-      updatedAt: _options[index].updatedAt,
-      version: _options[index].version,
-    );
-  });
-}
+    setState(() {
+      _options[index] = VariationOption(
+        id: _options[index].id,
+        variationId: _options[index].variationId,
+        name: _options[index].name,
+        status: value,
+        createdAt: _options[index].createdAt,
+        updatedAt: _options[index].updatedAt,
+        version: _options[index].version,
+      );
+    });
+  }
 
-
-  void _submitUpdate() {
+  void _submitUpdate() async {
     if (_nameEnController.text.trim().isEmpty) {
       CustomSnackbar.showWarning(context, 'Please enter Variation name (EN)');
       return;
@@ -107,12 +109,18 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
       return map;
     }).toList();
 
-    context.read<VariationCubit>().updateVariation(
+    for (final id in _optionsToDelete) {
+      await context.read<VariationCubit>().deleteOption(id);
+    }
+
+    await context.read<VariationCubit>().updateVariation(
       variationId: widget.variation.id,
       name: _nameEnController.text.trim(),
       arName: _nameArController.text.trim(),
       options: optionsData,
     );
+
+    
   }
 
   Widget _buildTextField({
@@ -160,7 +168,7 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
         }
       },
       builder: (context, state) {
-        final isLoading = state is UpdateVariationLoading;
+        final isLoading = state is UpdateVariationLoading || state is DeleteOptionLoading;
 
         return Container(
           constraints: BoxConstraints(maxWidth: maxWidth),
@@ -179,114 +187,156 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
               top: Radius.circular(ResponsiveUI.borderRadius(context, 24)),
             ),
             child: SafeArea(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: ResponsiveUI.value(context, 40),
-                        height: ResponsiveUI.value(context, 4),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(
-                            ResponsiveUI.borderRadius(context, 2),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                    Text(
-                      'Edit Variation',
-                      style: TextStyle(
-                        fontSize: ResponsiveUI.fontSize(context, 20),
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                    _buildTextField(
-                      controller: _nameEnController,
-                      title: 'Variation Name (EN)',
-                      hint: 'Enter Variation name in english',
-                    ),
-                    SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                    _buildTextField(
-                      controller: _nameArController,
-                      title: 'Variation Name (Ar)',
-                      hint: 'Enter Variation name in arabic',
-                    ),
-                    SizedBox(height: ResponsiveUI.spacing(context, 20)),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              bottom: false,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(
+                    context,
+                  ).viewInsets.bottom,
+                ),
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(
-                          'Options',
-                          style: TextStyle(
-                            fontSize: ResponsiveUI.fontSize(context, 16),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: _addOption,
-                          child: const Text(
-                            'Add Option',
-                            style: TextStyle(color: AppColors.primaryBlue),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const CustomGradientDivider(),
-                    SizedBox(height: ResponsiveUI.spacing(context, 8)),
-                    ..._options.asMap().entries.map((entry) {
-                      final index = entry.key;
-                      final option = entry.value;
-                      return Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: ResponsiveUI.spacing(context, 8),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: CustomTextField(
-                                onChanged: (v) => _updateOptionName(index, v),
-                                controller: TextEditingController(
-                                  text: option.name,
-                                ),
-                                hintText: 'Option name',
-                                hasBoxDecoration: false,
-                                hasBorder: true,
+                        Center(
+                          child: Container(
+                            width: ResponsiveUI.value(context, 40),
+                            height: ResponsiveUI.value(context, 4),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(
+                                ResponsiveUI.borderRadius(context, 2),
                               ),
                             ),
-
-                            const SizedBox(width: 8),
-                            Checkbox(
-                              activeColor: AppColors.primaryBlue,
-                              value: option.status,
-                              onChanged: (v) =>
-                                  _toggleOptionStatus(index, v ?? true),
+                          ),
+                        ),
+                        SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                        Text(
+                          'Edit Variation',
+                          style: TextStyle(
+                            fontSize: ResponsiveUI.fontSize(context, 20),
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                        _buildTextField(
+                          controller: _nameEnController,
+                          title: 'Variation Name (EN)',
+                          hint: 'Enter Variation name in english',
+                        ),
+                        SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                        _buildTextField(
+                          controller: _nameArController,
+                          title: 'Variation Name (Ar)',
+                          hint: 'Enter Variation name in arabic',
+                        ),
+                        SizedBox(height: ResponsiveUI.spacing(context, 20)),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Options',
+                              style: TextStyle(
+                                fontSize: ResponsiveUI.fontSize(context, 16),
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                            // IconButton(
-                            //   icon: const Icon(Icons.delete, color: Colors.red),
-                            //   onPressed: () => _removeOption(index),
-                            // ),
+                            TextButton(
+                              onPressed: _addOption,
+                              child: const Text(
+                                'Add Option',
+                                style: TextStyle(color: AppColors.primaryBlue),
+                              ),
+                            ),
                           ],
                         ),
-                      );
-                    }).toList(),
-                    SizedBox(height: ResponsiveUI.spacing(context, 24)),
-                    SizedBox(
-                      width: double.infinity,
-                      height: ResponsiveUI.value(context, 48),
-                      child: CustomElevatedButton(
-                        onPressed: isLoading ? null : _submitUpdate,
-                        text: isLoading ? 'Updating...' : 'Update Variation',
-                        isLoading: isLoading,
-                      ),
+                        const CustomGradientDivider(),
+                        SizedBox(height: ResponsiveUI.spacing(context, 8)),
+                        ..._options.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final option = entry.value;
+                          return Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: ResponsiveUI.spacing(context, 8),
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: CustomTextField(
+                                    onChanged: (v) =>
+                                        _updateOptionName(index, v),
+                                    controller: TextEditingController(
+                                      text: option.name,
+                                    ),
+                                    hintText: 'Option name',
+                                    hasBoxDecoration: false,
+                                    hasBorder: true,
+                                  ),
+                                ),
+
+                                const SizedBox(width: 8),
+                                Checkbox(
+                                  activeColor: AppColors.primaryBlue,
+                                  value: option.status,
+                                  onChanged: (v) =>
+                                      _toggleOptionStatus(index, v ?? true),
+                                ),
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () async {
+                                    final confirmed = await showDialog<bool>(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: const Text('Delete Option'),
+                                        content: const Text(
+                                          'Are you sure you want to delete this option?',
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context, false),
+                                            child: const Text('Cancel'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context, true),
+                                            child: const Text('Delete'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+
+                                    if (confirmed == true) {
+                                      _removeOption(index, option.id);
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                        SizedBox(height: ResponsiveUI.spacing(context, 24)),
+                        SizedBox(
+                          width: double.infinity,
+                          height: ResponsiveUI.value(context, 48),
+                          child: CustomElevatedButton(
+                            onPressed: isLoading ? null : _submitUpdate,
+                            text: isLoading
+                                ? 'Updating...'
+                                : 'Update Variation',
+                            isLoading: isLoading,
+                          ),
+                        ),
+                        SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                      ],
                     ),
-                    SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                  ],
+                  ),
                 ),
               ),
             ),

@@ -1,7 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../../warehouses/view/widgets/custom_delete_dialog.dart';
 import '../../cubit/country_cubit.dart';
@@ -43,7 +45,7 @@ class CountriesList extends StatelessWidget {
 
   void _showDeleteDialog(BuildContext context, CountryModel country) {
     if (country.id.isEmpty) {
-      CustomSnackbar.showError(context, 'Invalid Country ID');
+      CustomSnackbar.showError(context, LocaleKeys.invalid_country_id.tr());
       return;
     }
 
@@ -51,9 +53,9 @@ class CountriesList extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => CustomDeleteDialog(
-        title: 'Delete Country',
+        title: LocaleKeys.delete_country.tr(),
         message:
-            'Are you sure you want to delete this Country?\n"${country.name}"',
+            '${LocaleKeys.delete_country_message.tr()} \n"${country.name}"',
         onDelete: () {
           Navigator.pop(dialogContext);
           context.read<CountryCubit>().deleteCountry(country.id);
@@ -64,7 +66,7 @@ class CountriesList extends StatelessWidget {
 
   void _showSelectDialog(BuildContext context, CountryModel country) {
     if (country.id.isEmpty) {
-      CustomSnackbar.showError(context, 'Invalid Country ID');
+      CustomSnackbar.showError(context, LocaleKeys.invalid_country_id.tr());
       return;
     }
 
@@ -72,12 +74,12 @@ class CountriesList extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => CustomDeleteDialog(
-        title: 'Select Country',
+        title: LocaleKeys.select_country.tr(),
         message:
-            'Are you sure you want to select this country as the default?\n"${country.name}"',
+            '${LocaleKeys.select_country_message.tr()} \n"${country.name}"',
         icon: Icons.check_circle_rounded,
         iconColor: AppColors.primaryBlue,
-        deleteText: 'Select',
+        deleteText: LocaleKeys.select.tr(),
         onDelete: () {
           Navigator.pop(dialogContext);
           context.read<CountryCubit>().selectCountry(country.id, country.name);
