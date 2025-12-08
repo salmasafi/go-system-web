@@ -1,7 +1,5 @@
 class UpdateBrandModel {
-  UpdateBrandModel({
-      this.success, 
-      this.data,});
+  UpdateBrandModel({this.success, this.data});
 
   UpdateBrandModel.fromJson(dynamic json) {
     success = json['success'];
@@ -18,13 +16,10 @@ class UpdateBrandModel {
     }
     return map;
   }
-
 }
 
 class Data {
-  Data({
-      this.message, 
-      this.brand,});
+  Data({this.message, this.brand});
 
   Data.fromJson(dynamic json) {
     message = json['message'];
@@ -41,21 +36,23 @@ class Data {
     }
     return map;
   }
-
 }
 
 class Brand {
   Brand({
-      this.id, 
-      this.name, 
-      this.logo, 
-      this.createdAt, 
-      this.updatedAt, 
-      this.v,});
+    this.id,
+    this.name,
+    this.arName,
+    this.logo,
+    this.createdAt,
+    this.updatedAt,
+    this.v,
+  });
 
   Brand.fromJson(dynamic json) {
     id = json['_id'];
     name = json['name'];
+    name = json['ar_name'];
     logo = json['logo'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
@@ -63,6 +60,7 @@ class Brand {
   }
   String? id;
   String? name;
+  String? arName;
   String? logo;
   String? createdAt;
   String? updatedAt;
@@ -72,11 +70,11 @@ class Brand {
     final map = <String, dynamic>{};
     map['_id'] = id;
     map['name'] = name;
+    map['ar_name'] = arName;
     map['logo'] = logo;
     map['createdAt'] = createdAt;
     map['updatedAt'] = updatedAt;
     map['__v'] = v;
     return map;
   }
-
 }

@@ -152,17 +152,19 @@ class _MainAppState extends State<MainApp> {
             }),
           ),
           dropdownMenuTheme: DropdownMenuThemeData(menuStyle: MenuStyle()),
-          dialogTheme: DialogThemeData(backgroundColor: Colors.white),
+          dialogTheme: DialogThemeData(backgroundColor: AppColors.white),
           textButtonTheme: TextButtonThemeData(
             style: ButtonStyle(
+              foregroundColor: WidgetStatePropertyAll(AppColors.mediumBlue700,),
               textStyle: WidgetStateProperty.all<TextStyle>(
                 const TextStyle(
                   fontWeight: FontWeight.w800,
-                  color: AppColors.black,
+                  color: AppColors.darkGray,
                 ),
               ),
             ),
           ),
+        
           textSelectionTheme: const TextSelectionThemeData(
             cursorColor: AppColors.primaryBlue, // 🔵 لون المؤشر
             selectionColor: AppColors.primaryBlue, // لون التحديد (عند السحب)

@@ -2,11 +2,12 @@
 
 // ignore_for_file: constant_identifier_names
 
-abstract class  LocaleKeys {
+abstract class LocaleKeys {
   static const app_name = 'app_name';
   static const bank_accounts_title = 'bank_accounts_title';
   static const bank_accounts_no_accounts = 'bank_accounts_no_accounts';
-  static const bank_accounts_no_accounts_message = 'bank_accounts_no_accounts_message';
+  static const bank_accounts_no_accounts_message =
+      'bank_accounts_no_accounts_message';
   static const retry = 'retry';
   static const empty_message_connection = 'empty_message_connection';
   static const bank_accounts_total_balance = 'bank_accounts_total_balance';
@@ -55,12 +56,15 @@ abstract class  LocaleKeys {
   static const new_brand = 'new_brand';
   static const brand_name = 'brand_name';
   static const enter_brand_name = 'enter_brand_name';
+  static const brand_ar_name = 'ar_brand_name';
+  static const enter_brand_ar_name = 'enter_brand_ar_name';
   static const brand_logo = 'brand_logo';
   static const tap_to_upload = 'tap_to_upload';
   static const remove = 'remove';
   static const save_brand = 'save_brand';
   static const saving_brand = 'saving_brand';
   static const please_enter_brand_name = 'please_enter_brand_name';
+  static const please_enter_brand_ar_name = 'please_enter_brand_ar_name';
   static const please_select_logo = 'please_select_logo';
   static const edit_brand = 'edit_brand';
   static const update_brand = 'update_brand';
@@ -106,9 +110,9 @@ abstract class  LocaleKeys {
   static const none = 'none';
   static const new_image_selected = 'new_image_selected';
   static const update_category_button = 'update_category_button';
-  static const please_enter_category_name_en_ar = 'please_enter_category_name_en_ar';
+  static const please_enter_category_name_en_ar =
+      'please_enter_category_name_en_ar';
   static const no_image = 'no_image';
   static const products = 'products';
   static const parent = 'parent';
-
 }

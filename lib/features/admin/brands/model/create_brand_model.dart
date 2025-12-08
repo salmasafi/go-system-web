@@ -1,7 +1,5 @@
 class CreateBrandModel {
-  CreateBrandModel({
-      this.success, 
-      this.data,});
+  CreateBrandModel({this.success, this.data});
 
   CreateBrandModel.fromJson(dynamic json) {
     success = json['success'];
@@ -18,13 +16,10 @@ class CreateBrandModel {
     }
     return map;
   }
-
 }
 
 class Data {
-  Data({
-      this.message, 
-      this.brand,});
+  Data({this.message, this.brand});
 
   Data.fromJson(dynamic json) {
     message = json['message'];
@@ -41,20 +36,22 @@ class Data {
     }
     return map;
   }
-
 }
 
 class Brand {
   Brand({
-      this.name, 
-      this.logo, 
-      this.id, 
-      this.createdAt, 
-      this.updatedAt, 
-      this.v,});
+    this.name,
+    this.arName,
+    this.logo,
+    this.id,
+    this.createdAt,
+    this.updatedAt,
+    this.v,
+  });
 
   Brand.fromJson(dynamic json) {
     name = json['name'];
+    arName = json['ar_name'];
     logo = json['logo'];
     id = json['_id'];
     createdAt = json['createdAt'];
@@ -62,6 +59,7 @@ class Brand {
     v = json['__v'];
   }
   String? name;
+  String? arName;
   String? logo;
   String? id;
   String? createdAt;
@@ -71,6 +69,7 @@ class Brand {
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['name'] = name;
+    map['ar_name'] = arName;
     map['logo'] = logo;
     map['_id'] = id;
     map['createdAt'] = createdAt;
@@ -78,5 +77,4 @@ class Brand {
     map['__v'] = v;
     return map;
   }
-
 }

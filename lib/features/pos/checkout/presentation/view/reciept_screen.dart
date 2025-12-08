@@ -64,7 +64,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
       appBar: appBarWithActions(context, title: 'Reciept Preview'),
       body: Center(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(20),
+          padding: EdgeInsets.all(20), 
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

@@ -1,7 +1,5 @@
 class GetBrandByIdModel {
-  GetBrandByIdModel({
-      this.success, 
-      this.data,});
+  GetBrandByIdModel({this.success, this.data});
 
   GetBrandByIdModel.fromJson(dynamic json) {
     success = json['success'];
@@ -18,13 +16,10 @@ class GetBrandByIdModel {
     }
     return map;
   }
-
 }
 
 class Data {
-  Data({
-      this.message, 
-      this.brand,});
+  Data({this.message, this.brand});
 
   Data.fromJson(dynamic json) {
     message = json['message'];
@@ -41,21 +36,23 @@ class Data {
     }
     return map;
   }
-
 }
 
 class BrandById {
   BrandById({
-      this.id, 
-      this.name, 
-      this.logo, 
-      this.createdAt, 
-      this.updatedAt, 
-      this.v,});
+    this.id,
+    this.name,
+    this.arName,
+    this.logo,
+    this.createdAt,
+    this.updatedAt,
+    this.v,
+  });
 
   BrandById.fromJson(dynamic json) {
     id = json['_id'];
     name = json['name'];
+    arName = json['ar_name'];
     logo = json['logo'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
@@ -63,6 +60,7 @@ class BrandById {
   }
   String? id;
   String? name;
+  String? arName;
   String? logo;
   String? createdAt;
   String? updatedAt;
@@ -78,5 +76,4 @@ class BrandById {
     map['__v'] = v;
     return map;
   }
-
 }
