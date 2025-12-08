@@ -1,9 +1,11 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
 import 'package:systego/core/widgets/custom_popup_menu.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../model/country_model.dart';
 
 class AnimatedCountryCard extends StatefulWidget {
@@ -129,7 +131,7 @@ class _AnimatedCountryCardState extends State<AnimatedCountryCard> {
           ),
           SizedBox(width: ResponsiveUI.spacing(context, 6)),
           Text(
-            'Selected Country',
+            LocaleKeys.selected_country.tr(),
             style: TextStyle(
               fontSize: ResponsiveUI.fontSize(context, 13),
               color: AppColors.linkBlue,

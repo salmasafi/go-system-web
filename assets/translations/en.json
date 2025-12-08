@@ -124,5 +124,95 @@
 
   "no_image": "No Image",
   "products": "Products",
-  "parent": "Parent"
+  "parent": "Parent",
+
+  "search_by_category_name": "Search by category name",
+
+
+  "no_cities": "No cities",
+  "no_matching_cities": "No matching cities",
+  "all_caught_up": "You're all caught up!",
+  "try_adjusting_filters": "Try adjusting your filters",
+
+  "empty_connection": "Pull to refresh or check your connection",
+
+  "create_city": "Create City",
+  "edit_city": "Edit City",
+  "update_city": "Update City",
+  "new_city": "New City",
+
+  "delete_city": "Delete City",
+  "delete_city_message": "Are you sure you want to delete this city?",
+  "select_city": "Select City",
+  "select_city_message": "Are you sure you want to select this city?",
+  
+  "city": "City",
+  "cities": "Cities",
+
+  "country": "Country",
+  "unknown": "Unknown",
+  "selected_city": "Selected City",
+
+    "invalid_city_id": "Invalid City ID",
+
+
+     "city_dialog_new_city": "New City",
+  "city_dialog_edit_city": "Edit City",
+  "city_dialog_add_new_city": "Add a new City",
+  "city_dialog_update_city_details": "Update City details",
+
+  "city_name_en": "City Name (EN)",
+  "city_name_ar": "City Name (AR)",
+  "shipping_cost": "Shipping Cost",
+
+  "hint_city_name_en": "Enter city name in English",
+  "hint_city_name_ar": "Enter city name in Arabic",
+  "hint_select_country": "Select a country",
+  "hint_shipping_cost": "Enter shipping cost",
+
+  "validation_select_country": "Please select a country",
+
+  "error_creating_city": "Failed to create city",
+  "error_updating_city": "Failed to update city",
+
+
+  "countries_title": "Countries",
+  "no_countries": "No countries",
+  "no_matching_countries": "No Matching countries",
+
+  "create_country": "Create Country",
+  "edit_country": "Edit Country",
+  "update_country": "Update Country",
+  "new_country": "New Country",
+
+  "delete_country": "Delete Country",
+  "delete_country_message": "Are you sure you want to delete this country?",
+  "select_country": "Select Country",
+  "select_country_message": "Are you sure you want to select this country?",
+
+  "country_name_en": "Country Name (EN)",
+  "country_name_ar": "Country Name (AR)",
+  "hint_country_name_en": "Enter country name in English",
+  "hint_country_name_ar": "Enter country name in Arabic",
+
+  "error_creating_country": "Failed to create country",
+  "error_updating_country": "Failed to update country",
+  "error_deleting_country": "Failed to delete country",
+  "error_selecting_country": "Failed to select country",
+  "success_creating_country": "Country created successfully",
+  "success_updating_country": "Country updated successfully",
+  "success_deleting_country": "Country deleted successfully",
+  "success_selecting_country": "Country selected successfully",
+
+  "selected_country": "Selected Country",
+
+
+  "invalid_country_id": "Invalid Country ID",
+  "delete_country_title": "Delete Country",
+  "select_country_title": "Select Country",
+
+  "add_new_country": "Add a new Country",
+  "update_country_details": "Update Country details"
+
+
 }

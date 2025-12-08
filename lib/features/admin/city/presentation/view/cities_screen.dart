@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
@@ -7,6 +8,7 @@ import 'package:systego/core/widgets/app_bar_widgets.dart';
 import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
 import 'package:systego/features/admin/city/presentation/widgets/cities_list.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../cubit/city_cubit.dart';
 import '../../cubit/city_state.dart';
@@ -74,16 +76,16 @@ class _CitiesScreenState extends State<CitiesScreen> {
           final cities = state.cityData.cities;
 
           if (cities.isEmpty) {
-            String title = cities.isEmpty ? 'No cities' : 'No Matching cities';
+            String title = cities.isEmpty ? LocaleKeys.no_cities.tr() : LocaleKeys.no_matching_cities.tr();
             String message = cities.isEmpty
-                ? 'You\'re all caught up!'
-                : 'Try adjusting your filters';
+                ?  LocaleKeys.cities_all_caught_up.tr()
+                : LocaleKeys.try_adjusting_search.tr();
             return CustomEmptyState(
               icon: Icons.monetization_on_rounded,
               title: title,
               message: message,
               onRefresh: _refresh,
-              actionLabel: 'Retry',
+              actionLabel: LocaleKeys.retry.tr(),
               onAction: _refresh,
             );
           } else {
@@ -96,10 +98,10 @@ class _CitiesScreenState extends State<CitiesScreen> {
         } else {
           return CustomEmptyState(
             icon: Icons.monetization_on_rounded,
-            title: 'No cities',
-            message: 'Pull to refresh or check your connection',
+            title: LocaleKeys.no_cities.tr(),
+            message: LocaleKeys.empty_connection.tr(),
             onRefresh: _refresh,
-            actionLabel: 'Retry',
+            actionLabel: LocaleKeys.retry.tr(),
             onAction: _refresh,
           );
         }
@@ -112,7 +114,7 @@ class _CitiesScreenState extends State<CitiesScreen> {
     return Scaffold(
       appBar: appBarWithActions(
         context,
-        title: 'Cities',
+        title: LocaleKeys.cities.tr(),
         showActions: true,
         onPressed: () => showDialog(
           context: context,

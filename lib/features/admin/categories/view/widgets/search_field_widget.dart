@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_textfield/custom_text_field_widget.dart';
 
 class SearchFieldWidget extends StatelessWidget {
@@ -21,7 +23,7 @@ class SearchFieldWidget extends StatelessWidget {
       child: CustomTextField(
         controller: controller,
         labelText: '',
-        hintText: 'Search by category name',
+        hintText: LocaleKeys.search_by_category_name.tr(),
         prefixIcon: Icons.search,
         hasBoxDecoration: false,
         hasBorder: true,

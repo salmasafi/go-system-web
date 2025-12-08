@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../../warehouses/view/widgets/custom_delete_dialog.dart';
 import '../../cubit/city_cubit.dart';
@@ -45,7 +47,7 @@ class CitiesList extends StatelessWidget {
 
   void _showDeleteDialog(BuildContext context, CityModel city) {
     if (city.id.isEmpty) {
-      CustomSnackbar.showError(context, 'Invalid City ID');
+      CustomSnackbar.showError(context, LocaleKeys.invalid_city_id.tr());
       return;
     }
 
@@ -53,8 +55,8 @@ class CitiesList extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => CustomDeleteDialog(
-        title: 'Delete City',
-        message: 'Are you sure you want to delete this city?\n"${city.name}"',
+        title: LocaleKeys.delete_city.tr(),
+        message: '${LocaleKeys.delete_city_message.tr()} \n"${city.name}"',
         onDelete: () {
           Navigator.pop(dialogContext);
           context.read<CityCubit>().deleteCity(city.id);

@@ -1,9 +1,11 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
 import 'package:systego/core/widgets/custom_popup_menu.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../warehouses/view/widgets/custom_stat_chip.dart';
 import '../../model/city_model.dart';
 
@@ -126,7 +128,7 @@ class _AnimatedCityCardState extends State<AnimatedCityCard> {
         Expanded(
           child: CustomStatChip(
             icon: Icons.location_on_rounded,
-            label: 'Country: ${widget.city.country?.name ?? 'Unknown'}',
+            label: '${LocaleKeys.country.tr()}: ${widget.city.country?.name ?? LocaleKeys.unknown.tr()}',
             color: AppColors.linkBlue,
           ),
         ),

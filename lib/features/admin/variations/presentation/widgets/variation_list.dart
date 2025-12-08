@@ -39,14 +39,18 @@ class _VariationsListState extends State<VariationsList> {
     );
   }
 
+
   void _showEditDialog(BuildContext context, VariationModel variation) {
-    showDialog(
-      context: context,
-      builder: (context) => EditVariationBottomSheet(
-        variation: variation,
-      ),
-    );
-  }
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) => EditVariationBottomSheet(
+      variation: variation,
+    ),
+  );
+}
+
 
   void _showDeleteDialog(BuildContext context, VariationModel variation) {
     if (variation.id.isEmpty) {
