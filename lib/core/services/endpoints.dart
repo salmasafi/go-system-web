@@ -142,4 +142,11 @@ class EndPoint {
   static String deleteVariation(String id) => '/api/admin/variation/$id';
   static String deleteOption(String id) => '/api/admin/variation/option/$id';
 
+  /// variation
+  static const String getAllDiscounts = '/api/admin/discount';
+  static String getDiscount(String id) => '/api/admin/discount/$id';
+  static String addDiscount = '/api/admin/discount';
+  static String updateDiscount(String id) => '/api/admin/discount/$id';
+  static String deleteDiscount(String id) => '/api/admin/discount/$id';
+
 }

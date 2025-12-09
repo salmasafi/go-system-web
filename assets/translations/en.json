@@ -355,6 +355,32 @@
 
   "invalid_department_id": "Invalid Department ID",
   "delete_department_title": "Delete Department",
-  "delete_department_message": "Are you sure you want to delete this Department? "
+  "delete_department_message": "Are you sure you want to delete this Department? ",
+
+  "discount_amount": "Discount Amount",
+  "invalid_discount_id": "Invalid Discount ID",
+  "delete_discount": "Delete Discount",
+  "delete_discount_message": "Are you sure you want to delete this discount?",
+  "discount_status": "Discount Status",
+  "discount_name": "Discount Name",
+  "hint_discount_name": "Enter discount name",
+  "select_discount_type": "Select Discount Type",
+  "edit_discount": "Edit Discount",
+  "new_discount": "New Discount",
+  "no_discounts": "No discounts",
+  "discounts_title": "Discounts",
+  "discount_created_successfully": "Discount created successfully",
+  "discount_updated_successfully": "Discount updated successfully",
+  "discount_deleted_successfully": "Discount deleted successfully",
+  "no_matching_discounts": "No Matching Discounts",
+
+  "update_discount": "Update Discount",
+  "create_discount": "Create Discount",
+
+
+"brand_ar_name": "Brand Name (AR)",
+"enter_brand_ar_name": "Enter brand name in arabic",
+"please_enter_brand_ar_name": "Please enter arabic brand name"
+
 
 }

@@ -2,12 +2,11 @@
 
 // ignore_for_file: constant_identifier_names
 
-abstract class LocaleKeys {
+abstract class  LocaleKeys {
   static const app_name = 'app_name';
   static const bank_accounts_title = 'bank_accounts_title';
   static const bank_accounts_no_accounts = 'bank_accounts_no_accounts';
-  static const bank_accounts_no_accounts_message =
-      'bank_accounts_no_accounts_message';
+  static const bank_accounts_no_accounts_message = 'bank_accounts_no_accounts_message';
   static const retry = 'retry';
   static const empty_message_connection = 'empty_message_connection';
   static const bank_accounts_total_balance = 'bank_accounts_total_balance';
@@ -56,15 +55,12 @@ abstract class LocaleKeys {
   static const new_brand = 'new_brand';
   static const brand_name = 'brand_name';
   static const enter_brand_name = 'enter_brand_name';
-  static const brand_ar_name = 'ar_brand_name';
-  static const enter_brand_ar_name = 'enter_brand_ar_name';
   static const brand_logo = 'brand_logo';
   static const tap_to_upload = 'tap_to_upload';
   static const remove = 'remove';
   static const save_brand = 'save_brand';
   static const saving_brand = 'saving_brand';
   static const please_enter_brand_name = 'please_enter_brand_name';
-  static const please_enter_brand_ar_name = 'please_enter_brand_ar_name';
   static const please_select_logo = 'please_select_logo';
   static const edit_brand = 'edit_brand';
   static const update_brand = 'update_brand';
@@ -110,8 +106,7 @@ abstract class LocaleKeys {
   static const none = 'none';
   static const new_image_selected = 'new_image_selected';
   static const update_category_button = 'update_category_button';
-  static const please_enter_category_name_en_ar =
-      'please_enter_category_name_en_ar';
+  static const please_enter_category_name_en_ar = 'please_enter_category_name_en_ar';
   static const no_image = 'no_image';
   static const products = 'products';
   static const parent = 'parent';
@@ -286,5 +281,26 @@ abstract class LocaleKeys {
   static const invalid_department_id = 'invalid_department_id';
   static const delete_department_title = 'delete_department_title';
   static const delete_department_message = 'delete_department_message';
+  static const discount_amount = 'discount_amount';
+  static const invalid_discount_id = 'invalid_discount_id';
+  static const delete_discount = 'delete_discount';
+  static const delete_discount_message = 'delete_discount_message';
+  static const discount_status = 'discount_status';
+  static const discount_name = 'discount_name';
+  static const hint_discount_name = 'hint_discount_name';
+  static const select_discount_type = 'select_discount_type';
+  static const edit_discount = 'edit_discount';
+  static const new_discount = 'new_discount';
+  static const no_discounts = 'no_discounts';
+  static const discounts_title = 'discounts_title';
+  static const discount_created_successfully = 'discount_created_successfully';
+  static const discount_updated_successfully = 'discount_updated_successfully';
+  static const discount_deleted_successfully = 'discount_deleted_successfully';
+  static const no_matching_discounts = 'no_matching_discounts';
+  static const update_discount = 'update_discount';
+  static const create_discount = 'create_discount';
+  static const brand_ar_name = 'brand_ar_name';
+  static const enter_brand_ar_name = 'enter_brand_ar_name';
+  static const please_enter_brand_ar_name = 'please_enter_brand_ar_name';
 
 }
