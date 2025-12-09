@@ -358,7 +358,31 @@
 
     "invalid_department_id": "معرّف القسم غير صالح",
   "delete_department_title": "حذف القسم",
-  "delete_department_message": "هل أنت متأكد أنك تريد حذف هذا القسم؟"
+  "delete_department_message": "هل أنت متأكد أنك تريد حذف هذا القسم؟",
+
+   "discount_amount": "قيمة الخصم",
+  "invalid_discount_id": "معرّف الخصم غير صالح",
+  "delete_discount": "حذف الخصم",
+  "delete_discount_message": "هل أنت متأكد أنك تريد حذف هذا الخصم؟",
+  "discount_status": "حالة الخصم",
+  "discount_name": "اسم الخصم",
+  "hint_discount_name": "أدخل اسم الخصم",
+  "select_discount_type": "اختر نوع الخصم",
+  "edit_discount": "تعديل الخصم",
+  "new_discount": "خصم جديد",
+  "no_discounts": "لا توجد خصومات",
+  "discounts_title": "الخصومات",
+  "discount_created_successfully": "تم إنشاء الخصم بنجاح",
+  "discount_updated_successfully": "تم تحديث الخصم بنجاح",
+  "discount_deleted_successfully": "تم حذف الخصم بنجاح",
+  "no_matching_discounts": "لا توجد خصومات مطابقة",
+
+   "update_discount": "تحديث الخصم",
+  "create_discount": "إنشاء الخصم",
+
+  "brand_ar_name": "اسم الماركة باللغة العربية",
+"enter_brand_ar_name": "أدخل اسم الماركة باللغة العربية",
+"please_enter_brand_ar_name": "يرجى إدخال اسم الماركة باللغة العربية"
 
 
 

@@ -8,37 +8,32 @@ import 'package:systego/core/widgets/custom_loading/build_overlay_loading.dart';
 import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:systego/core/widgets/custom_textfield/build_text_field.dart';
 import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/features/admin/coupon/cubit/coupon_cubit.dart';
-import 'package:systego/features/admin/coupon/model/coupon_model.dart';
+import 'package:systego/features/admin/discount/cubit/discount_cubit.dart';
+import 'package:systego/features/admin/discount/model/discount_model.dart';
 import 'package:systego/generated/locale_keys.g.dart';
 
+class DiscountFormDialog extends StatefulWidget {
+  final DiscountModel? discount;
 
-class CouponFormDialog extends StatefulWidget {
-  final CouponModel? coupon;
-
-  const CouponFormDialog({super.key, this.coupon});
+  const DiscountFormDialog({super.key, this.discount});
 
   @override
-  State<CouponFormDialog> createState() => _CouponFormDialogState();
+  State<DiscountFormDialog> createState() => _DiscountFormDialogState();
 }
 
-class _CouponFormDialogState extends State<CouponFormDialog>
+class _DiscountFormDialogState extends State<DiscountFormDialog>
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
 
-  final _codeController = TextEditingController();
+  final _nameController = TextEditingController();
   final _amountController = TextEditingController();
-  final _minAmountController = TextEditingController();
-  final _quantityController = TextEditingController();
-  final _expiredDateController = TextEditingController();
-  final _availableController = TextEditingController();
-
   String? selectedType;
 
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
 
-  bool get isEditMode => widget.coupon != null;
+  bool get isEditMode => widget.discount != null;
+  bool status = true;
 
   @override
   void initState() {
@@ -49,15 +44,11 @@ class _CouponFormDialogState extends State<CouponFormDialog>
 
   void _initializeControllers() {
     if (isEditMode) {
-      _codeController.text = widget.coupon!.couponCode;
-      selectedType = widget.coupon!.type[0].toUpperCase() +
-          widget.coupon!.type.substring(1).toLowerCase();
-      _amountController.text = widget.coupon!.amount.toString();
-      _minAmountController.text = widget.coupon!.minimumAmount.toString();
-      _quantityController.text = widget.coupon!.quantity.toString();
-      _expiredDateController.text =
-          widget.coupon!.expiredDate.split("T").first;
-      _availableController.text = widget.coupon!.available.toString();
+      _nameController.text = widget.discount!.name;
+      selectedType = widget.discount!.type[0].toUpperCase() +
+          widget.discount!.type.substring(1).toLowerCase();
+      _amountController.text = widget.discount!.amount.toString();
+      status = widget.discount!.status;
     }
   }
 
@@ -73,13 +64,9 @@ class _CouponFormDialogState extends State<CouponFormDialog>
 
   @override
   void dispose() {
-    _codeController.dispose();
+    _nameController.dispose();
     _amountController.dispose();
-    _minAmountController.dispose();
-    _quantityController.dispose();
-    _expiredDateController.dispose();
     _animationController.dispose();
-    _availableController.dispose();
     super.dispose();
   }
 
@@ -94,16 +81,16 @@ class _CouponFormDialogState extends State<CouponFormDialog>
       child: Dialog(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        child: BlocConsumer<CouponsCubit, CouponsState>(
+        child: BlocConsumer<DiscountsCubit, DiscountsState>(
           listener: _handleStateChanges,
           builder: (context, state) {
             final isLoading =
-                state is CreateCouponLoading || state is UpdateCouponLoading;
+                state is CreateDiscountLoading || state is UpdateDiscountLoading;
 
             return Container(
               constraints: BoxConstraints(
                 maxWidth: maxWidth,
-                maxHeight: ResponsiveUI.screenHeight(context) * 0.85,
+                maxHeight: ResponsiveUI.screenHeight(context) * 0.5,
               ),
               decoration: _buildDecoration(context),
               child: Column(
@@ -122,22 +109,24 @@ class _CouponFormDialogState extends State<CouponFormDialog>
                               children: [
                                 buildTextField(
                                   context,
-                                  controller: _codeController,
-                                  label: LocaleKeys.coupon_code.tr(),
+                                  controller: _nameController,
+                                  label: LocaleKeys.discount_name.tr(),
                                   icon: Icons.local_offer,
-                                  hint: LocaleKeys.hint_coupon_code.tr(),
+                                  hint: LocaleKeys.hint_discount_name.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
-                                          v, LocaleKeys.coupon_code.tr()),
+                                          v, LocaleKeys.discount_name.tr()),
                                 ),
-                                SizedBox(height: 12),
+                                SizedBox(
+                                  height: ResponsiveUI.spacing(context, 12),
+                                ),
                                 buildDropdownField<String>(
                                   context,
                                   value: selectedType,
                                   items: ["Flat", "Percentage"],
-                                  label: LocaleKeys.coupon_type.tr(),
+                                  label: LocaleKeys.discount_type.tr(),
                                   icon: Icons.price_change_rounded,
-                                  hint: LocaleKeys.select_coupon_type.tr(),
+                                  hint: LocaleKeys.select_discount_type.tr(),
                                   itemLabel: (item) => item,
                                   onChanged: (val) {
                                     setState(() => selectedType = val);
@@ -145,11 +134,13 @@ class _CouponFormDialogState extends State<CouponFormDialog>
                                   validator: (v) =>
                                       v == null ? LocaleKeys.please_select_type.tr() : null,
                                 ),
-                                SizedBox(height: 12),
+                                SizedBox(
+                                  height: ResponsiveUI.spacing(context, 12),
+                                ),
                                 buildTextField(
                                   context,
                                   controller: _amountController,
-                                  label: LocaleKeys.coupon_amount.tr(),
+                                  label: LocaleKeys.discount_amount.tr(),
                                   icon: Icons.attach_money,
                                   hint: LocaleKeys.please_enter_minimum_amount.tr(),
                                   validator: (v) {
@@ -162,69 +153,35 @@ class _CouponFormDialogState extends State<CouponFormDialog>
                                     return null;
                                   },
                                 ),
-                                SizedBox(height: 12),
-                                buildTextField(
-                                  context,
-                                  controller: _minAmountController,
-                                  label: LocaleKeys.minimum_order_amount.tr(),
-                                  icon: Icons.shopping_cart_checkout,
-                                  hint: LocaleKeys.minimum_amount_to_apply_coupon_hint.tr(),
-                                  validator: (v) {
-                                    if (v == null || v.isEmpty) {
-                                      return LocaleKeys.please_enter_minimum_amount.tr();
-                                    }
-                                    return null;
-                                  },
+
+                                SizedBox(
+                                  height: ResponsiveUI.spacing(context, 12),
                                 ),
-                                SizedBox(height: 12),
-                                buildTextField(
-                                  context,
-                                  controller: _quantityController,
-                                  label: LocaleKeys.coupon_quantity.tr(),
-                                  icon: Icons.numbers,
-                                  hint: LocaleKeys.total_coupon_quantity_hint.tr(),
-                                  validator: (v) {
-                                    if (v == null || v.isEmpty) {
-                                      return LocaleKeys.enter_quantity.tr();
-                                    }
-                                    if (int.tryParse(v) == null) {
-                                      return LocaleKeys.invalid_number.tr();
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                SizedBox(height: 12),
-                                buildTextField(
-                                  context,
-                                  controller: _availableController,
-                                  label: LocaleKeys.coupon_available.tr(),
-                                  icon: Icons.numbers,
-                                  hint: LocaleKeys.total_available_coupons_hint.tr(),
-                                  validator: (v) {
-                                    if (v == null || v.isEmpty) {
-                                      return LocaleKeys.enter_available_count_validation.tr();
-                                    }
-                                    if (int.tryParse(v) == null) {
-                                      return LocaleKeys.invalid_number.tr();
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                SizedBox(height: 12),
-                                buildTextField(
-                                  context,
-                                  controller: _expiredDateController,
-                                  label: LocaleKeys.expired_date_label.tr(),
-                                  icon: Icons.date_range,
-                                  readOnly: true,
-                                  hint: LocaleKeys.pick_expiration_date.tr(),
-                                  onTap: _pickDate,
-                                  validator: (v) {
-                                    if (v == null || v.isEmpty) {
-                                      return LocaleKeys.pick_expiration_date.tr();
-                                    }
-                                    return null;
-                                  },
+
+                                 Row(
+                                  children: [
+                                    Text(
+                                      LocaleKeys.active.tr(),
+                                      style: TextStyle(
+                                        fontSize: ResponsiveUI.fontSize(
+                                          context,
+                                          14,
+                                        ),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    Switch(
+                                      value: status,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          status = value;
+                                        });
+                                      },
+                                      activeColor: AppColors.white,
+                                      activeTrackColor: AppColors.primaryBlue,
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -234,7 +191,7 @@ class _CouponFormDialogState extends State<CouponFormDialog>
                       ],
                     ),
                   ),
-                  CouponDialogButtons(
+                  DiscountDialogButtons(
                     isEditMode: isEditMode,
                     isLoading: isLoading,
                     onCancel: () => Navigator.of(context).pop(),
@@ -248,7 +205,6 @@ class _CouponFormDialogState extends State<CouponFormDialog>
       ),
     );
   }
-
 
   BoxDecoration _buildDecoration(BuildContext context) {
     return BoxDecoration(
@@ -264,7 +220,6 @@ class _CouponFormDialogState extends State<CouponFormDialog>
     );
   }
 
-
   Widget _buildHeader(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(20),
@@ -279,9 +234,11 @@ class _CouponFormDialogState extends State<CouponFormDialog>
       child: Row(
         children: [
           Icon(Icons.local_offer, color: Colors.white, size: 28),
-          SizedBox(width: 15),
+          SizedBox(
+                                  width: ResponsiveUI.spacing(context, 15),
+                                ),
           Text(
-            isEditMode ? LocaleKeys.edit_coupon.tr() : LocaleKeys.new_coupon.tr(),
+            isEditMode ? LocaleKeys.edit_discount.tr() : LocaleKeys.new_discount.tr(),
             style: TextStyle(
               fontSize: 22,
               color: Colors.white,
@@ -298,69 +255,48 @@ class _CouponFormDialogState extends State<CouponFormDialog>
     );
   }
 
-
-  Future<void> _pickDate() async {
-    DateTime now = DateTime.now();
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: isEditMode
-          ? DateTime.parse(widget.coupon!.expiredDate)
-          : now,
-      firstDate: now,
-      lastDate: DateTime(2030),
-    );
-    if (picked != null) {
-      _expiredDateController.text = picked.toIso8601String().split("T").first;
-    }
-  }
-
   void _handleSubmit() {
     if (_formKey.currentState!.validate()) {
-      final cubit = context.read<CouponsCubit>();
+      final cubit = context.read<DiscountsCubit>();
 
       if (isEditMode) {
-        cubit.updateCoupon(
-          couponId: widget.coupon!.id,
-          couponCode: _codeController.text.trim(),
+        cubit.updateDiscount(
+          discountId: widget.discount!.id,
+          name: _nameController.text.trim(),
           type: selectedType!.toLowerCase(),
           amount: double.parse(_amountController.text),
-          minimumAmount: double.parse(_minAmountController.text),
-          quantity: int.parse(_quantityController.text),
-          expiredDate: _expiredDateController.text.trim(),
-          available: int.parse(_availableController.text),
+          status: status,
         );
       } else {
-        cubit.createCoupon(
-          couponCode: _codeController.text.trim(),
+        cubit.createDiscount(
+          name: _nameController.text.trim(),
           type: selectedType!.toLowerCase(),
           amount: double.parse(_amountController.text),
-          minimumAmount: double.parse(_minAmountController.text),
-          quantity: int.parse(_quantityController.text),
-          expiredDate: _expiredDateController.text.trim(),
-          available: int.parse(_availableController.text),
+          status: status,
         );
       }
     }
   }
 
-  void _handleStateChanges(BuildContext context, CouponsState state) {
-    if (state is CreateCouponSuccess || state is UpdateCouponSuccess) {
+  void _handleStateChanges(BuildContext context, DiscountsState state) {
+    if (state is CreateDiscountSuccess || state is UpdateDiscountSuccess) {
       Navigator.pop(context);
-    } else if (state is CreateCouponError) {
+    } else if (state is CreateDiscountError) {
       CustomSnackbar.showError(context, state.error);
-    } else if (state is UpdateCouponError) {
+    } else if (state is UpdateDiscountError) {
       CustomSnackbar.showError(context, state.error);
     }
   }
 }
 
-class CouponDialogButtons extends StatelessWidget {
+
+class DiscountDialogButtons extends StatelessWidget {
   final bool isEditMode;
   final bool isLoading;
   final VoidCallback onCancel;
   final VoidCallback onSubmit;
 
-  const CouponDialogButtons({
+  const DiscountDialogButtons({
     super.key,
     required this.isEditMode,
     required this.isLoading,
@@ -446,7 +382,7 @@ class CouponDialogButtons extends StatelessWidget {
                   SizedBox(width: spacing8),
                   Flexible(
                     child: Text(
-                      isEditMode ? LocaleKeys.update_coupon.tr() : LocaleKeys.create_coupon.tr(),
+                      isEditMode ? LocaleKeys.update_discount.tr() : LocaleKeys.create_discount.tr(),
                       style: TextStyle(
                         fontSize: value14,
                         fontWeight: FontWeight.bold,
