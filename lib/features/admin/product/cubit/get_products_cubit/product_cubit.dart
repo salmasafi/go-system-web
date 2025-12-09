@@ -32,6 +32,9 @@ class ProductsCubit extends Cubit<ProductsState> {
               .reversed
               .toList();
           log('Products fetch successful');
+          log('Products ${products}');
+          log('Products ${products.map((p) => p.toJson())}');
+
           emit(ProductsSuccess(products));
         } else {
           final errorMessage = data['message'] ?? 'Failed to fetch products';

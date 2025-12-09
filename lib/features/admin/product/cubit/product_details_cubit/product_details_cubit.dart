@@ -29,6 +29,8 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
       if (response.statusCode == 200) {
         productDetailsModel = ProductDetailsModel.fromJson(response.data);
 
+        log('product details: ${productDetailsModel?.toJson()}');
+
         if (productDetailsModel?.success == true &&
             productDetailsModel?.data != null) {
           log('Product details loaded successfully');

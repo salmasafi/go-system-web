@@ -18,7 +18,7 @@ class ProductTitle extends StatelessWidget {
           style: TextStyle(
             fontSize: ResponsiveUI.fontSize(context, 20),
             fontWeight: FontWeight.w700,
-            color: Colors.black87,
+            color: AppColors.darkBlue,
             height: 1.3,
           ),
         ),

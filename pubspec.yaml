@@ -29,7 +29,8 @@ dependencies:
   screenshot: ^3.0.0
   easy_localization: ^3.0.8
   esc_pos_utils_plus: ^2.0.3  # التغيير الأساسي
-  image: ^4.0.0  # مطلوب لمعالجة الصور
+  image: ^4.0.0 
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_lints: ^5.0.0
@@ -40,9 +41,15 @@ flutter:
   uses-material-design: true
   assets:
     - assets/fonts/Rubik/
-    - assets/images/default.png
+    - assets/images/
     - assets/translations/
   fonts:
     - family: Rubik
       fonts:
         - asset: assets/fonts/Rubik/Rubik-Bold.ttf
+
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/systego_logo.jpeg"
