@@ -36,6 +36,7 @@ class _AddProductScreenState extends State<AddProductScreen>
   final _arDescriptionController = TextEditingController();
   final _priceController = TextEditingController();
   final _wholePriceController = TextEditingController();
+  final _startQuantityController = TextEditingController();
   final _quantityController = TextEditingController();
   final _lowStockController = TextEditingController();
   final _minQuantityController = TextEditingController();
@@ -75,6 +76,7 @@ class _AddProductScreenState extends State<AddProductScreen>
     _minQuantityController.text = '1';
     _lowStockController.text = '10';
     _maxToShowController.text = '100';
+    _startQuantityController.text = '0';
     _quantityController.text = '0';
     _wholePriceController.text = '0';
   }
@@ -283,18 +285,24 @@ class _AddProductScreenState extends State<AddProductScreen>
                     title: 'Pricing & Stock',
                     icon: Icons.attach_money,
                     children: [
+                      // Row(
+                      //   children: [
+                      //Expanded(child:
+                      buildTextField(
+                        context,
+                        controller: _unitController,
+                        label: 'Unit *',
+                        icon: Icons.scale,
+                        hint: 'piece, kg, etc.',
+                      ),
+                      //),
+                      //     SizedBox(width: ResponsiveUI.spacing(context, 12)),
+
+                      //   ],
+                      // ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
                       Row(
                         children: [
-                          Expanded(
-                            child: buildTextField(
-                              context,
-                              controller: _unitController,
-                              label: 'Unit *',
-                              icon: Icons.scale,
-                              hint: 'piece, kg, etc.',
-                            ),
-                          ),
-                          SizedBox(width: ResponsiveUI.spacing(context, 12)),
                           Expanded(
                             child: buildTextField(
                               context,
@@ -302,21 +310,6 @@ class _AddProductScreenState extends State<AddProductScreen>
                               label: 'Min. Sale Qty *',
                               icon: Icons.shopping_cart,
                               hint: '1',
-                              keyboardType: TextInputType.number,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: buildTextField(
-                              context,
-                              controller: _priceController,
-                              label: 'Unit Price *',
-                              icon: Icons.price_change,
-                              hint: '0.00',
                               keyboardType: TextInputType.number,
                             ),
                           ),
@@ -339,7 +332,7 @@ class _AddProductScreenState extends State<AddProductScreen>
                           Expanded(
                             child: buildTextField(
                               context,
-                              controller: _quantityController,
+                              controller: _startQuantityController,
                               label: 'Start Quantity',
                               icon: Icons.inventory,
                               hint: '0',
@@ -416,6 +409,8 @@ class _AddProductScreenState extends State<AddProductScreen>
                         SizedBox(height: ResponsiveUI.spacing(context, 16)),
                       ],
                       AnimatedCheckboxTile(
+                        priceController: _priceController,
+                        quantityController: _quantityController,
                         value: _differentPrice,
                         title: 'Different Prices for Variations',
                         //   icon: Icons.price_check,
@@ -804,7 +799,8 @@ class _AddProductScreenState extends State<AddProductScreen>
     final double mainPrice = double.tryParse(_priceController.text) ?? 0.0;
     final double wholePrice =
         double.tryParse(_wholePriceController.text) ?? 0.0;
-    final int startQuantity = int.tryParse(_quantityController.text) ?? 0;
+    final int quantity = int.tryParse(_quantityController.text) ?? 0;
+    final int startQuantity = int.tryParse(_startQuantityController.text) ?? 0;
     final int minQtySale = int.tryParse(_minQuantityController.text) ?? 1;
     final int lowStock = int.tryParse(_lowStockController.text) ?? 10;
     final int maxToShow = _showQuantity
@@ -815,6 +811,7 @@ class _AddProductScreenState extends State<AddProductScreen>
     List<Map<String, dynamic>> pricesJson = [];
 
     if (_differentPrice && _priceVariations.isNotEmpty) {
+      List<String> codes = [];
       for (int i = 0; i < _priceVariations.length; i++) {
         final v = _priceVariations[i];
 
@@ -824,6 +821,16 @@ class _AddProductScreenState extends State<AddProductScreen>
             'Enter price for variation ${i + 1}',
           );
           return;
+        } else {
+          if (codes.contains(v.priceController.text.trim())) {
+            CustomSnackbar.showError(
+              context,
+              'Don\'t enter the same codes for price variations',
+            );
+            return;
+          } else {
+            codes.add(v.priceController.text.trim());
+          }
         }
         if (v.codeController.text.trim().isEmpty) {
           CustomSnackbar.showError(
@@ -867,6 +874,7 @@ class _AddProductScreenState extends State<AddProductScreen>
       lowStock: lowStock,
       wholePrice: wholePrice,
       startQuantity: startQuantity,
+      quantity: quantity,
       taxesId:
           '67056d0a3b233c5c1b36a7ae', // Replace later with dynamic tax selection
       productHasImei: _hasIMEI,
@@ -887,7 +895,7 @@ class _AddProductScreenState extends State<AddProductScreen>
     _arDescriptionController.dispose();
     _priceController.dispose();
     _wholePriceController.dispose();
-    _quantityController.dispose();
+    _startQuantityController.dispose();
     _lowStockController.dispose();
     _minQuantityController.dispose();
     _maxToShowController.dispose();

@@ -266,38 +266,38 @@ class _CreatePopupScreenState extends State<CreatePopupScreen> {
                   // English Title
                   _buildTextField(
                     controller: _titleEnController,
-                    title: 'Popup Title (En)',
+                    title: 'Popup Title (En) *',
                     hint: 'Enter Popup title in english',
                   ),
                   // Arabic Title
                   _buildTextField(
                     controller: _titleArController,
-                    title: 'Popup Title (Ar)',
+                    title: 'Popup Title (Ar) *',
                     hint: 'Enter Popup title in arabic',
                   ),
                   // English Description
                   _buildTextField(
                     controller: _descriptionEnController,
-                    title: 'Popup Description (En)',
+                    title: 'Popup Description (En) *',
                     hint: 'Enter Popup description in english',
                   ),
                   // Arabic Description
                   _buildTextField(
                     controller: _descriptionArController,
-                    title: 'Popup Description (Ar)',
+                    title: 'Popup Description (Ar) *',
                     hint: 'Enter Popup description in arabic',
                   ),
                   // Link
                   _buildTextField(
                     controller: _linkController,
-                    title: 'Popup Link',
+                    title: 'Popup Link *',
                     hint: 'Enter Popup link',
                   ),
                   
                   // English Image Picker
                   _buildImagePicker(
                     selectedImage: _selectedEnImage,
-                    title: 'Popup English Image',
+                    title: 'Popup English Image *',
                     onPick: () => _pickImage(true),
                     onRemove: () => _removeImage(true),
                   ),
@@ -305,7 +305,7 @@ class _CreatePopupScreenState extends State<CreatePopupScreen> {
                   // Arabic Image Picker
                   _buildImagePicker(
                     selectedImage: _selectedArImage,
-                    title: 'Popup Arabic Image',
+                    title: 'Popup Arabic Image *',
                     onPick: () => _pickImage(false),
                     onRemove: () => _removeImage(false),
                   ),

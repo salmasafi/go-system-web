@@ -69,6 +69,7 @@ class ProductsCubit extends Cubit<ProductsState> {
     required int lowStock,
     required double wholePrice,
     required int startQuantity,
+    required int quantity,
     required String taxesId,
     required bool productHasImei,
     required bool differentPrice,
@@ -95,7 +96,8 @@ class ProductsCubit extends Cubit<ProductsState> {
       'minimum_quantity_sale': minimumQuantitySale,
       'low_stock': lowStock,
       'whole_price': wholePrice,
-      'quantity': startQuantity, // Note: API has typo "quantaty"
+      'start_quantaty': startQuantity, // Note: API has typo "quantaty"
+      'quantity': quantity,
       //'taxesId': taxesId,
       'product_has_imei': productHasImei,
       'different_price': differentPrice,

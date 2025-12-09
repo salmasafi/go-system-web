@@ -72,6 +72,7 @@ class DioHelper {
       dio.options.baseUrl + url,
     ).replace(queryParameters: query);
     log('🔗 Full Request URL: $uri');
+    log('🔗 Full Request Response: $data');
 
     return await dio.post(url, data: data, queryParameters: query);
   }
