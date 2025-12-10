@@ -77,7 +77,7 @@ class _AddProductScreenState extends State<AddProductScreen>
     _lowStockController.text = '10';
     _maxToShowController.text = '100';
     _startQuantityController.text = '0';
-    _quantityController.text = '0';
+    _quantityController.text = '1';
     _wholePriceController.text = '0';
   }
 

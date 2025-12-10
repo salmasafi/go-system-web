@@ -71,18 +71,22 @@ class CheckoutCubit extends Cubit<CheckoutState> {
         .toList();
 
     final body = {
-      "customer_id": //posCubit.selectedCustomer?.id ??
-          '68f4bd26a6017b1543773cf6',
+      "customer_id":
+          posCubit.selectedCustomer?.id ?? '68f4bd26a6017b1543773cf6',
       "warehouse_id": posCubit.selectedWarhouse?.id,
-      "currency_id":
-          '68e617af2c4fc1f8db2f267a', // posCubit.selectedCurrency?.id,
-      "account_id": posCubit.selectedAccount?.id,
+      "account_id": [
+        //posCubit.selectedAccount?.id
+        '6938368ac804bcdd2b748f13',
+      ],
       "order_tax": posCubit.selectedTax?.id,
-      "shipping_cost": 0,
       "grand_total": totalAmount,
-      "payment_method": posCubit.selectedPaymentMethod?.id,
       "payment_note": paymentNote ?? "",
       "products": products,
+      "order_pending": 0,
+      //"bundles": [],
+      //"order_discount": "64abc123def456789012349",
+      //"coupon_id": "68eb6921b5b637f54b426faa",
+      //"gift_card_id": "68eb9e5afe42ef2d3d7f9332",
     };
 
     try {

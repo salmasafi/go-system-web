@@ -51,6 +51,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   final List<String> _cardTypes = ['Visa', 'MasterCard'];
   List<Tax> _taxes = [];
   Tax? _selectedTax;
+  double currentTaxAmount = 0;
   PosCubit? posCubit;
 
   @override
@@ -60,23 +61,37 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     _subTotal = widget.totalAmount;
     _selectedTax =
         posCubit?.selectedTax ??
-        Tax(id: 'id', name: 'none', amount: 0.0, type: '', status: false);
+        Tax(id: 'id', name: 'none', amount: 0.0, type: 'fixed', status: false);
     _taxes = posCubit?.taxes ?? [];
-    _due = _subTotal + _selectedTax!.amount;
+
+    if (_selectedTax!.amount < 1 && _selectedTax!.amount > 0) {
+      currentTaxAmount = (_selectedTax!.amount * _subTotal);
+      _due = _subTotal + currentTaxAmount;
+    } else {
+      currentTaxAmount = _selectedTax!.amount;
+      _due = _subTotal + currentTaxAmount;
+    }
     _totalPayingCtrl.addListener(_calc);
   }
 
   void _calc() {
     setState(() {
       _totalPaying = double.tryParse(_totalPayingCtrl.text) ?? 0.0;
-      if (_totalPaying >= (widget.totalAmount + (_selectedTax?.amount ?? 0))) {
-        _change =
-            _totalPaying - (widget.totalAmount + (_selectedTax?.amount ?? 0));
+
+      if (_selectedTax!.amount < 1 && _selectedTax!.amount > 0) {
+        currentTaxAmount = (_selectedTax!.amount * _subTotal);
+        _due = _subTotal + currentTaxAmount;
+      } else {
+        currentTaxAmount = _selectedTax!.amount;
+        _due = _subTotal + currentTaxAmount;
+      }
+
+      if (_totalPaying >= (widget.totalAmount + currentTaxAmount)) {
+        _change = _totalPaying - (widget.totalAmount + currentTaxAmount);
         _due = 0.0;
       } else {
         _change = 0.0;
-        _due =
-            (widget.totalAmount + (_selectedTax?.amount ?? 0)) - _totalPaying;
+        _due = (widget.totalAmount + currentTaxAmount) - _totalPaying;
       }
     });
   }
@@ -244,7 +259,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
       children: [
         _row(
           'Total Payable',
-          (widget.totalAmount + (_selectedTax?.amount ?? 0)),
+          (widget.totalAmount + currentTaxAmount),
           AppColors.darkGray,
           bold: true,
         ),
@@ -252,15 +267,25 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
           color: AppColors.shadowGray.withOpacity(0.3),
           height: ResponsiveUI.spacing(context, 20),
         ),
-        _row('Sub total', _subTotal, AppColors.categoryPurple),
-        SizedBox(height: ResponsiveUI.spacing(context, 8)),
-        _row('Taxes', _selectedTax?.amount ?? 0, AppColors.clearPink),
-        SizedBox(height: ResponsiveUI.spacing(context, 8)),
-        _row('Total Paying', _totalPaying, AppColors.successGreen),
-        SizedBox(height: ResponsiveUI.spacing(context, 8)),
-        _row('Change', _change, AppColors.warningOrange),
-        SizedBox(height: ResponsiveUI.spacing(context, 8)),
-        _row('Due', _due, AppColors.red),
+
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _row('Sub total  ', _subTotal, AppColors.categoryPurple),
+            _row('Taxes  ', currentTaxAmount, AppColors.warningOrange),
+          ],
+        ),
+
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _row('Change  ', _change, AppColors.successGreen),
+            _row('Due  ', _due, AppColors.red),
+          ],
+        ),
+
+        // _row('Total Paying', _totalPaying, AppColors.successGreen),
+        // SizedBox(height: ResponsiveUI.spacing(context, 8)),
       ],
     ),
   );
@@ -722,10 +747,9 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
       return;
     }
 
-    double paidAmount =
-        _totalPaying >= (widget.totalAmount + (_selectedTax?.amount ?? 0))
+    double paidAmount = _totalPaying >= (widget.totalAmount + currentTaxAmount)
         ? _totalPaying
-        : (widget.totalAmount + (_selectedTax?.amount ?? 0));
+        : (widget.totalAmount + currentTaxAmount);
 
     //paidAmount = paidAmount - ((_selectedTax != null) ? _selectedTax!.amount : 0);
 
@@ -734,7 +758,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
 
     final success = await checkOutCubit.createSale(
       cartItems: widget.cartItems,
-      totalAmount: (widget.totalAmount + (_selectedTax?.amount ?? 0)),
+      totalAmount: (widget.totalAmount + currentTaxAmount),
       posCubit: posCubit,
       paymentNote: _paymentNoteCtrl.text.isEmpty ? null : _paymentNoteCtrl.text,
     );
@@ -752,9 +776,8 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
             recieptData: RecieptData(
               cartItems: widget.cartItems,
               totalAmount: widget.totalAmount, // Subtotal فقط
-              taxAmount: _selectedTax?.amount ?? 0.0, // قيمة الضريبة
+              taxAmount: currentTaxAmount,
               selectedTax: _selectedTax, // عشان يظهر اسم الضريبة
-
               paidAmount: paidAmount,
               change: _change,
               reference: context.read<CheckoutCubit>().reference ?? '',

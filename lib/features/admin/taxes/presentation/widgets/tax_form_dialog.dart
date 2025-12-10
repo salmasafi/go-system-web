@@ -253,14 +253,18 @@ class _TaxFormDialogState extends State<TaxFormDialog>
           name: _nameController.text.trim(),
           arName: _arNameController.text.trim(),
           taxType: selectedtaxType!.toLowerCase(),
-          amount: double.parse(_amountController.text),
+          amount: selectedtaxType == 'Fixed'
+              ? double.parse(_amountController.text.trim())
+              : double.parse(_amountController.text.trim()) / 100,
         );
       } else {
         cubit.createTax(
           name: _nameController.text.trim(),
           arName: _arNameController.text.trim(),
           taxType: selectedtaxType!.toLowerCase(),
-          amount: double.parse(_amountController.text),
+          amount: selectedtaxType == 'Fixed'
+              ? double.parse(_amountController.text.trim())
+              : double.parse(_amountController.text.trim()) / 100,
         );
       }
     }
