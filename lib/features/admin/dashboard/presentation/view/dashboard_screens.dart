@@ -149,7 +149,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         );
         break;
 
-      case 'Bank Accounts':
+      case 'Financial Accounts':
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const BankAccountsScreen()),
