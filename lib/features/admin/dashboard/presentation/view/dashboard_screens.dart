@@ -8,6 +8,7 @@ import 'package:systego/features/admin/coupon/presentation/view/coupons_screen.d
 import 'package:systego/features/admin/currency/presentation/view/currencies_screen.dart';
 import 'package:systego/features/admin/department/presentation/view/departments_screen.dart';
 import 'package:systego/features/admin/discount/presentation/view/discounts_screen.dart';
+import 'package:systego/features/admin/permission/presentation/view/permissions_screen.dart';
 import 'package:systego/features/admin/popup/presentation/view/popup_screen.dart';
 import 'package:systego/features/admin/purchase/view/purchase_screen.dart';
 import 'package:systego/features/admin/suppliers/view/supplier_screen.dart';
@@ -52,13 +53,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     {'icon': Icons.location_on_rounded, 'label': 'Countries'},
     {'icon': Icons.location_city_rounded, 'label': 'Cities'},
     {'icon': Icons.gps_fixed, 'label': 'Zones'},
-    {'icon': Icons.attach_money_rounded, 'label': 'Payment Methods'},
+    // {'icon': Icons.attach_money_rounded, 'label': 'Payment Methods'},
     {'icon': Icons.receipt_long, 'label': 'Taxes'},
-    {'icon': Icons.account_balance, 'label': 'Bank Accounts'},
+    {'icon': Icons.account_balance, 'label': 'Financial Accounts'},
     {'icon': Icons.open_in_new, 'label': 'Pop Ups'},
     {'icon': Icons.local_offer, 'label': 'Coupons'},
-    {'icon': Icons.business, 'label': 'Departments'},
+    // {'icon': Icons.business, 'label': 'Departments'},
     {'icon': Icons.local_offer, 'label': 'Discounts'},
+    {'icon': Icons.business, 'label': 'Permissions'},
   ];
 
   void _navigateToPage(String label) {
@@ -186,6 +188,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const DiscountsScreen()),
+        );
+        break;
+
+      case 'Permissions':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const PermissionScreen()),
         );
         break;
 

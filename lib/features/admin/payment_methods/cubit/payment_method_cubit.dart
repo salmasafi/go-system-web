@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/services/dio_helper.dart';
@@ -57,21 +59,28 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
   Future<void> createPaymentMethod({
     required String name,
     required String arName,
-    required String icon,
+    required File? icon,
     required String description,
     required String type,
     required bool isActive,
   }) async {
     emit(CreatePaymentMethodLoading());
     try {
+      String? base64Image;
+      if (icon != null) {
+        base64Image = await _convertFileToBase64(icon);
+      }
+
       final data = {
         "name": name,
         "ar_name": arName,
         'discription': description,
-        'icon': icon,
+        if (base64Image != null) 'icon': base64Image,
         'isActive': isActive,
         'type': type,
       };
+
+       log("dataaaaaaaaaaaaaaaaa: $data");
 
       final response = await DioHelper.postData(
         url: EndPoint.createPaymentMethod,
@@ -96,21 +105,30 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
     required String paymentMethodId,
     required String name,
     required String arName,
-    required String icon,
+    required File? icon,
     required String description,
     required String type,
     required bool isActive,
   }) async {
     emit(UpdatePaymentMethodLoading());
     try {
+      String? base64Image;
+      if (icon != null) {
+        base64Image = await _convertFileToBase64(icon);
+      }
+
+
+
       final data = <String, dynamic>{
         "name": name,
         "ar_name": arName,
         'discription': description,
-        'icon': icon,
+        if (base64Image != null) 'icon': base64Image,
         'isActive': isActive,
         'type': type,
       };
+
+      log("dataaaaaaaaaaaaaaaaa: $data");
 
       final response = await DioHelper.putData(
         url: EndPoint.updatePaymentMethod(paymentMethodId),
@@ -152,6 +170,28 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
     } catch (e) {
       final errorMessage = _extractErrorMessage(e);
       emit(DeletePaymentMethodError(errorMessage));
+    }
+  }
+
+  
+   Future<String?> _convertFileToBase64(File imageFile) async {
+    try {
+      final bytes = await imageFile.readAsBytes();
+      
+      String? mimeType;
+      final ext = imageFile.path.toLowerCase().split('.').last;
+      if (ext == 'png') {
+        mimeType = "image/png";
+      } else if (ext == 'jpg' || ext == 'jpeg') {
+        mimeType = "image/jpeg";
+      } else {
+        mimeType = "application/octet-stream";
+      }
+
+      return "data:$mimeType;base64,${base64Encode(bytes)}";
+    } catch (e) {
+      log("Error converting image: $e");
+      return null;
     }
   }
 }

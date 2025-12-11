@@ -382,7 +382,46 @@
 
   "brand_ar_name": "اسم الماركة باللغة العربية",
 "enter_brand_ar_name": "أدخل اسم الماركة باللغة العربية",
-"please_enter_brand_ar_name": "يرجى إدخال اسم الماركة باللغة العربية"
+"please_enter_brand_ar_name": "يرجى إدخال اسم الماركة باللغة العربية",
+
+  "new_popup": "منبثق جديد",
+  "popup_title_en": "عنوان المنبثق (إنجليزي)",
+  "popup_title_ar": "عنوان المنبثق (عربي)",
+  "popup_description_en": "وصف المنبثق (إنجليزي)",
+  "popup_description_ar": "وصف المنبثق (عربي)",
+  "popup_link": "رابط المنبثق",
+  "enter_popup_title_en": "أدخل عنوان المنبثق باللغة الإنجليزية",
+  "enter_popup_title_ar": "أدخل عنوان المنبثق باللغة العربية",
+  "enter_popup_description_en": "أدخل وصف المنبثق باللغة الإنجليزية",
+  "enter_popup_description_ar": "أدخل وصف المنبثق باللغة العربية",
+  "enter_popup_link": "أدخل رابط المنبثق",
+  "popup_english_image": "صورة المنبثق الإنجليزية",
+  "popup_arabic_image": "صورة المنبثق العربية",
+  "saving_popup": "جاري حفظ المنبثق",
+  "save_popup": "حفظ المنبثق",
+  "warning_enter_title_en": "يرجى إدخال عنوان المنبثق باللغة الإنجليزية",
+  "warning_enter_title_ar": "يرجى إدخال عنوان المنبثق باللغة العربية",
+  "warning_enter_description_en": "يرجى إدخال وصف المنبثق باللغة الإنجليزية",
+  "warning_enter_description_ar": "يرجى إدخال وصف المنبثق باللغة العربية",
+  "warning_select_en_image": "يرجى اختيار صورة النسخة الإنجليزية",
+  "warning_select_ar_image": "يرجى اختيار صورة النسخة العربية",
+
+
+
+    "edit_popup": "تعديل المنبثق",
+  "updating_popup": "جاري تحديث المنبثق",
+  "update_popup": "تحديث المنبثق",
+
+  "warning_title_en": "يرجى إدخال عنوان المنبثق باللغة الإنجليزية",
+  "warning_title_ar": "يرجى إدخال عنوان المنبثق باللغة العربية",
+
+
+  "popups_title": "النوافذ المنبثقة",
+  "no_popups_title": "لا توجد نوافذ منبثقة",
+  "no_popups_message": "لقد انتهيت من كل شيء!",
+  "no_popups_default_message": "اسحب للتحديث أو تحقق من اتصالك بالإنترنت",
+  "no_popups_icon_alt": "لا توجد نوافذ",
+  "popups_list_empty": "لا توجد نوافذ منبثقة متاحة"
 
 
 

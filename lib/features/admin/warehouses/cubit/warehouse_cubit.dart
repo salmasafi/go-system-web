@@ -11,6 +11,14 @@ class WareHouseCubit extends Cubit<WarehousesState> {
   WareHouseModel? warehouseModel;
   List<Warehouses> warehouses = [];
 
+  String getWarehouseNameById(String warehouseId) {
+  try {
+    return warehouses.firstWhere((w) => w.id == warehouseId).name ?? warehouseId;
+  } catch (e) {
+    return warehouseId;
+  }
+}
+
   Future<void> getWarehouses() async {
     emit(WarehousesLoading());
 
@@ -37,7 +45,35 @@ class WareHouseCubit extends Cubit<WarehousesState> {
         log(
           ' First warehouse type: ${warehouses.isNotEmpty ? warehouses.first.runtimeType : "empty"}',
         );
+        log(' Warehouses loaded successfully: ${warehouses}');
+        emit(WarehousesLoaded(warehouses));
 
+        // emit(WarehousesSuccess());
+
+        
+      } else {
+        log(' Failed with status: ${response.statusCode}');
+        emit(
+          WarehousesError('Failed to load warehouses: ${response.statusCode}'),
+        );
+      }
+    } catch (error) {
+      log(' Error: $error');
+      emit(WarehousesError(error.toString()));
+    }
+  }
+
+  
+  Future<void> getWarehouse(String id) async {
+    emit(WarehousesLoading());
+
+    try {
+      final response = await DioHelper.getData(
+        url: EndPoint.getWareHouseById(id),
+      );
+
+
+      if (response.statusCode == 200) {
         emit(WarehousesSuccess());
       } else {
         log(' Failed with status: ${response.statusCode}');
@@ -50,6 +86,7 @@ class WareHouseCubit extends Cubit<WarehousesState> {
       emit(WarehousesError(error.toString()));
     }
   }
+
 
   /// Create Warehouse
   Future<void> createWarehouse({

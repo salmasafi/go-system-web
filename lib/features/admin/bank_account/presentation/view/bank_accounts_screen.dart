@@ -23,7 +23,10 @@ class BankAccountsScreen extends StatefulWidget {
 
 class _BankAccountsScreenState extends State<BankAccountsScreen> {
   void accountsInit() async {
-    context.read<BankAccountCubit>().getBankAccounts();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<BankAccountCubit>().getBankAccounts();   // ✅ correct
+    });
+    // context.read<BankAccountCubit>().getBankAccounts();
   }
 
   @override
@@ -74,7 +77,6 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
           );
         } else if (state is GetBankAccountsSuccess) {
           final accounts = state.accounts;
-          final totalBalance = state.totalBalance;
 
           if (accounts.isEmpty) {
             return CustomEmptyState(
@@ -92,7 +94,7 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
               child: Column(
                 children: [
                   SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                  _buildTotalBalanceCard(context, totalBalance),
+                  // _buildTotalBalanceCard(context, totalBalance),
                   Expanded(child: BankAccountsList(accounts: accounts)),
                 ],
               ),
@@ -112,63 +114,12 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
     );
   }
 
-  Widget _buildTotalBalanceCard(BuildContext context, int totalBalance) {
-    final padding16 = ResponsiveUI.padding(context, 16);
-    final fontSize16 = ResponsiveUI.fontSize(context, 16);
-    final fontSize24 = ResponsiveUI.fontSize(context, 24);
-    final borderRadius20 = ResponsiveUI.borderRadius(context, 20);
-
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(padding16),
-      margin: EdgeInsets.symmetric(horizontal: padding16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(borderRadius20),
-        gradient: LinearGradient(
-          colors: [
-            AppColors.primaryBlue.withOpacity(0.75),
-            AppColors.primaryBlue.withOpacity(0.75),
-          ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            LocaleKeys.bank_accounts_total_balance.tr(),
-            style: TextStyle(
-              fontSize: fontSize16,
-              color: Colors.white70,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          SizedBox(height: ResponsiveUI.spacing(context, 8)),
-          Text(
-            totalBalance.toStringAsFixed(2),
-            style: TextStyle(
-              fontSize: fontSize24,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBarWithActions(
         context,
-        title: LocaleKeys.bank_accounts_title.tr(),
+        title: "Financial Accounts",
         showActions: true,
         onPressed: () => showDialog(
           context: context,

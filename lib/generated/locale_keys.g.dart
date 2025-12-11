@@ -302,5 +302,37 @@ abstract class  LocaleKeys {
   static const brand_ar_name = 'brand_ar_name';
   static const enter_brand_ar_name = 'enter_brand_ar_name';
   static const please_enter_brand_ar_name = 'please_enter_brand_ar_name';
+  static const new_popup = 'new_popup';
+  static const popup_title_en = 'popup_title_en';
+  static const popup_title_ar = 'popup_title_ar';
+  static const popup_description_en = 'popup_description_en';
+  static const popup_description_ar = 'popup_description_ar';
+  static const popup_link = 'popup_link';
+  static const enter_popup_title_en = 'enter_popup_title_en';
+  static const enter_popup_title_ar = 'enter_popup_title_ar';
+  static const enter_popup_description_en = 'enter_popup_description_en';
+  static const enter_popup_description_ar = 'enter_popup_description_ar';
+  static const enter_popup_link = 'enter_popup_link';
+  static const popup_english_image = 'popup_english_image';
+  static const popup_arabic_image = 'popup_arabic_image';
+  static const saving_popup = 'saving_popup';
+  static const save_popup = 'save_popup';
+  static const warning_enter_title_en = 'warning_enter_title_en';
+  static const warning_enter_title_ar = 'warning_enter_title_ar';
+  static const warning_enter_description_en = 'warning_enter_description_en';
+  static const warning_enter_description_ar = 'warning_enter_description_ar';
+  static const warning_select_en_image = 'warning_select_en_image';
+  static const warning_select_ar_image = 'warning_select_ar_image';
+  static const edit_popup = 'edit_popup';
+  static const updating_popup = 'updating_popup';
+  static const update_popup = 'update_popup';
+  static const warning_title_en = 'warning_title_en';
+  static const warning_title_ar = 'warning_title_ar';
+  static const popups_title = 'popups_title';
+  static const no_popups_title = 'no_popups_title';
+  static const no_popups_message = 'no_popups_message';
+  static const no_popups_default_message = 'no_popups_default_message';
+  static const no_popups_icon_alt = 'no_popups_icon_alt';
+  static const popups_list_empty = 'popups_list_empty';
 
 }

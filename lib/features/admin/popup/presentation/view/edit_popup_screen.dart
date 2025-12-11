@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -10,6 +11,7 @@ import 'package:systego/core/widgets/custom_textfield/custom_text_field_widget.d
 import 'package:systego/features/admin/popup/cubit/popup_cubit.dart';
 import 'package:systego/features/admin/popup/model/popup_model.dart';
 import 'package:systego/features/admin/categories/view/widgets/build_image_placeholder_widget.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 class EditPopupBottomSheet extends StatefulWidget {
   final PopupModel popup;
@@ -90,12 +92,12 @@ class _EditPopupBottomSheetState extends State<EditPopupBottomSheet> {
     if (_titleEnController.text.trim().isEmpty) {
       CustomSnackbar.showWarning(
         context,
-        'Please enter Popup title in English',
+        LocaleKeys.warning_title_en.tr(),
       );
       return;
     }
     if (_titleArController.text.trim().isEmpty) {
-      CustomSnackbar.showWarning(context, 'Please enter Popup title in Arabic');
+      CustomSnackbar.showWarning(context, LocaleKeys.warning_title_ar.tr());
       return;
     }
 
@@ -186,7 +188,7 @@ class _EditPopupBottomSheetState extends State<EditPopupBottomSheet> {
                   size: ResponsiveUI.iconSize(context, 18),
                 ),
                 label: Text(
-                  'Remove',
+                  LocaleKeys.remove.tr(),
                   style: TextStyle(
                     color: AppColors.red,
                     fontSize: ResponsiveUI.fontSize(context, 12),
@@ -255,7 +257,7 @@ class _EditPopupBottomSheetState extends State<EditPopupBottomSheet> {
                         ),
                         SizedBox(height: ResponsiveUI.spacing(context, 8)),
                         Text(
-                          'Tap to upload',
+                          LocaleKeys.tap_to_upload.tr(),
                           style: TextStyle(
                             color: AppColors.darkGray.withOpacity(0.7),
                             fontSize: ResponsiveUI.fontSize(context, 13),
@@ -332,7 +334,7 @@ class _EditPopupBottomSheetState extends State<EditPopupBottomSheet> {
                     ),
                     SizedBox(height: ResponsiveUI.spacing(context, 12)),
                     Text(
-                      'Edit Popup',
+                      LocaleKeys.edit_popup.tr(),
                       style: TextStyle(
                         fontSize: ResponsiveUI.fontSize(context, 20),
                         fontWeight: FontWeight.bold,
@@ -342,38 +344,38 @@ class _EditPopupBottomSheetState extends State<EditPopupBottomSheet> {
 
                     _buildTextField(
                       controller: _titleEnController,
-                      title: 'Popup Title (En)',
-                      hint: 'Enter Popup title in english',
+                      title: LocaleKeys.popup_title_en.tr(),
+                      hint: LocaleKeys.enter_popup_title_en.tr(),
                     ),
 
                     _buildTextField(
                       controller: _titleArController,
-                      title: 'Popup Title (Ar)',
-                      hint: 'Enter Popup title in arabic',
+                      title: LocaleKeys.popup_title_ar.tr(),
+                      hint: LocaleKeys.enter_popup_title_ar.tr(),
                     ),
 
                     _buildTextField(
                       controller: _descriptionEnController,
-                      title: 'Popup Description (En)',
-                      hint: 'Enter Popup description in english',
+                      title: LocaleKeys.popup_description_en.tr(),
+                      hint: LocaleKeys.enter_popup_description_en.tr(),
                     ),
 
                     _buildTextField(
                       controller: _descriptionArController,
-                      title: 'Popup Description (Ar)',
-                      hint: 'Enter Popup description in arabic',
+                      title: LocaleKeys.popup_description_ar.tr(),
+                      hint: LocaleKeys.enter_popup_description_ar.tr(),
                     ),
 
                     _buildTextField(
                       controller: _linkController,
-                      title: 'Popup Link',
-                      hint: 'Enter Popup link',
+                      title: LocaleKeys.popup_link.tr(),
+                      hint: LocaleKeys.enter_popup_link.tr(),
                     ),
 
                     _buildImagePicker(
                       selectedLocalImage: _selectedEnImage,
                       existingImageUrl: widget.popup.imageEn,
-                      title: 'Popup English Image',
+                      title: LocaleKeys.popup_english_image.tr(),
                       onPick: () => _pickImage(true),
                       onRemove: () => _removeImage(true),
                     ),
@@ -381,7 +383,7 @@ class _EditPopupBottomSheetState extends State<EditPopupBottomSheet> {
                     _buildImagePicker(
                       selectedLocalImage: _selectedArImage,
                       existingImageUrl: widget.popup.imageAr,
-                      title: 'Popup Arabic Image',
+                      title: LocaleKeys.popup_arabic_image.tr(),
                       onPick: () => _pickImage(false),
                       onRemove: () => _removeImage(false),
                     ),
@@ -392,7 +394,7 @@ class _EditPopupBottomSheetState extends State<EditPopupBottomSheet> {
                       height: ResponsiveUI.value(context, 48),
                       child: CustomElevatedButton(
                         onPressed: isLoading ? null : _submitUpdate,
-                        text: isLoading ? 'Updating Popup' : 'Update Popup',
+                        text: isLoading ? LocaleKeys.updating_popup.tr() : LocaleKeys.update_popup.tr(),
                         isLoading: isLoading
                       ),
                     ),

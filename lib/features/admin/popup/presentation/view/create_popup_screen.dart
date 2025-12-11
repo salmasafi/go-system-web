@@ -10,6 +10,8 @@ import 'package:systego/core/widgets/custom_error/custom_error_state.dart';
 import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:systego/core/widgets/custom_textfield/custom_text_field_widget.dart';
 import 'package:systego/features/admin/popup/cubit/popup_cubit.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 class CreatePopupScreen extends StatefulWidget {
   const CreatePopupScreen({super.key});
@@ -56,7 +58,6 @@ class _CreatePopupScreenState extends State<CreatePopupScreen> {
     });
   }
 
-  // Helper method to build text fields for redundancy reduction
   Widget _buildTextField({
     required TextEditingController controller,
     required String title,
@@ -87,7 +88,6 @@ class _CreatePopupScreenState extends State<CreatePopupScreen> {
     );
   }
 
-  // Helper method to build image pickers
   Widget _buildImagePicker({
     required File? selectedImage,
     required String title,
@@ -119,7 +119,7 @@ class _CreatePopupScreenState extends State<CreatePopupScreen> {
                   size: ResponsiveUI.iconSize(context, 18),
                 ),
                 label: Text(
-                  'Remove',
+                  LocaleKeys.remove.tr(),
                   style: TextStyle(
                     color: AppColors.red,
                     fontSize: ResponsiveUI.fontSize(context, 12),
@@ -175,7 +175,7 @@ class _CreatePopupScreenState extends State<CreatePopupScreen> {
                         height: ResponsiveUI.spacing(context, 8),
                       ),
                       Text(
-                        'Tap to upload',
+                        LocaleKeys.tap_to_upload.tr(),
                         style: TextStyle(
                           color: AppColors.darkGray.withOpacity(0.7),
                           fontSize: ResponsiveUI.fontSize(context, 13),
@@ -191,27 +191,33 @@ class _CreatePopupScreenState extends State<CreatePopupScreen> {
 
   void _validateAndSubmit() {
     if (_titleEnController.text.trim().isEmpty) {
-      CustomSnackbar.showWarning(context, 'Please enter Popup title in English');
+      CustomSnackbar.showWarning(
+          context, LocaleKeys.warning_enter_title_en.tr());
       return;
     }
     if (_titleArController.text.trim().isEmpty) {
-      CustomSnackbar.showWarning(context, 'Please enter Popup title in Arabic');
+      CustomSnackbar.showWarning(
+          context, LocaleKeys.warning_enter_title_ar.tr());
       return;
     }
     if (_descriptionEnController.text.trim().isEmpty) {
-      CustomSnackbar.showWarning(context, 'Please enter Popup description in English');
+      CustomSnackbar.showWarning(
+          context, LocaleKeys.warning_enter_description_en.tr());
       return;
     }
     if (_descriptionArController.text.trim().isEmpty) {
-      CustomSnackbar.showWarning(context, 'Please enter Popup description in Arabic');
+      CustomSnackbar.showWarning(
+          context, LocaleKeys.warning_enter_description_ar.tr());
       return;
     }
     if (_selectedEnImage == null) {
-      CustomSnackbar.showWarning(context, 'Please select an English image');
+      CustomSnackbar.showWarning(
+          context, LocaleKeys.warning_select_en_image.tr());
       return;
     }
     if (_selectedArImage == null) {
-      CustomSnackbar.showWarning(context, 'Please select an Arabic image');
+      CustomSnackbar.showWarning(
+          context, LocaleKeys.warning_select_ar_image.tr());
       return;
     }
 
@@ -225,7 +231,6 @@ class _CreatePopupScreenState extends State<CreatePopupScreen> {
           imageAr: _selectedArImage,
         );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -242,7 +247,8 @@ class _CreatePopupScreenState extends State<CreatePopupScreen> {
         if (state is CreatePopupSuccess) {
           return Scaffold(
             backgroundColor: AppColors.lightBlueBackground,
-            appBar: appBarWithActions(context, title: "New Popup"),
+            appBar:
+                appBarWithActions(context, title: LocaleKeys.new_popup.tr()),
             body: CustomErrorState(
               message: state.message,
               onRetry: _validateAndSubmit,
@@ -254,7 +260,8 @@ class _CreatePopupScreenState extends State<CreatePopupScreen> {
 
         return Scaffold(
           backgroundColor: const Color.fromARGB(255, 243, 249, 254),
-          appBar: appBarWithActions(context, title: "New Popup"),
+          appBar:
+              appBarWithActions(context, title: LocaleKeys.new_popup.tr()),
           body: SafeArea(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(
@@ -263,49 +270,42 @@ class _CreatePopupScreenState extends State<CreatePopupScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // English Title
                   _buildTextField(
                     controller: _titleEnController,
-                    title: 'Popup Title (En)',
-                    hint: 'Enter Popup title in english',
+                    title: LocaleKeys.popup_title_en.tr(),
+                    hint: LocaleKeys.enter_popup_title_en.tr(),
                   ),
-                  // Arabic Title
                   _buildTextField(
                     controller: _titleArController,
-                    title: 'Popup Title (Ar)',
-                    hint: 'Enter Popup title in arabic',
+                    title: LocaleKeys.popup_title_ar.tr(),
+                    hint: LocaleKeys.enter_popup_title_ar.tr(),
                   ),
-                  // English Description
                   _buildTextField(
                     controller: _descriptionEnController,
-                    title: 'Popup Description (En)',
-                    hint: 'Enter Popup description in english',
+                    title: LocaleKeys.popup_description_en.tr(),
+                    hint: LocaleKeys.enter_popup_description_en.tr(),
                   ),
-                  // Arabic Description
                   _buildTextField(
                     controller: _descriptionArController,
-                    title: 'Popup Description (Ar)',
-                    hint: 'Enter Popup description in arabic',
+                    title: LocaleKeys.popup_description_ar.tr(),
+                    hint: LocaleKeys.enter_popup_description_ar.tr(),
                   ),
-                  // Link
                   _buildTextField(
                     controller: _linkController,
-                    title: 'Popup Link',
-                    hint: 'Enter Popup link',
+                    title: LocaleKeys.popup_link.tr(),
+                    hint: LocaleKeys.enter_popup_link.tr(),
                   ),
-                  
-                  // English Image Picker
+
                   _buildImagePicker(
                     selectedImage: _selectedEnImage,
-                    title: 'Popup English Image',
+                    title: LocaleKeys.popup_english_image.tr(),
                     onPick: () => _pickImage(true),
                     onRemove: () => _removeImage(true),
                   ),
 
-                  // Arabic Image Picker
                   _buildImagePicker(
                     selectedImage: _selectedArImage,
-                    title: 'Popup Arabic Image',
+                    title: LocaleKeys.popup_arabic_image.tr(),
                     onPick: () => _pickImage(false),
                     onRemove: () => _removeImage(false),
                   ),
@@ -316,8 +316,10 @@ class _CreatePopupScreenState extends State<CreatePopupScreen> {
                     height: ResponsiveUI.value(context, 48),
                     child: CustomElevatedButton(
                       onPressed: isLoading ? null : _validateAndSubmit,
-                      text: isLoading ? 'Saving Popup' : 'Save Popup',
-                      isLoading: isLoading
+                      text: isLoading
+                          ? LocaleKeys.saving_popup.tr()
+                          : LocaleKeys.save_popup.tr(),
+                      isLoading: isLoading,
                     ),
                   ),
                   SizedBox(height: ResponsiveUI.spacing(context, 16)),
