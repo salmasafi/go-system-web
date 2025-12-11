@@ -19,6 +19,8 @@ class AnimatedBankAccountCard extends StatefulWidget {
   final Duration? animationDuration;
   final Duration? animationDelay;
 
+  final String warehouseName;
+
   const AnimatedBankAccountCard({
     super.key,
     required this.account,
@@ -28,6 +30,7 @@ class AnimatedBankAccountCard extends StatefulWidget {
     this.onTap,
     this.animationDuration,
     this.animationDelay,
+    required this.warehouseName,
   });
 
   @override
@@ -96,7 +99,7 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
   Widget _buildImageWidget(BankAccountModel account) {
     final size = ResponsiveUI.borderRadius(context, 50);
 
-    if (account.icon.isEmpty) {
+    if (account.image.isEmpty) {
       return Icon(
         Icons.account_balance,
         color: AppColors.white,
@@ -104,11 +107,11 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
       );
     }
 
-    final isBase64 = account.icon.startsWith('data:');
+    final isBase64 = account.image.startsWith('data:');
     Widget image;
 
     if (isBase64) {
-      final parts = account.icon.split(',');
+      final parts = account.image.split(',');
       if (parts.length == 2) {
         try {
           final Uint8List bytes = base64Decode(parts[1]);
@@ -127,7 +130,7 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
       }
     } else {
       image = Image.network(
-        account.icon,
+        account.image,
         fit: BoxFit.cover,
         width: size,
         height: size,
@@ -137,7 +140,7 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
             child: CircularProgressIndicator(
               value: progress.expectedTotalBytes != null
                   ? progress.cumulativeBytesLoaded /
-                      progress.expectedTotalBytes!
+                        progress.expectedTotalBytes!
                   : null,
               color: AppColors.primaryBlue,
             ),
@@ -172,10 +175,7 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
         ),
         SizedBox(width: ResponsiveUI.spacing(context, 8)),
         if (widget.onEdit != null || widget.onDelete != null)
-          CustomPopupMenu(
-            onEdit: widget.onEdit,
-            onDelete: widget.onDelete,
-          ),
+          CustomPopupMenu(onEdit: widget.onEdit, onDelete: widget.onDelete),
       ],
     );
   }
@@ -184,9 +184,34 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Account Number + Initial Balance Row
+        // Note
+        if (account.description.isNotEmpty)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Description:",
+                style: TextStyle(
+                  fontSize: ResponsiveUI.fontSize(context, 12),
+                  color: AppColors.darkGray.withOpacity(0.6),
+                ),
+              ),
+              SizedBox(height: ResponsiveUI.spacing(context, 4)),
+              Text(
+                account.description,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: ResponsiveUI.fontSize(context, 13),
+                  color: AppColors.darkGray.withOpacity(0.8),
+                ),
+              ),
+            ],
+          ),
+
+        SizedBox(height: ResponsiveUI.spacing(context, 8)),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             // Account number
             Expanded(
@@ -194,7 +219,7 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    LocaleKeys.bank_accounts_account_number.tr(),
+                    "Warehouse:",
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 12),
                       color: AppColors.darkGray.withOpacity(0.6),
@@ -202,7 +227,9 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
                   ),
                   SizedBox(height: ResponsiveUI.spacing(context, 2)),
                   Text(
-                    '#${account.accountNumber}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    widget.warehouseName,
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 14),
                       fontWeight: FontWeight.w500,
@@ -213,15 +240,15 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
               ),
             ),
 
-            SizedBox(width: ResponsiveUI.spacing(context, 16)),
+            SizedBox(width: ResponsiveUI.spacing(context, 100)),
 
             // Initial Balance
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    LocaleKeys.bank_accounts_initial_balance.tr(),
+                    "Balance:",
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 12),
                       color: AppColors.darkGray.withOpacity(0.6),
@@ -229,7 +256,7 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
                   ),
                   SizedBox(height: ResponsiveUI.spacing(context, 2)),
                   Text(
-                    account.initialBalance.toStringAsFixed(2),
+                    account.balance.toStringAsFixed(2),
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 14),
                       fontWeight: FontWeight.w500,
@@ -244,51 +271,70 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
 
         SizedBox(height: ResponsiveUI.spacing(context, 12)),
 
-        // Note
-        if (account.note.isNotEmpty)
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                LocaleKeys.bank_accounts_note.tr(),
-                style: TextStyle(
-                  fontSize: ResponsiveUI.fontSize(context, 12),
-                  color: AppColors.darkGray.withOpacity(0.6),
-                ),
-              ),
-              SizedBox(height: ResponsiveUI.spacing(context, 4)),
-              Text(
-                account.note,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: ResponsiveUI.fontSize(context, 13),
-                  color: AppColors.darkGray.withOpacity(0.8),
-                ),
-              ),
-            ],
-          ),
-
-        SizedBox(height: ResponsiveUI.spacing(context, 8)),
-
-        // Status Row
         Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              account.status
-                  ? LocaleKeys.bank_accounts_active.tr()
-                  : LocaleKeys.bank_accounts_inactive.tr(),
-              style: TextStyle(
-                fontSize: ResponsiveUI.fontSize(context, 12),
-                color: account.status
-                    ? AppColors.successGreen
-                    : AppColors.darkGray.withOpacity(0.6),
-                fontWeight: FontWeight.w500,
+            // Account number
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    account.status
+                        ? LocaleKeys.bank_accounts_active.tr()
+                        : LocaleKeys.bank_accounts_inactive.tr(),
+                    style: TextStyle(
+                      fontSize: ResponsiveUI.fontSize(context, 12),
+                      color: account.status
+                          ? AppColors.successGreen
+                          : AppColors.darkGray.withOpacity(0.6),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(width: ResponsiveUI.spacing(context, 100)),
+
+            // Initial Balance
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    account.status ? "In POS" : "not in POS",
+                    style: TextStyle(
+                      fontSize: ResponsiveUI.fontSize(context, 12),
+                      color: account.status
+                          ? AppColors.successGreen
+                          : AppColors.darkGray.withOpacity(0.6),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
+        // Status Row
+        // Row(
+        //  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //   children: [
+        //     Text(
+        //       account.status
+        //           ? LocaleKeys.bank_accounts_active.tr()
+        //           : LocaleKeys.bank_accounts_inactive.tr(),
+        //       style: TextStyle(
+        //         fontSize: ResponsiveUI.fontSize(context, 12),
+        //         color: account.status
+        //             ? AppColors.successGreen
+        //             : AppColors.darkGray.withOpacity(0.6),
+        //         fontWeight: FontWeight.w500,
+        //       ),
+        //     ),
+        //   ],
+        // ),
       ],
     );
   }

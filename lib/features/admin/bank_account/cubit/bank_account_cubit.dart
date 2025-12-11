@@ -28,8 +28,7 @@ class BankAccountCubit extends Cubit<BankAccountState> {
         final model = BankAccountResponse.fromJson(response.data);
         if (model.success) {
           allAccounts = model.data.accounts;
-          totalBalance = model.data.totalBalance;
-          emit(GetBankAccountsSuccess(allAccounts, totalBalance));
+          emit(GetBankAccountsSuccess(allAccounts));
         } else {
           final errorMessage = ErrorHandler.handleError(response);
           emit(GetBankAccountsError(errorMessage));
@@ -70,32 +69,34 @@ class BankAccountCubit extends Cubit<BankAccountState> {
 
   Future<void> addBankAccount({
     required String name,
-    required String arName,
-    required String accountNumber,
-    required double initialBalance,
-    required String note,
-    required File? icon,
+     required String wareHouseId,
+    required String description,
+    required double balance,
+    required File? image,
     required bool status,
+    required bool inPos,
   }) async {
     emit(CreateBankAccountLoading());
     try {
       String? base64Image;
-      if (icon != null) {
-        base64Image = await _convertFileToBase64(icon);
+      if (image != null) {
+        base64Image = await _convertFileToBase64(image);
       }
 
       final data = {
         'name': name,
-        'ar_name': arName,
-        'account_no': accountNumber,
-        'initial_balance': initialBalance,
-        'is_default': status,
-        'note': note,
-        if (base64Image != null) 'icon': base64Image,
+        'balance': balance,
+        'status': status,
+        'in_POS': inPos,
+        'description': description,
+        'warehouseId': wareHouseId,
+        if (base64Image != null) 'image': base64Image,
         
       };
 
-      dev.log('base64Image when add: $base64Image');
+      // log("${data}");
+
+      // dev.log('base64Image when add: $base64Image');
 
       final response = await DioHelper.postData(
         url: EndPoint.addBankAccount,
@@ -103,7 +104,7 @@ class BankAccountCubit extends Cubit<BankAccountState> {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateBankAccountSuccess('Bank account created successfully'));
+        emit(CreateBankAccountSuccess('Financial account created successfully'));
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(CreateBankAccountError(errorMessage));
@@ -116,32 +117,32 @@ class BankAccountCubit extends Cubit<BankAccountState> {
 
   Future<void> updateBankAccount({
     required String accountId,
-    required String name,
-    required String arName,
-    required String accountNumber,
-    required double initialBalance,
-    required String note,
+     required String name,
+     required String wareHouseId,
+    required String description,
+    required double balance,
+    required File? image,
     required bool status,
-    required File? icon,
+    required bool inPos,
   }) async {
     emit(UpdateBankAccountLoading());
     try {
 
-      String? base64Icon;
-
-      if (icon != null) {
-        base64Icon = await _convertFileToBase64(icon);
+     String? base64Image;
+      if (image != null) {
+        base64Image = await _convertFileToBase64(image);
       }
       
 
-      final data = <String, dynamic>{
+       final data = {
         'name': name,
-        'ar_name': arName,
-        'account_no': accountNumber,
-        'initial_balance': initialBalance,
-        'is_default': status,
-        'note': note,
-        if (base64Icon != null) "icon": base64Icon,
+        'balance': balance,
+        'status': status,
+        'in_POS': inPos,
+        'description': description,
+        'warehouseId': wareHouseId,
+        if (base64Image != null) 'image': base64Image,
+        
       };
 
       dev.log('Sending data: $data');
@@ -154,7 +155,7 @@ class BankAccountCubit extends Cubit<BankAccountState> {
       );
 
       if (response.statusCode == 200) {
-        emit(UpdateBankAccountSuccess('Bank account updated successfully'));
+        emit(UpdateBankAccountSuccess('Financial account updated successfully'));
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(UpdateBankAccountError(errorMessage));
@@ -174,7 +175,7 @@ class BankAccountCubit extends Cubit<BankAccountState> {
 
       if (response.statusCode == 200) {
         allAccounts.removeWhere((account) => account.id == accountId);
-        emit(DeleteBankAccountSuccess('Bank account deleted successfully'));
+        emit(DeleteBankAccountSuccess('Financial account deleted successfully'));
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(DeleteBankAccountError(errorMessage));

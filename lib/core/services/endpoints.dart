@@ -10,6 +10,7 @@ class EndPoint {
   static const String createWarehouse = '/api/admin/warehouse';
   static const String updateWarehouse = '/api/admin/warehouse';
   static const String deleteWarehouse = '/api/admin/warehouse';
+  static String getWareHouseById(String id) => '/api/admin/warehouse/$id';
 
   /// Supplier
   static const String getSuppliers = '/api/admin/supplier';
@@ -148,5 +149,13 @@ class EndPoint {
   static String addDiscount = '/api/admin/discount';
   static String updateDiscount(String id) => '/api/admin/discount/$id';
   static String deleteDiscount(String id) => '/api/admin/discount/$id';
+
+
+  /// permissions
+  static const String getAllpermissions = '/api/admin/permission';
+  static String getpermission(String id) => '/api/admin/permission/$id';
+  static String addpermission = '/api/admin/permission';
+  static String updatepermission(String id) => '/api/admin/permission/$id';
+  static String deletepermission(String id) => '/api/admin/permission/$id';
 
 }

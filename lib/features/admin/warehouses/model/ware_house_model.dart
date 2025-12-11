@@ -51,8 +51,8 @@ class Data {
 
 class Warehouses {
   Warehouses({
-      this.id, 
-      this.name, 
+      required this.id, 
+      required this.name, 
       this.address, 
       this.phone, 
       this.email, 
@@ -62,20 +62,20 @@ class Warehouses {
       this.updatedAt, 
       this.v,});
 
-  Warehouses.fromJson(dynamic json) {
-    id = json['_id'];
-    name = json['name'];
-    address = json['address'];
-    phone = json['phone'];
-    email = json['email'];
-    numberOfProducts = json['number_of_products'];
-    stockQuantity = json['stock_Quantity'];
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
-    v = json['__v'];
-  }
-  String? id;
-  String? name;
+ Warehouses.fromJson(dynamic json)
+    : id = json['_id'] ?? "",
+      name = json['name'] ?? "",
+      address = json['address'],
+      phone = json['phone'],
+      email = json['email'],
+      numberOfProducts = json['number_of_products'],
+      stockQuantity = json['stock_Quantity'],
+      createdAt = json['createdAt'],
+      updatedAt = json['updatedAt'],
+      v = json['__v'];
+
+  String id;
+  String name;
   String? address;
   String? phone;
   String? email;

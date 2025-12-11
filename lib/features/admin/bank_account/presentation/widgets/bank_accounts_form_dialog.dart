@@ -5,8 +5,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:systego/core/widgets/custom_drop_down_menu.dart';
 import 'package:systego/features/admin/bank_account/cubit/bank_account_cubit.dart';
 import 'package:systego/features/admin/bank_account/model/bank_account_model.dart';
+import 'package:systego/features/admin/warehouses/cubit/warehouse_cubit.dart';
+import 'package:systego/features/admin/warehouses/cubit/warehouse_state.dart';
 import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
@@ -29,10 +32,8 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
     with SingleTickerProviderStateMixin {
   File? _selectedImage;
   final _nameController = TextEditingController();
-  final _accountNoController = TextEditingController();
-  final _initialBalanceController = TextEditingController();
-  final _noteController = TextEditingController();
-  final _arNameController = TextEditingController();
+  final _balanceController = TextEditingController();
+  final _descriptionController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   late AnimationController _animationController;
@@ -40,6 +41,8 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
 
   bool get isEditMode => widget.account != null;
   bool status = true;
+  bool inPos = true;
+  String? selectedWareHouse;
 
   final _picker = ImagePicker();
 
@@ -63,21 +66,29 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
   @override
   void initState() {
     super.initState();
+    // context.read<WareHouseCubit>().getWarehouses();
     _initializeControllers();
     _setupAnimation();
   }
 
+  @override
+void didChangeDependencies() {
+  super.didChangeDependencies();
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    context.read<WareHouseCubit>().getWarehouses();
+  });
+}
+
+
   void _initializeControllers() {
     if (isEditMode) {
       _nameController.text = widget.account!.name;
-      _arNameController.text = widget.account!.arName ?? '';
-      _accountNoController.text = widget.account!.accountNumber.toString();
-      _initialBalanceController.text = widget.account!.initialBalance
-          .toString();
-      _noteController.text = widget.account!.note;
+      _balanceController.text = widget.account!.balance.toString();
+      _descriptionController.text = widget.account!.description;
       status = widget.account!.status;
+      inPos = widget.account!.inPos;
 
-      log("selected ${_selectedImage}");
+      selectedWareHouse = widget.account!.wareHouseId;
     }
   }
 
@@ -96,10 +107,8 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
   @override
   void dispose() {
     _nameController.dispose();
-    _arNameController.dispose();
-    _accountNoController.dispose();
-    _initialBalanceController.dispose();
-    _noteController.dispose();
+    _descriptionController.dispose();
+    _balanceController.dispose();
     _animationController.dispose();
     super.dispose();
   }
@@ -160,46 +169,106 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        LocaleKeys.bank_name_en.tr()
+                                        LocaleKeys.bank_name_en.tr(),
                                       ),
                                 ),
                                 SizedBox(
                                   height: ResponsiveUI.spacing(context, 12),
                                 ),
-                                buildTextField(
-                                  context,
-                                  controller: _arNameController,
-                                  label: LocaleKeys.bank_name_ar.tr(),
-                                  icon: Icons.account_balance,
-                                  hint: LocaleKeys.hint_bank_name_ar,
-                                  validator: (v) =>
-                                      LoginValidator.validateRequired(
-                                        v,
-                                        LocaleKeys.bank_name_ar.tr(),
-                                      ),
+
+                                BlocBuilder<WareHouseCubit, WarehousesState>(
+                                  builder: (context, state) {
+                                    // Default values
+                                    List<String> warehouseIds = [];
+                                    List<String> warehouseNames = [];
+
+                                    // Loading state
+                                    if (state is WarehousesLoading) {
+                                      return const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 20,
+                                        ),
+                                        child: Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                      );
+                                    }
+
+                                    // Success – we have data
+                                    if (state is WarehousesLoaded) {
+                                      warehouseIds = state.warehouses
+                                          .map((w) => w.id)
+                                          .toList();
+                                      warehouseNames = state.warehouses
+                                          .map((w) => w.name)
+                                          .toList();
+                                    }
+
+                                    // If we have no warehouses at all (even after loading)
+                                    if (warehouseIds.isEmpty) {
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 20,
+                                        ),
+                                        child: Text(
+                                          "No warehouses found",
+                                          style: TextStyle(
+                                            color: Colors.grey[600],
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      );
+                                    }
+
+                                    return buildDropdownField<String>(
+                                      context,
+                                      value: selectedWareHouse,
+                                      items: warehouseIds,
+                                      label: "Warehouse",
+                                      hint: "select warehouse",
+                                      icon: Icons.warehouse_rounded,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          selectedWareHouse = value;
+                                        });
+                                      },
+                                      itemLabel: (id) {
+                                        final index = warehouseIds.indexOf(id);
+                                        return index != -1
+                                            ? warehouseNames[index]
+                                            : 'Unknown';
+                                      },
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return "please select warehouse";
+                                        }
+                                        return null;
+                                      },
+                                    );
+                                  },
                                 ),
+                                // SizedBox(
+                                //   height: ResponsiveUI.spacing(context, 12),
+                                // ),
+                                // buildTextField(
+                                //   context,
+                                //   controller: _accountNoController,
+                                //   label: LocaleKeys.account_number.tr(),
+                                //   icon: Icons.numbers,
+                                //   hint: LocaleKeys.hint_account_number.tr(),
+                                //   validator: (v) =>
+                                //       LoginValidator.validateRequired(
+                                //         v,
+                                //         LocaleKeys.account_number.tr(),
+                                //       ),
+                                //   keyboardType: TextInputType.number,
+                                // ),
                                 SizedBox(
                                   height: ResponsiveUI.spacing(context, 12),
                                 ),
                                 buildTextField(
                                   context,
-                                  controller: _accountNoController,
-                                  label: LocaleKeys.account_number.tr(),
-                                  icon: Icons.numbers,
-                                  hint: LocaleKeys.hint_account_number.tr(),
-                                  validator: (v) =>
-                                      LoginValidator.validateRequired(
-                                        v,
-                                        LocaleKeys.account_number.tr(),
-                                      ),
-                                  keyboardType: TextInputType.number,
-                                ),
-                                SizedBox(
-                                  height: ResponsiveUI.spacing(context, 12),
-                                ),
-                                buildTextField(
-                                  context,
-                                  controller: _initialBalanceController,
+                                  controller: _balanceController,
                                   label: LocaleKeys.initial_balance.tr(),
                                   icon: Icons.attach_money_rounded,
                                   hint: LocaleKeys.hint_initial_balance.tr(),
@@ -215,10 +284,11 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
                                 ),
                                 buildTextField(
                                   context,
-                                  controller: _noteController,
+                                  controller: _descriptionController,
                                   label: LocaleKeys.note.tr(),
                                   icon: Icons.note_alt_rounded,
                                   hint: LocaleKeys.hint_note.tr(),
+                                  maxLines: 3,
                                 ),
                                 SizedBox(
                                   height: ResponsiveUI.spacing(context, 12),
@@ -241,6 +311,35 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
                                       onChanged: (value) {
                                         setState(() {
                                           status = value;
+                                        });
+                                      },
+                                      activeColor: AppColors.white,
+                                      activeTrackColor: AppColors.primaryBlue,
+                                    ),
+                                  ],
+                                ),
+
+                                SizedBox(
+                                  height: ResponsiveUI.spacing(context, 12),
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "In POS",
+                                      style: TextStyle(
+                                        fontSize: ResponsiveUI.fontSize(
+                                          context,
+                                          14,
+                                        ),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    Switch(
+                                      value: inPos,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          inPos = value;
                                         });
                                       },
                                       activeColor: AppColors.white,
@@ -359,7 +458,6 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
               Widget imageWidget;
 
               if (isBase64) {
-
                 final parts = widget.existingImageUrl!.split(',');
 
                 if (parts.length == 2) {
@@ -427,31 +525,29 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(borderRadius12 - 2),
 
-                      child:
-                          imageWidget,
+                      child: imageWidget,
                     ),
                   ),
 
-                   Positioned(
-              top: 8,
-              right: 8,
-              child: GestureDetector(
-                onTap: _pickImage,
-                child: Container(
-                  padding: EdgeInsets.all(padding8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey,
-                    borderRadius: BorderRadius.circular(20),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: GestureDetector(
+                      onTap: _pickImage,
+                      child: Container(
+                        padding: EdgeInsets.all(padding8),
+                        decoration: BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Icon(
+                          Icons.edit,
+                          color: Colors.white,
+                          size: iconSize24,
+                        ),
+                      ),
+                    ),
                   ),
-                  child: Icon(
-                    Icons.edit,
-                    color: Colors.white,
-                    size: iconSize24,
-                  ),
-                ),
-              ),
-            ),
-
                 ],
               );
             },
@@ -528,35 +624,72 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
     }
   }
 
+  // void _handleSubmit() {
+  //   if (_formKey.currentState!.validate()) {
+  //     final cubit = context.read<BankAccountCubit>();
+
+  //     final name = _nameController.text.trim();
+  //     final accountNo = _accountNoController.text;
+  //     final balance = double.tryParse(_initialBalanceController.text) ?? 0;
+  //     final note = _noteController.text.trim();
+
+  //     if (isEditMode) {
+  //       cubit.updateBankAccount(
+  //         accountId: widget.account!.id,
+  //         name: name,
+  //         arName: _arNameController.text.trim(),
+  //         accountNumber: accountNo,
+  //         initialBalance: balance,
+  //         note: note,
+  //         status: status,
+  //         icon: _selectedImage,
+  //       );
+  //     } else {
+  //       cubit.addBankAccount(
+  //         name: name,
+  //         arName: _arNameController.text.trim(),
+  //         accountNumber: accountNo,
+  //         initialBalance: balance,
+  //         note: note,
+  //         icon: _selectedImage,
+  //         status: status,
+  //       );
+  //     }
+  //   }
+  // }
+
   void _handleSubmit() {
     if (_formKey.currentState!.validate()) {
       final cubit = context.read<BankAccountCubit>();
 
       final name = _nameController.text.trim();
-      final accountNo = _accountNoController.text;
-      final balance = double.tryParse(_initialBalanceController.text) ?? 0;
-      final note = _noteController.text.trim();
+      final balance = double.tryParse(_balanceController.text) ?? 0.0;
+      final description = _descriptionController.text.trim();
+      if (selectedWareHouse == null) {
+        CustomSnackbar.showError(context, "Please select a warehouse");
+        return;
+      }
 
       if (isEditMode) {
         cubit.updateBankAccount(
           accountId: widget.account!.id,
           name: name,
-          arName: _arNameController.text.trim(),
-          accountNumber: accountNo,
-          initialBalance: balance,
-          note: note,
+          balance: balance,
+          description: description,
           status: status,
-          icon: _selectedImage,
+          inPos: inPos,
+          image: _selectedImage,
+          wareHouseId: selectedWareHouse!,
         );
       } else {
         cubit.addBankAccount(
           name: name,
-          arName: _arNameController.text.trim(),
-          accountNumber: accountNo,
-          initialBalance: balance,
-          note: note,
-          icon: _selectedImage,
+          balance: balance,
+          description: description,
           status: status,
+          inPos: inPos,
+          image: _selectedImage,
+          wareHouseId: selectedWareHouse!,
         );
       }
     }
@@ -627,7 +760,9 @@ class BankAccountDialogHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isEditMode ? LocaleKeys.edit_bank_account.tr() : LocaleKeys.new_bank_account.tr(),
+                  isEditMode
+                      ? LocaleKeys.edit_bank_account.tr()
+                      : LocaleKeys.new_bank_account.tr(),
                   style: TextStyle(
                     color: AppColors.white,
                     fontSize: fontSize22,
@@ -759,7 +894,9 @@ class BankAccountDialogButtons extends StatelessWidget {
                   SizedBox(width: spacing8),
                   Flexible(
                     child: Text(
-                      isEditMode ? LocaleKeys.update_account.tr() : LocaleKeys.create_account.tr(),
+                      isEditMode
+                          ? LocaleKeys.update_account.tr()
+                          : LocaleKeys.create_account.tr(),
                       style: TextStyle(
                         fontSize: value14,
                         fontWeight: FontWeight.bold,

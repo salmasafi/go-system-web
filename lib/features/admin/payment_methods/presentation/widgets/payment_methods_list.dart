@@ -39,7 +39,7 @@ class PaymentMethodsList extends StatelessWidget {
   ) {
     showDialog(
       context: context,
-      builder: (context) => PaymentMethodFormDialog(paymentMethod: paymentMethod),
+      builder: (context) => PaymentMethodFormDialog(paymentMethod: paymentMethod, existingImageUrl: paymentMethod.icon,),
     );
   }
 
