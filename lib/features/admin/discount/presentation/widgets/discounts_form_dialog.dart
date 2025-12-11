@@ -123,7 +123,7 @@ class _DiscountFormDialogState extends State<DiscountFormDialog>
                                 buildDropdownField<String>(
                                   context,
                                   value: selectedType,
-                                  items: ["Flat", "Percentage"],
+                                  items: ["Fixed", "Percentage"],
                                   label: LocaleKeys.discount_type.tr(),
                                   icon: Icons.price_change_rounded,
                                   hint: LocaleKeys.select_discount_type.tr(),

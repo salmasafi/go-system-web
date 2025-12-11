@@ -9,7 +9,6 @@ import 'package:systego/features/admin/currency/presentation/view/currencies_scr
 import 'package:systego/features/admin/department/presentation/view/departments_screen.dart';
 import 'package:systego/features/admin/discount/presentation/view/discounts_screen.dart';
 import 'package:systego/features/admin/popup/presentation/view/popup_screen.dart';
-import 'package:systego/features/admin/purchase/view/purchase_screen.dart';
 import 'package:systego/features/admin/suppliers/view/supplier_screen.dart';
 import 'package:systego/features/admin/taxes/presentation/view/taxes_screen.dart';
 import 'package:systego/features/admin/variations/presentation/view/variation_screen.dart';
@@ -45,7 +44,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     {'icon': Icons.inventory_2_rounded, 'label': 'Products'},
     {'icon': Icons.local_offer_rounded, 'label': 'Brands'},
     {'icon': Icons.warehouse_rounded, 'label': 'Warehouses'},
-    {'icon': Icons.shopping_cart_rounded, 'label': 'Purchase'},
+    //{'icon': Icons.shopping_cart_rounded, 'label': 'Purchase'},
     {'icon': Icons.factory, 'label': 'Suppliers'},
     {'icon': Icons.list_alt, 'label': 'Variations'},
     {'icon': Icons.monetization_on_rounded, 'label': 'Currencies'},
@@ -91,12 +90,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
         );
         break;
 
-      case 'Purchase':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const PurchaseScreen()),
-        );
-        break;
+      // case 'Purchase':
+      //   Navigator.push(
+      //     context,
+      //     MaterialPageRoute(builder: (_) => const PurchaseScreen()),
+      //   );
+      //   break;
 
       case 'Suppliers':
         Navigator.push(

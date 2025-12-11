@@ -9,7 +9,6 @@ import 'package:systego/features/admin/taxes/model/taxes_model.dart';
 
 part 'taxes_state.dart';
 
-
 class TaxesCubit extends Cubit<TaxesState> {
   TaxesCubit() : super(TaxesInitial());
 
@@ -47,7 +46,11 @@ class TaxesCubit extends Cubit<TaxesState> {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(ChangeTaxStatusSuccess('$name ${status ? "tax now activated" : "tax now deactivated"}'));
+        emit(
+          ChangeTaxStatusSuccess(
+            '$name ${status ? "tax now activated" : "tax now deactivated"}',
+          ),
+        );
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(ChangeTaxStatusError(errorMessage));
@@ -62,11 +65,17 @@ class TaxesCubit extends Cubit<TaxesState> {
     required String name,
     required String taxType,
     required double amount,
-    required String arName
+    required String arName,
   }) async {
     emit(CreateTaxLoading());
     try {
-      final data = {'name': name, 'ar_name': arName, 'amount': amount, 'type': taxType};
+      var _amount = (taxType == 'fixed') ? amount : amount / 100;
+      final data = {
+        'name': name,
+        'ar_name': arName,
+        'amount': _amount,
+        'type': taxType,
+      };
 
       final response = await DioHelper.postData(
         url: EndPoint.createTax,
@@ -90,11 +99,17 @@ class TaxesCubit extends Cubit<TaxesState> {
     required String name,
     required String taxType,
     required double amount,
-    required String arName
+    required String arName,
   }) async {
     emit(UpdateTaxLoading());
     try {
-      final data = {'name': name, 'ar_name': arName, 'amount': amount, 'type': taxType};
+      var _amount = (taxType == 'fixed') ? amount : amount / 100;
+      final data = {
+        'name': name,
+        'ar_name': arName,
+        'amount': _amount,
+        'type': taxType,
+      };
 
       final response = await DioHelper.putData(
         url: EndPoint.updateTax(taxId),

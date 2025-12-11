@@ -73,11 +73,11 @@ class _POSScreenState extends State<POSScreen> {
       builder: (_) => POSCartBottomSheet(
         onQuantityChanged: (index, delta) {
           checkoutCubit.updateQuantity(index, delta);
-          context.read<PosCubit>().selectTab();
+          posCubit.refreshCartProducts();
         },
         onRemove: (index) {
           checkoutCubit.removeFromCart(index);
-          posCubit.selectTab();
+          posCubit.refreshCartProducts();
         },
       ),
     );

@@ -2,10 +2,7 @@ class DiscountResponse {
   final bool success;
   final DiscountData data;
 
-  DiscountResponse({
-    required this.success,
-    required this.data,
-  });
+  DiscountResponse({required this.success, required this.data});
 
   factory DiscountResponse.fromJson(Map<String, dynamic> json) {
     return DiscountResponse(
@@ -15,10 +12,7 @@ class DiscountResponse {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'success': success,
-      'data': data.toJson(),
-    };
+    return {'success': success, 'data': data.toJson()};
   }
 }
 
@@ -26,10 +20,7 @@ class DiscountData {
   final String message;
   final List<DiscountModel> discounts;
 
-  DiscountData({
-    required this.message,
-    required this.discounts,
-  });
+  DiscountData({required this.message, required this.discounts});
 
   factory DiscountData.fromJson(Map<String, dynamic> json) {
     return DiscountData(
@@ -54,9 +45,9 @@ class DiscountModel {
   final double amount;
   final String type;
   final bool status;
-  final String createdAt;
-  final String updatedAt;
-  final int version;
+  final String? createdAt;
+  final String? updatedAt;
+  final int? version;
 
   DiscountModel({
     required this.id,

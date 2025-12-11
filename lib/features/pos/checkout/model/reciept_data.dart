@@ -1,3 +1,5 @@
+import 'package:systego/features/admin/discount/model/discount_model.dart';
+
 import '../../home/model/pos_models.dart';
 import 'checkout_models.dart';
 
@@ -6,6 +8,8 @@ class RecieptData {
   double totalAmount;
   double taxAmount;
   Tax? selectedTax;
+  double discountAmount;
+  DiscountModel? selectedDiscount;
   double paidAmount;
   double change;
   String reference;
@@ -18,6 +22,8 @@ class RecieptData {
     required this.totalAmount,
     required this.taxAmount,
     this.selectedTax,
+    required this.discountAmount,
+    this.selectedDiscount,
     required this.paidAmount,
     required this.change,
     required this.reference,

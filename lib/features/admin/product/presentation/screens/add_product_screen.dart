@@ -821,23 +821,24 @@ class _AddProductScreenState extends State<AddProductScreen>
             'Enter price for variation ${i + 1}',
           );
           return;
-        } else {
-          if (codes.contains(v.priceController.text.trim())) {
-            CustomSnackbar.showError(
-              context,
-              'Don\'t enter the same codes for price variations',
-            );
-            return;
-          } else {
-            codes.add(v.priceController.text.trim());
-          }
         }
+
         if (v.codeController.text.trim().isEmpty) {
           CustomSnackbar.showError(
             context,
             'Enter product code for variation ${i + 1}',
           );
           return;
+        } else {
+          if (codes.contains(v.codeController.text.trim())) {
+            CustomSnackbar.showError(
+              context,
+              'Don\'t enter the same codes for price variations',
+            );
+            return;
+          } else {
+            codes.add(v.codeController.text.trim());
+          }
         }
 
         pricesJson.add({
@@ -850,8 +851,9 @@ class _AddProductScreenState extends State<AddProductScreen>
           "options": v.selectedOptions,
         });
       }
+      // Remove duplicates from codes list if needed (optional, but ensures no duplicates after processing)
+      //codes = codes.toSet().toList();
     }
-
     // === Encode Images ===
     final String mainImageBase64 = ImageHelper.encodeImageToBase64(_mainImage!);
     final List<String> galleryBase64 = _galleryImages

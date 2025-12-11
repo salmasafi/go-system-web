@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_state.dart';
 import 'package:systego/features/POS/home/model/pos_models.dart';
+import 'package:systego/features/admin/discount/model/discount_model.dart';
 import '../../../../core/services/dio_helper.dart';
 import '../../../../core/services/endpoints.dart';
 import '../../../../core/utils/error_handler.dart';
@@ -28,8 +29,15 @@ class PosCubit extends Cubit<PosState> {
   List<BankAccount> accounts = [];
   BankAccount? selectedAccount;
 
-  List<Tax> taxes = [];
+  List<Tax> taxes = [
+    Tax(id: 'null', name: 'No Tax', amount: 0.0, type: 'fixed', status: true),
+  ];
   Tax? selectedTax;
+
+  List<DiscountModel> discounts = [
+    DiscountModel(id: 'null', name: 'No Discount', amount: 0.0, type: 'fixed', status: true, createdAt: '', updatedAt: '', version: null),
+  ];
+  DiscountModel? selectedDiscount;
 
   List<Currency> currencies = [];
   Currency? selectedCurrency;
@@ -153,17 +161,33 @@ class PosCubit extends Cubit<PosState> {
         accounts = (json['accounts'] as List? ?? [])
             .map((e) => BankAccount.fromJson(e))
             .toList();
+
         var filteredAccounts = accounts.isNotEmpty
             ? accounts.where((element) => element.isDefault)
             : null;
         selectedAccount = filteredAccounts?.first;
-
-        taxes = (json['taxes'] as List? ?? [])
-            .map((e) => Tax.fromJson(e))
+        List<Tax> taxesFromJson = ((json['taxes'] as List?) ?? [])
+            .map<Tax>((dynamic e) => Tax.fromJson(e as Map<String, dynamic>))
             .toList();
-        taxes = taxes.where((value) => value.status).toList();
-        selectedTax = taxes.isNotEmpty ? taxes.first : null;
 
+        taxes.addAll(taxesFromJson);
+
+        var filteredTaxes = taxes.isNotEmpty
+            ? taxes.where((element) => element.status)
+            : null;
+        selectedTax = filteredTaxes?.first;
+        
+        List<DiscountModel> discountsFromJson = ((json['discounts'] as List?) ?? [])
+            .map<DiscountModel>((dynamic e) => DiscountModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+
+        discounts.addAll(discountsFromJson);
+
+        var filteredDiscounts = discounts.isNotEmpty
+            ? discounts.where((element) => element.status)
+            : null;
+        selectedDiscount = filteredDiscounts?.first;
+        
         currencies = (json['currencies'] as List? ?? [])
             .map((e) => Currency.fromJson(e))
             .toList();
@@ -181,6 +205,11 @@ class PosCubit extends Cubit<PosState> {
 
   void changeTax(Tax? tax) {
     selectedTax = tax;
+    emit(PosDataLoaded(featuredProducts));
+  }
+
+  void changeDiscount(DiscountModel? discount) {
+    selectedDiscount = discount;
     emit(PosDataLoaded(featuredProducts));
   }
 

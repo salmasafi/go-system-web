@@ -1,4 +1,3 @@
-// lib/features/pos/home/presentation/widgets/checkout_dialog.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
@@ -7,6 +6,7 @@ import 'package:systego/core/widgets/custom_textfield/build_text_field.dart';
 import 'package:systego/features/POS/checkout/model/reciept_data.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
 import 'package:systego/features/POS/home/model/pos_models.dart';
+import 'package:systego/features/admin/discount/model/discount_model.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../cubit/checkout_cubit/checkout_cubit.dart';
 import '../../model/checkout_models.dart';
@@ -50,27 +50,51 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   String _selectedCardType = 'Visa';
   final List<String> _cardTypes = ['Visa', 'MasterCard'];
   List<Tax> _taxes = [];
-  Tax? _selectedTax;
+  late Tax? _selectedTax;
+  List<DiscountModel> _discounts = [];
+  late DiscountModel? _selectedDiscount;
+
   double currentTaxAmount = 0;
-  PosCubit? posCubit;
+  double currentDiscountAmount = 0;
+  late PosCubit posCubit;
 
   @override
   void initState() {
     super.initState();
     posCubit = context.read<PosCubit>();
     _subTotal = widget.totalAmount;
-    _selectedTax =
-        posCubit?.selectedTax ??
-        Tax(id: 'id', name: 'none', amount: 0.0, type: 'fixed', status: false);
-    _taxes = posCubit?.taxes ?? [];
+    _taxes = posCubit.taxes;
+    _discounts = posCubit.discounts;
+
+    // Set selectedTax, ensuring it's from the list
+    if (posCubit.selectedTax != null) {
+      // Find matching tax by id
+      _selectedTax = posCubit.selectedTax ;
+    } else {
+      _selectedTax = _taxes.first;
+    }
 
     if (_selectedTax!.amount < 1 && _selectedTax!.amount > 0) {
       currentTaxAmount = (_selectedTax!.amount * _subTotal);
-      _due = _subTotal + currentTaxAmount;
     } else {
       currentTaxAmount = _selectedTax!.amount;
-      _due = _subTotal + currentTaxAmount;
     }
+
+    // Set selectedDiscount, ensuring it's from the list
+    if (posCubit.selectedDiscount != null) {
+      // Find matching discount by id
+      _selectedDiscount = posCubit.selectedDiscount ;
+    } else {
+      _selectedDiscount = _discounts.first;
+    }
+
+    if (_selectedDiscount!.amount < 1 && _selectedDiscount!.amount > 0) {
+      currentDiscountAmount = (_selectedDiscount!.amount * _subTotal);
+    } else {
+      currentDiscountAmount = _selectedDiscount!.amount;
+    }
+
+    _due = (_subTotal - currentDiscountAmount) + currentTaxAmount;
     _totalPayingCtrl.addListener(_calc);
   }
 
@@ -78,20 +102,35 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     setState(() {
       _totalPaying = double.tryParse(_totalPayingCtrl.text) ?? 0.0;
 
-      if (_selectedTax!.amount < 1 && _selectedTax!.amount > 0) {
-        currentTaxAmount = (_selectedTax!.amount * _subTotal);
-        _due = _subTotal + currentTaxAmount;
-      } else {
-        currentTaxAmount = _selectedTax!.amount;
-        _due = _subTotal + currentTaxAmount;
+      double discountAmount = 0.0;
+      if (_selectedDiscount != null) {
+        if (_selectedDiscount!.amount < 1 && _selectedDiscount!.amount > 0) {
+          discountAmount = _selectedDiscount!.amount * _subTotal;
+        } else {
+          discountAmount = _selectedDiscount!.amount;
+        }
+      }
+      currentDiscountAmount = discountAmount;
+
+      double taxableSubtotal = _subTotal - discountAmount;
+
+      currentTaxAmount = 0.0;
+      if (_selectedTax != null) {
+        if (_selectedTax!.amount < 1 && _selectedTax!.amount > 0) {
+          currentTaxAmount = _selectedTax!.amount * taxableSubtotal;
+        } else {
+          currentTaxAmount = _selectedTax!.amount;
+        }
       }
 
-      if (_totalPaying >= (widget.totalAmount + currentTaxAmount)) {
-        _change = _totalPaying - (widget.totalAmount + currentTaxAmount);
+      _due = taxableSubtotal + currentTaxAmount;
+
+      if (_totalPaying >= _due) {
+        _change = _totalPaying - _due;
         _due = 0.0;
       } else {
         _change = 0.0;
-        _due = (widget.totalAmount + currentTaxAmount) - _totalPaying;
+        _due = _due - _totalPaying;
       }
     });
   }
@@ -148,6 +187,8 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
                       _dynamicFields(),
                       SizedBox(height: ResponsiveUI.spacing(context, 16)),
                       _notesSection(),
+                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                      _discountDropdown(),
                       SizedBox(height: ResponsiveUI.spacing(context, 16)),
                       _taxDropdown(),
                     ],
@@ -259,7 +300,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
       children: [
         _row(
           'Total Payable',
-          (widget.totalAmount + currentTaxAmount),
+          _due,
           AppColors.darkGray,
           bold: true,
         ),
@@ -267,15 +308,13 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
           color: AppColors.shadowGray.withOpacity(0.3),
           height: ResponsiveUI.spacing(context, 20),
         ),
-
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _row('Sub total  ', _subTotal, AppColors.categoryPurple),
-            _row('Taxes  ', currentTaxAmount, AppColors.warningOrange),
-          ],
+        _row('Sub total  ', _subTotal, AppColors.categoryPurple),
+        _row('Discount  ', currentDiscountAmount, AppColors.successGreen),
+        _row('Taxes  ', currentTaxAmount, AppColors.warningOrange),
+        Divider(
+          color: AppColors.shadowGray.withOpacity(0.3),
+          height: ResponsiveUI.spacing(context, 20),
         ),
-
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -283,9 +322,6 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
             _row('Due  ', _due, AppColors.red),
           ],
         ),
-
-        // _row('Total Paying', _totalPaying, AppColors.successGreen),
-        // SizedBox(height: ResponsiveUI.spacing(context, 8)),
       ],
     ),
   );
@@ -727,10 +763,57 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
                   (t) => DropdownMenuItem<Tax>(value: t, child: Text(t.name)),
                 )
                 .toList(),
-            onChanged: (v) => setState(() {
-              _selectedTax = v!;
-              _calc();
-            }),
+            onChanged: (v) {
+              setState(() {
+                _selectedTax = v;
+                _calc();
+              });
+            },
+          ),
+        ),
+      ),
+    ],
+  );
+
+  Widget _discountDropdown() => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        'Select Discount',
+        style: TextStyle(
+          fontSize: ResponsiveUI.fontSize(context, 14),
+          fontWeight: FontWeight.w600,
+          color: AppColors.darkGray,
+        ),
+      ),
+      SizedBox(height: ResponsiveUI.spacing(context, 8)),
+      Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: ResponsiveUI.padding(context, 12),
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.lightBlueBackground,
+          borderRadius: BorderRadius.circular(
+            ResponsiveUI.borderRadius(context, 12),
+          ),
+          border: Border.all(color: AppColors.shadowGray.withOpacity(0.3)),
+        ),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<DiscountModel>(
+            value: _selectedDiscount,
+            isExpanded: true,
+            icon: Icon(Icons.arrow_drop_down, color: AppColors.primaryBlue),
+            items: _discounts
+                .map(
+                  (d) => DropdownMenuItem<DiscountModel>(value: d, child: Text(d.name)),
+                )
+                .toList(),
+            onChanged: (v) {
+              setState(() {
+                _selectedDiscount = v;
+                _calc();
+              });
+            },
           ),
         ),
       ),
@@ -747,9 +830,9 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
       return;
     }
 
-    double paidAmount = _totalPaying >= (widget.totalAmount + currentTaxAmount)
+    double paidAmount = _totalPaying >= _due
         ? _totalPaying
-        : (widget.totalAmount + currentTaxAmount);
+        : _due;
 
     //paidAmount = paidAmount - ((_selectedTax != null) ? _selectedTax!.amount : 0);
 
@@ -758,7 +841,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
 
     final success = await checkOutCubit.createSale(
       cartItems: widget.cartItems,
-      totalAmount: (widget.totalAmount + currentTaxAmount),
+      totalAmount: _due,
       posCubit: posCubit,
       paymentNote: _paymentNoteCtrl.text.isEmpty ? null : _paymentNoteCtrl.text,
     );
@@ -778,6 +861,8 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
               totalAmount: widget.totalAmount, // Subtotal فقط
               taxAmount: currentTaxAmount,
               selectedTax: _selectedTax, // عشان يظهر اسم الضريبة
+              discountAmount: currentDiscountAmount,
+              selectedDiscount: _selectedDiscount, // عشان يظهر اسم الخصم
               paidAmount: paidAmount,
               change: _change,
               reference: context.read<CheckoutCubit>().reference ?? '',

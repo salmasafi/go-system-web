@@ -1,7 +1,6 @@
 part of 'discount_cubit.dart';
 
-@immutable
-sealed class DiscountsState {}
+class DiscountsState {}
 
 final class DiscountsInitial extends DiscountsState {}
 

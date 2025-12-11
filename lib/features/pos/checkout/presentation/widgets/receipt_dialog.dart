@@ -43,6 +43,14 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
     return DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
   }
 
+  // String _formatAmount(double amount, String type) {
+  //   if (type == 'percentage') {
+  //     return '${(amount * 100).toStringAsFixed(0)}%';
+  //   } else {
+  //     return '\$${amount.toStringAsFixed(2)}';
+  //   }
+  // }
+
   // String _amountInWords(double amount) {
   //   int dollars = amount.floor();
   //   int cents = ((amount - dollars) * 100).round();
@@ -99,7 +107,7 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
   // }
 
   double get grandTotal =>
-      widget.recieptData.totalAmount + widget.recieptData.taxAmount;
+      widget.recieptData.totalAmount - widget.recieptData.discountAmount + widget.recieptData.taxAmount;
   @override
   void initState() {
     // needs to clear cart list
@@ -423,6 +431,28 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
   }
 
   Widget _buildTotalSection() {
+    String taxDisplay = '';
+    if (widget.recieptData.selectedTax != null) {
+      if (widget.recieptData.selectedTax!.type == 'percentage') {
+        taxDisplay = '${(widget.recieptData.selectedTax!.amount * 100).toStringAsFixed(0)}%';
+      } else {
+        taxDisplay = '\$${widget.recieptData.selectedTax!.amount.toStringAsFixed(2)}';
+      }
+    } else {
+      taxDisplay = '\$${widget.recieptData.taxAmount.toStringAsFixed(2)}';
+    }
+
+    String discountDisplay = '';
+    if (widget.recieptData.selectedDiscount != null) {
+      if (widget.recieptData.selectedDiscount!.type == 'percentage') {
+        discountDisplay = '${(widget.recieptData.selectedDiscount!.amount * 100).toStringAsFixed(0)}%';
+      } else {
+        discountDisplay = '\$${widget.recieptData.selectedDiscount!.amount.toStringAsFixed(2)}';
+      }
+    } else {
+      discountDisplay = '\$${widget.recieptData.discountAmount.toStringAsFixed(2)}';
+    }
+
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -441,10 +471,18 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
       child: Column(
         children: [
           _totalRow('Subtotal:', widget.recieptData.totalAmount, false),
+          if (widget.recieptData.discountAmount > 0) ...[
+            SizedBox(height: 8),
+            _totalRow(
+              '${widget.recieptData.selectedDiscount?.name ?? 'Discount'} ($discountDisplay):',
+              -widget.recieptData.discountAmount,
+              false,
+            ),
+          ],
           if (widget.recieptData.taxAmount > 0) ...[
             SizedBox(height: 8),
             _totalRow(
-              '${widget.recieptData.selectedTax?.name ?? 'Tax'} (${widget.recieptData.selectedTax?.amount ?? widget.recieptData.taxAmount}\$):',
+              '${widget.recieptData.selectedTax?.name ?? 'Tax'} ($taxDisplay):',
               widget.recieptData.taxAmount,
               false,
             ),
@@ -502,11 +540,11 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
           ),
         ),
         Text(
-          '\$${amount.toStringAsFixed(2)}',
+          amount >= 0 ? '\$${amount.toStringAsFixed(2)}' : '-\$${(-amount).toStringAsFixed(2)}',
           style: TextStyle(
             fontSize: bold ? 18 : 15,
             fontWeight: FontWeight.bold,
-            color: bold ? AppColors.primaryBlue : AppColors.darkGray,
+            color: bold ? AppColors.primaryBlue : (amount < 0 ? AppColors.successGreen : AppColors.darkGray),
           ),
         ),
       ],

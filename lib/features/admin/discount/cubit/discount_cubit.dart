@@ -1,7 +1,6 @@
 import 'dart:developer';
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:meta/meta.dart';
 import 'package:systego/core/services/dio_helper.dart';
 import 'package:systego/core/services/endpoints.dart';
 import 'package:systego/core/utils/error_handler.dart';
@@ -49,20 +48,24 @@ class DiscountsCubit extends Cubit<DiscountsState> {
     required bool status,
   }) async {
     emit(CreateDiscountLoading());
-
+    var _amount = (type == 'fixed') ? amount : amount / 100;
     try {
       final data = {
         "name": name,
-        "amount": amount,
+        "amount": _amount,
         "type": type,
         "status": status,
       };
 
-      final response =
-          await DioHelper.postData(url: EndPoint.addDiscount, data: data);
+      final response = await DioHelper.postData(
+        url: EndPoint.addDiscount,
+        data: data,
+      );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateDiscountSuccess(LocaleKeys.discount_created_successfully.tr()));
+        emit(
+          CreateDiscountSuccess(LocaleKeys.discount_created_successfully.tr()),
+        );
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(CreateDiscountError(errorMessage));
@@ -82,11 +85,11 @@ class DiscountsCubit extends Cubit<DiscountsState> {
     required bool status,
   }) async {
     emit(UpdateDiscountLoading());
-
+    var _amount = (type == 'fixed') ? amount : amount / 100;
     try {
       final data = {
         "name": name,
-        "amount": amount,
+        "amount": _amount,
         "type": type,
         "status": status,
       };
@@ -97,7 +100,9 @@ class DiscountsCubit extends Cubit<DiscountsState> {
       );
 
       if (response.statusCode == 200) {
-        emit(UpdateDiscountSuccess(LocaleKeys.discount_updated_successfully.tr()));
+        emit(
+          UpdateDiscountSuccess(LocaleKeys.discount_updated_successfully.tr()),
+        );
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(UpdateDiscountError(errorMessage));
@@ -113,12 +118,15 @@ class DiscountsCubit extends Cubit<DiscountsState> {
     emit(DeleteDiscountLoading());
 
     try {
-      final response =
-          await DioHelper.deleteData(url: EndPoint.deleteDiscount(discountId));
+      final response = await DioHelper.deleteData(
+        url: EndPoint.deleteDiscount(discountId),
+      );
 
       if (response.statusCode == 200) {
         allDiscounts.removeWhere((d) => d.id == discountId);
-        emit(DeleteDiscountSuccess(LocaleKeys.discount_deleted_successfully.tr()));
+        emit(
+          DeleteDiscountSuccess(LocaleKeys.discount_deleted_successfully.tr()),
+        );
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(DeleteDiscountError(errorMessage));
