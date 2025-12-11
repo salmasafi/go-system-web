@@ -578,10 +578,7 @@ SizedBox(height: ResponsiveUI.verticalSpacing(context, 3)),
                                             );
                                           }),
                                       ],
-                                    ),
-
-                                    // 🖼️ VARIANT GALLERY SECTION
-                                    if (hasGallery)
+                                      gallery: hasGallery ?
                                       Padding(
                                         padding: EdgeInsets.only(
                                           top: ResponsiveUI.verticalSpacing(
@@ -663,7 +660,93 @@ SizedBox(height: ResponsiveUI.verticalSpacing(context, 3)),
                                             ),
                                           ],
                                         ),
-                                      ),
+                                      ): null,
+                                    ),
+
+                                    // // 🖼️ VARIANT GALLERY SECTION
+                                    // if (hasGallery)
+                                    //   Padding(
+                                    //     padding: EdgeInsets.only(
+                                    //       top: ResponsiveUI.verticalSpacing(
+                                    //         context,
+                                    //         1,
+                                    //       ),
+                                    //     ),
+                                    //     child: Column(
+                                    //       crossAxisAlignment:
+                                    //           CrossAxisAlignment.start,
+                                    //       children: [
+                                    //         // Text(
+                                    //         //   'Price Variant Images',
+                                    //         //   style: TextStyle(
+                                    //         //     fontSize: 14,
+                                    //         //     fontWeight: FontWeight.w600,
+                                    //         //     color: AppColors.darkGray,
+                                    //         //   ),
+                                    //         // ),
+                                    //         SizedBox(
+                                    //           height:
+                                    //               ResponsiveUI.verticalSpacing(
+                                    //                 context,
+                                    //                 1,
+                                    //               ),
+                                    //         ),
+                                    //         SizedBox(
+                                    //           height:
+                                    //               80, // Smaller height for variant gallery
+                                    //           child: ListView.builder(
+                                    //             scrollDirection:
+                                    //                 Axis.horizontal,
+                                    //             itemCount: price.gallery.length,
+                                    //             itemBuilder: (context, index) {
+                                    //               return Padding(
+                                    //                 padding: EdgeInsets.only(
+                                    //                   right:
+                                    //                       ResponsiveUI.padding(
+                                    //                         context,
+                                    //                         1,
+                                    //                       ),
+                                    //                 ),
+                                    //                 child: ClipRRect(
+                                    //                   borderRadius:
+                                    //                       BorderRadius.circular(
+                                    //                         8,
+                                    //                       ),
+                                    //                   child: Image.network(
+                                    //                     price.gallery[index],
+                                    //                     width: 80,
+                                    //                     height: 80,
+                                    //                     fit: BoxFit.cover,
+                                    //                     errorBuilder:
+                                    //                         (
+                                    //                           context,
+                                    //                           error,
+                                    //                           stackTrace,
+                                    //                         ) {
+                                    //                           return Container(
+                                    //                             width: 80,
+                                    //                             height: 80,
+                                    //                             color: AppColors
+                                    //                                 .shadowGray,
+                                    //                             child: Icon(
+                                    //                               Icons
+                                    //                                   .broken_image,
+                                    //                               color:
+                                    //                                   AppColors
+                                    //                                       .white,
+                                    //                               size: 30,
+                                    //                             ),
+                                    //                           );
+                                    //                         },
+                                    //                   ),
+                                    //                 ),
+                                    //               );
+                                    //             },
+                                    //           ),
+                                    //         ),
+                                    //       ],
+                                    //     ),
+                                    //   ),
                                     if (product.prices.indexOf(price) <
                                         product.prices.length - 1)
                                       Divider(

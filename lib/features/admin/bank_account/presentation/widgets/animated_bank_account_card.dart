@@ -19,7 +19,6 @@ class AnimatedBankAccountCard extends StatefulWidget {
   final Duration? animationDuration;
   final Duration? animationDelay;
 
-  final String warehouseName;
 
   const AnimatedBankAccountCard({
     super.key,
@@ -30,7 +29,6 @@ class AnimatedBankAccountCard extends StatefulWidget {
     this.onTap,
     this.animationDuration,
     this.animationDelay,
-    required this.warehouseName,
   });
 
   @override
@@ -229,7 +227,7 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
                   Text(
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    widget.warehouseName,
+                    widget.account.warehouseName ?? "",
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 14),
                       fontWeight: FontWeight.w500,
@@ -303,10 +301,10 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    account.status ? "In POS" : "not in POS",
+                    account.inPos ? "In POS" : "not in POS",
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 12),
-                      color: account.status
+                      color: account.inPos
                           ? AppColors.successGreen
                           : AppColors.darkGray.withOpacity(0.6),
                       fontWeight: FontWeight.w500,
@@ -317,24 +315,6 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
             ),
           ],
         ),
-        // Status Row
-        // Row(
-        //  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //   children: [
-        //     Text(
-        //       account.status
-        //           ? LocaleKeys.bank_accounts_active.tr()
-        //           : LocaleKeys.bank_accounts_inactive.tr(),
-        //       style: TextStyle(
-        //         fontSize: ResponsiveUI.fontSize(context, 12),
-        //         color: account.status
-        //             ? AppColors.successGreen
-        //             : AppColors.darkGray.withOpacity(0.6),
-        //         fontWeight: FontWeight.w500,
-        //       ),
-        //     ),
-        //   ],
-        // ),
       ],
     );
   }

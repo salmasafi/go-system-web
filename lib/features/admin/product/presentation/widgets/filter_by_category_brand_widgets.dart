@@ -1,4 +1,3 @@
-// File 1: lib/features/product/presentation/widgets/filter_by_category_brand_widgets.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
@@ -11,7 +10,9 @@ import 'package:systego/features/admin/product/models/filter_models.dart';
 
 enum FilterType {
   categories,
-  brands, // variations, warehouses
+  brands,
+  variations,
+  warehouses
 }
 
 class FilterItem {
@@ -31,7 +32,7 @@ class FilterItem {
 class FilterButtons extends StatefulWidget {
   final Function(String?) onCategorySelected;
   final Function(String?) onBrandSelected;
-  final Function(String?) onVariationSelected;
+  final Function(String?, String?) onVariationSelected;
   final Function(String?) onWarehouseSelected;
 
   const FilterButtons({
@@ -49,8 +50,8 @@ class FilterButtons extends StatefulWidget {
 class _FilterButtonsState extends State<FilterButtons> {
   bool _showCategoriesFilter = false;
   bool _showBrandsFilter = false;
-  //bool _showWarhousesFilter = false;
-  //bool _showVariationsFilter = false;
+  bool _showWarehousesFilter = false;
+  bool _showVariationsFilter = false;
 
   @override
   Widget build(BuildContext context) {
@@ -80,8 +81,8 @@ class _FilterButtonsState extends State<FilterButtons> {
                                       !_showCategoriesFilter;
                                   if (_showCategoriesFilter) {
                                     _showBrandsFilter = false;
-                                    //_showWarhousesFilter = false;
-                                    //_showVariationsFilter = false;
+                                    _showWarehousesFilter = false;
+                                    _showVariationsFilter = false;
                                   }
                                 });
                               },
@@ -97,8 +98,8 @@ class _FilterButtonsState extends State<FilterButtons> {
                                   _showBrandsFilter = !_showBrandsFilter;
                                   if (_showBrandsFilter) {
                                     _showCategoriesFilter = false;
-                                    // _showWarhousesFilter = false;
-                                    //  _showVariationsFilter = false;
+                                    _showWarehousesFilter = false;
+                                    _showVariationsFilter = false;
                                   }
                                 });
                               },
@@ -106,47 +107,45 @@ class _FilterButtonsState extends State<FilterButtons> {
                           ),
                         ],
                       ),
-
-                      // SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      //   children: [
-                      //     Expanded(
-                      //       child: FilterButton(
-                      //         label: 'Warehouses',
-                      //         isActive: _showWarhousesFilter,
-                      //         onTap: () {
-                      //           setState(() {
-                      //             _showWarhousesFilter = !_showWarhousesFilter;
-                      //             if (_showWarhousesFilter) {
-                      //               _showCategoriesFilter = false;
-                      //               _showBrandsFilter = false;
-                      //               _showVariationsFilter = false;
-                      //             }
-                      //           });
-                      //         },
-                      //       ),
-                      //     ),
-                      //     SizedBox(width: ResponsiveUI.spacing(context, 12)),
-                      //     Expanded(
-                      //       child: FilterButton(
-                      //         label: 'Variations',
-                      //         isActive: _showVariationsFilter,
-                      //         onTap: () {
-                      //           setState(() {
-                      //             _showVariationsFilter =
-                      //                 !_showVariationsFilter;
-                      //             if (_showVariationsFilter) {
-                      //               _showCategoriesFilter = false;
-                      //               _showWarhousesFilter = false;
-                      //               _showBrandsFilter = false;
-                      //             }
-                      //           });
-                      //         },
-                      //       ),
-                      //     ),
-                      //   ],
-                      // ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: FilterButton(
+                              label: 'Variations',
+                              isActive: _showVariationsFilter,
+                              onTap: () {
+                                setState(() {
+                                  _showVariationsFilter = !_showVariationsFilter;
+                                  if (_showVariationsFilter) {
+                                    _showCategoriesFilter = false;
+                                    _showBrandsFilter = false;
+                                    _showWarehousesFilter = false;
+                                  }
+                                });
+                              },
+                            ),
+                          ),
+                          SizedBox(width: ResponsiveUI.spacing(context, 12)),
+                          Expanded(
+                            child: FilterButton(
+                              label: 'Warehouses',
+                              isActive: _showWarehousesFilter,
+                              onTap: () {
+                                setState(() {
+                                  _showWarehousesFilter = !_showWarehousesFilter;
+                                  if (_showWarehousesFilter) {
+                                    _showCategoriesFilter = false;
+                                    _showBrandsFilter = false;
+                                    _showVariationsFilter = false;
+                                  }
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -156,8 +155,8 @@ class _FilterButtonsState extends State<FilterButtons> {
                     delay: Duration.zero,
                     child: GenericFilterPanel(
                       filterType: FilterType.categories,
-                      selectedId: null, // Local or pass from parent if needed
-                      onSelected: widget.onCategorySelected,
+                      selectedId: null,
+                      onSelected: (id, _) => widget.onCategorySelected(id),
                       onClose: () {
                         setState(() {
                           _showCategoriesFilter = false;
@@ -171,7 +170,7 @@ class _FilterButtonsState extends State<FilterButtons> {
                     child: GenericFilterPanel(
                       filterType: FilterType.brands,
                       selectedId: null,
-                      onSelected: widget.onBrandSelected,
+                      onSelected: (id, _) => widget.onBrandSelected(id),
                       onClose: () {
                         setState(() {
                           _showBrandsFilter = false;
@@ -179,34 +178,32 @@ class _FilterButtonsState extends State<FilterButtons> {
                       },
                     ),
                   ),
-                // if (_showVariationsFilter)
-                //   AnimatedElement(
-                //     delay: Duration.zero,
-                //     child: GenericFilterPanel(
-                //       filterType: FilterType.variations,
-                //       selectedId: null,
-                //       onSelected: widget.onVariationSelected,
-                //       onClose: () {
-                //         setState(() {
-                //           _showVariationsFilter = false;
-                //         });
-                //       },
-                //     ),
-                //   ),
-                // if (_showWarhousesFilter)
-                //   AnimatedElement(
-                //     delay: Duration.zero,
-                //     child: GenericFilterPanel(
-                //       filterType: FilterType.warehouses,
-                //       selectedId: null,
-                //       onSelected: widget.onWarehouseSelected,
-                //       onClose: () {
-                //         setState(() {
-                //           _showWarhousesFilter = false;
-                //         });
-                //       },
-                //     ),
-                //   ),
+                if (_showVariationsFilter)
+                  AnimatedElement(
+                    delay: Duration.zero,
+                    child: VariationsFilterPanel(
+                      onSelected: widget.onVariationSelected,
+                      onClose: () {
+                        setState(() {
+                          _showVariationsFilter = false;
+                        });
+                      },
+                    ),
+                  ),
+                if (_showWarehousesFilter)
+                  AnimatedElement(
+                    delay: Duration.zero,
+                    child: GenericFilterPanel(
+                      filterType: FilterType.warehouses,
+                      selectedId: null,
+                      onSelected: (id, _) => widget.onWarehouseSelected(id),
+                      onClose: () {
+                        setState(() {
+                          _showWarehousesFilter = false;
+                        });
+                      },
+                    ),
+                  ),
               ],
             ),
           );
@@ -278,11 +275,10 @@ class FilterButton extends StatelessWidget {
   }
 }
 
-// Generic Filter Panel using BlocBuilder
 class GenericFilterPanel extends StatelessWidget {
   final FilterType filterType;
   final String? selectedId;
-  final Function(String?) onSelected;
+  final Function(String?, String?) onSelected;
   final VoidCallback onClose;
 
   const GenericFilterPanel({
@@ -299,10 +295,10 @@ class GenericFilterPanel extends StatelessWidget {
         return 'Categories';
       case FilterType.brands:
         return 'Brands';
-      // case FilterType.variations:
-      //   return 'Variations';
-      // case FilterType.warehouses:
-      //   return 'Warehouses';
+      case FilterType.variations:
+        return 'Variations';
+      case FilterType.warehouses:
+        return 'Warehouses';
     }
   }
 
@@ -319,28 +315,29 @@ class GenericFilterPanel extends StatelessWidget {
             count: count,
           );
         case FilterType.brands:
+        
           return FilterItem(
             id: (item as BrandFilter).id,
             name: item.name,
             image: item.logo,
-            count: 0, // Add count from API if available
+            count: 0,
           );
-        // case FilterType.variations:
-        //   final varn = item as VariationFilter;
-        //   return FilterItem(
-        //     id: varn.id,
-        //     name: varn.name,
-        //     image: '',
-        //     count: varn.options.length,
-        //   );
-        // case FilterType.warehouses:
-        //   final wh = item as WarehouseFilter;
-        //   return FilterItem(
-        //     id: wh.id,
-        //     name: wh.name,
-        //     image: '',
-        //     count: wh.numberOfProducts,
-        //   );
+        case FilterType.variations:
+          final varn = item as VariationFilter;
+          return FilterItem(
+            id: varn.id,
+            name: varn.name,
+            image: '',
+            count: varn.options.length,
+          );
+        case FilterType.warehouses:
+          final wh = item as WarehouseFilter;
+          return FilterItem(
+            id: wh.id,
+            name: wh.name,
+            image: '',
+            count: wh.numberOfProducts,
+          );
       }
     }).toList();
   }
@@ -359,7 +356,7 @@ class GenericFilterPanel extends StatelessWidget {
           ? Icon(Icons.check, color: AppColors.primaryBlue)
           : null,
       selected: isSelected,
-      onTap: () => onSelected(isSelected ? null : item.id),
+      onTap: () => onSelected(isSelected ? null : item.id, null),
     );
   }
 
@@ -369,10 +366,10 @@ class GenericFilterPanel extends StatelessWidget {
         return Icons.category;
       case FilterType.brands:
         return Icons.business;
-      // case FilterType.variations:
-      //   return Icons.tune;
-      // case FilterType.warehouses:
-      //   return Icons.warehouse;
+      case FilterType.variations:
+        return Icons.tune;
+      case FilterType.warehouses:
+        return Icons.warehouse;
     }
   }
 
@@ -385,7 +382,6 @@ class GenericFilterPanel extends StatelessWidget {
             padding: EdgeInsets.all(16),
             child: Center(
               child: CustomLoadingState(),
-              //  child: CircularProgressIndicator(color: AppColors.primaryBlue),
             ),
           );
         }
@@ -415,11 +411,14 @@ class GenericFilterPanel extends StatelessWidget {
             case FilterType.brands:
               list = state.filters.data?.brands ?? [];
               break;
-            // case FilterType.variations:
-            //   list = state.filters.data?.variations ?? [];
-            //   break;
-            // case FilterType.warehouses:
-            //   list = state.filters.data?.warehouses ?? [];
+            case FilterType.variations:
+              list = state.filters.data?.variations ?? [];
+              break;
+            case FilterType.warehouses:
+              list = state.filters.data?.warehouses ?? [];
+              break;
+            default:
+              list = [];
           }
 
           final items = _getItems(list);
@@ -455,6 +454,106 @@ class GenericFilterPanel extends StatelessWidget {
                       final item = items[index];
                       final isSelected = selectedId == item.id;
                       return _buildItem(item, isSelected);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return const SizedBox.shrink();
+      },
+    );
+  }
+}
+
+class VariationsFilterPanel extends StatelessWidget {
+  final Function(String?, String?) onSelected;
+  final VoidCallback onClose;
+
+  const VariationsFilterPanel({
+    super.key,
+    required this.onSelected,
+    required this.onClose,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ProductFiltersCubit, ProductFiltersState>(
+      builder: (context, state) {
+        if (state is ProductFiltersLoading) {
+          return Container(
+            padding: EdgeInsets.all(16),
+            child: Center(
+              child: CustomLoadingState(),
+            ),
+          );
+        }
+
+        if (state is ProductFiltersError) {
+          return Container(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Text('Error: ${state.message}'),
+                ElevatedButton(
+                  onPressed: () =>
+                      context.read<ProductFiltersCubit>().getFilters(),
+                  child: Text('Retry'),
+                ),
+              ],
+            ),
+          );
+        }
+
+        if (state is ProductFiltersSuccess) {
+          final variations = state.filters.data?.variations ?? [];
+
+          return Container(
+            margin: EdgeInsets.symmetric(
+              horizontal: ResponsiveUI.padding(context, 16),
+            ),
+            padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(
+                ResponsiveUI.borderRadius(context, 12),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FilterPanelHeader(title: 'Variations', onClose: onClose),
+                SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                SizedBox(
+                  height: ResponsiveUI.value(context, 300),
+                  child: ListView.builder(
+                    itemCount: variations.length,
+                    itemBuilder: (context, index) {
+                      final variation = variations[index];
+                      return ExpansionTile(
+                        leading: const Icon(Icons.tune),
+                        title: Text(variation.name),
+                        subtitle: Text('${variation.options.where((opt) => opt.status).length} options'),
+                        children: variation.options
+                            .where((option) => option.status)
+                            .map((option) {
+                          return ListTile(
+                            title: Text(option.name),
+                            onTap: () {
+                              onSelected(variation.id, option.name);
+                            },
+                          );
+                        }).toList(),
+                      );
                     },
                   ),
                 ),
