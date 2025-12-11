@@ -24,7 +24,7 @@ class _TaxFormDialogState extends State<TaxFormDialog>
   final _nameController = TextEditingController();
   final _amountController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-    final _arNameController = TextEditingController();
+  final _arNameController = TextEditingController();
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
 
@@ -59,7 +59,7 @@ class _TaxFormDialogState extends State<TaxFormDialog>
   void _initializeControllers() {
     if (isEditMode) {
       _nameController.text = widget.tax!.name;
-       _arNameController.text = widget.tax!.arName ?? '';
+      _arNameController.text = widget.tax!.arName ?? '';
       _amountController.text = widget.tax!.amount.toString();
       selectedtaxType =
           widget.tax!.type[0].toUpperCase() +
@@ -186,6 +186,7 @@ class _TaxFormDialogState extends State<TaxFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _amountController,
+                                  keyboardType: TextInputType.number,
                                   label: 'Amount',
                                   icon: Icons.attach_money_rounded,
                                   hint: 'Enter Tax Amount',
@@ -252,14 +253,18 @@ class _TaxFormDialogState extends State<TaxFormDialog>
           name: _nameController.text.trim(),
           arName: _arNameController.text.trim(),
           taxType: selectedtaxType!.toLowerCase(),
-          amount: double.parse(_amountController.text),
+          amount: selectedtaxType == 'Fixed'
+              ? double.parse(_amountController.text.trim())
+              : double.parse(_amountController.text.trim()) / 100,
         );
       } else {
         cubit.createTax(
           name: _nameController.text.trim(),
           arName: _arNameController.text.trim(),
           taxType: selectedtaxType!.toLowerCase(),
-          amount: double.parse(_amountController.text),
+          amount: selectedtaxType == 'Fixed'
+              ? double.parse(_amountController.text.trim())
+              : double.parse(_amountController.text.trim()) / 100,
         );
       }
     }

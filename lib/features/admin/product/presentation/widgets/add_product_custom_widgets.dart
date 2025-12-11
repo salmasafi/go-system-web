@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 
+import '../../../../../core/widgets/custom_textfield/build_text_field.dart';
+
 // ═══════════════════════════════════════════════════════════════════════════
 // 1. Section Card Widget
 // ═══════════════════════════════════════════════════════════════════════════
@@ -92,12 +94,16 @@ class AnimatedCheckboxTile extends StatelessWidget {
   final String title;
   final ValueChanged<bool?> onChanged;
   final Color activeColor;
+  final TextEditingController? priceController;
+  final TextEditingController? quantityController;
 
   const AnimatedCheckboxTile({
     super.key,
     required this.value,
     required this.title,
     required this.onChanged,
+    this.priceController,
+    this.quantityController,
     this.activeColor = AppColors.primaryBlue,
   });
 
@@ -136,41 +142,69 @@ class AnimatedCheckboxTile extends StatelessWidget {
               horizontal: ResponsiveUI.padding(context, 16),
               vertical: ResponsiveUI.padding(context, 12),
             ),
-            child: Row(
+            child: Column(
               children: [
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: value ? activeColor : Colors.transparent,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(
-                      color: value ? activeColor : AppColors.shadowGray,
-                      width: 2,
+                Row(
+                  children: [
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: value ? activeColor : Colors.transparent,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: value ? activeColor : AppColors.shadowGray,
+                          width: 2,
+                        ),
+                      ),
+                      child: value
+                          ? Icon(Icons.check, size: 16, color: AppColors.white)
+                          : null,
                     ),
-                  ),
-                  child: value
-                      ? Icon(Icons.check, size: 16, color: AppColors.white)
-                      : null,
-                ),
-                // SizedBox(width: ResponsiveUI.spacing(context, 12)),
-                // Icon(
-                //   icon,
-                //   size: ResponsiveUI.iconSize(context, 20),
-                //   color: value ? activeColor : AppColors.shadowGray,
-                // ),
-                SizedBox(width: ResponsiveUI.spacing(context, 10)),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: ResponsiveUI.fontSize(context, 14),
-                      fontWeight: value ? FontWeight.w600 : FontWeight.normal,
-                      color: value ? activeColor : AppColors.darkGray,
+                    // SizedBox(width: ResponsiveUI.spacing(context, 12)),
+                    // Icon(
+                    //   icon,
+                    //   size: ResponsiveUI.iconSize(context, 20),
+                    //   color: value ? activeColor : AppColors.shadowGray,
+                    // ),
+                    SizedBox(width: ResponsiveUI.spacing(context, 10)),
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: ResponsiveUI.fontSize(context, 14),
+                          fontWeight: value
+                              ? FontWeight.w600
+                              : FontWeight.normal,
+                          color: value ? activeColor : AppColors.darkGray,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
+                if (!value &&
+                    priceController != null &&
+                    quantityController != null) ...[
+                  SizedBox(height: ResponsiveUI.spacing(context, 20)),
+                  buildTextField(
+                    context,
+                    controller: priceController!,
+                    label: 'Unit Price *',
+                    icon: Icons.price_change,
+                    hint: '0.00',
+                    keyboardType: TextInputType.number,
+                  ),
+                  SizedBox(height: ResponsiveUI.spacing(context, 20)),
+                  buildTextField(
+                    context,
+                    controller: quantityController!,
+                    label: 'Product Quantity *',
+                    icon: Icons.production_quantity_limits,
+                    hint: '0.00',
+                    keyboardType: TextInputType.number,
+                  ),
+                ],
               ],
             ),
           ),
@@ -339,7 +373,7 @@ class MainImagePicker extends StatelessWidget {
           onTap: onPick,
           child: Container(
             width: double.infinity,
-            height: 200,
+            height: 400,
             decoration: BoxDecoration(
               gradient: image == null
                   ? LinearGradient(
@@ -367,7 +401,7 @@ class MainImagePicker extends StatelessWidget {
                         child: Image.file(
                           image!,
                           width: double.infinity,
-                          fit: BoxFit.fill,
+                          fit: BoxFit.contain,
                         ),
                       ),
                       Positioned(
@@ -412,14 +446,14 @@ class MainImagePicker extends StatelessWidget {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Recommended: 1000x1000px',
-                        style: TextStyle(
-                          color: AppColors.shadowGray.withOpacity(0.7),
-                          fontSize: 11,
-                        ),
-                      ),
+                      // SizedBox(height: 4),
+                      // Text(
+                      //   'Recommended: 1000x1000px',
+                      //   style: TextStyle(
+                      //     color: AppColors.shadowGray.withOpacity(0.7),
+                      //     fontSize: 11,
+                      //   ),
+                      // ),
                     ],
                   ),
           ),

@@ -25,9 +25,9 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   List<Widget> screens = [
     DashboardScreen(),
-    Container(),
+    //Container(),
     POSScreen(),
-    Container(),
+    //Container(),
     Container(),
   ];
 
@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: CustomBottomAppBar(
         currentIndex: _currentIndex,
         onTap: (index) async {
-          if (index == 4) {
+          if (index == 2) {
             await CacheHelper.clearAllData();
             navigatorKey.currentState?.pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => const LoginScreen()),

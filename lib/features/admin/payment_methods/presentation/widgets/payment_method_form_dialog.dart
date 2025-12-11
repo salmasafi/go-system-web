@@ -211,7 +211,7 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _descriptionController,
-                                  // keyboardType: TextInputType.number,
+                                  keyboardType: TextInputType.number,
                                   label: 'Description',
                                   icon: Icons.description,
                                   hint: 'Enter description',
