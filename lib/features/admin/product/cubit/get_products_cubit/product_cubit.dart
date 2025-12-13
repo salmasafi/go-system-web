@@ -147,6 +147,100 @@ class ProductsCubit extends Cubit<ProductsState> {
     }
   }
 
+  Future<void> updateProductWithData({
+    required String id,
+    required String name,
+    required String arName,
+    required String description,
+    required String arDescription,
+    required String image,
+    required String? code,
+    required List<String> categoryIds,
+    required String brandId,
+    required String unit,
+    required double price,
+    required bool expAbility,
+    required DateTime? expiryDate,
+    required int minimumQuantitySale,
+    required int lowStock,
+    required double wholePrice,
+    required int startQuantity,
+    required int quantity,
+    required String taxesId,
+    required bool productHasImei,
+    required bool differentPrice,
+    required bool showQuantity,
+    required bool isFeatured,
+    required int maximumToShow,
+    required List<String> galleryProduct,
+    required List<Map<String, dynamic>> prices,
+  }) async {
+    emit(ProductsLoading());
+
+    // Build the request body according to API spec
+    final Map<String, dynamic> requestBody = {
+      'name': name,
+      'ar_name': arName,
+      'description': description,
+      'ar_description': arDescription,
+      if (code != null) 'code': code,
+      'image': image,
+      'categoryId': categoryIds,
+      'brandId': brandId,
+      'unit': unit,
+      'price': price,
+      'exp_ability': expAbility,
+      if (expAbility) 'date_of_expiery': expiryDate.toString(),
+      'minimum_quantity_sale': minimumQuantitySale,
+      'low_stock': lowStock,
+      'whole_price': wholePrice,
+      'start_quantaty': startQuantity, // Note: API has typo "quantaty"
+      'quantity': quantity,
+      //'taxesId': taxesId,
+      'product_has_imei': productHasImei,
+      'different_price': differentPrice,
+      'show_quantity': showQuantity,
+      'is_featured': isFeatured,
+      'maximum_to_show': maximumToShow,
+      'gallery_product': galleryProduct,
+      'prices': prices,
+    };
+
+    try {
+      log('Starting product edit request...');
+      log('Request body: $requestBody');
+
+      final response = await DioHelper.putData(
+        url: '${EndPoint.createProduct}/$id',
+        data: requestBody,
+      );
+
+      log('Response received: ${response.statusCode}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = response.data;
+        if (data['success'] == true) {
+          final message = data['message'] ?? 'Product updated successfully';
+          log('Product edit successful');
+          emit(ProductAddSuccess(message));
+        } else {
+          final errorMessage =
+              data['message']?.toString() ?? 'Failed to edit product';
+          log('Product edit failed: $errorMessage');
+          emit(ProductsError(errorMessage));
+        }
+      } else {
+        final errorMessage = ErrorHandler.handleError(response);
+        log('Response error: $errorMessage');
+        emit(ProductsError(errorMessage));
+      }
+    } catch (error) {
+      log('Product edit error caught: $error');
+      final errorMessage = ErrorHandler.handleError(error);
+      emit(ProductsError(errorMessage));
+    }
+  }
+
   // Future<void> addProduct() async {
   //   // Keep old method for backward compatibility
   //   emit(ProductsLoading());
@@ -258,66 +352,72 @@ class ProductsCubit extends Cubit<ProductsState> {
     }
   }
 
+  Future<void> getWareHouseProducts(String wareHouseID) async {
+    emit(ProductsLoading());
 
-Future<void> getWareHouseProducts(String wareHouseID) async {
-  emit(ProductsLoading());
+    try {
+      log('Starting products request...');
 
-  try {
-    log('Starting products request...');
+      final response = await DioHelper.getData(
+        url: EndPoint.getWareHouseProducts(wareHouseID),
+      );
 
-    final response = await DioHelper.getData(url: EndPoint.getWareHouseProducts(wareHouseID));
+      log('Response received: ${response.statusCode}');
 
-    log('Response received: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final data = response.data;
+        log('data received: ${response.data}');
+        if (data['success'] == true && data['data'] != null) {
+          final productsJson =
+              data['data']['productWarehouses'] as List<dynamic>? ?? [];
+          final warehouseProducts = productsJson
+              .map(
+                (json) =>
+                    WarehouseProduct.fromJson(json as Map<String, dynamic>),
+              )
+              .toList()
+              .reversed
+              .toList();
+          // Map to Product objects for the state (assuming partial mapping; adjust as needed based on full Product requirements)
+          final products = warehouseProducts.where((wp) => wp.productId != null).map((
+            wp,
+          ) {
+            // Construct a partial JSON for Product.fromJson, filling defaults for missing fields
+            // This assumes Product.fromJson can handle minimal fields; expand defaults as per Product model
+            final productJson = {
+              '_id': wp.productId!.id,
+              'name': wp.productId!.name,
+              'quantity': wp.quantity,
+              'description': '', // Default
+              'price': 0.0, // Default
+              'prices': [], // Default
+              'categoryId': [], // Default
+              'brandId': {
+                '_id': '',
+              }, // Default, assuming brandId is a map with id
+              // Add more defaults for other required Product fields if necessary
+            };
+            return Product.fromJson(productJson);
+          }).toList();
+          log('Products fetch successful');
+          log('Products ${products}');
+          log('Products ${products.map((p) => p.toJson())}');
 
-    if (response.statusCode == 200) {
-      final data = response.data;
-      log('data received: ${response.data}');
-      if (data['success'] == true && data['data'] != null) {
-        final productsJson = data['data']['productWarehouses'] as List<dynamic>? ?? [];
-        final warehouseProducts = productsJson
-            .map((json) => WarehouseProduct.fromJson(json as Map<String, dynamic>))
-            .toList()
-            .reversed
-            .toList();
-        // Map to Product objects for the state (assuming partial mapping; adjust as needed based on full Product requirements)
-        final products = warehouseProducts
-            .where((wp) => wp.productId != null)
-            .map((wp) {
-              // Construct a partial JSON for Product.fromJson, filling defaults for missing fields
-              // This assumes Product.fromJson can handle minimal fields; expand defaults as per Product model
-              final productJson = {
-                '_id': wp.productId!.id,
-                'name': wp.productId!.name,
-                'quantity': wp.quantity,
-                'description': '', // Default
-                'price': 0.0, // Default
-                'prices': [], // Default
-                'categoryId': [], // Default
-                'brandId': {'_id': ''}, // Default, assuming brandId is a map with id
-                // Add more defaults for other required Product fields if necessary
-              };
-              return Product.fromJson(productJson);
-            })
-            .toList();
-        log('Products fetch successful');
-        log('Products ${products}');
-        log('Products ${products.map((p) => p.toJson())}');
-
-        emit(ProductsSuccess(products));
+          emit(ProductsSuccess(products));
+        } else {
+          final errorMessage = data['message'] ?? 'Failed to fetch products';
+          log('Products fetch failed: $errorMessage');
+          emit(ProductsError(errorMessage));
+        }
       } else {
-        final errorMessage = data['message'] ?? 'Failed to fetch products';
-        log('Products fetch failed: $errorMessage');
+        final errorMessage = ErrorHandler.handleError(response);
+        log('Response error: $errorMessage');
         emit(ProductsError(errorMessage));
       }
-    } else {
-      final errorMessage = ErrorHandler.handleError(response);
-      log('Response error: $errorMessage');
+    } catch (error) {
+      log('Products fetch error caught: $error');
+      final errorMessage = ErrorHandler.handleError(error);
       emit(ProductsError(errorMessage));
     }
-  } catch (error) {
-    log('Products fetch error caught: $error');
-    final errorMessage = ErrorHandler.handleError(error);
-    emit(ProductsError(errorMessage));
   }
-}
 }

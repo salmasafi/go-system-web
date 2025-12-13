@@ -27,8 +27,11 @@ class CustomImageContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: ResponsiveUI.value(context, size ?? 60),
-      width: ResponsiveUI.value(context, size ?? 60),
+      height: ResponsiveUI.value(
+        context, //size ??
+        100,
+      ),
+      width: ResponsiveUI.value(context, 90),
       clipBehavior: Clip.antiAlias,
       //padding: EdgeInsets.all(padding ?? 14),
       decoration: BoxDecoration(
@@ -47,8 +50,11 @@ class CustomImageContainer extends StatelessWidget {
       ),
       child: (image != null)
           ? SizedBox(
-              height: ResponsiveUI.value(context, size ?? 60),
-              width: ResponsiveUI.value(context, size ?? 60),
+              height: ResponsiveUI.value(
+                context, //size ??
+                120,
+              ),
+              // width: ResponsiveUI.value(context, size ?? double.maxFinite),
               child: Image.network(
                 image!,
                 fit: BoxFit.fill,
@@ -65,7 +71,7 @@ class CustomImageContainer extends StatelessWidget {
               icon ?? Icons.inventory_2,
               color: iconColor ?? Colors.white,
               size: size != null
-                  ? ResponsiveUI.iconSize(context, size!)
+                  ? ResponsiveUI.iconSize(context, 70)
                   : ResponsiveUI.iconSize(context, 30),
             ),
     );

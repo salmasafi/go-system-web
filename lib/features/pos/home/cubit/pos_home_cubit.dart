@@ -135,7 +135,7 @@ class PosCubit extends Cubit<PosState> {
       final response = await DioHelper.getData(url: EndPoint.posFeatured);
       if (response.statusCode == 200) {
         final data = response.data['data']['products'] as List;
-        featuredProducts = data.map((e) => Product.fromJson(e)).toList();
+        featuredProducts = data.map((e) => Product.fromList(e)).toList();
       }
     } catch (e) {
       log('Featured error: $e');
@@ -278,7 +278,7 @@ class PosCubit extends Cubit<PosState> {
         );
         if (response.statusCode == 200) {
           final data = response.data['data']['products'] as List;
-          categoryProducts = data.map((e) => Product.fromJson(e)).toList();
+          categoryProducts = data.map((e) => Product.fromList(e)).toList();
           selectedCategoryId = categoryId;
           hideFilterPanels();
           emit(PosDataLoaded(categoryProducts));
@@ -301,7 +301,7 @@ class PosCubit extends Cubit<PosState> {
         );
         if (response.statusCode == 200) {
           final data = response.data['data']['products'] as List;
-          brandProducts = data.map((e) => Product.fromJson(e)).toList();
+          brandProducts = data.map((e) => Product.fromList(e)).toList();
           selectedBrandId = brandId;
           hideFilterPanels();
           emit(PosDataLoaded(brandProducts));
@@ -389,7 +389,7 @@ class PosCubit extends Cubit<PosState> {
       if (response.statusCode == 200) {
         final data = response.data['data']['product'];
         if (data != null) {
-          final product = Product.fromJson2(data);
+          final product = Product.fromScan(data);
           return product;
         } else {
           emit(PosError('Product not found'));

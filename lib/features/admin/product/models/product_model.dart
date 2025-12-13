@@ -2,6 +2,7 @@
 class Product {
   final String id;
   final String name;
+  final String arName;
   final String image;
   final List<Category> categoryId;
   final Brand brandId;
@@ -9,6 +10,7 @@ class Product {
   final double price;
   final int quantity;
   final String description;
+  final String arDescription;
   final bool expAbility;
   final DateTime? dateOfExpiery;
   final int minimumQuantitySale;
@@ -29,6 +31,7 @@ class Product {
   Product({
     required this.id,
     required this.name,
+    required this.arName,
     required this.image,
     required this.categoryId,
     required this.brandId,
@@ -36,6 +39,7 @@ class Product {
     required this.price,
     required this.quantity,
     required this.description,
+    required this.arDescription,
     required this.expAbility,
     this.dateOfExpiery,
     required this.minimumQuantitySale,
@@ -58,8 +62,10 @@ class Product {
     return Product(
       id: json['_id'] ?? '',
       name: json['name'] ?? '',
+      arName: json['ar_name'] ?? '',
       image: json['image'] ?? '',
-      categoryId: (json['categoryId'] as List<dynamic>?)
+      categoryId:
+          (json['categoryId'] as List<dynamic>?)
               ?.map((e) => Category.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
@@ -69,6 +75,7 @@ class Product {
       unit: json['unit'] ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       quantity: json['quantity'] ?? 0,
+      arDescription: json['ar_description'] ?? '',
       description: json['description'] ?? '',
       expAbility: json['exp_ability'] ?? false,
       dateOfExpiery: json['date_of_expiery'] != null
@@ -88,7 +95,8 @@ class Product {
       isFeatured: json['is_featured'],
       createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
       updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
-      prices: (json['prices'] as List<dynamic>?)
+      prices:
+          (json['prices'] as List<dynamic>?)
               ?.map((e) => Price.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
@@ -152,10 +160,8 @@ class Category {
       image: json['image'] ?? '',
       productQuantity: json['product_quantity'] ?? 0,
       parentId: json['parentId'],
-      createdAt:
-          DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
-      updatedAt:
-          DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
+      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
+      updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
     );
   }
 
@@ -192,20 +198,18 @@ class Brand {
       id: json['_id'] ?? '',
       name: json['name'] ?? '',
       logo: json['logo'] ?? '',
-      createdAt:
-          DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
-      updatedAt:
-          DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
+      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
+      updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
     );
   }
 
   factory Brand.empty() => Brand(
-        id: '',
-        name: '',
-        logo: '',
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      );
+    id: '',
+    name: '',
+    logo: '',
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+  );
 
   Map<String, dynamic> toJson() {
     return {
@@ -249,14 +253,13 @@ class Price {
       code: json['code'] ?? '',
       gallery: (json['gallery'] as List<dynamic>?)?.cast<String>() ?? [],
       quantity: json['quantity'] ?? 0,
-      variations: (json['variations'] as List<dynamic>?)
+      variations:
+          (json['variations'] as List<dynamic>?)
               ?.map((e) => VariationDetail.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
-      createdAt:
-          DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
-      updatedAt:
-          DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
+      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
+      updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
     );
   }
 
@@ -279,15 +282,13 @@ class VariationDetail {
   final String name;
   final List<Option> options;
 
-  VariationDetail({
-    required this.name,
-    required this.options,
-  });
+  VariationDetail({required this.name, required this.options});
 
   factory VariationDetail.fromJson(Map<String, dynamic> json) {
     return VariationDetail(
       name: json['name'] ?? '',
-      options: (json['options'] as List<dynamic>?)
+      options:
+          (json['options'] as List<dynamic>?)
               ?.map((e) => Option.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
@@ -321,13 +322,9 @@ class Option {
       id: json['_id'] ?? '',
       variationId: json['variationId'] ?? '',
       name: json['name'] ?? '',
-      status: json['status'] is bool
-          ? json['status']
-          : json['status'] == 1,
-      createdAt:
-          DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
-      updatedAt:
-          DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
+      status: json['status'] is bool ? json['status'] : json['status'] == 1,
+      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
+      updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
     );
   }
 

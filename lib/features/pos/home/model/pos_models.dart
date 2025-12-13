@@ -45,33 +45,174 @@ class Brand {
   }
 }
 
+// موديل جديد لـ Variation (مثل color أو size)
+class Variation {
+  final String name; // e.g., "Color" or "Size"
+  final List<VariationOption> options;
+
+  Variation({required this.name, required this.options});
+
+  factory Variation.fromJson(Map<String, dynamic> json) {
+    return Variation(
+      name: json['name'] as String,
+      options: (json['options'] as List)
+          .map((o) => VariationOption.fromJson(o))
+          .toList(),
+    );
+  }
+}
+
+class VariationOption {
+  final String id;
+  final String name; // e.g., "brown", "medium"
+  final String variationId;
+
+  VariationOption({
+    required this.id,
+    required this.name,
+    required this.variationId,
+  });
+
+  factory VariationOption.fromJson(Map<String, dynamic> json) {
+    return VariationOption(
+      id: json['_id'] as String,
+      name: json['name'] as String,
+      variationId: json['variationId'] as String,
+    );
+  }
+}
+
+// موديل جديد لكل سعر variation
+class PriceVariation {
+  final String id;
+  final String productId;
+  final double price;
+  final String code; // e.g., "hoodie1_brown"
+  final List<String> gallery;
+  final int quantity;
+  final List<Variation> variations; // list of color/size etc.
+
+  PriceVariation({
+    required this.id,
+    required this.productId,
+    required this.price,
+    required this.code,
+    required this.gallery,
+    required this.quantity,
+    required this.variations,
+  });
+
+  factory PriceVariation.fromJson(Map<String, dynamic> json) {
+    return PriceVariation(
+      id: json['_id'] as String,
+      productId: json['productId'] as String,
+      price: (json['price'] as num).toDouble(),
+      code: json['code'] as String,
+      gallery: (json['gallery'] as List).cast<String>(),
+      quantity: json['quantity'] as int,
+      variations:
+          (json['variations'] as List?)
+              ?.map((v) => Variation.fromJson(v))
+              .toList() ??
+          [],
+    );
+  }
+}
+
+// تعديل موديل Product
 class Product {
   final String id;
   final String name;
+  final String description;
   final String? image;
-  final double price;
+  final double price; // سعر افتراضي أو أدنى سعر
+  final bool differentPrice; // جديد: هل لديه variations؟
+  final List<PriceVariation>
+  prices; // جديد: قائمة الـ variations إذا differentPrice true
+  // يمكن إضافة حقول أخرى من الـ API إذا لزم (مثل quantity, description)
 
   Product({
     required this.id,
     required this.name,
     this.image,
     required this.price,
+    required this.description,
+    this.differentPrice = false,
+    this.prices = const [],
   });
 
-  factory Product.fromJson(Map<String, dynamic> json) {
+  // Factory للرد من القائمة (يحتوي على "prices" array إذا different_price true)
+  factory Product.fromList(Map<String, dynamic> json) {
+    bool hasDifferentPrice = json['different_price'] as bool? ?? false;
+    List<PriceVariation> variations = hasDifferentPrice
+        ? (json['prices'] as List?)
+                  ?.map((p) => PriceVariation.fromJson(p))
+                  .toList() ??
+              []
+        : [];
+
+    // التحقق الجديد: إذا كان هناك سعر واحد فقط في القائمة، اجعل differentPrice = false
+    if (variations.length == 1) {
+      hasDifferentPrice = false;
+    }
+
+    // حساب السعر الافتراضي: إذا variations، خذ أدنى سعر؛ وإلا السعر الرئيسي
+    double defaultPrice = hasDifferentPrice
+        ? (variations.isNotEmpty
+              ? variations.map((v) => v.price).reduce((a, b) => a < b ? a : b)
+              : 0.0)
+        : (json['price'] as num?)?.toDouble() ?? 0.0;
+
     return Product(
       id: json['_id'] as String,
       name: json['name'] as String,
+      description: json['description'] as String,
       image: json['image'] as String?,
-      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      price: defaultPrice,
+      differentPrice: hasDifferentPrice,
+      prices: variations,
     );
   }
-  factory Product.fromJson2(Map<String, dynamic> json) {
+
+  // Factory للرد من سكان/بحث كود (يحتوي على "price" كـ object، لكن قد يكون variation واحد أو قائمة)
+  factory Product.fromScan(Map<String, dynamic> json) {
+    bool hasDifferentPrice = json['different_price'] as bool? ?? false;
+    List<PriceVariation> variations = [];
+
+    if (hasDifferentPrice) {
+      // إذا different_price true، افترض أن "prices" موجودة كقائمة
+      variations =
+          (json['prices'] as List?)
+              ?.map((p) => PriceVariation.fromJson(p))
+              .toList() ??
+          [];
+    } else if (json['price'] is Map) {
+      // إذا سعر واحد، حوّله إلى PriceVariation واحد
+      variations = [
+        PriceVariation.fromJson(json['price'] as Map<String, dynamic>),
+      ];
+    }
+
+    // التحقق الجديد: إذا كان هناك سعر واحد فقط في القائمة، اجعل differentPrice = false
+    if (variations.length == 1) {
+      hasDifferentPrice = false;
+    }
+
+    // حساب السعر الافتراضي كما فوق
+    double defaultPrice = hasDifferentPrice || variations.isNotEmpty
+        ? (variations.isNotEmpty
+              ? variations.map((v) => v.price).reduce((a, b) => a < b ? a : b)
+              : 0.0)
+        : (json['price']['price'] as num?)?.toDouble() ?? 0.0;
+
     return Product(
       id: json['_id'] as String,
       name: json['name'] as String,
+      description: json['description'] as String,
       image: json['image'] as String?,
-      price: (json['price']['price'] as num?)?.toDouble() ?? 0.0,
+      price: defaultPrice,
+      differentPrice: hasDifferentPrice,
+      prices: variations,
     );
   }
 }

@@ -137,13 +137,13 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
     return Row(
       children: [
         CustomImageContainer(
-          size: ResponsiveUI.iconSize(context, 70),
+          
           gradient: LinearGradient(
             colors: [AppColors.primaryBlue, AppColors.darkBlue],
           ),
           image: widget.product.image,
         ),
-        SizedBox(width: ResponsiveUI.spacing(context, 14)),
+        SizedBox(width: ResponsiveUI.spacing(context, 18)),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

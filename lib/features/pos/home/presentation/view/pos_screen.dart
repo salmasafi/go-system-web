@@ -19,6 +19,7 @@ import '../widgets/filter_by_category_brand_widgets.dart';
 import '../widgets/header_section.dart';
 import '../widgets/product_grid.dart';
 import '../widgets/tab_bar.dart';
+import '../widgets/variation_selector_dialog.dart'; // جديد
 
 class POSScreen extends StatefulWidget {
   const POSScreen({super.key});
@@ -38,13 +39,53 @@ class _POSScreenState extends State<POSScreen> {
   }
 
   void _addToCart(Product product) {
-    context.read<CheckoutCubit>().addToCart(product);
-    PosCubit posCubit = context.read<PosCubit>();
+    if (product.differentPrice && product.prices.isNotEmpty) {
+      // إذا variations، افتح الديالوج
 
-    posCubit.selectTab(
-      tab: context.read<PosCubit>().selectedTab,
-      noFliterRefresh: true,
-    );
+      final checkoutCubit = context.read<CheckoutCubit>();
+      final PosCubit posCubit = context.read<PosCubit>();
+
+      showDialog(
+        context: context,
+        builder: (_) => VariationSelectorDialog(
+          product: product,
+          onVariationSelected: (variation) {
+            checkoutCubit.addToCart(product, variation: variation);
+            posCubit.selectTab(
+              tab: posCubit.selectedTab,
+              noFliterRefresh: true,
+            );
+          },
+        ),
+      );
+    } else {
+      // سعر واحد: أضف مباشرة (يمكن إضافة snackbar لعرض تفاصيل سريع)
+      context.read<CheckoutCubit>().addToCart(product);
+      PosCubit posCubit = context.read<PosCubit>();
+      posCubit.selectTab(tab: posCubit.selectedTab, noFliterRefresh: true);
+      CustomSnackbar.showSuccess(
+        context,
+        '${product.name} added (Price: \$${product.price})',
+      ); // عرض تفاصيل بسيط
+    }
+  }
+
+  // ────────────────────────────────────────────────────────────────
+  //  Handle barcode scan → API → add to cart
+  // ────────────────────────────────────────────────────────────────
+  void _handleBarcodeScan(String code) async {
+    final posCubit = context.read<PosCubit>();
+
+    // Clear search bar
+    setState(() {
+      _searchQuery = '';
+      _searchController.clear();
+    });
+
+    final product = await posCubit.getProductByCode(code);
+    if (product != null && mounted) {
+      _addToCart(product);
+    }
   }
 
   double get _total => context.read<CheckoutCubit>().cartItems.fold(
@@ -57,7 +98,10 @@ class _POSScreenState extends State<POSScreen> {
       bool matchesSearch =
           _searchQuery.isEmpty ||
           product.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          product.price.toString().contains(_searchQuery.toLowerCase());
+          product.price.toString().contains(_searchQuery.toLowerCase()) ||
+          product.prices.any(
+            (v) => v.code.toLowerCase().contains(_searchQuery.toLowerCase()),
+          );
       return matchesSearch;
     }).toList();
   }
@@ -81,31 +125,6 @@ class _POSScreenState extends State<POSScreen> {
         },
       ),
     );
-  }
-
-  // ────────────────────────────────────────────────────────────────
-  //  Handle barcode scan → API → add to cart
-  // ────────────────────────────────────────────────────────────────
-  void _handleBarcodeScan(String code) async {
-    final posCubit = context.read<PosCubit>();
-
-    final checkoutCubit = context.read<CheckoutCubit>();
-
-    // Clear search bar
-    setState(() {
-      _searchQuery = '';
-      _searchController.clear();
-    });
-
-    final product = await posCubit.getProductByCode(code);
-    if (product != null && mounted) {
-      checkoutCubit.addToCart(product);
-      posCubit.selectTab(
-        tab: context.read<PosCubit>().selectedTab,
-        noFliterRefresh: true,
-      );
-      CustomSnackbar.showSuccess(context, '${product.name} added to cart');
-    }
   }
 
   @override

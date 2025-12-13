@@ -44,8 +44,7 @@ class POSProductCard extends StatelessWidget {
                       ? CachedNetworkImage(
                           imageUrl: product.image!,
                           fit: BoxFit.contain,
-                          placeholder: (_, __) =>
-                              const CustomLoadingState(),
+                          placeholder: (_, __) => const CustomLoadingState(),
                           errorWidget: (_, __, ___) =>
                               const Icon(Icons.image, size: 40),
                         )
@@ -58,6 +57,7 @@ class POSProductCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // في build، في Row السعر:
                   Text(
                     product.name,
                     maxLines: 1,
@@ -72,13 +72,23 @@ class POSProductCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '\$${product.price.toStringAsFixed(2)}',
+                        product.differentPrice
+                            ? 'From \$${product.price.toStringAsFixed(2)}'
+                            : '\$${product.price.toStringAsFixed(2)}',
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: AppColors.primaryBlue,
                         ),
                       ),
+                      // Text(
+                      //   '\$${product.price.toStringAsFixed(2)}',
+                      //   style: const TextStyle(
+                      //     fontSize: 16,
+                      //     fontWeight: FontWeight.bold,
+                      //     color: AppColors.primaryBlue,
+                      //   ),
+                      // ),
                       Container(
                         padding: const EdgeInsets.all(6),
                         decoration: const BoxDecoration(

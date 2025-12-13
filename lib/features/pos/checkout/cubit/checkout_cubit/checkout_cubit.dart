@@ -14,16 +14,17 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   Map<String, dynamic>? sale;
 
   List<CartItem> cartItems = [];
-  //RecieptData? recieptData;
 
-  void addToCart(Product product) {
+  // تعديل: أضف إلى السلة مع optional variation
+  void addToCart(Product product, {PriceVariation? variation}) {
     final existingIndex = cartItems.indexWhere(
-      (i) => i.product.id == product.id,
+      (i) => i.product.id == product.id && 
+             (i.selectedVariation?.id == variation?.id || (i.selectedVariation == null && variation == null)),
     );
     if (existingIndex >= 0) {
       cartItems[existingIndex].quantity++;
     } else {
-      cartItems.add(CartItem(product: product, quantity: 1));
+      cartItems.add(CartItem(product: product, selectedVariation: variation, quantity: 1));
     }
     emit(PosCartUpdated(cartItems));
   }
@@ -64,29 +65,22 @@ class CheckoutCubit extends Cubit<CheckoutState> {
           (item) => {
             "product_id": item.product.id,
             "quantity": item.quantity,
-            "price": item.product.price,
-            "subtotal": item.product.price * item.quantity,
+            "price": item.effectivePrice, // تعديل: استخدم السعر الفعلي
+            "subtotal": item.subtotal,
+            if (item.selectedVariation != null) "variation_id": item.selectedVariation!.id, // جديد: أضف ID الـ variation إذا موجود
           },
         )
         .toList();
 
     final body = {
-      "customer_id":
-          posCubit.selectedCustomer?.id ?? '68f4bd26a6017b1543773cf6',
+      "customer_id": posCubit.selectedCustomer?.id ?? '68f4bd26a6017b1543773cf6',
       "warehouse_id": posCubit.selectedWarhouse?.id,
-      "account_id": [
-        //posCubit.selectedAccount?.id
-        '6938368ac804bcdd2b748f13',
-      ],
+      "account_id": ['6938368ac804bcdd2b748f13'],
       "order_tax": posCubit.selectedTax?.id,
       "grand_total": totalAmount,
       "payment_note": paymentNote ?? "",
       "products": products,
       "order_pending": 0,
-      //"bundles": [],
-      //"order_discount": "64abc123def456789012349",
-      //"coupon_id": "68eb6921b5b637f54b426faa",
-      //"gift_card_id": "68eb9e5afe42ef2d3d7f9332",
     };
 
     try {
@@ -101,18 +95,13 @@ class CheckoutCubit extends Cubit<CheckoutState> {
         final points = response.data['data']['pointsEarned'] ?? 0;
 
         emit(CheckoutSuccess());
-        reference =
-            saleData['reference'] ??
-            'SALE-${DateTime.now().millisecondsSinceEpoch}';
+        reference = saleData['reference'] ?? 'SALE-${DateTime.now().millisecondsSinceEpoch}';
         pointsEarned = points;
         sale = saleData;
         return true;
       } else {
-        emit(
-          CheckoutError(response.data['message'] ?? 'Failed to complete sale'),
-        );
+        emit(CheckoutError(response.data['message'] ?? 'Failed to complete sale'));
         log(response.data['message'] ?? 'Failed to complete sale');
-
         return false;
       }
     } catch (e) {
@@ -121,8 +110,4 @@ class CheckoutCubit extends Cubit<CheckoutState> {
       return false;
     }
   }
-
-  // void setRecieptData(RecieptData recieptData2) {
-  //   recieptData = recieptData2;
-  // }
 }
