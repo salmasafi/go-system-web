@@ -42,6 +42,8 @@ class EndPoint {
   static String deleteProduct(String id) => '/api/admin/product/$id';
   static String productByCode = '/api/admin/product/code';
 
+  static String getWareHouseProducts(String id) => '/api/admin/product_warehouse/$id';
+
   // Currency
   static const String getCurrencies = '/api/admin/currency';
   static String getCurrencyById(String id) => '/api/admin/currency/$id';

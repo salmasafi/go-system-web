@@ -5,7 +5,6 @@ import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/features/admin/bank_account/cubit/bank_account_cubit.dart';
 import 'package:systego/features/admin/bank_account/model/bank_account_model.dart';
 import 'package:systego/features/admin/bank_account/presentation/widgets/bank_accounts_form_dialog.dart';
-import 'package:systego/features/admin/warehouses/cubit/warehouse_cubit.dart';
 import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../../warehouses/view/widgets/custom_delete_dialog.dart';
@@ -32,10 +31,8 @@ class _BankAccountsListState extends State<BankAccountsList> {
       ),
       itemCount: widget.accounts.length,
       itemBuilder: (context, index) {
-        final warehouseName = _getWarehouseName(context, widget.accounts[index]);
 
         return AnimatedBankAccountCard(
-          warehouseName: warehouseName,
           account: widget.accounts[index],
           index: index,
           onDelete: () => _showDeleteDialog(context, widget.accounts[index]),
@@ -46,18 +43,6 @@ class _BankAccountsListState extends State<BankAccountsList> {
     );
   }
 
-  
-  // String _getWarehouseName(BuildContext context, BankAccountModel account) {
-  //   try {
-  //     return context.read<WareHouseCubit>().getWarehouse(account.name);
-  //   } catch (e) {
-  //     return account.name;
-  //   }
-  // }
-
-String _getWarehouseName(BuildContext context, BankAccountModel account) {
-  return context.read<WareHouseCubit>().getWarehouseNameById(account.wareHouseId);
-}
 
   void _showEditDialog(BuildContext context, BankAccountModel account) {
     showDialog(

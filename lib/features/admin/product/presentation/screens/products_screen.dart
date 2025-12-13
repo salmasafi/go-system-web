@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
+import 'package:systego/core/services/dio_helper.dart';
+import 'package:systego/core/services/endpoints.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/app_bar_widgets.dart';
@@ -14,6 +16,7 @@ import 'package:systego/features/admin/product/models/product_model.dart';
 import 'package:systego/features/admin/product/presentation/screens/add_product_screen.dart';
 import 'package:systego/features/admin/product/presentation/widgets/filter_by_category_brand_widgets.dart';
 import 'package:systego/features/admin/product/presentation/widgets/product_list.dart';
+import 'package:systego/features/admin/product/presentation/widgets/search_bar_widget.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../widgets/search_bar_widget.dart';
 import 'barcode_scanner_screen.dart';
@@ -31,8 +34,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
   String? _selectedCategoryId;
   String? _selectedBrandId;
   String? _selectedVariationId;
-  // ignore: unused_field
+
+// String? _selectedVariationId; // Keep this for the variation category
+  String? _selectedVariationOption; 
+  
   String? _selectedWarehouseId;
+
+    List<String> _warehouseProductIds = [];
+
 
 
   void productsInit() async {
@@ -54,6 +63,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
       _selectedBrandId = null;
       _selectedVariationId = null;
       _selectedWarehouseId = null;
+      _warehouseProductIds = [];
     });
     productsInit();
   }
@@ -82,19 +92,35 @@ class _ProductsScreenState extends State<ProductsScreen> {
       bool matchesBrand =
           _selectedBrandId == null || product.brandId.id == _selectedBrandId;
 
-      // Variation filter
-      bool matchesVariation =
-          _selectedVariationId == null ||
-          product.prices.any(
-            (price) => price.variations.any(
-              (varn) => varn.name == _selectedVariationId,
-            ),
-          );
+
+  bool matchesWarehouse =
+          _selectedWarehouseId == null ||
+          _warehouseProductIds.contains(product.id);
+
+      // // Variation filter
+      // bool matchesVariation =
+      //     _selectedVariationId == null ||
+      //     product.prices.any(
+      //       (price) => price.variations.any(
+      //         (varn) => varn.name == _selectedVariationId,
+      //       ),
+      //     );
+
+      bool matchesVariation = true;
+    if (_selectedVariationOption != null) {
+      // Check if any price variation has the selected option name
+      matchesVariation = product.prices.any((price) =>
+          price.variations.any((varn) => varn.options.any(
+                (option) => option.name == _selectedVariationOption,
+              )));
+    }
+
 
       return matchesSearch &&
           matchesCategory &&
           matchesBrand &&
-          matchesVariation;
+          matchesVariation &&
+          matchesWarehouse;
     }).toList();
   }
 
@@ -163,6 +189,44 @@ class _ProductsScreenState extends State<ProductsScreen> {
         }
       },
     );
+  }
+
+  
+  // Add this method to fetch warehouse products
+  Future<void> _fetchWarehouseProducts(String warehouseId) async {
+    if (warehouseId.isEmpty) {
+      setState(() {
+        _warehouseProductIds = [];
+      });
+      return;
+    }
+
+    try {
+      // Call your warehouse products API
+      final response = await DioHelper.getData(
+        url: EndPoint.getWareHouseProducts(warehouseId),
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        if (data['success'] == true && data['data'] != null) {
+          final productsJson = data['data']['productWarehouses'] as List<dynamic>? ?? [];
+          
+          // Extract product IDs from warehouse products
+          final productIds = productsJson
+              .where((json) => json['productId'] != null)
+              .map<String>((json) => json['productId']['_id'] as String)
+              .toList();
+
+          setState(() {
+            _warehouseProductIds = productIds;
+          });
+        }
+      }
+    } catch (error) {
+      // log('Error fetching warehouse products: $error');
+      // You might want to show an error message here
+    }
   }
 
   @override
@@ -238,15 +302,45 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         _selectedBrandId = id;
                       });
                     },
-                    onVariationSelected: (id) {
-                      setState(() {
-                        _selectedVariationId = id;
-                      });
-                    },
-                    onWarehouseSelected: (id) {
+                    // onVariationSelected: (id) {
+                    //   setState(() {
+                    //     _selectedVariationId = id;
+                    //   });
+                    // },
+
+                    onVariationSelected: (variationId, optionName) { // Updated to pass both
+    setState(() {
+      _selectedVariationId = variationId;
+      _selectedVariationOption = optionName;
+    });
+  },
+                    // onWarehouseSelected: (id) {
+                    //   setState(() {
+                    //     _selectedWarehouseId = id;
+                    //   });
+                    //   if (id != null) {
+                    //     context.read<ProductsCubit>().getWareHouseProducts(id);
+                    //   } else {
+                    //     context.read<ProductsCubit>().getProducts();
+                    //   }
+                    // },
+
+                    onWarehouseSelected: (id) async {
                       setState(() {
                         _selectedWarehouseId = id;
+                        // Clear warehouse product IDs when warehouse is cleared
+                        if (id == null) {
+                          _warehouseProductIds = [];
+                        }
                       });
+                      
+                      // Fetch warehouse products when a warehouse is selected
+                      if (id != null) {
+                        await _fetchWarehouseProducts(id);
+                      }
+                      
+                      // Trigger a rebuild to apply the filter
+                      setState(() {});
                     },
                   ),
                   Expanded(

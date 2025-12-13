@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +20,7 @@ import '../../../../../core/widgets/custom_textfield/build_text_field.dart';
 class BankAccountFormDialog extends StatefulWidget {
   final BankAccountModel? account;
   final String? existingImageUrl;
+  
 
   const BankAccountFormDialog({super.key, this.account, this.existingImageUrl});
 
@@ -285,9 +285,9 @@ void didChangeDependencies() {
                                 buildTextField(
                                   context,
                                   controller: _descriptionController,
-                                  label: LocaleKeys.note.tr(),
+                                  label: "Description",
                                   icon: Icons.note_alt_rounded,
-                                  hint: LocaleKeys.hint_note.tr(),
+                                  hint: "Enter a Discription",
                                   maxLines: 3,
                                 ),
                                 SizedBox(

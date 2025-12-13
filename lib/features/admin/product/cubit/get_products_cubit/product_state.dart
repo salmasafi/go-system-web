@@ -13,6 +13,13 @@ class ProductsSuccess extends ProductsState {
   ProductsSuccess(this.products);
 }
 
+
+class WareHouseProductsSuccess extends ProductsState {
+  final List<Product> products;
+
+  WareHouseProductsSuccess(this.products);
+}
+
 class ProductDeleteSuccess extends ProductsState {
   final String message;
 
