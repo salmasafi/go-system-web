@@ -13,7 +13,6 @@ AppBar appBarWithActions(
   int notificationCount = 0, // عدد الإشعارات غير المقروءة
 }) {
   return AppBar(
-    
     scrolledUnderElevation: 0,
     elevation: 0,
     backgroundColor: backgroundColor ?? AppColors.white,
@@ -127,6 +126,65 @@ AppBar appBarWithActions(
             ),
           ]
         : null,
+    bottom: PreferredSize(
+      preferredSize: Size.fromHeight(ResponsiveUI.value(context, 1)),
+      child: Container(
+        height: ResponsiveUI.value(context, 1),
+        color: AppColors.lightGray.withOpacity(0.3),
+      ),
+    ),
+  );
+}
+
+AppBar appBarWithActionsWidget(
+  BuildContext context, {
+  String? title,
+  void Function()? onPressed,
+  Color? backgroundColor,
+  Widget? actionWidget,
+  bool showActions = false,
+  bool showBackButton = true,
+  int notificationCount = 0, // عدد الإشعارات غير المقروءة
+}) {
+  return AppBar(
+    scrolledUnderElevation: 0,
+    elevation: 0,
+    backgroundColor: backgroundColor ?? AppColors.white,
+    centerTitle: true,
+    title: Text(
+      title ?? '',
+      style: TextStyle(
+        fontSize: ResponsiveUI.fontSize(context, 20),
+        fontWeight: FontWeight.w600,
+        color: AppColors.darkGray,
+        letterSpacing: 0.5,
+      ),
+    ),
+    leading: showBackButton
+        ? Container(
+            margin: EdgeInsets.only(
+              left: ResponsiveUI.padding(context, 8),
+              top: ResponsiveUI.padding(context, 8),
+              bottom: ResponsiveUI.padding(context, 8),
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.lightBlueBackground,
+              borderRadius: BorderRadius.circular(
+                ResponsiveUI.borderRadius(context, 12),
+              ),
+            ),
+            child: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(
+                Icons.arrow_back_ios_new,
+                color: AppColors.mediumBlue700[700],
+                size: ResponsiveUI.fontSize(context, 20),
+              ),
+              padding: EdgeInsets.zero,
+            ),
+          )
+        : null,
+    actions: showActions && actionWidget != null ? [actionWidget] : null,
     bottom: PreferredSize(
       preferredSize: Size.fromHeight(ResponsiveUI.value(context, 1)),
       child: Container(

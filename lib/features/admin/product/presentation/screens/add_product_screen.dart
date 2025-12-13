@@ -42,6 +42,7 @@ class _AddProductScreenState extends State<AddProductScreen>
   final _minQuantityController = TextEditingController();
   final _maxToShowController = TextEditingController();
   final _unitController = TextEditingController();
+  final _codeController = TextEditingController();
 
   // Images
   File? _mainImage;
@@ -56,6 +57,7 @@ class _AddProductScreenState extends State<AddProductScreen>
   bool _hasIMEI = false;
   bool _differentPrice = false;
   bool _showQuantity = false;
+  bool _isFeatured = false;
 
   // Expiry Date
   DateTime? _expiryDate;
@@ -73,7 +75,7 @@ class _AddProductScreenState extends State<AddProductScreen>
     _variations = context.read<ProductFiltersCubit>().variations;
 
     // Set default values
-    _minQuantityController.text = '1';
+    _minQuantityController.text = '50';
     _lowStockController.text = '10';
     _maxToShowController.text = '100';
     _startQuantityController.text = '0';
@@ -307,7 +309,7 @@ class _AddProductScreenState extends State<AddProductScreen>
                             child: buildTextField(
                               context,
                               controller: _minQuantityController,
-                              label: 'Min. Sale Qty *',
+                              label: 'Min. Wholesale Qty *',
                               icon: Icons.shopping_cart,
                               hint: '1',
                               keyboardType: TextInputType.number,
@@ -364,6 +366,16 @@ class _AddProductScreenState extends State<AddProductScreen>
                     icon: Icons.settings,
                     children: [
                       AnimatedCheckboxTile(
+                        value: _isFeatured,
+                        title: 'Is Featured',
+                        //   icon: Icons.calendar_today,
+                        onChanged: (value) {
+                          setState(() {
+                            _isFeatured = value ?? false;
+                          });
+                        },
+                      ),
+                      AnimatedCheckboxTile(
                         value: _hasExpiry,
                         title: 'Has Expiry Date',
                         //   icon: Icons.calendar_today,
@@ -411,6 +423,7 @@ class _AddProductScreenState extends State<AddProductScreen>
                       AnimatedCheckboxTile(
                         priceController: _priceController,
                         quantityController: _quantityController,
+                        codeController: _codeController,
                         value: _differentPrice,
                         title: 'Different Prices for Variations',
                         //   icon: Icons.price_check,
@@ -690,7 +703,7 @@ class _AddProductScreenState extends State<AddProductScreen>
                       borderRadius: BorderRadius.circular(8),
                       child: Image.file(
                         variation.galleryImages[imgIndex],
-                        fit: BoxFit.fill,
+                        fit: BoxFit.contain,
                       ),
                     ),
                   ),
@@ -872,6 +885,7 @@ class _AddProductScreenState extends State<AddProductScreen>
       unit: _unitController.text.trim(),
       price: _differentPrice ? 0.0 : mainPrice, // MUST be 0 if variations used
       expAbility: _hasExpiry,
+      code: _codeController.text.trim(),
       minimumQuantitySale: minQtySale,
       lowStock: lowStock,
       wholePrice: wholePrice,
@@ -882,6 +896,7 @@ class _AddProductScreenState extends State<AddProductScreen>
       productHasImei: _hasIMEI,
       differentPrice: _differentPrice,
       showQuantity: _showQuantity,
+      isFeatured: _isFeatured,
       maximumToShow: maxToShow,
       galleryProduct: galleryBase64,
       prices: pricesJson,
@@ -902,6 +917,7 @@ class _AddProductScreenState extends State<AddProductScreen>
     _minQuantityController.dispose();
     _maxToShowController.dispose();
     _unitController.dispose();
+    _codeController.dispose();
     for (var variation in _priceVariations) {
       variation.dispose();
     }

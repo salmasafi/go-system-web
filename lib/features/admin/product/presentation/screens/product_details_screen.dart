@@ -129,7 +129,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                           product.galleryProduct[index],
                                           width: 100,
                                           height: 100,
-                                          fit: BoxFit.cover,
+                                          fit: BoxFit.contain,
                                           errorBuilder:
                                               (context, error, stackTrace) {
                                                 return Container(
@@ -220,263 +220,291 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         //     ),
                         //   ],
                         // ),
-
                         SizedBox(
                           height: ResponsiveUI.verticalSpacing(context, 3),
                         ),
 
                         // 🏷️ Stock & Inventory Section
-Container(
-  padding: EdgeInsets.symmetric(
-    horizontal: ResponsiveUI.padding(context, 12),
-    vertical: ResponsiveUI.padding(context, 16),
-  ),
-  decoration: BoxDecoration(
-    color: AppColors.white,
-    borderRadius: BorderRadius.circular(12),
-    boxShadow: [
-      BoxShadow(
-        color: AppColors.shadowGray.withOpacity(0.08),
-        blurRadius: 12,
-        offset: Offset(0, 4),
-      ),
-    ],
-    border: Border.all(
-      color: AppColors.lightGray.withOpacity(0.2),
-      width: 1,
-    ),
-  ),
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      // Section Header with Icon
-      Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: AppColors.primaryBlue.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(
-              Icons.inventory_2_outlined,
-              color: AppColors.primaryBlue,
-              size: 20,
-            ),
-          ),
-          SizedBox(width: ResponsiveUI.padding(context, 12)),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Stock & Inventory',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.darkBlue,
-                    letterSpacing: -0.3,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  'Product stock management details',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.darkGray,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-      
-      SizedBox(height: ResponsiveUI.verticalSpacing(context, 3)),
-      
-      // Stock Info Cards
-      Container(
-        decoration: BoxDecoration(
-          color: AppColors.lightBlueBackground.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: AppColors.lightGray.withOpacity(0.3),
-            width: 1,
-          ),
-        ),
-        child: Column(
-          children: [
-            // Low Stock Alert
-            _buildStockInfoRow(
-              context: context,
-              icon: Icons.notifications_active_outlined,
-              iconColor: AppColors.warningOrange,
-              label: 'Low Stock Alert',
-              value: '${product.lowStock} units',
-              isFirst: true,
-            ),
-            
-            Divider(
-              height: 1,
-              color: AppColors.lightGray.withOpacity(0.3),
-              indent: 60,
-            ),
-            
-            // Minimum Sale Quantity
-            _buildStockInfoRow(
-              context: context,
-              icon: Icons.shopping_cart_outlined,
-              iconColor: AppColors.successGreen,
-              label: 'Minimum Sale Quantity',
-              value: '${product.minimumQuantitySale} units',
-            ),
-            
-            Divider(
-              height: 1,
-              color: AppColors.lightGray.withOpacity(0.3),
-              indent: 60,
-            ),
-            
-            // Maximum Quantity to Show
-            _buildStockInfoRow(
-              context: context,
-              icon: Icons.visibility_outlined,
-              iconColor: AppColors.primaryBlue,
-              label: 'Maximum Quantity to Show',
-              value: product.maximumToShow > 0
-                  ? '${product.maximumToShow} units'
-                  : 'No Limit',
-              isLast: true,
-            ),
-          ],
-        ),
-      ),
-    ],
-  ),
-),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: ResponsiveUI.padding(context, 12),
+                            vertical: ResponsiveUI.padding(context, 16),
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.shadowGray.withOpacity(0.08),
+                                blurRadius: 12,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                            border: Border.all(
+                              color: AppColors.lightGray.withOpacity(0.2),
+                              width: 1,
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Section Header with Icon
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primaryBlue.withOpacity(
+                                        0.1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Icon(
+                                      Icons.inventory_2_outlined,
+                                      color: AppColors.primaryBlue,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: ResponsiveUI.padding(context, 12),
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Stock & Inventory',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w700,
+                                            color: AppColors.darkBlue,
+                                            letterSpacing: -0.3,
+                                          ),
+                                        ),
+                                        SizedBox(height: 4),
+                                        Text(
+                                          'Product stock management details',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: AppColors.darkGray,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
 
-SizedBox(height: ResponsiveUI.verticalSpacing(context, 4)),
+                              SizedBox(
+                                height: ResponsiveUI.verticalSpacing(
+                                  context,
+                                  3,
+                                ),
+                              ),
 
-// 🎯 Product Features Section
-Container(
-  padding: EdgeInsets.symmetric(
-    horizontal: ResponsiveUI.padding(context, 12),
-    vertical: ResponsiveUI.padding(context, 16),
-  ),
-  decoration: BoxDecoration(
-    color: AppColors.white,
-    borderRadius: BorderRadius.circular(12),
-    boxShadow: [
-      BoxShadow(
-        color: AppColors.shadowGray.withOpacity(0.08),
-        blurRadius: 12,
-        offset: Offset(0, 4),
-      ),
-    ],
-    border: Border.all(
-      color: AppColors.lightGray.withOpacity(0.2),
-      width: 1,
-    ),
-  ),
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      // Section Header
-      Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: AppColors.categoryPurple.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(
-              Icons.featured_play_list_outlined,
-              color: AppColors.categoryPurple,
-              size: 20,
-            ),
-          ),
-          SizedBox(width: ResponsiveUI.padding(context, 12)),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Product Features',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.darkBlue,
-                    letterSpacing: -0.3,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  'Toggle features and capabilities',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.darkGray,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-      
-      SizedBox(height: ResponsiveUI.verticalSpacing(context, 3)),
-      
-      // Feature Chips Grid
-      Wrap(
-        spacing: ResponsiveUI.padding(context, 10),
-        runSpacing: ResponsiveUI.padding(context, 10),
-        children: [
-          _buildEnhancedFeatureChip(
-            context,
-            'Expiration Ability',
-            product.expAbility,
-            Icons.calendar_today_outlined,
-            AppColors.warningOrange,
-          ),
-          _buildEnhancedFeatureChip(
-            context,
-            'Has IMEI',
-            product.productHasImei,
-            Icons.qr_code_scanner_outlined,
-            AppColors.primaryBlue,
-          ),
-          _buildEnhancedFeatureChip(
-            context,
-            'Different Prices',
-            product.differentPrice,
-            Icons.attach_money_outlined,
-            AppColors.successGreen,
-          ),
-          _buildEnhancedFeatureChip(
-            context,
-            'Show Quantity',
-            product.showQuantity,
-            Icons.visibility_outlined,
-            AppColors.linkBlue,
-          ),
-          _buildEnhancedFeatureChip(
-            context,
-            'Featured',
-            product.isFeatured,
-            Icons.star_outlined,
-            AppColors.holdBeige,
-          ),
-        ],
-      ),
-    ],
-  ),
-),
+                              // Stock Info Cards
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: AppColors.lightBlueBackground
+                                      .withOpacity(0.5),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: AppColors.lightGray.withOpacity(0.3),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Column(
+                                  children: [
+                                    // Low Stock Alert
+                                    _buildStockInfoRow(
+                                      context: context,
+                                      icon: Icons.notifications_active_outlined,
+                                      iconColor: AppColors.warningOrange,
+                                      label: 'Low Stock Alert',
+                                      value: '${product.lowStock} units',
+                                      isFirst: true,
+                                    ),
 
-SizedBox(height: ResponsiveUI.verticalSpacing(context, 3)),
+                                    Divider(
+                                      height: 1,
+                                      color: AppColors.lightGray.withOpacity(
+                                        0.3,
+                                      ),
+                                      indent: 60,
+                                    ),
+
+                                    // Minimum Sale Quantity
+                                    _buildStockInfoRow(
+                                      context: context,
+                                      icon: Icons.shopping_cart_outlined,
+                                      iconColor: AppColors.successGreen,
+                                      label: 'Minimum Sale Quantity',
+                                      value:
+                                          '${product.minimumQuantitySale} units',
+                                    ),
+
+                                    Divider(
+                                      height: 1,
+                                      color: AppColors.lightGray.withOpacity(
+                                        0.3,
+                                      ),
+                                      indent: 60,
+                                    ),
+
+                                    // Maximum Quantity to Show
+                                    _buildStockInfoRow(
+                                      context: context,
+                                      icon: Icons.visibility_outlined,
+                                      iconColor: AppColors.primaryBlue,
+                                      label: 'Maximum Quantity to Show',
+                                      value: product.maximumToShow > 0
+                                          ? '${product.maximumToShow} units'
+                                          : 'No Limit',
+                                      isLast: true,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        SizedBox(
+                          height: ResponsiveUI.verticalSpacing(context, 4),
+                        ),
+
+                        // 🎯 Product Features Section
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: ResponsiveUI.padding(context, 12),
+                            vertical: ResponsiveUI.padding(context, 16),
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.shadowGray.withOpacity(0.08),
+                                blurRadius: 12,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                            border: Border.all(
+                              color: AppColors.lightGray.withOpacity(0.2),
+                              width: 1,
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Section Header
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.categoryPurple
+                                          .withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Icon(
+                                      Icons.featured_play_list_outlined,
+                                      color: AppColors.categoryPurple,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: ResponsiveUI.padding(context, 12),
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Product Features',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w700,
+                                            color: AppColors.darkBlue,
+                                            letterSpacing: -0.3,
+                                          ),
+                                        ),
+                                        SizedBox(height: 4),
+                                        Text(
+                                          'Toggle features and capabilities',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: AppColors.darkGray,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              SizedBox(
+                                height: ResponsiveUI.verticalSpacing(
+                                  context,
+                                  3,
+                                ),
+                              ),
+
+                              // Feature Chips Grid
+                              Wrap(
+                                spacing: ResponsiveUI.padding(context, 10),
+                                runSpacing: ResponsiveUI.padding(context, 10),
+                                children: [
+                                  _buildEnhancedFeatureChip(
+                                    context,
+                                    'Expiration Ability',
+                                    product.expAbility,
+                                    Icons.calendar_today_outlined,
+                                    AppColors.warningOrange,
+                                  ),
+                                  _buildEnhancedFeatureChip(
+                                    context,
+                                    'Has IMEI',
+                                    product.productHasImei,
+                                    Icons.qr_code_scanner_outlined,
+                                    AppColors.primaryBlue,
+                                  ),
+                                  _buildEnhancedFeatureChip(
+                                    context,
+                                    'Different Prices',
+                                    product.differentPrice,
+                                    Icons.attach_money_outlined,
+                                    AppColors.successGreen,
+                                  ),
+                                  _buildEnhancedFeatureChip(
+                                    context,
+                                    'Show Quantity',
+                                    product.showQuantity,
+                                    Icons.visibility_outlined,
+                                    AppColors.linkBlue,
+                                  ),
+                                  _buildEnhancedFeatureChip(
+                                    context,
+                                    'Featured',
+                                    product.isFeatured,
+                                    Icons.star_outlined,
+                                    AppColors.holdBeige,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        SizedBox(
+                          height: ResponsiveUI.verticalSpacing(context, 3),
+                        ),
 
                         // 🟢 Product Features & Flags
                         // Text(
@@ -523,7 +551,6 @@ SizedBox(height: ResponsiveUI.verticalSpacing(context, 3)),
                         //     ),
                         //   ],
                         // ),
-
                         SizedBox(
                           height: ResponsiveUI.verticalSpacing(context, 3),
                         ),
@@ -633,7 +660,7 @@ SizedBox(height: ResponsiveUI.verticalSpacing(context, 3)),
                                                         price.gallery[index],
                                                         width: 80,
                                                         height: 80,
-                                                        fit: BoxFit.cover,
+                                                        fit: BoxFit.contain,
                                                         errorBuilder:
                                                             (
                                                               context,
@@ -726,131 +753,127 @@ SizedBox(height: ResponsiveUI.verticalSpacing(context, 3)),
   }
 
   Widget _buildStockInfoRow({
-  required BuildContext context,
-  required IconData icon,
-  required Color iconColor,
-  required String label,
-  required String value,
-  bool isFirst = false,
-  bool isLast = false,
-}) {
-  return Container(
-    decoration: BoxDecoration(
-      color: AppColors.white,
-      borderRadius: BorderRadius.only(
-        topLeft: isFirst ? Radius.circular(10) : Radius.zero,
-        topRight: isFirst ? Radius.circular(10) : Radius.zero,
-        bottomLeft: isLast ? Radius.circular(10) : Radius.zero,
-        bottomRight: isLast ? Radius.circular(10) : Radius.zero,
-      ),
-    ),
-    padding: EdgeInsets.symmetric(
-      vertical: ResponsiveUI.padding(context, 14),
-      horizontal: ResponsiveUI.padding(context, 16),
-    ),
-    child: Row(
-      children: [
-        Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: iconColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            icon,
-            color: iconColor,
-            size: 18,
-          ),
+    required BuildContext context,
+    required IconData icon,
+    required Color iconColor,
+    required String label,
+    required String value,
+    bool isFirst = false,
+    bool isLast = false,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: isFirst ? Radius.circular(10) : Radius.zero,
+          topRight: isFirst ? Radius.circular(10) : Radius.zero,
+          bottomLeft: isLast ? Radius.circular(10) : Radius.zero,
+          bottomRight: isLast ? Radius.circular(10) : Radius.zero,
         ),
-        SizedBox(width: ResponsiveUI.padding(context, 14)),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.darkGray,
-                ),
-              ),
-              SizedBox(height: 2),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.darkBlue,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-Widget _buildEnhancedFeatureChip(
-  BuildContext context,
-  String label,
-  bool isActive,
-  IconData icon,
-  Color activeColor,
-) {
-  return Container(
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(10),
-      color: isActive ? activeColor.withOpacity(0.1) : AppColors.lightGray.withOpacity(0.3),
-      border: Border.all(
-        color: isActive ? activeColor.withOpacity(0.3) : AppColors.lightGray.withOpacity(0.5),
-        width: 1.5,
       ),
-      boxShadow: isActive
-          ? [
-              BoxShadow(
-                color: activeColor.withOpacity(0.15),
-                blurRadius: 8,
-                offset: Offset(0, 3),
-              ),
-            ]
-          : [],
-    ),
-    child: Padding(
       padding: EdgeInsets.symmetric(
-        horizontal: ResponsiveUI.padding(context, 14),
-        vertical: ResponsiveUI.padding(context, 10),
+        vertical: ResponsiveUI.padding(context, 14),
+        horizontal: ResponsiveUI.padding(context, 16),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 16,
-            color: isActive ? activeColor : AppColors.darkGray,
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: iconColor, size: 18),
           ),
-          SizedBox(width: ResponsiveUI.padding(context, 6)),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-              color: isActive ? activeColor : AppColors.darkGray,
-              letterSpacing: -0.2,
+          SizedBox(width: ResponsiveUI.padding(context, 14)),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.darkGray,
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.darkBlue,
+                  ),
+                ),
+              ],
             ),
           ),
-          SizedBox(width: ResponsiveUI.padding(context, 4)),
-          if (isActive)
-            Icon(
-              Icons.check_circle,
-              size: 14,
-              color: activeColor,
-            ),
         ],
       ),
-    ),
-  );
-}
+    );
+  }
+
+  Widget _buildEnhancedFeatureChip(
+    BuildContext context,
+    String label,
+    bool isActive,
+    IconData icon,
+    Color activeColor,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: isActive
+            ? activeColor.withOpacity(0.1)
+            : AppColors.lightGray.withOpacity(0.3),
+        border: Border.all(
+          color: isActive
+              ? activeColor.withOpacity(0.3)
+              : AppColors.lightGray.withOpacity(0.5),
+          width: 1.5,
+        ),
+        boxShadow: isActive
+            ? [
+                BoxShadow(
+                  color: activeColor.withOpacity(0.15),
+                  blurRadius: 8,
+                  offset: Offset(0, 3),
+                ),
+              ]
+            : [],
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: ResponsiveUI.padding(context, 14),
+          vertical: ResponsiveUI.padding(context, 10),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: isActive ? activeColor : AppColors.darkGray,
+            ),
+            SizedBox(width: ResponsiveUI.padding(context, 6)),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+                color: isActive ? activeColor : AppColors.darkGray,
+                letterSpacing: -0.2,
+              ),
+            ),
+            SizedBox(width: ResponsiveUI.padding(context, 4)),
+            if (isActive)
+              Icon(Icons.check_circle, size: 14, color: activeColor),
+          ],
+        ),
+      ),
+    );
+  }
 }

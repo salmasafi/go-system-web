@@ -35,7 +35,16 @@ class PosCubit extends Cubit<PosState> {
   Tax? selectedTax;
 
   List<DiscountModel> discounts = [
-    DiscountModel(id: 'null', name: 'No Discount', amount: 0.0, type: 'fixed', status: true, createdAt: '', updatedAt: '', version: null),
+    DiscountModel(
+      id: 'null',
+      name: 'No Discount',
+      amount: 0.0,
+      type: 'fixed',
+      status: true,
+      createdAt: '',
+      updatedAt: '',
+      version: null,
+    ),
   ];
   DiscountModel? selectedDiscount;
 
@@ -134,6 +143,25 @@ class PosCubit extends Cubit<PosState> {
   }
 
   Future<void> getSelections() async {
+    taxes = [
+      Tax(id: 'null', name: 'No Tax', amount: 0.0, type: 'fixed', status: true),
+    ];
+    selectedTax = null;
+
+    discounts = [
+      DiscountModel(
+        id: 'null',
+        name: 'No Discount',
+        amount: 0.0,
+        type: 'fixed',
+        status: true,
+        createdAt: '',
+        updatedAt: '',
+        version: null,
+      ),
+    ];
+    selectedDiscount = null;
+
     try {
       final response = await DioHelper.getData(url: EndPoint.posSelections);
       if (response.statusCode == 200) {
@@ -150,48 +178,56 @@ class PosCubit extends Cubit<PosState> {
             .toList();
         selectedCustomer = customers.isNotEmpty ? customers.first : null;
 
-        paymentMethods = (json['paymentMethods'] as List)
-            .map((e) => PaymentMethod.fromJson(e))
-            .toList();
-        selectedPaymentMethod = paymentMethods.isNotEmpty
-            ? paymentMethods.first
-            : null;
-
         // ←←← الجديد: نضيف Account + Tax + Currency
         accounts = (json['accounts'] as List? ?? [])
             .map((e) => BankAccount.fromJson(e))
             .toList();
 
-        var filteredAccounts = accounts.isNotEmpty
-            ? accounts.where((element) => element.isDefault)
-            : null;
-        selectedAccount = filteredAccounts?.first;
+        // var filteredAccounts = accounts.isNotEmpty
+        //     ? accounts.where((element) => element.isDefault)
+        //     : null;
+        selectedAccount = accounts.first;
         List<Tax> taxesFromJson = ((json['taxes'] as List?) ?? [])
             .map<Tax>((dynamic e) => Tax.fromJson(e as Map<String, dynamic>))
             .toList();
 
-        taxes.addAll(taxesFromJson);
+        //taxes.addAll(taxesFromJson);
 
-        var filteredTaxes = taxes.isNotEmpty
-            ? taxes.where((element) => element.status)
+        var filteredTaxes = taxesFromJson.isNotEmpty
+            ? taxesFromJson.where((element) => element.status)
             : null;
-        selectedTax = filteredTaxes?.first;
-        
-        List<DiscountModel> discountsFromJson = ((json['discounts'] as List?) ?? [])
-            .map<DiscountModel>((dynamic e) => DiscountModel.fromJson(e as Map<String, dynamic>))
-            .toList();
+        taxes.addAll(filteredTaxes ?? []);
 
-        discounts.addAll(discountsFromJson);
+        selectedTax = taxes.first;
 
-        var filteredDiscounts = discounts.isNotEmpty
-            ? discounts.where((element) => element.status)
+        List<DiscountModel> discountsFromJson =
+            ((json['discounts'] as List?) ?? [])
+                .map<DiscountModel>(
+                  (dynamic e) =>
+                      DiscountModel.fromJson(e as Map<String, dynamic>),
+                )
+                .toList();
+
+        //discounts.addAll(discountsFromJson);
+
+        var filteredDiscounts = discountsFromJson.isNotEmpty
+            ? discountsFromJson.where((element) => element.status)
             : null;
-        selectedDiscount = filteredDiscounts?.first;
-        
+        discounts.addAll(filteredDiscounts ?? []);
+
+        selectedDiscount = discounts.first;
+
         currencies = (json['currencies'] as List? ?? [])
             .map((e) => Currency.fromJson(e))
             .toList();
         selectedCurrency = currencies.isNotEmpty ? currencies.first : null;
+
+        paymentMethods = (json['paymentMethods'] as List)
+            .map((e) => PaymentMethod.fromJson(e))
+            .toList();
+        selectedPaymentMethod = paymentMethods.isNotEmpty
+            ? paymentMethods.where((element) => element.name == 'Cash').first
+            : null;
       }
     } catch (e) {
       log('Selections error: $e');

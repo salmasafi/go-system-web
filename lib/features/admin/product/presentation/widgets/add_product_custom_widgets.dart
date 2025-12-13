@@ -96,6 +96,7 @@ class AnimatedCheckboxTile extends StatelessWidget {
   final Color activeColor;
   final TextEditingController? priceController;
   final TextEditingController? quantityController;
+  final TextEditingController? codeController;
 
   const AnimatedCheckboxTile({
     super.key,
@@ -104,6 +105,7 @@ class AnimatedCheckboxTile extends StatelessWidget {
     required this.onChanged,
     this.priceController,
     this.quantityController,
+    this.codeController,
     this.activeColor = AppColors.primaryBlue,
   });
 
@@ -185,7 +187,8 @@ class AnimatedCheckboxTile extends StatelessWidget {
                 ),
                 if (!value &&
                     priceController != null &&
-                    quantityController != null) ...[
+                    quantityController != null &&
+                    codeController != null) ...[
                   SizedBox(height: ResponsiveUI.spacing(context, 20)),
                   buildTextField(
                     context,
@@ -194,6 +197,15 @@ class AnimatedCheckboxTile extends StatelessWidget {
                     icon: Icons.price_change,
                     hint: '0.00',
                     keyboardType: TextInputType.number,
+                  ),
+                  SizedBox(height: ResponsiveUI.spacing(context, 20)),
+                  buildTextField(
+                    context,
+                    controller: codeController!,
+                    label: 'Code *',
+                    icon: Icons.qr_code,
+                    hint: 'Enter unique code',
+                    keyboardType: TextInputType.visiblePassword,
                   ),
                   SizedBox(height: ResponsiveUI.spacing(context, 20)),
                   buildTextField(
@@ -591,7 +603,7 @@ class ImageThumbnail extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: Image.file(image, fit: BoxFit.fill),
+            child: Image.file(image, fit: BoxFit.contain),
           ),
         ),
         Positioned(

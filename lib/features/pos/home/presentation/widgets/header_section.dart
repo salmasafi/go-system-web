@@ -56,7 +56,7 @@ class _POSHeaderSectionState extends State<POSHeaderSection> {
                 onChanged: widget.onChanged,
                 onTap: widget.onTap,
               ),
-              SizedBox(height: ResponsiveUI.spacing(context, 12)),
+              //SizedBox(height: ResponsiveUI.spacing(context, 12)),
               // Row(
               //   children: [
               //     Expanded(
@@ -89,45 +89,46 @@ class _POSHeaderSectionState extends State<POSHeaderSection> {
               //   ],
               // ),
               // // داخل الـ Row في POSHeaderSection
-              Row(
-                children: [
-                  Expanded(
-                    child: InkWell(
-                      onTap: () => _showWarhouseDialog(),
-                      child: POSInfoChip(
-                        icon: Icons.warehouse_outlined,
-                        label: 'Warehouse',
-                        value: cubit.selectedWarhouse?.name ?? 'Select',
-                        color: AppColors.primaryBlue,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: ResponsiveUI.spacing(context, 8)),
-                  Expanded(
-                    child: InkWell(
-                      onTap: () => _showCustomerDialog(),
-                      child: POSInfoChip(
-                        icon: Icons.person_outline,
-                        label: 'Customer',
-                        value: cubit.selectedCustomer?.name ?? 'Walk-in',
-                        color: AppColors.successGreen,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: ResponsiveUI.spacing(context, 8)),
-                  Expanded(
-                    child: InkWell(
-                      onTap: () => _showBankAccountDialog(),
-                      child: POSInfoChip(
-                        icon: Icons.account_balance_wallet_outlined,
-                        label: 'Bank Account',
-                        value: cubit.selectedAccount?.name ?? 'Default Account',
-                        color: AppColors.categoryPurple,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              // Row(
+              //   children: [
+              //     Expanded(
+              //       child: InkWell(
+              //         onTap: () => _showWarhouseDialog(),
+              //         child: POSInfoChip(
+              //           icon: Icons.warehouse_outlined,
+              //           label: 'Warehouse',
+              //           value: cubit.selectedWarhouse?.name ?? 'Select',
+              //           color: AppColors.primaryBlue,
+              //         ),
+              //       ),
+              //     ),
+              //     SizedBox(width: ResponsiveUI.spacing(context, 8)),
+              //     Expanded(
+              //       child: InkWell(
+              //         onTap: () => _showCustomerDialog(),
+              //         child: POSInfoChip(
+              //           icon: Icons.person_outline,
+              //           label: 'Customer',
+              //           value: cubit.selectedCustomer?.name ?? 'Walk-in',
+              //           color: AppColors.successGreen,
+              //         ),
+              //       ),
+              //     ),
+              //     SizedBox(width: ResponsiveUI.spacing(context, 8)),
+              //     Expanded(
+              //       child: InkWell(
+              //         onTap: () => _showBankAccountDialog(),
+              //         child: POSInfoChip(
+              //           icon: Icons.account_balance_wallet_outlined,
+              //           label: 'Bank Account',
+              //           value: cubit.selectedAccount?.name ?? 'Default Account',
+              //           color: AppColors.categoryPurple,
+              //         ),
+              //       ),
+              //     ),
+              //   ],
+              // ),
+           
             ],
           ),
         );

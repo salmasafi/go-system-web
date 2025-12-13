@@ -1,6 +1,7 @@
 // lib/features/pos/home/presentation/widgets/pos_app_bar.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:systego/core/widgets/app_bar_widgets.dart';
 import 'package:systego/features/admin/auth/cubit/login_cubit.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
@@ -76,144 +77,194 @@ class _POSAppBarState extends State<POSAppBar> {
     // Safely get username from LoginCubit (works after restart)
     final username = context.read<LoginCubit>().savedUser?.username ?? 'Guest';
 
-    return AppBar(
-      elevation: 0,
-      backgroundColor: AppColors.primaryBlue,
-      foregroundColor: AppColors.white,
-      title: GestureDetector(
-        onTap: () => _selectDate(context),
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: ResponsiveUI.padding(context, 12),
-            vertical: ResponsiveUI.padding(context, 6),
-          ),
-          decoration: BoxDecoration(
-            color: AppColors.white.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(
-              ResponsiveUI.borderRadius(context, 12),
+    return appBarWithActionsWidget(
+      context,
+      backgroundColor: AppColors.lightBlueBackground,
+      actionWidget: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: ResponsiveUI.padding(context, 10),
+        ),
+        child: Center(
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: ResponsiveUI.padding(context, 12),
+              vertical: ResponsiveUI.padding(context, 6),
             ),
-            border: Border.all(
-              color: AppColors.white.withOpacity(0.3),
-              width: 1.5,
+            decoration: BoxDecoration(
+              color: AppColors.black.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(
+                ResponsiveUI.borderRadius(context, 10),
+              ),
+              border: Border.all(
+                color: AppColors.black.withOpacity(0.3),
+                width: 1.5,
+              ),
             ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Date Box
-              Container(
-                padding: EdgeInsets.all(ResponsiveUI.padding(context, 8)),
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.circular(
-                    ResponsiveUI.borderRadius(context, 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.person_outline,
+                  color: AppColors.black,
+                  size: ResponsiveUI.iconSize(context, 16),
+                ),
+                SizedBox(width: ResponsiveUI.spacing(context, 6)),
+                Text(
+                  username,
+                  style: TextStyle(
+                    color: AppColors.black,
+                    fontSize: ResponsiveUI.fontSize(context, 13),
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      '${_selectedDate.day}',
-                      style: TextStyle(
-                        color: AppColors.primaryBlue,
-                        fontSize: ResponsiveUI.fontSize(context, 16),
-                        fontWeight: FontWeight.bold,
-                        height: 1,
-                      ),
-                    ),
-                    Text(
-                      _getMonthName(_selectedDate.month),
-                      style: TextStyle(
-                        color: AppColors.primaryBlue,
-                        fontSize: ResponsiveUI.fontSize(context, 10),
-                        fontWeight: FontWeight.w600,
-                        height: 1.2,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(width: ResponsiveUI.spacing(context, 10)),
-
-              // Date Text + Hint
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    _formatDate(_selectedDate),
-                    style: TextStyle(
-                      color: AppColors.white,
-                      fontSize: ResponsiveUI.fontSize(context, 15),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    'Tap to change',
-                    style: TextStyle(
-                      color: AppColors.white.withOpacity(0.8),
-                      fontSize: ResponsiveUI.fontSize(context, 11),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(width: ResponsiveUI.spacing(context, 8)),
-
-              // Calendar Icon
-              Icon(
-                Icons.calendar_today,
-                color: AppColors.white,
-                size: ResponsiveUI.iconSize(context, 18),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-      actions: [
-        // User Info Button
-        Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: ResponsiveUI.padding(context, 16),
-          ),
-          child: Center(
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: ResponsiveUI.padding(context, 12),
-                vertical: ResponsiveUI.padding(context, 6),
-              ),
-              decoration: BoxDecoration(
-                color: AppColors.white.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(
-                  ResponsiveUI.borderRadius(context, 10),
-                ),
-                border: Border.all(
-                  color: AppColors.white.withOpacity(0.3),
-                  width: 1.5,
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.person_outline,
-                    color: AppColors.white,
-                    size: ResponsiveUI.iconSize(context, 16),
-                  ),
-                  SizedBox(width: ResponsiveUI.spacing(context, 6)),
-                  Text(
-                    username,
-                    style: TextStyle(
-                      color: AppColors.white,
-                      fontSize: ResponsiveUI.fontSize(context, 13),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
+      showActions: true,
+      showBackButton: false,
+      title: 'POS', 
     );
+    // AppBar(
+    //       elevation: 0,
+    //       backgroundColor: AppColors.primaryBlue,
+    //       foregroundColor: AppColors.white,
+    //        title:  // GestureDetector(
+    //       //   onTap: () => _selectDate(context),
+    //       //   child: Container(
+    //       //     padding: EdgeInsets.symmetric(
+    //       //       horizontal: ResponsiveUI.padding(context, 12),
+    //       //       vertical: ResponsiveUI.padding(context, 6),
+    //       //     ),
+    //       //     decoration: BoxDecoration(
+    //       //       color: AppColors.white.withOpacity(0.15),
+    //       //       borderRadius: BorderRadius.circular(
+    //       //         ResponsiveUI.borderRadius(context, 12),
+    //       //       ),
+    //       //       border: Border.all(
+    //       //         color: AppColors.white.withOpacity(0.3),
+    //       //         width: 1.5,
+    //       //       ),
+    //       //     ),
+    //       //     child: Row(
+    //       //       mainAxisSize: MainAxisSize.min,
+    //       //       children: [
+    //       //         // Date Box
+    //       //         Container(
+    //       //           padding: EdgeInsets.all(ResponsiveUI.padding(context, 8)),
+    //       //           decoration: BoxDecoration(
+    //       //             color: AppColors.white,
+    //       //             borderRadius: BorderRadius.circular(
+    //       //               ResponsiveUI.borderRadius(context, 8),
+    //       //             ),
+    //       //           ),
+    //       //           child: Column(
+    //       //             mainAxisSize: MainAxisSize.min,
+    //       //             children: [
+    //       //               Text(
+    //       //                 '${_selectedDate.day}',
+    //       //                 style: TextStyle(
+    //       //                   color: AppColors.primaryBlue,
+    //       //                   fontSize: ResponsiveUI.fontSize(context, 16),
+    //       //                   fontWeight: FontWeight.bold,
+    //       //                   height: 1,
+    //       //                 ),
+    //       //               ),
+    //       //               Text(
+    //       //                 _getMonthName(_selectedDate.month),
+    //       //                 style: TextStyle(
+    //       //                   color: AppColors.primaryBlue,
+    //       //                   fontSize: ResponsiveUI.fontSize(context, 10),
+    //       //                   fontWeight: FontWeight.w600,
+    //       //                   height: 1.2,
+    //       //                 ),
+    //       //               ),
+    //       //             ],
+    //       //           ),
+    //       //         ),
+    //       //         SizedBox(width: ResponsiveUI.spacing(context, 10)),
+
+    //       //         // Date Text + Hint
+    //       //         Column(
+    //       //           crossAxisAlignment: CrossAxisAlignment.start,
+    //       //           mainAxisSize: MainAxisSize.min,
+    //       //           children: [
+    //       //             Text(
+    //       //               _formatDate(_selectedDate),
+    //       //               style: TextStyle(
+    //       //                 color: AppColors.white,
+    //       //                 fontSize: ResponsiveUI.fontSize(context, 15),
+    //       //                 fontWeight: FontWeight.bold,
+    //       //               ),
+    //       //             ),
+    //       //             Text(
+    //       //               'Tap to change',
+    //       //               style: TextStyle(
+    //       //                 color: AppColors.white.withOpacity(0.8),
+    //       //                 fontSize: ResponsiveUI.fontSize(context, 11),
+    //       //               ),
+    //       //             ),
+    //       //           ],
+    //       //         ),
+    //       //         SizedBox(width: ResponsiveUI.spacing(context, 8)),
+
+    //       //         // Calendar Icon
+    //       //         Icon(
+    //       //           Icons.calendar_today,
+    //       //           color: AppColors.white,
+    //       //           size: ResponsiveUI.iconSize(context, 18),
+    //       //         ),
+    //       //       ],
+    //       //     ),
+    //       //   ),
+    //       // ),
+
+    //       actions: [
+    //         // User Info Button
+    //         Padding(
+    //           padding: EdgeInsets.symmetric(
+    //             horizontal: ResponsiveUI.padding(context, 16),
+    //           ),
+    //           child: Center(
+    //             child: Container(
+    //               padding: EdgeInsets.symmetric(
+    //                 horizontal: ResponsiveUI.padding(context, 12),
+    //                 vertical: ResponsiveUI.padding(context, 6),
+    //               ),
+    //               decoration: BoxDecoration(
+    //                 color: AppColors.white.withOpacity(0.15),
+    //                 borderRadius: BorderRadius.circular(
+    //                   ResponsiveUI.borderRadius(context, 10),
+    //                 ),
+    //                 border: Border.all(
+    //                   color: AppColors.white.withOpacity(0.3),
+    //                   width: 1.5,
+    //                 ),
+    //               ),
+    //               child: Row(
+    //                 mainAxisSize: MainAxisSize.min,
+    //                 children: [
+    //                   Icon(
+    //                     Icons.person_outline,
+    //                     color: AppColors.white,
+    //                     size: ResponsiveUI.iconSize(context, 16),
+    //                   ),
+    //                   SizedBox(width: ResponsiveUI.spacing(context, 6)),
+    //                   Text(
+    //                     username,
+    //                     style: TextStyle(
+    //                       color: AppColors.white,
+    //                       fontSize: ResponsiveUI.fontSize(context, 13),
+    //                       fontWeight: FontWeight.w600,
+    //                     ),
+    //                   ),
+    //                 ],
+    //               ),
+    //             ),
+    //           ),
+    //         ),
+    //       ],
+    //     );
   }
 }

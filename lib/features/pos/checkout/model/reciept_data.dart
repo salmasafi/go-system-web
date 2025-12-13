@@ -1,5 +1,4 @@
 import 'package:systego/features/admin/discount/model/discount_model.dart';
-
 import '../../home/model/pos_models.dart';
 import 'checkout_models.dart';
 

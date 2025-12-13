@@ -69,12 +69,12 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     // Set selectedTax, ensuring it's from the list
     if (posCubit.selectedTax != null) {
       // Find matching tax by id
-      _selectedTax = posCubit.selectedTax ;
+      _selectedTax = posCubit.selectedTax;
     } else {
       _selectedTax = _taxes.first;
     }
 
-    if (_selectedTax!.amount < 1 && _selectedTax!.amount > 0) {
+    if (_selectedTax!.type == 'percentage') {
       currentTaxAmount = (_selectedTax!.amount * _subTotal);
     } else {
       currentTaxAmount = _selectedTax!.amount;
@@ -83,12 +83,12 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     // Set selectedDiscount, ensuring it's from the list
     if (posCubit.selectedDiscount != null) {
       // Find matching discount by id
-      _selectedDiscount = posCubit.selectedDiscount ;
+      _selectedDiscount = posCubit.selectedDiscount;
     } else {
       _selectedDiscount = _discounts.first;
     }
 
-    if (_selectedDiscount!.amount < 1 && _selectedDiscount!.amount > 0) {
+    if (_selectedDiscount!.type == 'percentage') {
       currentDiscountAmount = (_selectedDiscount!.amount * _subTotal);
     } else {
       currentDiscountAmount = _selectedDiscount!.amount;
@@ -102,28 +102,27 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     setState(() {
       _totalPaying = double.tryParse(_totalPayingCtrl.text) ?? 0.0;
 
+      double taxAmount = 0.0;
+      if (_selectedTax != null) {
+        if (_selectedTax!.type == 'percentage') {
+          taxAmount = _selectedTax!.amount * _subTotal;
+        } else {
+          taxAmount = _selectedTax!.amount;
+        }
+      }
+      currentTaxAmount = taxAmount;
+
       double discountAmount = 0.0;
       if (_selectedDiscount != null) {
-        if (_selectedDiscount!.amount < 1 && _selectedDiscount!.amount > 0) {
-          discountAmount = _selectedDiscount!.amount * _subTotal;
+        if (_selectedDiscount!.type == 'percentage') {
+          discountAmount = _selectedDiscount!.amount * (_subTotal + taxAmount);
         } else {
           discountAmount = _selectedDiscount!.amount;
         }
       }
       currentDiscountAmount = discountAmount;
 
-      double taxableSubtotal = _subTotal - discountAmount;
-
-      currentTaxAmount = 0.0;
-      if (_selectedTax != null) {
-        if (_selectedTax!.amount < 1 && _selectedTax!.amount > 0) {
-          currentTaxAmount = _selectedTax!.amount * taxableSubtotal;
-        } else {
-          currentTaxAmount = _selectedTax!.amount;
-        }
-      }
-
-      _due = taxableSubtotal + currentTaxAmount;
+      _due = (_subTotal + taxAmount) - discountAmount;
 
       if (_totalPaying >= _due) {
         _change = _totalPaying - _due;
@@ -188,9 +187,9 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
                       SizedBox(height: ResponsiveUI.spacing(context, 16)),
                       _notesSection(),
                       SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                      _discountDropdown(),
-                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
                       _taxDropdown(),
+                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                      _discountDropdown(),
                     ],
                   ),
                 ),
@@ -298,19 +297,15 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     ),
     child: Column(
       children: [
-        _row(
-          'Total Payable',
-          _due,
-          AppColors.darkGray,
-          bold: true,
-        ),
+        _row('Total Payable', _due, AppColors.darkGray, bold: true),
         Divider(
           color: AppColors.shadowGray.withOpacity(0.3),
           height: ResponsiveUI.spacing(context, 20),
         ),
+
+
         _row('Sub total  ', _subTotal, AppColors.categoryPurple),
-        _row('Discount  ', currentDiscountAmount, AppColors.successGreen),
-        _row('Taxes  ', currentTaxAmount, AppColors.warningOrange),
+
         Divider(
           color: AppColors.shadowGray.withOpacity(0.3),
           height: ResponsiveUI.spacing(context, 20),
@@ -318,7 +313,19 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _row('Change  ', _change, AppColors.successGreen),
+            _row('Taxes  ', currentTaxAmount, AppColors.warningOrange),
+            _row('Discount  ', currentDiscountAmount, AppColors.successGreen),
+          ],
+        ),
+
+        Divider(
+          color: AppColors.shadowGray.withOpacity(0.3),
+          height: ResponsiveUI.spacing(context, 20),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _row('Change  ', _change, AppColors.clearPink),
             _row('Due  ', _due, AppColors.red),
           ],
         ),
@@ -760,7 +767,12 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
             icon: Icon(Icons.arrow_drop_down, color: AppColors.primaryBlue),
             items: _taxes
                 .map(
-                  (t) => DropdownMenuItem<Tax>(value: t, child: Text(t.name)),
+                  (t) => DropdownMenuItem<Tax>(
+                    value: t,
+                    child: Text(
+                      '${t.name} - ${(t.type == 'fixed') ? '${t.amount}EGP' : '${(t.amount * 100).toStringAsFixed(1)}%'}',
+                    ),
+                  ),
                 )
                 .toList(),
             onChanged: (v) {
@@ -805,7 +817,12 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
             icon: Icon(Icons.arrow_drop_down, color: AppColors.primaryBlue),
             items: _discounts
                 .map(
-                  (d) => DropdownMenuItem<DiscountModel>(value: d, child: Text(d.name)),
+                  (d) => DropdownMenuItem<DiscountModel>(
+                    value: d,
+                    child: Text(
+                      '${d.name} - ${(d.type == 'fixed') ? '${d.amount}EGP' : '${(d.amount * 100).toStringAsFixed(1)}%'}',
+                    ),
+                  ),
                 )
                 .toList(),
             onChanged: (v) {
@@ -830,9 +847,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
       return;
     }
 
-    double paidAmount = _totalPaying >= _due
-        ? _totalPaying
-        : _due;
+    double paidAmount = _totalPaying >= _due ? _totalPaying : _due;
 
     //paidAmount = paidAmount - ((_selectedTax != null) ? _selectedTax!.amount : 0);
 

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/features/POS/checkout/cubit/checkout_cubit/checkout_cubit.dart';
+import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
 import '../../model/checkout_models.dart';
 import 'action_botton.dart';
 import 'checkout_dialog.dart';
@@ -25,12 +26,14 @@ class POSCartBottomSheet extends StatefulWidget {
 
 class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
   late CheckoutCubit cubit;
+  late PosCubit posCubit;
   late List<CartItem> cartItems;
   late double total;
 
   @override
   void initState() {
     super.initState();
+    posCubit = context.read<PosCubit>();
     cubit = context.read<CheckoutCubit>();
     cartItems = List.from(
       cubit.cartItems,
@@ -109,6 +112,7 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
                       TextButton(
                         onPressed: () {
                           cubit.updateCartWithEmptyList();
+                          posCubit.refreshCartProducts();
                           _refresh();
                         },
                         child: Text(
@@ -278,6 +282,14 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
           decoration: InputDecoration(
             hintText: 'Enter new quantity',
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            // focusColor: AppColors.primaryBlue,
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: AppColors.primaryBlue, width: 1.7),
+            ),
+            // enabledBorder: OutlineInputBorder(
+            //   borderSide: BorderSide(color: AppColors.primaryBlue),
+            // ),
           ),
         ),
         actions: [
@@ -296,7 +308,7 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryBlue,
             ),
-            child: const Text('OK', style: TextStyle(color: Colors.white)),
+            child: const Text('OK', style: TextStyle(color: AppColors.white)),
           ),
         ],
       ),
@@ -306,20 +318,22 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
   void _showCheckoutDialog() {
     showDialog(
       context: context,
-      builder: (_) => POSPaymentMethodsDialog(
-        onMethodSelected: (method) {
-          Navigator.pop(context); // إغلاق اختيار الدفع
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => POSCheckoutDialog(
-              totalAmount: total,
-              cartItems: cartItems,
-              selectedPaymentMethod: method,
-            ),
-          );
-        },
-      ),
+      builder: (_) =>
+          //POSPaymentMethodsDialog(
+          //onMethodSelected: (method) {
+          //Navigator.pop(context); // إغلاق اختيار الدفع
+          // showDialog(
+          //context: context,
+          // barrierDismissible: false,
+          // builder: (_) =>
+          POSCheckoutDialog(
+            totalAmount: total,
+            cartItems: cartItems,
+            selectedPaymentMethod: posCubit.selectedPaymentMethod!,
+          ),
+      // );
+      //},
+      //),
     );
   }
 }
