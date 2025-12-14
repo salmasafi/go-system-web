@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/features/admin/adjustment/presentation/view/adjustments_screen.dart';
 import 'package:systego/features/admin/bank_account/presentation/view/bank_accounts_screen.dart';
 import 'package:systego/features/admin/city/presentation/view/cities_screen.dart';
 import 'package:systego/features/admin/country/presentation/view/countries_screen.dart';
@@ -10,6 +11,7 @@ import 'package:systego/features/admin/department/presentation/view/departments_
 import 'package:systego/features/admin/discount/presentation/view/discounts_screen.dart';
 import 'package:systego/features/admin/permission/presentation/view/permissions_screen.dart';
 import 'package:systego/features/admin/popup/presentation/view/popup_screen.dart';
+import 'package:systego/features/admin/reason/presentation/view/reasons_screen.dart';
 import 'package:systego/features/admin/suppliers/view/supplier_screen.dart';
 import 'package:systego/features/admin/taxes/presentation/view/taxes_screen.dart';
 import 'package:systego/features/admin/variations/presentation/view/variation_screen.dart';
@@ -60,6 +62,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     // {'icon': Icons.business, 'label': 'Departments'},
     {'icon': Icons.local_offer, 'label': 'Discounts'},
     {'icon': Icons.business, 'label': 'Permissions'},
+    {'icon': Icons.business, 'label': 'Adjustment Reasons'},
+    {'icon': Icons.business, 'label': 'Adjustments'},
   ];
 
   void _navigateToPage(String label) {
@@ -194,6 +198,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const PermissionScreen()),
+        );
+        break;
+
+       case 'Adjustment Reasons':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ReasonsScreen()),
+        );
+        break;
+
+      case 'Adjustments':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const AdjustmentsScreen()),
         );
         break;
 

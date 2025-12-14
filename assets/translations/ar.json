@@ -421,8 +421,49 @@
   "no_popups_message": "لقد انتهيت من كل شيء!",
   "no_popups_default_message": "اسحب للتحديث أو تحقق من اتصالك بالإنترنت",
   "no_popups_icon_alt": "لا توجد نوافذ",
-  "popups_list_empty": "لا توجد نوافذ منبثقة متاحة"
+  "popups_list_empty": "لا توجد نوافذ منبثقة متاحة",
 
+
+  "reasons": "الأسباب",
+  "no_reasons": "لا توجد أسباب",
+  "no_reasons_available": "لا توجد أسباب متاحة حتى الآن",
+  "delete_reason": "حذف السبب",
+  "delete_reason_message": "هل أنت متأكد أنك تريد حذف هذا السبب؟",
+  "invalid_reason_id": "معرّف السبب غير صالح",
+  "reason_text": "السبب",
+  "hint_enter_reason": "أدخل نص السبب",
+  "edit_reason": "تعديل السبب",
+  "new_reason": "سبب جديد",
+  "reason_dialog_update_details": "تحديث تفاصيل السبب",
+  "reason_dialog_add_new": "إضافة سبب جديد",
+  "update_reason": "تحديث السبب",
+  "create_reason": "إنشاء سبب",
+
+  "no_adjustments": "لا توجد تعديلات",
+  "no_matching_adjustments": "لا توجد تعديلات مطابقة",
+  "adjustments_all_caught_up": "تمت متابعة جميع التعديلات!",
+  "adjustments": "التعديلات",
+  "reason": "السبب",
+  "invalid_adjustment_id": "معرّف التعديل غير صالح",
+  "delete_adjustment": "حذف التعديل",
+  "delete_adjustment_message": "هل أنت متأكد أنك تريد حذف هذا التعديل؟",
+  "warehouse_id": "معرّف المستودع",
+  "hint_warehouse_id": "أدخل معرّف المستودع",
+  "product_id": "معرّف المنتج",
+  "hint_product_id": "أدخل معرّف المنتج",
+  "quantity": "الكمية",
+  "hint_quantity": "أدخل الكمية",
+  "hint_select_reason": "اختر سببًا",
+  "validation_select_reason": "يرجى اختيار سبب",
+
+  "image": "الصورة",
+  "hint_image": "أدخل الصورة",
+  "edit_adjustment": "تعديل التعديل",
+  "new_adjustment": "تعديل جديد",
+  "adjustment_dialog_update_details": "تحديث تفاصيل التعديل",
+  "adjustment_dialog_add_new": "إضافة تعديل جديد",
+  "update_adjustment": "تحديث التعديل",
+  "create_adjustment": "إنشاء تعديل"
 
 
 }
