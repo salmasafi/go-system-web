@@ -5,7 +5,6 @@ import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
-import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:systego/features/POS/checkout/cubit/checkout_cubit/checkout_cubit.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_state.dart';
@@ -17,6 +16,7 @@ import '../../../checkout/presentation/widgets/cart_fab.dart';
 import '../../../checkout/presentation/widgets/cart_summary.dart';
 import '../widgets/filter_by_category_brand_widgets.dart';
 import '../widgets/header_section.dart';
+import '../widgets/product_details_dialog.dart';
 import '../widgets/product_grid.dart';
 import '../widgets/tab_bar.dart';
 import '../widgets/variation_selector_dialog.dart'; // جديد
@@ -39,12 +39,11 @@ class _POSScreenState extends State<POSScreen> {
   }
 
   void _addToCart(Product product) {
+    final checkoutCubit = context.read<CheckoutCubit>();
+    final posCubit = context.read<PosCubit>();
+
     if (product.differentPrice && product.prices.isNotEmpty) {
-      // إذا variations، افتح الديالوج
-
-      final checkoutCubit = context.read<CheckoutCubit>();
-      final PosCubit posCubit = context.read<PosCubit>();
-
+      // Product has multiple variations - show variation selector
       showDialog(
         context: context,
         builder: (_) => VariationSelectorDialog(
@@ -59,16 +58,23 @@ class _POSScreenState extends State<POSScreen> {
         ),
       );
     } else {
-      // سعر واحد: أضف مباشرة (يمكن إضافة snackbar لعرض تفاصيل سريع)
-      context.read<CheckoutCubit>().addToCart(product);
-      PosCubit posCubit = context.read<PosCubit>();
-      posCubit.selectTab(tab: posCubit.selectedTab, noFliterRefresh: true);
-      CustomSnackbar.showSuccess(
-        context,
-        '${product.name} added (Price: \$${product.price})',
-      ); // عرض تفاصيل بسيط
+      // Product has single price - show product details dialog for preview
+      showDialog(
+        context: context,
+        builder: (_) => ProductDetailsDialog(
+          product: product,
+          onAddToCart: () {
+            checkoutCubit.addToCart(product);
+            posCubit.selectTab(
+              tab: posCubit.selectedTab,
+              noFliterRefresh: true,
+            );
+          },
+        ),
+      );
     }
   }
+
 
   // ────────────────────────────────────────────────────────────────
   //  Handle barcode scan → API → add to cart

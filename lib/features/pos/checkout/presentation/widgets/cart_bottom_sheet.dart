@@ -7,8 +7,8 @@ import 'package:systego/features/POS/checkout/cubit/checkout_cubit/checkout_cubi
 import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
 import '../../model/checkout_models.dart';
 import 'action_botton.dart';
+import 'cart_item_tile.dart';
 import 'checkout_dialog.dart';
-import 'payment_methods_dialog.dart'; // Import the checkout dialog
 
 class POSCartBottomSheet extends StatefulWidget {
   final Function(int, int) onQuantityChanged;
@@ -132,6 +132,10 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
           ),
 
           // === قائمة المنتجات (تسكرول) ===
+          // lib/features/pos/home/presentation/widgets/cart_bottom_sheet.dart
+          // Replace the ListView.builder section with this updated version
+
+          // In the Expanded ListView.builder section, replace the entire builder:
           Expanded(
             child: ListView.builder(
               padding: EdgeInsets.symmetric(
@@ -141,20 +145,38 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
               itemBuilder: (context, index) {
                 final item = cartItems[index];
                 return Dismissible(
-                  key: ValueKey('${item.product.id}_$index'),
+                  key: ValueKey(
+                    '${item.product.id}_${item.selectedVariation?.code ?? 'no_var'}_$index',
+                  ),
                   direction: DismissDirection.endToStart,
                   background: Container(
                     margin: const EdgeInsets.symmetric(vertical: 6),
                     decoration: BoxDecoration(
-                      color: AppColors.red,
+                      gradient: const LinearGradient(
+                        colors: [Colors.red, Colors.redAccent],
+                      ),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     alignment: Alignment.centerRight,
                     padding: const EdgeInsets.only(right: 24),
-                    child: const Icon(
-                      Icons.delete_forever,
-                      color: Colors.white,
-                      size: 28,
+                    child: const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.delete_forever,
+                          color: Colors.white,
+                          size: 32,
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Remove',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   onDismissed: (_) {
@@ -189,6 +211,9 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
             ),
           ),
 
+          // Don't forget to add these imports at the top of cart_bottom_sheet.dart:
+          // import 'enhanced_cart_item_tile.dart';
+          // import 'cart_item_details_dialog.dart';
           // === الجزء السفلي الثابت (Total + Buttons) ===
           Container(
             padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
@@ -334,70 +359,6 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
       // );
       //},
       //),
-    );
-  }
-}
-
-// Updated CartItemTile (unchanged)
-class CartItemTile extends StatelessWidget {
-  final CartItem item;
-  final VoidCallback onIncrement;
-  final VoidCallback onDecrement;
-  final VoidCallback onLongPress;
-
-  const CartItemTile({
-    super.key,
-    required this.item,
-    required this.onIncrement,
-    required this.onDecrement,
-    required this.onLongPress,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: CircleAvatar(
-        radius: 20,
-        backgroundImage: item.product.image != null
-            ? NetworkImage(item.product.image!)
-            : null,
-        child: item.product.image == null
-            ? const Icon(Icons.image, size: 20)
-            : null,
-      ),
-      title: Text(
-        item.product.name,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-      ),
-      subtitle: Text('\$${item.product.price.toStringAsFixed(2)}'),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.remove_circle_outline, size: 20),
-            onPressed: onDecrement,
-          ),
-          GestureDetector(
-            onLongPress: onLongPress,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Text(
-                '${item.quantity}',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.add_circle_outline, size: 20),
-            onPressed: onIncrement,
-          ),
-        ],
-      ),
     );
   }
 }

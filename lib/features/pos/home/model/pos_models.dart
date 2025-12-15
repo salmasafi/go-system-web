@@ -123,6 +123,7 @@ class PriceVariation {
 class Product {
   final String id;
   final String name;
+  final String code;
   final String description;
   final String? image;
   final double price; // سعر افتراضي أو أدنى سعر
@@ -135,6 +136,7 @@ class Product {
     required this.id,
     required this.name,
     this.image,
+    required this.code,
     required this.price,
     required this.description,
     this.differentPrice = false,
@@ -166,6 +168,7 @@ class Product {
     return Product(
       id: json['_id'] as String,
       name: json['name'] as String,
+      code: json['code'] ?? 'no code',
       description: json['description'] as String,
       image: json['image'] as String?,
       price: defaultPrice,
@@ -208,6 +211,7 @@ class Product {
     return Product(
       id: json['_id'] as String,
       name: json['name'] as String,
+      code: json['code'] ?? 'no code',
       description: json['description'] as String,
       image: json['image'] as String?,
       price: defaultPrice,
