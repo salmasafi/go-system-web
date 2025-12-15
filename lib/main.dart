@@ -56,16 +56,25 @@ void main() async {
   log('isLoggedIn $isLoggedIn');
   log(token ?? '');
 
+  final deviceLocale = WidgetsBinding.instance.window.locale;
+  final startLocale = deviceLocale.languageCode == 'ar'
+      ? Locale('ar')
+      : Locale('en');
+
   runApp(
     EasyLocalization(
       supportedLocales: [Locale('en'), Locale('ar')],
       path: 'assets/translations',
       fallbackLocale: Locale('en'),
       assetLoader: CodegenLoader(),
-      child: DevicePreview(
-        enabled: true,
-        builder: (context) => MainApp(isLoggedIn: isLoggedIn),
-      ),
+      saveLocale: true,
+      startLocale: startLocale,
+      child: MainApp(isLoggedIn: isLoggedIn),
+
+      // DevicePreview(
+      //   enabled: true,
+      //   builder: (context) => MainApp(isLoggedIn: isLoggedIn),
+      // ),
     ),
   );
 }
@@ -134,7 +143,7 @@ class _MainAppState extends State<MainApp> {
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         // locale: DevicePreview.locale(context),
-        builder: DevicePreview.appBuilder,
+        // builder: DevicePreview.appBuilder,
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
         locale: context.locale,
@@ -163,7 +172,7 @@ class _MainAppState extends State<MainApp> {
           dialogTheme: DialogThemeData(backgroundColor: AppColors.white),
           textButtonTheme: TextButtonThemeData(
             style: ButtonStyle(
-              foregroundColor: WidgetStatePropertyAll(AppColors.mediumBlue700,),
+              foregroundColor: WidgetStatePropertyAll(AppColors.mediumBlue700),
               textStyle: WidgetStateProperty.all<TextStyle>(
                 const TextStyle(
                   fontWeight: FontWeight.w800,
@@ -172,7 +181,7 @@ class _MainAppState extends State<MainApp> {
               ),
             ),
           ),
-        
+
           textSelectionTheme: const TextSelectionThemeData(
             cursorColor: AppColors.primaryBlue, // 🔵 لون المؤشر
             selectionColor: AppColors.primaryBlue, // لون التحديد (عند السحب)
