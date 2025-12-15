@@ -419,7 +419,50 @@
   "no_popups_message": "You're all caught up!",
   "no_popups_default_message": "Pull to refresh or check your connection",
   "no_popups_icon_alt": "No popups",
-  "popups_list_empty": "No popups available"
+  "popups_list_empty": "No popups available",
+
+
+    "reasons": "Reasons",
+  "no_reasons": "No Reasons",
+  "no_reasons_available": "No reasons available yet",
+  "delete_reason": "Delete Reason",
+  "delete_reason_message": "Are you sure you want to delete this reason?",
+  "invalid_reason_id": "Invalid Reason ID",
+  "reason_text": "Reason",
+  "hint_enter_reason": "Enter reason text",
+  "edit_reason": "Edit Reason",
+  "new_reason": "New Reason",
+  "reason_dialog_update_details": "Update reason details",
+  "reason_dialog_add_new": "Add a new reason",
+  "update_reason": "Update Reason",
+  "create_reason": "Create Reason",
+
+
+  "no_adjustments": "No Adjustments",
+"no_matching_adjustments": "No Matching Adjustments",
+"adjustments_all_caught_up": "All caught up with adjustments!",
+"adjustments": "Adjustments",
+"reason": "Reason",
+"invalid_adjustment_id": "Invalid Adjustment ID",
+"delete_adjustment": "Delete Adjustment",
+"delete_adjustment_message": "Are you sure you want to delete this adjustment?",
+"warehouse_id": "Warehouse ID",
+"hint_warehouse_id": "Enter warehouse ID",
+"product_id": "Product ID",
+"hint_product_id": "Enter product ID",
+"quantity": "Quantity",
+"hint_quantity": "Enter quantity",
+"hint_select_reason": "Select a reason",
+"validation_select_reason": "Please select a reason",
+
+"image": "Image",
+"hint_image": "Enter image",
+"edit_adjustment": "Edit Adjustment",
+"new_adjustment": "New Adjustment",
+"adjustment_dialog_update_details": "Update the adjustment details",
+"adjustment_dialog_add_new": "Add a new adjustment",
+"update_adjustment": "Update Adjustment",
+"create_adjustment": "Create Adjustment"
 
 
 }

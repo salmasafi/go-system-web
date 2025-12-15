@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:systego/core/services/session_helper.dart';
 import 'package:systego/features/POS/checkout/cubit/checkout_cubit/checkout_cubit.dart';
+import 'package:systego/features/admin/adjustment/cubit/adjustment_cubit.dart';
 import 'package:systego/features/admin/auth/cubit/login_cubit.dart';
 import 'package:systego/features/admin/bank_account/cubit/bank_account_cubit.dart';
 import 'package:systego/features/admin/brands/cubit/brand_cubit.dart';
@@ -21,6 +22,7 @@ import 'package:systego/features/admin/popup/cubit/popup_cubit.dart';
 import 'package:systego/features/admin/product/cubit/get_products_cubit/product_cubit.dart';
 import 'package:systego/features/admin/product/cubit/product_details_cubit/product_details_cubit.dart';
 import 'package:systego/features/admin/product/cubit/filter_product_cubit/product_filter_cubit.dart';
+import 'package:systego/features/admin/reason/cubit/reason_cubit.dart';
 import 'package:systego/features/admin/taxes/cubit/taxes_cubit.dart';
 import 'package:systego/features/admin/variations/cubit/variation_cubit.dart';
 import 'package:systego/features/admin/zone/cubit/zone_cubit.dart';
@@ -54,16 +56,25 @@ void main() async {
   log('isLoggedIn $isLoggedIn');
   log(token ?? '');
 
+  final deviceLocale = WidgetsBinding.instance.window.locale;
+  final startLocale = deviceLocale.languageCode == 'ar'
+      ? Locale('ar')
+      : Locale('en');
+
   runApp(
     EasyLocalization(
       supportedLocales: [Locale('en'), Locale('ar')],
       path: 'assets/translations',
       fallbackLocale: Locale('en'),
       assetLoader: CodegenLoader(),
-      child: DevicePreview(
-        enabled: true,
-        builder: (context) => MainApp(isLoggedIn: isLoggedIn),
-      ),
+      saveLocale: true,
+      startLocale: startLocale,
+      child: MainApp(isLoggedIn: isLoggedIn),
+
+      // DevicePreview(
+      //   enabled: true,
+      //   builder: (context) => MainApp(isLoggedIn: isLoggedIn),
+      // ),
     ),
   );
 }
@@ -113,6 +124,8 @@ class _MainAppState extends State<MainApp> {
         BlocProvider<VariationCubit>(create: (context) => VariationCubit()),
         BlocProvider<DiscountsCubit>(create: (context) => DiscountsCubit()),
         BlocProvider<PermissionCubit>(create: (context) => PermissionCubit()),
+        BlocProvider<ReasonCubit>(create: (context) => ReasonCubit()),
+        BlocProvider<AdjustmentCubit>(create: (context) => AdjustmentCubit()),
         BlocProvider<PaymentMethodCubit>(
           create: (context) => PaymentMethodCubit(),
         ),
@@ -130,7 +143,7 @@ class _MainAppState extends State<MainApp> {
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         // locale: DevicePreview.locale(context),
-        builder: DevicePreview.appBuilder,
+        // builder: DevicePreview.appBuilder,
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
         locale: context.locale,
@@ -159,7 +172,7 @@ class _MainAppState extends State<MainApp> {
           dialogTheme: DialogThemeData(backgroundColor: AppColors.white),
           textButtonTheme: TextButtonThemeData(
             style: ButtonStyle(
-              foregroundColor: WidgetStatePropertyAll(AppColors.mediumBlue700,),
+              foregroundColor: WidgetStatePropertyAll(AppColors.mediumBlue700),
               textStyle: WidgetStateProperty.all<TextStyle>(
                 const TextStyle(
                   fontWeight: FontWeight.w800,
@@ -168,7 +181,7 @@ class _MainAppState extends State<MainApp> {
               ),
             ),
           ),
-        
+
           textSelectionTheme: const TextSelectionThemeData(
             cursorColor: AppColors.primaryBlue, // 🔵 لون المؤشر
             selectionColor: AppColors.primaryBlue, // لون التحديد (عند السحب)

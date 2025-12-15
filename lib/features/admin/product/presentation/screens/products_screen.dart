@@ -35,14 +35,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
   String? _selectedBrandId;
   String? _selectedVariationId;
 
-// String? _selectedVariationId; // Keep this for the variation category
-  String? _selectedVariationOption; 
-  
+  // String? _selectedVariationId; // Keep this for the variation category
+  String? _selectedVariationOption;
+
   String? _selectedWarehouseId;
 
-    List<String> _warehouseProductIds = [];
+  List<String> _warehouseProductIds = [];
 
-
+  // Track active filters
+  Map<String, Filter> _activeFilters = {};
 
   void productsInit() async {
     context.read<ProductFiltersCubit>().getFilters();
@@ -68,59 +69,139 @@ class _ProductsScreenState extends State<ProductsScreen> {
     productsInit();
   }
 
-  List<Product> _filterProducts(List<Product> products) {
+  
+  // Add a filter
+  void _addFilter(FilterType type, String id, String name) {
+    setState(() {
+      _activeFilters[type.name] = Filter(
+        type: type,
+        id: id,
+        name: name,
+      );
+    });
+  }
+
+  // Remove a specific filter
+  void _removeFilter(FilterType type) {
+    setState(() {
+      _activeFilters.remove(type.name);
+    });
+  }
+
+  // Clear all filters
+  void _clearAllFilters() {
+    setState(() {
+      _activeFilters.clear();
+    });
+  }
+
+  // List<Product> _filterProducts(List<Product> products) {
+  //   return products.where((product) {
+  //     // Search filter
+  //     bool matchesSearch =
+  //         _searchQuery.isEmpty ||
+  //         product.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+  //         product.description.toLowerCase().contains(
+  //           _searchQuery.toLowerCase(),
+  //         ) ||
+  //         product.price.toString().contains(_searchQuery.toLowerCase()) ||
+  //         product.quantity.toString().contains(_searchQuery.toLowerCase()) ||
+  //         product.prices.any(
+  //           (price) => price.code.contains(_searchQuery.toLowerCase()),
+  //         );
+
+  //     // Category filter
+  //     bool matchesCategory =
+  //         _selectedCategoryId == null ||
+  //         product.categoryId.any((cat) => cat.id == _selectedCategoryId);
+
+  //     // Brand filter
+  //     bool matchesBrand =
+  //         _selectedBrandId == null || product.brandId.id == _selectedBrandId;
+
+  //     bool matchesWarehouse =
+  //         _selectedWarehouseId == null ||
+  //         _warehouseProductIds.contains(product.id);
+
+  //     // // Variation filter
+  //     // bool matchesVariation =
+  //     //     _selectedVariationId == null ||
+  //     //     product.prices.any(
+  //     //       (price) => price.variations.any(
+  //     //         (varn) => varn.name == _selectedVariationId,
+  //     //       ),
+  //     //     );
+
+  //     bool matchesVariation = true;
+  //     if (_selectedVariationOption != null) {
+  //       // Check if any price variation has the selected option name
+  //       matchesVariation = product.prices.any(
+  //         (price) => price.variations.any(
+  //           (varn) => varn.options.any(
+  //             (option) => option.name == _selectedVariationOption,
+  //           ),
+  //         ),
+  //       );
+  //     }
+
+  //     return matchesSearch &&
+  //         matchesCategory &&
+  //         matchesBrand &&
+  //         matchesVariation &&
+  //         matchesWarehouse;
+  //   }).toList();
+  // }
+
+    List<Product> _filterProducts(List<Product> products) {
     return products.where((product) {
       // Search filter
       bool matchesSearch =
           _searchQuery.isEmpty ||
           product.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           product.description.toLowerCase().contains(
-            _searchQuery.toLowerCase(),
-          ) ||
+                _searchQuery.toLowerCase(),
+              ) ||
           product.price.toString().contains(_searchQuery.toLowerCase()) ||
           product.quantity.toString().contains(_searchQuery.toLowerCase()) ||
           product.prices.any(
-            (price) => price.code.contains(_searchQuery.toLowerCase()),
-          );
+                (price) => price.code.contains(_searchQuery.toLowerCase()),
+              );
 
-      // Category filter
-      bool matchesCategory =
-          _selectedCategoryId == null ||
-          product.categoryId.any((cat) => cat.id == _selectedCategoryId);
+      // Apply active filters in sequence
+      bool matchesAllFilters = true;
+      
+      for (var filter in _activeFilters.values) {
+        switch (filter.type) {
+          case FilterType.categories:
+            matchesAllFilters = matchesAllFilters &&
+                product.categoryId.any((cat) => cat.id == filter.id);
+            break;
+          case FilterType.brands:
+            matchesAllFilters = matchesAllFilters &&
+                product.brandId.id == filter.id;
+            break;
+          case FilterType.variations:
+            matchesAllFilters = matchesAllFilters &&
+                product.prices.any(
+                      (price) => price.variations.any(
+                            (varn) => varn.options.any(
+                              (option) => option.name == filter.name,
+                            ),
+                          ),
+                    );
+            break;
+          case FilterType.warehouses:
+            // You'll need to update this based on your warehouse filtering logic
+            // For now, it returns true if warehouse filter is not set
+            matchesAllFilters = matchesAllFilters && true;
+            break;
+        }
+        
+        // Early exit if any filter fails
+        if (!matchesAllFilters) break;
+      }
 
-      // Brand filter
-      bool matchesBrand =
-          _selectedBrandId == null || product.brandId.id == _selectedBrandId;
-
-
-  bool matchesWarehouse =
-          _selectedWarehouseId == null ||
-          _warehouseProductIds.contains(product.id);
-
-      // // Variation filter
-      // bool matchesVariation =
-      //     _selectedVariationId == null ||
-      //     product.prices.any(
-      //       (price) => price.variations.any(
-      //         (varn) => varn.name == _selectedVariationId,
-      //       ),
-      //     );
-
-      bool matchesVariation = true;
-    if (_selectedVariationOption != null) {
-      // Check if any price variation has the selected option name
-      matchesVariation = product.prices.any((price) =>
-          price.variations.any((varn) => varn.options.any(
-                (option) => option.name == _selectedVariationOption,
-              )));
-    }
-
-
-      return matchesSearch &&
-          matchesCategory &&
-          matchesBrand &&
-          matchesVariation &&
-          matchesWarehouse;
+      return matchesSearch && matchesAllFilters;
     }).toList();
   }
 
@@ -153,19 +234,31 @@ class _ProductsScreenState extends State<ProductsScreen> {
             String message = products.isEmpty
                 ? 'Add your first product to get started'
                 : 'Try adjusting your search or filters';
-            return CustomEmptyState(
-              icon: Icons.inventory_2_outlined,
-              title: title,
-              message: message,
-              onRefresh: _refresh,
-              actionLabel: 'Retry',
-              onAction: _refresh,
+            return Column(
+              children: [
+                if (_activeFilters.isNotEmpty) _buildActiveFiltersChips(),
+                Expanded(
+                  child: CustomEmptyState(
+                    icon: Icons.inventory_2_outlined,
+                    title: title,
+                    message: message,
+                    onRefresh: _refresh,
+                    actionLabel: 'Retry',
+                    onAction: _refresh,
+                  ),
+                ),
+              ],
             );
           } else {
             return RefreshIndicator(
               onRefresh: _refresh,
               color: AppColors.primaryBlue,
-              child: ProductsList(products: displayProducts),
+              child: Column(
+                children: [
+                  if (_activeFilters.isNotEmpty) _buildActiveFiltersChips(),
+                  Expanded(child: ProductsList(products: displayProducts)),
+                ],
+              ),
             );
           }
         } else if (state is ProductsError) {
@@ -192,6 +285,42 @@ class _ProductsScreenState extends State<ProductsScreen> {
   }
 
   
+  // Build active filter chips
+  Widget _buildActiveFiltersChips() {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: ResponsiveUI.padding(context, 16),
+        vertical: ResponsiveUI.padding(context, 8),
+      ),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          // Clear all button
+          if (_activeFilters.length > 1)
+            InputChip(
+              label: Text('Clear all'),
+              onPressed: _clearAllFilters,
+              backgroundColor: AppColors.primaryBlue.withOpacity(0.1),
+              deleteIcon: Icon(Icons.clear_all, size: 16),
+              onDeleted: _clearAllFilters,
+            ),
+          
+          // Individual filter chips
+          ..._activeFilters.values.map((filter) {
+            return InputChip(
+              label: Text('${filter.type.name}: ${filter.name}'),
+              onPressed: () => _removeFilter(filter.type),
+              backgroundColor: AppColors.primaryBlue.withOpacity(0.1),
+              deleteIcon: Icon(Icons.close, size: 16),
+              onDeleted: () => _removeFilter(filter.type),
+            );
+          }).toList(),
+        ],
+      ),
+    );
+  }
+
   // Add this method to fetch warehouse products
   Future<void> _fetchWarehouseProducts(String warehouseId) async {
     if (warehouseId.isEmpty) {
@@ -210,8 +339,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
       if (response.statusCode == 200) {
         final data = response.data;
         if (data['success'] == true && data['data'] != null) {
-          final productsJson = data['data']['productWarehouses'] as List<dynamic>? ?? [];
-          
+          final productsJson =
+              data['data']['productWarehouses'] as List<dynamic>? ?? [];
+
           // Extract product IDs from warehouse products
           final productIds = productsJson
               .where((json) => json['productId'] != null)
@@ -270,7 +400,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                             });
                           },
                           text: 'products by name or code',
-                          suffixIcon:  Icons.qr_code_scanner,
+                          suffixIcon: Icons.qr_code_scanner,
                           suffixOnPressed: () async {
                             // Navigate to Barcode Scanner Screen
                             final result = await Navigator.push(
@@ -291,56 +421,107 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           },
                         ),
                   ),
-                  FilterButtons(
+                  // FilterButtons(
+                  //   onCategorySelected: (id) {
+                  //     setState(() {
+                  //       _selectedCategoryId = id;
+                  //     });
+                  //   },
+                  //   onBrandSelected: (id) {
+                  //     setState(() {
+                  //       _selectedBrandId = id;
+                  //     });
+                  //   },
+
+                  //   // onVariationSelected: (id) {
+                  //   //   setState(() {
+                  //   //     _selectedVariationId = id;
+                  //   //   });
+                  //   // },
+                  //   onVariationSelected: (variationId, optionName) {
+                  //     // Updated to pass both
+                  //     setState(() {
+                  //       _selectedVariationId = variationId;
+                  //       _selectedVariationOption = optionName;
+                  //     });
+                  //   },
+
+                  //   // onWarehouseSelected: (id) {
+                  //   //   setState(() {
+                  //   //     _selectedWarehouseId = id;
+                  //   //   });
+                  //   //   if (id != null) {
+                  //   //     context.read<ProductsCubit>().getWareHouseProducts(id);
+                  //   //   } else {
+                  //   //     context.read<ProductsCubit>().getProducts();
+                  //   //   }
+                  //   // },
+                  //   onWarehouseSelected: (id) async {
+                  //     setState(() {
+                  //       _selectedWarehouseId = id;
+                  //       // Clear warehouse product IDs when warehouse is cleared
+                  //       if (id == null) {
+                  //         _warehouseProductIds = [];
+                  //       }
+                  //     });
+
+                  //     // Fetch warehouse products when a warehouse is selected
+                  //     if (id != null) {
+                  //       await _fetchWarehouseProducts(id);
+                  //     }
+
+                  //     // Trigger a rebuild to apply the filter
+                  //     setState(() {});
+                  //   },
+                  // ),
+                   FilterButtons(
                     onCategorySelected: (id) {
-                      setState(() {
-                        _selectedCategoryId = id;
-                      });
+                      if (id != null) {
+                        // Get category name from filters state
+                        final category = (filtersState as ProductFiltersSuccess?)
+                            ?.filters
+                            .data
+                            ?.categories
+                            ?.firstWhere((cat) => cat.id == id);
+                        _addFilter(FilterType.categories, id, category?.name ?? 'Category');
+                      } else {
+                        _removeFilter(FilterType.categories);
+                      }
                     },
                     onBrandSelected: (id) {
-                      setState(() {
-                        _selectedBrandId = id;
-                      });
-                    },
-                    // onVariationSelected: (id) {
-                    //   setState(() {
-                    //     _selectedVariationId = id;
-                    //   });
-                    // },
-
-                    onVariationSelected: (variationId, optionName) { // Updated to pass both
-    setState(() {
-      _selectedVariationId = variationId;
-      _selectedVariationOption = optionName;
-    });
-  },
-                    // onWarehouseSelected: (id) {
-                    //   setState(() {
-                    //     _selectedWarehouseId = id;
-                    //   });
-                    //   if (id != null) {
-                    //     context.read<ProductsCubit>().getWareHouseProducts(id);
-                    //   } else {
-                    //     context.read<ProductsCubit>().getProducts();
-                    //   }
-                    // },
-
-                    onWarehouseSelected: (id) async {
-                      setState(() {
-                        _selectedWarehouseId = id;
-                        // Clear warehouse product IDs when warehouse is cleared
-                        if (id == null) {
-                          _warehouseProductIds = [];
-                        }
-                      });
-                      
-                      // Fetch warehouse products when a warehouse is selected
                       if (id != null) {
-                        await _fetchWarehouseProducts(id);
+                        final brand = (filtersState as ProductFiltersSuccess?)
+                            ?.filters
+                            .data
+                            ?.brands
+                            ?.firstWhere((b) => b.id == id);
+                        _addFilter(FilterType.brands, id, brand?.name ?? 'Brand');
+                      } else {
+                        _removeFilter(FilterType.brands);
                       }
-                      
-                      // Trigger a rebuild to apply the filter
-                      setState(() {});
+                    },
+                    onVariationSelected: (variationId, optionName) {
+                      if (optionName != null) {
+                        _addFilter(FilterType.variations, variationId ?? '', optionName);
+                      } else {
+                        _removeFilter(FilterType.variations);
+                      }
+                    },
+                    onWarehouseSelected: (id) async {
+                      if (id != null) {
+                        final warehouse = (filtersState as ProductFiltersSuccess?)
+                            ?.filters
+                            .data
+                            ?.warehouses
+                            ?.firstWhere((w) => w.id == id);
+                        _addFilter(FilterType.warehouses, id, warehouse?.name ?? 'Warehouse');
+                        await _fetchWarehouseProducts(id);
+                      } else {
+                        _removeFilter(FilterType.warehouses);
+                        setState(() {
+                          _warehouseProductIds = [];
+                        });
+                      }
                     },
                   ),
                   Expanded(
@@ -349,6 +530,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       child: _buildListContent(),
                     ),
                   ),
+                  // Expanded(
+                  //   child: AnimatedElement(
+                  //     delay: const Duration(milliseconds: 200),
+                  //     child: _buildListContent(),
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -357,4 +544,16 @@ class _ProductsScreenState extends State<ProductsScreen> {
       ),
     );
   }
+}
+
+class Filter {
+  final FilterType type;
+  final String id;
+  final String name;
+  
+  Filter({
+    required this.type,
+    required this.id,
+    required this.name,
+  });
 }
