@@ -43,6 +43,8 @@ class CurrencyModel {
   final String id;
   final String name;
   final String arName;
+  final bool isDefault;
+  final double? amount;
   final DateTime createdAt;
   final DateTime updatedAt;
   final int version;
@@ -53,6 +55,8 @@ class CurrencyModel {
     required this.arName,
     required this.createdAt,
     required this.updatedAt,
+    required this.isDefault,
+     this.amount,
     required this.version,
   });
 
@@ -60,6 +64,9 @@ class CurrencyModel {
     return CurrencyModel(
       id: json['_id'] as String,
       name: json['name'] as String,
+      isDefault: json['isdefault'] as bool,
+      // amount: json['amount'] as double ?? 0,
+      amount: (json['amount'] as num?)?.toDouble() ?? 0.0, // Handle null amount
       arName: json['ar_name'] as String,
       createdAt: DateTime.parse(json['createdAt'] ?? ''),
       updatedAt: DateTime.parse(json['createdAt'] ?? ''),
@@ -72,6 +79,8 @@ class CurrencyModel {
       '_id': id,
       'name': name,
       'ar_name': arName,
+      'isdefault': isDefault,
+      'amount': amount,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
       '__v': version,

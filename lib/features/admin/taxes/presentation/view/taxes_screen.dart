@@ -10,6 +10,8 @@ import 'package:systego/features/admin/taxes/cubit/taxes_cubit.dart';
 import 'package:systego/features/admin/taxes/presentation/widgets/taxes_list.dart';
 import 'package:systego/features/admin/taxes/presentation/widgets/tax_form_dialog.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:easy_localization/easy_localization.dart';
+import '../../../../../../generated/locale_keys.g.dart';
 
 class TaxesScreen extends StatefulWidget {
   const TaxesScreen({super.key});
@@ -73,18 +75,12 @@ class _TaxesScreenState extends State<TaxesScreen> {
           final taxes = state.taxes;
 
           if (taxes.isEmpty) {
-            String title = taxes.isEmpty
-                ? 'No taxes'
-                : 'No Matching taxes';
-            String message = taxes.isEmpty
-                ? 'You\'re all caught up!'
-                : 'Try adjusting your filters';
             return CustomEmptyState(
               icon: Icons.monetization_on_rounded,
-              title: title,
-              message: message,
+              title: LocaleKeys.no_taxes.tr(),
+              message: LocaleKeys.adjustments_all_caught_up.tr(),
               onRefresh: _refresh,
-              actionLabel: 'Retry',
+              actionLabel: LocaleKeys.retry.tr(),
               onAction: _refresh,
             );
           } else {
@@ -97,10 +93,10 @@ class _TaxesScreenState extends State<TaxesScreen> {
         } else {
           return CustomEmptyState(
             icon: Icons.monetization_on_rounded,
-            title: 'No taxes',
-            message: 'Pull to refresh or check your connection',
+            title: LocaleKeys.no_taxes.tr(),
+            message: LocaleKeys.pull_to_refresh_or_check_connection.tr(),
             onRefresh: _refresh,
-            actionLabel: 'Retry',
+            actionLabel: LocaleKeys.retry.tr(),
             onAction: _refresh,
           );
         }
@@ -113,7 +109,7 @@ class _TaxesScreenState extends State<TaxesScreen> {
     return Scaffold(
       appBar: appBarWithActions(
         context,
-        title: 'Taxes',
+        title: LocaleKeys.taxes.tr(),
         showActions: true,
         onPressed: () => showDialog(
           context: context,

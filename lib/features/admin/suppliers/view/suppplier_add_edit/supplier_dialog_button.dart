@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 class SupplierDialogButtons extends StatelessWidget {
   final bool isEditMode;
@@ -55,7 +57,7 @@ class SupplierDialogButtons extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'Cancel',
+                LocaleKeys.cancel.tr(),
                 style: TextStyle(
                   fontSize: fontSize16,
                   fontWeight: FontWeight.w600,
@@ -92,7 +94,9 @@ class SupplierDialogButtons extends StatelessWidget {
                   SizedBox(width: spacing8),
                   Flexible(
                     child: Text(
-                      isEditMode ? 'Update Supplier' : 'Create Supplier',
+                      isEditMode
+                          ? LocaleKeys.update_supplier.tr()
+                          : LocaleKeys.create_supplier.tr(),
                       style: TextStyle(
                         fontSize: value14,
                         fontWeight: FontWeight.bold,

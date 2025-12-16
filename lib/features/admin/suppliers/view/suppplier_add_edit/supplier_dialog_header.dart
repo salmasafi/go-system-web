@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 class SupplierDialogHeader extends StatelessWidget {
   final bool isEditMode;
@@ -66,7 +68,9 @@ class SupplierDialogHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isEditMode ? 'Edit Supplier' : 'New Supplier',
+                  isEditMode
+                      ? LocaleKeys.edit_supplier.tr()
+                      : LocaleKeys.new_supplier.tr(),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: fontSize22,
@@ -74,7 +78,9 @@ class SupplierDialogHeader extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  isEditMode ? 'Update supplier details' : 'Add a new supplier',
+                  isEditMode
+                      ? LocaleKeys.update_supplier_details.tr()
+                      : LocaleKeys.add_new_supplier.tr(),
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.9),
                     fontSize: fontSize13,

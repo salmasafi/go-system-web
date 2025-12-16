@@ -135,13 +135,69 @@ class _AnimatedCurrencyCardState extends State<AnimatedCurrencyCard> {
         //   color: AppColors.linkBlue,
         //   size: ResponsiveUI.fontSize(context, 18),
         // ),
-        Text(
-          '${LocaleKeys.created_at.tr()}: $createdAt',
-          style: TextStyle(
-            fontSize: ResponsiveUI.fontSize(context, 13),
-            color: AppColors.darkGray.withOpacity(0.6),
-          ),
+
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+              Text(
+                "Amount",
+                style: TextStyle(
+                  fontSize: ResponsiveUI.fontSize(context, 12),
+                  color: AppColors.darkGray.withOpacity(0.6),
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              SizedBox(height: ResponsiveUI.spacing(context, 2)),
+              Text(
+                currency.amount.toString(),
+                style: TextStyle(
+                  fontSize: ResponsiveUI.fontSize(context, 14),
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.darkGray,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+                    ],
+                  ),
+            ),
+          ],
         ),
+
+        currency.isDefault ? 
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+              Text(
+                "Default Currency",
+                style: TextStyle(
+                  fontSize: ResponsiveUI.fontSize(context, 12),
+                  color: AppColors.successGreen,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+       
+                    ],
+                  ),
+            ),
+          ],
+        ) : SizedBox(),
+
+        // Text(
+        //   '${LocaleKeys.created_at.tr()}: $createdAt',
+        //   style: TextStyle(
+        //     fontSize: ResponsiveUI.fontSize(context, 13),
+        //     color: AppColors.darkGray.withOpacity(0.6),
+        //   ),
+        // ),
         // Text(
         //   'Updated at: $updatedAt',
         //   style: TextStyle(

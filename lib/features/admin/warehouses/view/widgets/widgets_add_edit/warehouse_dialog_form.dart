@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import '../../../../../../core/utils/validators.dart';
 import '../../../../../../core/widgets/custom_loading/build_overlay_loading.dart';
 import '../../../../../../core/widgets/custom_textfield/build_text_field.dart';
+import '../../../../../../generated/locale_keys.g.dart';
 
 class WarehouseDialogForm extends StatelessWidget {
   final GlobalKey<FormState> formKey;
@@ -40,30 +42,36 @@ class WarehouseDialogForm extends StatelessWidget {
                   buildTextField(
                     context,
                     controller: nameController,
-                    label: 'Warehouse Name',
+                    label: LocaleKeys.warehouse_name.tr(),
                     icon: Icons.warehouse_outlined,
-                    hint: 'Enter warehouse name',
+                    hint: LocaleKeys.enter_warehouse_name.tr(),
                     validator: (v) =>
-                        LoginValidator.validateRequired(v, 'Warehouse name'),
+                        LoginValidator.validateRequired(
+                          v,
+                          LocaleKeys.warehouse_name_required.tr(),
+                        ),
                   ),
                   SizedBox(height: spacing20),
                   buildTextField(
                     context,
                     controller: addressController,
-                    label: 'Address',
+                    label: LocaleKeys.address.tr(),
                     icon: Icons.location_on_outlined,
-                    hint: 'Enter warehouse address',
+                    hint: LocaleKeys.enter_warehouse_address.tr(),
                     maxLines: 2,
                     validator: (v) =>
-                        LoginValidator.validateRequired(v, 'Address'),
+                        LoginValidator.validateRequired(
+                          v,
+                          LocaleKeys.address_required.tr(),
+                        ),
                   ),
                   SizedBox(height: spacing20),
                   buildTextField(
                     context,
                     controller: phoneController,
-                    label: 'Phone Number',
+                    label: LocaleKeys.phone_number.tr(),
                     icon: Icons.phone_outlined,
-                    hint: 'Enter phone number',
+                    hint: LocaleKeys.enter_phone_number.tr(),
                     keyboardType: TextInputType.phone,
                     validator: LoginValidator.validatePhone,
                   ),
@@ -71,9 +79,9 @@ class WarehouseDialogForm extends StatelessWidget {
                   buildTextField(
                     context,
                     controller: emailController,
-                    label: 'Email Address',
+                    label: LocaleKeys.email_address.tr(),
                     icon: Icons.email_outlined,
-                    hint: 'Enter email address',
+                    hint: LocaleKeys.enter_email_address.tr(),
                     keyboardType: TextInputType.emailAddress,
                     validator: LoginValidator.validateEmail,
                   ),

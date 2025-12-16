@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../../warehouses/view/widgets/custom_delete_dialog.dart';
 import '../../cubit/zone_cubit.dart';
@@ -45,7 +47,7 @@ class ZonesList extends StatelessWidget {
 
   void _showDeleteDialog(BuildContext context, ZoneModel zone) {
     if (zone.id.isEmpty) {
-      CustomSnackbar.showError(context, 'Invalid Zone ID');
+      CustomSnackbar.showError(context, LocaleKeys.invalid_zone_id.tr());
       return;
     }
 
@@ -53,8 +55,8 @@ class ZonesList extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => CustomDeleteDialog(
-        title: 'Delete Zone',
-        message: 'Are you sure you want to delete this zone?\n"${zone.name}"',
+        title: LocaleKeys.delete_zone_title.tr(),
+        message: '${LocaleKeys.delete_zone_message.tr()} ${zone.name}"',
         onDelete: () {
           Navigator.pop(dialogContext);
           context.read<ZoneCubit>().deleteZone(zone.id);

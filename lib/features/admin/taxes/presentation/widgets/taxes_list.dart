@@ -9,6 +9,8 @@ import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../../warehouses/view/widgets/custom_delete_dialog.dart';
 import 'animated_tax_card.dart';
 import 'tax_form_dialog.dart';
+import 'package:easy_localization/easy_localization.dart';
+import '../../../../../../generated/locale_keys.g.dart';
 
 class TaxesList extends StatelessWidget {
   final List<TaxModel> taxes;
@@ -35,10 +37,9 @@ class TaxesList extends StatelessWidget {
     );
   }
 
-
   void _changeStatus(BuildContext context, TaxModel tax, bool status) {
     log("updating tax status");
-    context.read<TaxesCubit>().changeTaxStatus(tax.id,tax.name, status);
+    context.read<TaxesCubit>().changeTaxStatus(tax.id, tax.name, status);
   }
 
   void _showEditDialog(BuildContext context, TaxModel tax) {
@@ -50,7 +51,7 @@ class TaxesList extends StatelessWidget {
 
   void _showDeleteDialog(BuildContext context, TaxModel tax) {
     if (tax.id.isEmpty) {
-      CustomSnackbar.showError(context, 'Invalid Tax ID');
+      CustomSnackbar.showError(context, LocaleKeys.invalid_tax_id.tr());
       return;
     }
 
@@ -58,9 +59,8 @@ class TaxesList extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => CustomDeleteDialog(
-        title: 'Delete Tax',
-        message:
-            'Are you sure you want to delete this Tax?\n"${tax.name}"',
+        title: LocaleKeys.delete_tax.tr(),
+        message: '${LocaleKeys.delete_tax_message.tr()}\n"${tax.name}"',
         onDelete: () {
           Navigator.pop(dialogContext);
           context.read<TaxesCubit>().deleteTax(tax.id);
@@ -68,5 +68,4 @@ class TaxesList extends StatelessWidget {
       ),
     );
   }
-
 }

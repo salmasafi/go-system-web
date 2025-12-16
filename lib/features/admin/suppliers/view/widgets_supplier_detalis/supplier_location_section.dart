@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/admin/suppliers/model/supplier_whis_id_model.dart' as supplier_details;
+import 'package:systego/features/admin/suppliers/model/supplier_whis_id_model.dart'
+    as supplier_details;
+import 'package:systego/generated/locale_keys.g.dart';
 import 'supplier_details_widgets.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class SupplierLocationSection extends StatelessWidget {
   final supplier_details.Supplier supplier;
@@ -18,7 +21,7 @@ class SupplierLocationSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionTitle(
-          title: 'Location Details',
+          title: LocaleKeys.location_details.tr(),
           icon: Icons.location_on,
         ),
         SizedBox(height: ResponsiveUI.spacing(context, 12)),
@@ -27,16 +30,16 @@ class SupplierLocationSection extends StatelessWidget {
             Expanded(
               child: LocationCard(
                 icon: Icons.public,
-                title: 'Country',
-                value: supplier.countryId?.name ?? 'N/A',
+                title: LocaleKeys.country.tr(),
+                value: supplier.countryId?.name ?? LocaleKeys.not_available.tr(),
               ),
             ),
             SizedBox(width: ResponsiveUI.spacing(context, 12)),
             Expanded(
               child: LocationCard(
                 icon: Icons.location_city,
-                title: 'City',
-                value: supplier.cityId?.name ?? 'N/A',
+                title: LocaleKeys.city.tr(),
+                value: supplier.cityId?.name ?? LocaleKeys.not_available.tr(),
               ),
             ),
           ],
@@ -66,7 +69,7 @@ class SupplierLocationSection extends StatelessWidget {
           ),
           SizedBox(width: ResponsiveUI.spacing(context, 12)),
           Text(
-            'Shipping Cost: ',
+            LocaleKeys.shipping_cost.tr(),
             style: TextStyle(
               fontSize: ResponsiveUI.fontSize(context, 14),
               color: AppColors.darkGray.withOpacity(0.7),

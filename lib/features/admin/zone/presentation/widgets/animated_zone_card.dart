@@ -1,9 +1,11 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
 import 'package:systego/core/widgets/custom_popup_menu.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../warehouses/view/widgets/custom_stat_chip.dart';
 import '../../model/zone_model.dart';
 
@@ -126,7 +128,7 @@ class _AnimatedZoneCardState extends State<AnimatedZoneCard> {
         Expanded(
           child: CustomStatChip(
             icon: Icons.location_on_rounded,
-            label: 'Country: ${widget.zone.country.name}',
+            label: '${LocaleKeys.country.tr()}: ${widget.zone.country.name}',
             color: AppColors.linkBlue,
           ),
         ),
@@ -134,7 +136,7 @@ class _AnimatedZoneCardState extends State<AnimatedZoneCard> {
         Expanded(
           child: CustomStatChip(
             icon: Icons.location_city_rounded,
-            label: 'City: ${widget.zone.city.name}',
+            label: '${LocaleKeys.city.tr()}: ${widget.zone.city.name}',
             color: AppColors.successGreen,
           ),
         ),

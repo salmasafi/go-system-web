@@ -1,7 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_image_card.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_gradient_divider.dart';
 import '../../../../../core/widgets/custom_popup_menu.dart';
 import 'custom_stat_chip.dart';
@@ -159,7 +161,7 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                widget.warehouse.name ?? 'Warehouse',
+                widget.warehouse.name ?? LocaleKeys.warehouse_default_name.tr(),
                 style: TextStyle(
                   fontSize: fontSizeName,
                   fontWeight: FontWeight.bold,
@@ -177,7 +179,7 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
                   SizedBox(width: spacing4),
                   Expanded(
                     child: Text(
-                      widget.warehouse.address ?? 'No address',
+                      widget.warehouse.address ?? LocaleKeys.warehouse_no_address.tr(),
                       style: TextStyle(
                         fontSize: fontSizeAddress,
                         color: AppColors.darkGray.withOpacity(0.6),
@@ -205,7 +207,7 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
         Expanded(
           child: CustomStatChip(
             icon: Icons.inventory_2_outlined,
-            label: '${widget.warehouse.numberOfProducts ?? 0} Products',
+            label: '${widget.warehouse.numberOfProducts ?? 0} ${LocaleKeys.warehouse_products.tr()}',
             color: AppColors.successGreen,
           ),
         ),
@@ -213,7 +215,7 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
         Expanded(
           child: CustomStatChip(
             icon: Icons.storage,
-            label: '${widget.warehouse.stockQuantity ?? 0} Stock',
+            label: '${widget.warehouse.stockQuantity ?? 0} ${LocaleKeys.warehouse_stock.tr()}',
             color: AppColors.linkBlue,
           ),
         ),
@@ -233,7 +235,7 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
         SizedBox(width: spacing6),
         Expanded(
           child: Text(
-            widget.warehouse.phone ?? 'No phone',
+            widget.warehouse.phone ?? LocaleKeys.warehouse_no_phone.tr(),
             style: TextStyle(
               fontSize: fontSize13,
               color: AppColors.darkGray.withOpacity(0.7),
@@ -247,7 +249,7 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
         SizedBox(width: spacing6),
         Expanded(
           child: Text(
-            widget.warehouse.email ?? 'No email',
+            widget.warehouse.email ?? LocaleKeys.warehouse_no_email.tr(),
             style: TextStyle(
               fontSize: fontSize13,
               color: AppColors.darkGray.withOpacity(0.7),

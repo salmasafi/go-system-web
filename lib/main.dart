@@ -6,6 +6,7 @@ import 'package:systego/core/services/session_helper.dart';
 import 'package:systego/features/POS/checkout/cubit/checkout_cubit/checkout_cubit.dart';
 import 'package:systego/features/admin/adjustment/cubit/adjustment_cubit.dart';
 import 'package:systego/features/admin/admins_screen/cubit/admins_cubit.dart';
+import 'package:systego/features/admin/admins_screen/cubit/permissions_cubit.dart';
 import 'package:systego/features/admin/auth/cubit/login_cubit.dart';
 import 'package:systego/features/admin/bank_account/cubit/bank_account_cubit.dart';
 import 'package:systego/features/admin/brands/cubit/brand_cubit.dart';
@@ -127,6 +128,7 @@ class _MainAppState extends State<MainApp> {
         BlocProvider<PermissionCubit>(create: (context) => PermissionCubit()),
         BlocProvider<ReasonCubit>(create: (context) => ReasonCubit()),
         BlocProvider<AdjustmentCubit>(create: (context) => AdjustmentCubit()),
+        BlocProvider<PermissionsCubit>(create: (context) => PermissionsCubit()),
         BlocProvider<AdminsCubit>(create: (context) => AdminsCubit()),
         BlocProvider<PaymentMethodCubit>(
           create: (context) => PaymentMethodCubit(),

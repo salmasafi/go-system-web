@@ -1,7 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/features/admin/city/cubit/city_cubit.dart';
 import 'package:systego/features/admin/country/model/country_model.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
 import '../../../../../core/utils/validators.dart';
@@ -185,13 +187,13 @@ class _ZoneFormDialogState extends State<ZoneFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _nameController,
-                                  label: 'Zone Name (EN)',
+                                  label: LocaleKeys.zone_name_en.tr(),
                                   icon: Icons.gps_fixed,
-                                  hint: 'Enter Zone name in English',
+                                  hint: LocaleKeys.enter_zone_name_en.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'zone name in english',
+                                        LocaleKeys.zone_name_en.tr(),
                                       ),
                                 ),
                                 SizedBox(
@@ -200,13 +202,13 @@ class _ZoneFormDialogState extends State<ZoneFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _arNameController,
-                                  label: 'Zone Name (AR)',
+                                  label: LocaleKeys.zone_name_ar.tr(),
                                   icon: Icons.gps_fixed,
-                                  hint: 'Enter Zone name in Arabic',
+                                  hint:  LocaleKeys.enter_zone_name_ar.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'zone name in arabic',
+                                        LocaleKeys.zone_name_ar.tr(),
                                       ),
                                 ),
                                 SizedBox(
@@ -217,9 +219,9 @@ class _ZoneFormDialogState extends State<ZoneFormDialog>
                                   context,
                                   value: selectedCountry,
                                   items: CityCubit.countries,
-                                  label: 'Country',
+                                  label: LocaleKeys.country.tr(),
                                   icon: Icons.public_rounded,
-                                  hint: 'Select a country',
+                                  hint: LocaleKeys.select_country.tr(),
                                   onChanged: (value) {
                                     setState(() {
                                       selectedCountry = value;
@@ -233,7 +235,7 @@ class _ZoneFormDialogState extends State<ZoneFormDialog>
                                   itemLabel: (country) => country.name,
                                   validator: (value) {
                                     if (value == null) {
-                                      return 'Please select a country';
+                                      return LocaleKeys.please_select_country_city.tr();
                                     }
                                     return null;
                                   },
@@ -246,9 +248,9 @@ class _ZoneFormDialogState extends State<ZoneFormDialog>
                                   context,
                                   value: selectedCity,
                                   items: filteredCities,
-                                  label: 'City',
+                                  label: LocaleKeys.city.tr(),
                                   icon: Icons.location_city_rounded,
-                                  hint: 'Select a city (based on country)',
+                                  hint: LocaleKeys.select_city.tr(),
                                   onChanged: (value) {
                                     setState(() {
                                       selectedCity = value;
@@ -257,7 +259,7 @@ class _ZoneFormDialogState extends State<ZoneFormDialog>
                                   itemLabel: (city) => city.name,
                                   validator: (value) {
                                     if (value == null) {
-                                      return 'Please select a city';
+                                      return LocaleKeys.please_select_country_city.tr();
                                     }
                                     return null;
                                   },
@@ -269,13 +271,13 @@ class _ZoneFormDialogState extends State<ZoneFormDialog>
                                   context,
                                   controller: _costController,
                                   keyboardType: TextInputType.number,
-                                  label: 'Cost',
+                                  label:  LocaleKeys.cost.tr(),
                                   icon: Icons.local_shipping,
-                                  hint: 'Enter cost',
+                                  hint: LocaleKeys.enter_cost.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'cost',
+                                        LocaleKeys.cost.tr(),
                                       ),
                                 ),
                               ],
@@ -356,7 +358,7 @@ class _ZoneFormDialogState extends State<ZoneFormDialog>
         );
       }
     } else if (selectedCountry == null || selectedCity == null) {
-      CustomSnackbar.showError(context, 'Please select both country and city');
+      CustomSnackbar.showError(context, LocaleKeys.please_select_country_city.tr());
     }
   }
 }
@@ -426,7 +428,8 @@ class ZoneDialogHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isEditMode ? 'Edit Zone' : 'New Zone',
+                  isEditMode  ? LocaleKeys.edit_zone.tr()
+                      : LocaleKeys.new_zone.tr(),
                   style: TextStyle(
                     color: AppColors.white,
                     fontSize: fontSize22,
@@ -434,7 +437,8 @@ class ZoneDialogHeader extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  isEditMode ? 'Update Zone details' : 'Add a new Zone',
+                  isEditMode  ? LocaleKeys.update_zone_details.tr()
+                      : LocaleKeys.add_new_zone.tr(),
                   style: TextStyle(
                     color: AppColors.white.withOpacity(0.9),
                     fontSize: fontSize13,
@@ -517,7 +521,7 @@ class ZoneDialogButtons extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'Cancel',
+                LocaleKeys.cancel.tr(),
                 style: TextStyle(
                   fontSize: fontSize16,
                   fontWeight: FontWeight.w600,
@@ -556,7 +560,8 @@ class ZoneDialogButtons extends StatelessWidget {
                   SizedBox(width: spacing8),
                   Flexible(
                     child: Text(
-                      isEditMode ? 'Update Zone' : 'Create Zone',
+                      isEditMode ? LocaleKeys.update_zone.tr()
+                          : LocaleKeys.create_zone.tr(),
                       style: TextStyle(
                         fontSize: value14,
                         fontWeight: FontWeight.bold,

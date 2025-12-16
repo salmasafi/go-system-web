@@ -6,7 +6,6 @@ import 'package:systego/features/admin/admins_screen/cubit/admins_cubit.dart';
 import 'package:systego/features/admin/admins_screen/model/admins_model.dart';
 import 'package:systego/features/admin/admins_screen/presentation/view/edit_permission_screen.dart';
 import 'package:systego/features/admin/admins_screen/presentation/widgets/admin_animated_card.dart';
-import 'package:systego/features/admin/admins_screen/presentation/widgets/admin_form_dialog.dart';
 import 'package:systego/generated/locale_keys.g.dart';
 
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';

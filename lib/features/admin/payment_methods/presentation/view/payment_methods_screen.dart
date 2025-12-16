@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
@@ -6,6 +7,7 @@ import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/app_bar_widgets.dart';
 import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../cubit/payment_method_cubit.dart';
 import '../../cubit/payment_method_state.dart';
@@ -74,16 +76,13 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
           final paymentMethods = state.paymentMethods;
 
           if (paymentMethods.isEmpty) {
-            String title = paymentMethods.isEmpty ? 'No Payment Methods' : 'No Matching Payment Methods';
-            String message = paymentMethods.isEmpty
-                ? 'You\'re all caught up!'
-                : 'Try adjusting your filters';
+            
             return CustomEmptyState(
               icon: Icons.monetization_on_rounded,
-              title: title,
-              message: message,
+              title: LocaleKeys.no_payment_methods_title.tr(),
+              message: LocaleKeys.no_payment_methods_message.tr(),
               onRefresh: _refresh,
-              actionLabel: 'Retry',
+              actionLabel: LocaleKeys.retry.tr(),
               onAction: _refresh,
             );
           } else {
@@ -96,10 +95,10 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
         } else {
           return CustomEmptyState(
             icon: Icons.monetization_on_rounded,
-            title: 'No Payment Methods',
-            message: 'Pull to refresh or check your connection',
+            title: LocaleKeys.no_payment_methods_title.tr(),
+            message: LocaleKeys.empty_state_message_connection.tr(),
             onRefresh: _refresh,
-            actionLabel: 'Retry',
+            actionLabel: LocaleKeys.retry.tr(),
             onAction: _refresh,
           );
         }
@@ -112,7 +111,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
     return Scaffold(
       appBar: appBarWithActions(
         context,
-        title: 'Payment Methods',
+        title:  LocaleKeys.payment_methods_screen_title.tr(),
         showActions: true,
         onPressed: () => showDialog(
           context: context,

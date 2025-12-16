@@ -4,7 +4,7 @@ import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_button_widget.dart';
 import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
-import 'package:systego/features/admin/admins_screen/cubit/admins_cubit.dart';
+import 'package:systego/features/admin/admins_screen/cubit/permissions_cubit.dart';
 import 'package:systego/features/admin/admins_screen/model/permission_model.dart';
 import 'package:systego/generated/locale_keys.g.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -78,13 +78,13 @@ class _EditPermissionsBottomSheetState
   void initState() {
     super.initState();
     // Fetch permissions when bottom sheet opens
-    context.read<AdminsCubit>().getUserPermissions(widget.userId);
+    context.read<PermissionsCubit>().getUserPermissions(widget.userId);
   }
   @override
   Widget build(BuildContext context) {
     final maxWidth = ResponsiveUI.contentMaxWidth(context);
     final isDesktop = maxWidth > 600;
-    return BlocConsumer<AdminsCubit, AdminsState>(
+    return BlocConsumer<PermissionsCubit, PermissionsState>(
       listener: (context, state) {
         if (state is PermissionsLoaded) {
           setState(() {
@@ -226,7 +226,7 @@ class _EditPermissionsBottomSheetState
                                 SizedBox(height: ResponsiveUI.spacing(context, 16)),
                                 CustomElevatedButton(
                                   onPressed: () => context
-                                      .read<AdminsCubit>()
+                                      .read<PermissionsCubit>()
                                       .getUserPermissions(widget.userId),
                                   text: LocaleKeys.retry.tr(),
                                 ),
@@ -411,7 +411,7 @@ class _EditPermissionsBottomSheetState
         .where((p) => p.actions.isNotEmpty)
         .toList();
    
-    context.read<AdminsCubit>().updatePermissions(
+    context.read<PermissionsCubit>().updatePermissions(
       userId: widget.userId,
       permissions: filteredPermissions,
     );

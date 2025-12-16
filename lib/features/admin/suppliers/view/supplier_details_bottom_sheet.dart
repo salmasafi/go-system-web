@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
@@ -7,6 +9,7 @@ import 'package:systego/features/admin/suppliers/cubit/supplier_cubit.dart';
 import 'package:systego/features/admin/suppliers/cubit/supplier_state.dart';
 import 'package:systego/features/admin/suppliers/view/widgets_supplier_detalis/supplier_details_content.dart';
 import '../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
+import '../../../../generated/locale_keys.g.dart';
 
 class SupplierDetailsBottomSheet extends StatelessWidget {
   final String supplierId;
@@ -15,7 +18,10 @@ class SupplierDetailsBottomSheet extends StatelessWidget {
 
   static void show(BuildContext context, String supplierId) {
     if (supplierId.isEmpty) {
-      CustomSnackbar.showError(context, 'Invalid supplier ID');
+      CustomSnackbar.showError(
+        context,
+        LocaleKeys.invalid_supplier_id.tr(),
+      );
       return;
     }
 
@@ -72,7 +78,7 @@ class SupplierDetailsBottomSheet extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            'Supplier Details',
+            LocaleKeys.supplier_details_title.tr(),
             style: TextStyle(
               fontSize: ResponsiveUI.fontSize(context, 20),
               fontWeight: FontWeight.bold,
@@ -102,11 +108,8 @@ class SupplierDetailsBottomSheet extends StatelessWidget {
       },
       builder: (context, state) {
         if (state is SupplierLoading) {
-          return Center(
+          return const Center(
             child: CustomLoadingState(),
-            // CircularProgressIndicator(
-            //   color: AppColors.primaryBlue,
-            // ),
           );
         }
 
@@ -177,7 +180,7 @@ class SupplierDetailsBottomSheet extends StatelessWidget {
           ),
           SizedBox(height: ResponsiveUI.spacing(context, 16)),
           Text(
-            'No supplier data available',
+            LocaleKeys.no_supplier_data.tr(),
             style: TextStyle(
               fontSize: ResponsiveUI.fontSize(context, 14),
               color: AppColors.darkGray,

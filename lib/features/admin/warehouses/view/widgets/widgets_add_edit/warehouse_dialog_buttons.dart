@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import '../../../../../../generated/locale_keys.g.dart';
 
 class WarehouseDialogButtons extends StatelessWidget {
   final bool isEditMode;
@@ -29,7 +31,6 @@ class WarehouseDialogButtons extends StatelessWidget {
     final iconSize20 = ResponsiveUI.iconSize(context, 20);
     final spacing8 = ResponsiveUI.spacing(context, 8);
     final spacing16 = ResponsiveUI.spacing(context, 16);
-    //final value3 = ResponsiveUI.value(context, 300);
 
     return Container(
       padding: EdgeInsets.all(padding24),
@@ -56,7 +57,7 @@ class WarehouseDialogButtons extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'Cancel',
+                LocaleKeys.cancel.tr(),
                 style: TextStyle(
                   fontSize: fontSize16,
                   fontWeight: FontWeight.w600,
@@ -73,7 +74,8 @@ class WarehouseDialogButtons extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryBlue,
                 foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: padding16, horizontal: padding12),
+                padding: EdgeInsets.symmetric(
+                    vertical: padding16, horizontal: padding12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(borderRadius12),
                 ),
@@ -84,13 +86,17 @@ class WarehouseDialogButtons extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    isEditMode ? Icons.check_circle_outline : Icons.add_circle_outline,
+                    isEditMode
+                        ? Icons.check_circle_outline
+                        : Icons.add_circle_outline,
                     size: iconSize20,
                   ),
                   SizedBox(width: spacing8),
                   Flexible(
                     child: Text(
-                      isEditMode ? 'Update Warehouse' : 'Create Warehouse',
+                      isEditMode
+                          ? LocaleKeys.update_warehouse.tr()
+                          : LocaleKeys.create_warehouse.tr(),
                       style: TextStyle(
                         fontSize: value14,
                         fontWeight: FontWeight.bold,

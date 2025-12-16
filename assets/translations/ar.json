@@ -463,7 +463,174 @@
   "adjustment_dialog_update_details": "تحديث تفاصيل التعديل",
   "adjustment_dialog_add_new": "إضافة تعديل جديد",
   "update_adjustment": "تحديث التعديل",
-  "create_adjustment": "إنشاء تعديل"
+  "create_adjustment": "إنشاء تعديل",
+
+    "suppliers_title": "الموردين",
+
+  "no_suppliers_title": "لا يوجد موردون بعد",
+  "no_suppliers_message": "لا يوجد موردون متاحون في الوقت الحالي.",
+
+  "no_results_title": "لم يتم العثور على نتائج",
+  "no_results_message": "حاول تعديل البحث أو عوامل التصفية.",
+  "clear_filters": "مسح عوامل التصفية",
+
+   "invalid_supplier_id": "معرّف المورد غير صالح",
+
+  "supplier_details_title": "تفاصيل المورد",
+
+  "no_supplier_data": "لا تتوفر بيانات للمورد",
+
+  "unknown_supplier": "غير معروف",
+  "no_company": "بدون شركة",
+
+  "delete_supplier_title": "حذف المورد",
+  "delete_supplier_message": "هل أنت متأكد أنك تريد حذف هذا المورد؟ لا يمكن التراجع عن هذا الإجراء.",
+
+   "search_hint": "ابحث بالاسم أو الشركة...",
+  "country_hint": "الدولة",
+  "city_hint": "المدينة",
+
+  "address": "عنوان",
+
+   "contact_information": "معلومات الاتصال",
+  "email": "البريد الإلكتروني",
+  "phone_number": "رقم الهاتف",
+
+   "location_details": "تفاصيل الموقع",
+
+     "create_supplier": "إنشاء مورد",
+  "update_supplier": "تحديث المورد",
+
+   "supplier_image": "صورة المورد",
+  "supplier_name": "اسم المورد",
+  "enter_supplier_name": "أدخل اسم المورد",
+  "company_name": "اسم الشركة",
+  "enter_company_name": "أدخل اسم الشركة",
+  "email_address": "البريد الإلكتروني",
+  "enter_email_address": "أدخل البريد الإلكتروني",
+  "enter_phone_number": "أدخل رقم الهاتف",
+  "enter_supplier_address": "أدخل عنوان المورد",
+  "select_country_first": "اختر الدولة أولاً",
+  "no_options_available": "لا توجد خيارات متاحة",
+  "processing": "جارٍ المعالجة...",
+
+   "edit_supplier": "تعديل المورد",
+  "new_supplier": "مورد جديد",
+  "update_supplier_details": "تحديث تفاصيل المورد",
+  "add_new_supplier": "إضافة مورد جديد",
+
+
+   "failed_to_pick_image": "فشل في اختيار الصورة",
+  "please_select_country": "يرجى اختيار الدولة",
+  "please_select_city": "يرجى اختيار المدينة",
+  "supplier_updated_successfully": "تم تحديث المورد بنجاح",
+  "supplier_created_successfully": "تم إنشاء المورد بنجاح",
+
+
+  "no_taxes": "لا توجد ضرائب",
+  "no_matching_taxes": "لا توجد ضرائب مطابقة",
+  "pull_to_refresh_or_check_connection": "اسحب للتحديث أو تحقق من اتصالك",
+  "taxes": "الضرائب",
+
+    "invalid_tax_id": "معرّف الضريبة غير صالح",
+  "delete_tax": "حذف الضريبة",
+  "delete_tax_message": "هل أنت متأكد أنك تريد حذف هذه الضريبة؟",
+
+   "tax_name_en": "اسم الضريبة (بالإنجليزية)",
+  "tax_name_en_hint": "أدخل اسم الضريبة بالإنجليزية",
+  "tax_name_ar": "اسم الضريبة (بالعربية)",
+  "tax_name_ar_hint": "أدخل اسم الضريبة بالعربية",
+  "tax_type": "نوع الضريبة",
+  "tax_type_hint": "اختر نوع الضريبة",
+  "amount": "المبلغ",
+  "amount_hint": "أدخل مبلغ الضريبة",
+  "tax_type_fixed": "ثابت",
+  "tax_type_percentage": "نسبة مئوية",
+  "please_select_tax_type": "يرجى اختيار نوع الضريبة",
+  "please_enter_tax_amount": "يرجى إدخال مبلغ الضريبة",
+  "amount_must_be_valid_number": "يجب أن يكون المبلغ رقمًا صالحًا",
+  "amount_must_be_greater_than_zero": "يجب أن يكون المبلغ أكبر من صفر",
+  "new_tax": "ضريبة جديدة",
+  "edit_tax": "تعديل الضريبة",
+  "add_new_tax": "إضافة ضريبة جديدة",
+  "update_tax_details": "تحديث تفاصيل الضريبة",
+  "create_tax": "إنشاء ضريبة",
+  "update_tax": "تحديث الضريبة",
+
+   "warehouses": "المستودعات",
+  "warehouse_deleted_success": "تم حذف المستودع بنجاح!",
+  "warehouse_created_success": "تم إنشاء المستودع بنجاح!",
+  "warehouse_updated_success": "تم تحديث المستودع بنجاح!",
+  "no_warehouses_found": "لم يتم العثور على مستودعات",
+  "add_first_warehouse_message": "أضف أول مستودع لك للبدء",
+  "no_results_found": "لم يتم العثور على نتائج",
+  "try_different_keywords": "حاول البحث باستخدام كلمات مختلفة",
+  "delete_warehouse": "حذف المستودع",
+  "delete_warehouse_message": "هل أنت متأكد أنك تريد حذف ؟ لا يمكن التراجع عن هذا الإجراء.",
+  "invalid_warehouse_id": "معرّف المستودع غير صالح",
+
+  "create_warehouse": "إنشاء مستودع",
+  "update_warehouse": "تحديث المستودع",
+
+
+   "warehouse_name": "اسم المستودع",
+  "enter_warehouse_name": "أدخل اسم المستودع",
+
+  "enter_warehouse_address": "أدخل عنوان المستودع",
+
+  "warehouse_name_required": "اسم المستودع مطلوب",
+  "address_required": "العنوان مطلوب",
+
+  "edit_warehouse": "تعديل المستودع",
+  "new_warehouse": "مستودع جديد",
+
+  "update_warehouse_details": "تحديث تفاصيل المستودع",
+  "add_new_warehouse": "إضافة مستودع جديد",
+
+
+    "warehouse_default_name": "مستودع",
+  "warehouse_no_address": "بدون عنوان",
+  "warehouse_products": "منتجات",
+  "warehouse_stock": "المخزون",
+  "warehouse_no_phone": "لا يوجد رقم هاتف",
+  "warehouse_no_email": "لا يوجد بريد إلكتروني",
+
+
+  "zones_screen_title": "المناطق",
+  "no_zones_title": "لا توجد مناطق",
+  "no_matching_zones_title": "لا توجد مناطق مطابقة",
+  "no_zones_message": "لقد وصلت إلى النهاية!",
+  "no_matching_zones_message": "حاول تعديل عوامل التصفية",
+  "empty_state_message_connection": "اسحب للتحديث أو تحقق من اتصالك",
+
+
+   "invalid_zone_id": "معرّف المنطقة غير صالح",
+  "delete_zone_title": "حذف المنطقة",
+  "delete_zone_message": "هل أنت متأكد أنك تريد حذف هذه المنطقة؟",
+  "select_zone_title": "اختر المنطقة",
+  "select_zone_message": "هل أنت متأكد أنك تريد اختيار هذه المنطقة كافتراضية؟",
+
+   "zone_name_en": "اسم المنطقة (بالإنجليزية)",
+  "enter_zone_name_en": "أدخل اسم المنطقة بالإنجليزية",
+  "zone_name_ar": "اسم المنطقة (بالعربية)",
+  "enter_zone_name_ar": "أدخل اسم المنطقة بالعربية",
+
+  "cost": "التكلفة",
+  "enter_cost": "أدخل التكلفة",
+  "please_select_country_city": "يرجى اختيار كل من الدولة والمدينة",
+  "edit_zone": "تعديل المنطقة",
+  "update_zone_details": "تحديث تفاصيل المنطقة",
+  "new_zone": "منطقة جديدة",
+  "add_new_zone": "إضافة منطقة جديدة",
+  "update_zone": "تحديث المنطقة",
+  "create_zone": "إنشاء منطقة",
+
+
+  "payment_methods_screen_title": "طرق الدفع",
+  "no_payment_methods_title": "لا توجد طرق دفع",
+  "no_matching_payment_methods_title": "لا توجد طرق دفع مطابقة",
+  "no_payment_methods_message": "لقد وصلت إلى النهاية!",
+  "no_matching_payment_methods_message": "حاول تعديل عوامل التصفية"
 
 
 }

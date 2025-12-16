@@ -1,8 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/features/admin/warehouses/view/warehouse_form_dialog.dart';
 import 'package:systego/features/admin/warehouses/view/widgets/animated_warehouse_card.dart';
 import 'package:systego/features/admin/warehouses/view/widgets/custom_delete_dialog.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/responsive_ui.dart';
 import '../../../../core/widgets/app_bar_widgets.dart';
@@ -61,7 +63,7 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
     return Scaffold(
       appBar: appBarWithActions(
         context,
-        title: 'Warehouses',
+        title: LocaleKeys.warehouses.tr(),
         showActions: true,
         onPressed: () {
           showDialog(
@@ -92,7 +94,7 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
               if (state is WarehouseDeleted) {
                 CustomSnackbar.showSuccess(
                   context,
-                  'Warehouse deleted successfully!',
+                  LocaleKeys.warehouse_deleted_success.tr(),
                 );
                 setState(() => _isDeleting = false);
               }
@@ -100,14 +102,14 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
               if (state is WarehouseCreated) {
                 CustomSnackbar.showSuccess(
                   context,
-                  'Warehouse created successfully!',
+                  LocaleKeys.warehouse_created_success.tr(),
                 );
               }
 
               if (state is WarehouseUpdated) {
                 CustomSnackbar.showSuccess(
                   context,
-                  'Warehouse updated successfully!',
+                  LocaleKeys.warehouse_updated_success.tr(),
                 );
               }
             },
@@ -129,8 +131,8 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
               if (warehouses.isEmpty) {
                 return CustomEmptyState(
                   icon: Icons.warehouse_outlined,
-                  title: 'No Warehouses Found',
-                  message: 'Add your first warehouse to get started',
+                  title: LocaleKeys.no_warehouses_found.tr(),
+                  message: LocaleKeys.add_first_warehouse_message.tr(),
                   onRefresh: () async =>
                       await context.read<WareHouseCubit>().getWarehouses(),
                 );
@@ -139,7 +141,7 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
               return Column(
                 children: [
                   SearchBarWidget(
-                    text: 'warehouses',
+                    text: LocaleKeys.warehouses.tr(),
                     controller: _searchController,
                     onChanged: (value) => _filterWarehouses(value, warehouses),
                   ),
@@ -147,8 +149,8 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
                     child: _filteredWarehouses.isEmpty
                         ? CustomEmptyState(
                             icon: Icons.search_off,
-                            title: 'No Results Found',
-                            message: 'Try searching with different keywords',
+                            title: LocaleKeys.no_results_found.tr(),
+                            message:  LocaleKeys.try_different_keywords.tr(),
                             onRefresh: () async {
                               _searchController.clear();
                               await context
@@ -230,7 +232,7 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
 
   void _showDeleteDialog(BuildContext context, Warehouses warehouse) {
     if (warehouse.id == null || warehouse.id!.isEmpty) {
-      CustomSnackbar.showError(context, 'Invalid warehouse ID');
+      CustomSnackbar.showError(context, LocaleKeys.invalid_warehouse_id.tr());
       return;
     }
 
@@ -238,9 +240,9 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => CustomDeleteDialog(
-        title: 'Delete Warehouse',
+        title: LocaleKeys.delete_warehouse.tr(),
         message:
-            'Are you sure you want to delete "${warehouse.name}"? This action cannot be undone.',
+            '${LocaleKeys.delete_warehouse_message} ${warehouse.name}',
         onDelete: () {
           Navigator.pop(dialogContext);
 

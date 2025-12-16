@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/admin/suppliers/model/supplier_whis_id_model.dart' as supplier_details;
+import 'package:systego/features/admin/suppliers/model/supplier_whis_id_model.dart'
+    as supplier_details;
+import 'package:easy_localization/easy_localization.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 class SupplierProfileSection extends StatelessWidget {
   final supplier_details.Supplier supplier;
@@ -51,25 +54,25 @@ class SupplierProfileSection extends StatelessWidget {
         shape: BoxShape.circle,
         image: supplier.image != null
             ? DecorationImage(
-          image: NetworkImage(supplier.image!),
-          fit: BoxFit.cover,
-        )
+                image: NetworkImage(supplier.image!),
+                fit: BoxFit.cover,
+              )
             : null,
         border: Border.all(color: AppColors.white, width: 4),
       ),
       child: supplier.image == null
           ? Icon(
-        Icons.store,
-        size: ResponsiveUI.iconSize(context, 48),
-        color: AppColors.primaryBlue,
-      )
+              Icons.store,
+              size: ResponsiveUI.iconSize(context, 48),
+              color: AppColors.primaryBlue,
+            )
           : null,
     );
   }
 
   Widget _buildUsername(BuildContext context) {
     return Text(
-      supplier.username ?? 'Unknown',
+      supplier.username ?? LocaleKeys.unknown_supplier.tr(),
       style: TextStyle(
         fontSize: ResponsiveUI.fontSize(context, 22),
         fontWeight: FontWeight.bold,
@@ -90,7 +93,7 @@ class SupplierProfileSection extends StatelessWidget {
         borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
       ),
       child: Text(
-        supplier.companyName ?? 'No Company',
+        supplier.companyName ?? LocaleKeys.no_company.tr(),
         style: TextStyle(
           fontSize: ResponsiveUI.fontSize(context, 14),
           color: AppColors.white,

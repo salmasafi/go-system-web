@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/app_bar_widgets.dart';
@@ -13,6 +15,7 @@ import '../../../../core/widgets/custom_error/custom_error_state.dart';
 import '../../../../core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
 import '../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../model/supplier_model.dart';
+import '../../../../generated/locale_keys.g.dart';
 
 class SupplierScreen extends StatefulWidget {
   const SupplierScreen({super.key});
@@ -40,7 +43,7 @@ class _SupplierScreenState extends State<SupplierScreen> {
       child: Scaffold(
         appBar: appBarWithActions(
           context,
-          title: 'Suppliers',
+          title: LocaleKeys.suppliers_title.tr(),
           onPressed: () {
             SupplierDialog.show(context);
           },
@@ -79,8 +82,8 @@ class _SupplierScreenState extends State<SupplierScreen> {
                   _selectedCity == null) {
                 return CustomEmptyState(
                   icon: Icons.store_outlined,
-                  title: 'No Suppliers Yet',
-                  message: 'There are no suppliers available at the moment.',
+                  title: LocaleKeys.no_suppliers_title.tr(),
+                  message: LocaleKeys.no_suppliers_message.tr(),
                   onRefresh: () async {
                     await cubit.getSuppliers();
                   },
@@ -141,9 +144,9 @@ class _SupplierScreenState extends State<SupplierScreen> {
                       Expanded(
                         child: CustomEmptyState(
                           icon: Icons.search_off,
-                          title: 'No Results Found',
-                          message: 'Try adjusting your search or filters.',
-                          actionLabel: 'Clear Filters',
+                          title: LocaleKeys.no_results_title.tr(),
+                          message: LocaleKeys.no_results_message.tr(),
+                          actionLabel: LocaleKeys.clear_filters.tr(),
                           onAction: () {
                             setState(() {
                               _searchQuery = '';

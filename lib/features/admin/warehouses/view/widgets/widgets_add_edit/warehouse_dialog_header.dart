@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 class WarehouseDialogHeader extends StatelessWidget {
   final bool isEditMode;
@@ -28,7 +30,10 @@ class WarehouseDialogHeader extends StatelessWidget {
     final borderRadius20 = ResponsiveUI.borderRadius(context, 20);
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: paddingHorizontal, vertical: paddingVertical),
+      padding: EdgeInsets.symmetric(
+        horizontal: paddingHorizontal,
+        vertical: paddingVertical,
+      ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -63,7 +68,9 @@ class WarehouseDialogHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isEditMode ? 'Edit Warehouse' : 'New Warehouse',
+                  isEditMode
+                      ? LocaleKeys.edit_warehouse.tr()
+                      : LocaleKeys.new_warehouse.tr(),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: fontSize22,
@@ -71,7 +78,9 @@ class WarehouseDialogHeader extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  isEditMode ? 'Update warehouse details' : 'Add a new warehouse',
+                  isEditMode
+                      ? LocaleKeys.update_warehouse_details.tr()
+                      : LocaleKeys.add_new_warehouse.tr(),
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.9),
                     fontSize: fontSize13,

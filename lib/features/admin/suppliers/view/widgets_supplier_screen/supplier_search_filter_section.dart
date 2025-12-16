@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/features/admin/suppliers/cubit/supplier_cubit.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 class SupplierSearchFilterSection extends StatelessWidget {
   final TextEditingController searchController;
@@ -64,7 +66,7 @@ class SupplierSearchFilterSection extends StatelessWidget {
       controller: searchController,
       onChanged: onSearchChanged,
       decoration: InputDecoration(
-        hintText: 'Search by name or company...',
+        hintText: LocaleKeys.search_hint.tr(),
         hintStyle: TextStyle(
           color: AppColors.darkGray.withOpacity(0.5),
           fontSize: ResponsiveUI.fontSize(context, 14),
@@ -76,13 +78,13 @@ class SupplierSearchFilterSection extends StatelessWidget {
         ),
         suffixIcon: searchQuery.isNotEmpty
             ? IconButton(
-          icon: Icon(
-            Icons.clear,
-            color: AppColors.darkGray,
-            size: ResponsiveUI.iconSize(context, 20),
-          ),
-          onPressed: onSearchCleared,
-        )
+                icon: Icon(
+                  Icons.clear,
+                  color: AppColors.darkGray,
+                  size: ResponsiveUI.iconSize(context, 20),
+                ),
+                onPressed: onSearchCleared,
+              )
             : null,
         filled: true,
         fillColor: AppColors.lightBlueBackground,
@@ -121,7 +123,7 @@ class SupplierSearchFilterSection extends StatelessWidget {
         Expanded(
           child: _buildFilterDropdown<dynamic>(
             context: context,
-            hint: 'Country',
+            hint: LocaleKeys.country_hint.tr(),
             value: selectedCountry,
             items: cubit.countries ?? [],
             onChanged: onCountryChanged,
@@ -133,12 +135,12 @@ class SupplierSearchFilterSection extends StatelessWidget {
         Expanded(
           child: _buildFilterDropdown<dynamic>(
             context: context,
-            hint: 'City',
+            hint: LocaleKeys.city_hint.tr(),
             value: selectedCity,
             items: selectedCountry != null
                 ? (cubit.cities ?? [])
-                .where((city) => city.country == selectedCountry)
-                .toList()
+                    .where((city) => city.country == selectedCountry)
+                    .toList()
                 : cubit.cities ?? [],
             onChanged: onCityChanged,
             itemBuilder: (city) => city.name ?? '',
@@ -211,8 +213,8 @@ class SupplierSearchFilterSection extends StatelessWidget {
           _buildFilterChip(
             context,
             label: cubit.countries
-                ?.firstWhere((c) => c.id == selectedCountry)
-                .name ??
+                    ?.firstWhere((c) => c.id == selectedCountry)
+                    .name ??
                 '',
             onDeleted: onCountryRemoved,
           ),
@@ -220,8 +222,8 @@ class SupplierSearchFilterSection extends StatelessWidget {
           _buildFilterChip(
             context,
             label:
-            cubit.cities?.firstWhere((c) => c.id == selectedCity).name ??
-                '',
+                cubit.cities?.firstWhere((c) => c.id == selectedCity).name ??
+                    '',
             onDeleted: onCityRemoved,
           ),
       ],
@@ -229,10 +231,10 @@ class SupplierSearchFilterSection extends StatelessWidget {
   }
 
   Widget _buildFilterChip(
-      BuildContext context, {
-        required String label,
-        required VoidCallback onDeleted,
-      }) {
+    BuildContext context, {
+    required String label,
+    required VoidCallback onDeleted,
+  }) {
     return Chip(
       label: Text(
         label,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
@@ -8,6 +9,7 @@ import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
 import 'package:systego/features/admin/city/cubit/city_cubit.dart';
 import 'package:systego/features/admin/zone/cubit/zone_cubit.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../cubit/zone_state.dart';
 import '../widgets/zone_form_dialog.dart';
@@ -76,16 +78,13 @@ class _ZonesScreenState extends State<ZonesScreen> {
           final zones = state.zones;
 
           if (zones.isEmpty) {
-            String title = zones.isEmpty ? 'No Zones' : 'No Matching Zones';
-            String message = zones.isEmpty
-                ? 'You\'re all caught up!'
-                : 'Try adjusting your filters';
+            
             return CustomEmptyState(
               icon: Icons.monetization_on_rounded,
-              title: title,
-              message: message,
+              title: LocaleKeys.no_zones_title.tr(),
+              message: LocaleKeys.no_zones_message.tr(),
               onRefresh: _refresh,
-              actionLabel: 'Retry',
+              actionLabel:  LocaleKeys.retry.tr(),
               onAction: _refresh,
             );
           } else {
@@ -98,10 +97,10 @@ class _ZonesScreenState extends State<ZonesScreen> {
         } else {
           return CustomEmptyState(
             icon: Icons.monetization_on_rounded,
-            title: 'No Zones',
-            message: 'Pull to refresh or check your connection',
+            title:  LocaleKeys.no_zones_title.tr(),
+            message:  LocaleKeys.empty_state_message_connection.tr(),
             onRefresh: _refresh,
-            actionLabel: 'Retry',
+            actionLabel: LocaleKeys.retry.tr(),
             onAction: _refresh,
           );
         }
@@ -114,7 +113,7 @@ class _ZonesScreenState extends State<ZonesScreen> {
     return Scaffold(
       appBar: appBarWithActions(
         context,
-        title: 'Zones',
+        title: LocaleKeys.zones_screen_title.tr(),
         showActions: true,
         onPressed: () => showDialog(
           context: context,

@@ -4,6 +4,8 @@ import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:systego/features/admin/suppliers/view/suppplier_add_edit/supplier_dialog_button.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../cubit/supplier_cubit.dart';
 import '../../model/supplier_model.dart';
 import 'supplier_dialog_form.dart';
@@ -11,12 +13,11 @@ import 'supplier_dialog_header.dart';
 
 class SupplierDialog {
   static void show(
-      BuildContext context, {
-        Suppliers? supplier,
-      }) {
+    BuildContext context, {
+    Suppliers? supplier,
+  }) {
     final cubit = context.read<SupplierCubit>();
 
-    // تحميل البيانات إذا لم تكن موجودة
     if ((cubit.countries?.isEmpty ?? true) ||
         (cubit.cities?.isEmpty ?? true)) {
       cubit.getSuppliers().then((_) {
@@ -30,10 +31,10 @@ class SupplierDialog {
   }
 
   static void _showDialogContent(
-      BuildContext context,
-      Suppliers? supplier,
-      SupplierCubit cubit,
-      ) {
+    BuildContext context,
+    Suppliers? supplier,
+    SupplierCubit cubit,
+  ) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -112,7 +113,7 @@ class _SupplierDialogContentState extends State<_SupplierDialogContent> {
       }
     } catch (e) {
       if (mounted) {
-        CustomSnackbar.showError(context, 'Failed to pick image');
+        CustomSnackbar.showError(context, LocaleKeys.failed_to_pick_image.tr());
       }
     }
   }
@@ -121,12 +122,12 @@ class _SupplierDialogContentState extends State<_SupplierDialogContent> {
     if (!_formKey.currentState!.validate()) return;
 
     if (_selectedCountryId == null) {
-      CustomSnackbar.showError(context, 'Please select a country');
+      CustomSnackbar.showError(context, LocaleKeys.please_select_country.tr());
       return;
     }
 
     if (_selectedCityId == null) {
-      CustomSnackbar.showError(context, 'Please select a city');
+      CustomSnackbar.showError(context, LocaleKeys.please_select_city.tr());
       return;
     }
 
@@ -163,8 +164,8 @@ class _SupplierDialogContentState extends State<_SupplierDialogContent> {
         CustomSnackbar.showSuccess(
           context,
           isEditMode
-              ? 'Supplier updated successfully'
-              : 'Supplier created successfully',
+              ? LocaleKeys.supplier_updated_successfully.tr()
+              : LocaleKeys.supplier_created_successfully.tr(),
         );
       }
     } catch (e) {

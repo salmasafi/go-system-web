@@ -1,8 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/utils/validators.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import 'dart:io';
 import '../../model/supplier_model.dart';
 
@@ -74,27 +76,27 @@ class SupplierDialogForm extends StatelessWidget {
                   _buildTextField(
                     context,
                     controller: usernameController,
-                    label: 'Supplier Name',
+                    label: LocaleKeys.supplier_name.tr(),
                     icon: Icons.person_outline,
-                    hint: 'Enter supplier name',
-                    validator: (v) => LoginValidator.validateRequired(v, 'Supplier name'),
+                    hint: LocaleKeys.enter_supplier_name.tr(),
+                    validator: (v) => LoginValidator.validateRequired(v, LocaleKeys.supplier_name.tr()),
                   ),
                   SizedBox(height: spacing20),
                   _buildTextField(
                     context,
                     controller: companyNameController,
-                    label: 'Company Name',
+                    label: LocaleKeys.company_name.tr(),
                     icon: Icons.business_outlined,
-                    hint: 'Enter company name',
-                    validator: (v) => LoginValidator.validateRequired(v, 'Company name'),
+                    hint: LocaleKeys.enter_company_name.tr(),
+                    validator: (v) => LoginValidator.validateRequired(v, LocaleKeys.company_name.tr()),
                   ),
                   SizedBox(height: spacing20),
                   _buildTextField(
                     context,
                     controller: emailController,
-                    label: 'Email Address',
+                    label: LocaleKeys.email_address.tr(),
                     icon: Icons.email_outlined,
-                    hint: 'Enter email address',
+                    hint: LocaleKeys.enter_email_address.tr(),
                     keyboardType: TextInputType.emailAddress,
                     validator: LoginValidator.validateEmail,
                   ),
@@ -102,9 +104,9 @@ class SupplierDialogForm extends StatelessWidget {
                   _buildTextField(
                     context,
                     controller: phoneController,
-                    label: 'Phone Number',
+                    label: LocaleKeys.phone_number.tr(),
                     icon: Icons.phone_outlined,
-                    hint: 'Enter phone number',
+                    hint: LocaleKeys.enter_phone_number.tr(),
                     keyboardType: TextInputType.phone,
                     validator: LoginValidator.validatePhone,
                   ),
@@ -112,18 +114,18 @@ class SupplierDialogForm extends StatelessWidget {
                   _buildTextField(
                     context,
                     controller: addressController,
-                    label: 'Address',
+                    label: LocaleKeys.address.tr(),
                     icon: Icons.location_on_outlined,
-                    hint: 'Enter supplier address',
+                    hint: LocaleKeys.enter_email_address.tr(),
                     maxLines: 2,
                     validator: (v) => LoginValidator.validateRequired(v, 'Address'),
                   ),
                   SizedBox(height: spacing20),
                   _buildDropdownField(
                     context,
-                    label: 'Country',
+                    label: LocaleKeys.country.tr(),
                     icon: Icons.public,
-                    hint: 'Select country',
+                    hint: LocaleKeys.select_country.tr(),
                     value: selectedCountryId,
                     items: countries ?? [],
                     onChanged: onCountryChanged,
@@ -133,9 +135,9 @@ class SupplierDialogForm extends StatelessWidget {
                   SizedBox(height: spacing20),
                   _buildDropdownField(
                     context,
-                    label: 'City',
+                    label: LocaleKeys.city.tr(),
                     icon: Icons.location_city,
-                    hint: 'Select city',
+                    hint: LocaleKeys.select_city.tr(),
                     value: selectedCityId,
                     items: filteredCities,
                     onChanged: onCityChanged,
@@ -166,7 +168,7 @@ class SupplierDialogForm extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Supplier Image',
+          LocaleKeys.supplier_image.tr(),
           style: TextStyle(
             fontSize: fontSize14,
             fontWeight: FontWeight.w600,
@@ -260,7 +262,7 @@ class SupplierDialogForm extends StatelessWidget {
                   ),
                   SizedBox(height: spacing8),
                   Text(
-                    'Tap to select image',
+                    LocaleKeys.tap_to_select_image.tr(),
                     style: TextStyle(
                       fontSize: fontSize14,
                       color: Colors.grey[600],
@@ -384,7 +386,7 @@ class SupplierDialogForm extends StatelessWidget {
           value: value,
           disabledHint: isDisabled
               ? Text(
-            label == 'City' ? 'Select country first' : 'No options available',
+            label == LocaleKeys.city.tr() ? LocaleKeys.select_country_first.tr() : LocaleKeys.no_options_available.tr(),
             style: TextStyle(color: Colors.grey[400], fontSize: fontSizeHint),
           )
               : null,
@@ -463,7 +465,7 @@ class SupplierDialogForm extends StatelessWidget {
               ),
               SizedBox(height: spacing20),
               Text(
-                'Processing...',
+                LocaleKeys.processing.tr(),
                 style: TextStyle(
                   fontSize: fontSize16,
                   fontWeight: FontWeight.w600,

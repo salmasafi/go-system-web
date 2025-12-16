@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -45,12 +46,16 @@ class _AdjustmentFormDialogState extends State<AdjustmentFormDialog>
   File? _selectedImage;
   // Dropdown state
   // ReasonModel? selectedReason;
+
+   List<String> availableProducts = [];
   
   final reasons = AdjustmentCubit.reasons;
   String? selectedWareHouse;
   String? selectedProduct;
   String? selectedReason;
   bool get isEditMode => widget.adjustment != null;
+    bool _isFetchingProducts = false;
+
 
   @override
   void initState() {
@@ -84,7 +89,7 @@ class _AdjustmentFormDialogState extends State<AdjustmentFormDialog>
       _noteController.text = widget.adjustment!.note;
       selectedWareHouse = widget.adjustment!.warehouseId;
       selectedProduct = widget.adjustment!.productId;
-      selectedReason = widget.adjustment!.warehouseId;
+      selectedReason = widget.adjustment!.selectReasonId;
 
 
     }
@@ -94,9 +99,12 @@ class _AdjustmentFormDialogState extends State<AdjustmentFormDialog>
 void didChangeDependencies() {
   super.didChangeDependencies();
   WidgetsBinding.instance.addPostFrameCallback((_) {
-    context.read<ProductsCubit>().getProducts();
+    // context.read<ProductsCubit>().getProducts();
     context.read<WareHouseCubit>().getWarehouses();
     context.read<ReasonCubit>().getReasons();
+     if (isEditMode && selectedWareHouse != null) {
+        _fetchWarehouseProducts(selectedWareHouse!);
+      }
   });
 }
 
@@ -124,6 +132,17 @@ void didChangeDependencies() {
     super.dispose();
   }
 
+   // New method to fetch warehouse products
+  void _fetchWarehouseProducts(String warehouseId) {
+    setState(() {
+      _isFetchingProducts = true;
+      selectedProduct = null; // Reset product selection
+      availableProducts = [];
+    });
+    
+    context.read<ProductsCubit>().getWareHouseProducts(warehouseId);
+  }
+
   @override
   Widget build(BuildContext context) {
     final maxWidth = ResponsiveUI.isMobile(context)
@@ -144,7 +163,7 @@ void didChangeDependencies() {
 
     final isDataLoading =
         warehouseState is WarehousesLoading ||
-        productsState is ProductsLoading ||
+        // productsState is ProductsLoading ||
         reasonState is GetReasonsLoading;
 
     final isSubmitting =
@@ -180,6 +199,22 @@ void didChangeDependencies() {
   ReasonState reasonState,
   bool isSubmitting,
 ) {
+   // Reset products when warehouse changes
+    if (productsState is ProductsSuccess && selectedWareHouse != null) {
+      if(productsState.products.isEmpty){
+         _isFetchingProducts = false;
+      }
+      // Update available products list
+      final currentProducts = productsState.products.map((e) => e.id).toList();
+      if (!listEquals(availableProducts, currentProducts)) {
+        availableProducts = currentProducts;
+        _isFetchingProducts = false;
+      }
+    } else if (productsState is ProductsLoading) {
+      _isFetchingProducts = true;
+    } else if (productsState is ProductsError) {
+      _isFetchingProducts = false;
+    }
   return Container(
     constraints: BoxConstraints(
       maxWidth: ResponsiveUI.isMobile(context)
@@ -214,7 +249,17 @@ void didChangeDependencies() {
                       label: "Warehouse",
                       hint: "Select warehouse",
                       icon: Icons.warehouse_rounded,
-                      onChanged: (v) => setState(() => selectedWareHouse = v),
+                      // onChanged: (v) => setState(() => selectedWareHouse = v),
+                      onChanged: (v) {
+                          setState(() {
+                            selectedWareHouse = v;
+                            selectedProduct = null; // Reset product when warehouse changes
+                            availableProducts = []; // Clear products list
+                          });
+                          if (v != null) {
+                            _fetchWarehouseProducts(v);
+                          }
+                        },
                       itemLabel: (id) =>
                           warehouseState.warehouses
                               .firstWhere((w) => w.id == id)
@@ -225,23 +270,28 @@ void didChangeDependencies() {
 
                   SizedBox(height: ResponsiveUI.spacing(context, 12)),
 
-                  /// -------- PRODUCT --------
-                  if (productsState is ProductsSuccess)
-                    buildDropdownField<String>(
-                      context,
-                      value: selectedProduct,
-                      items: productsState.products.map((e) => e.id).toList(),
-                      label: "Product",
-                      hint: "Select product",
-                      icon: Icons.inventory_2_outlined,
-                      onChanged: (v) => setState(() => selectedProduct = v),
-                      itemLabel: (id) =>
-                          productsState.products
-                              .firstWhere((p) => p.id == id)
-                              .name,
-                      validator: (v) =>
-                          v == null ? "Please select product" : null,
-                    ),
+                  // /// -------- PRODUCT --------
+                  // if (productsState is ProductsSuccess)
+                  //   buildDropdownField<String>(
+                  //     context,
+                  //     value: selectedProduct,
+                  //     items: productsState.products.map((e) => e.id).toList(),
+                  //     label: "Product",
+                  //     hint: "Select product",
+                  //     icon: Icons.inventory_2_outlined,
+                  //     onChanged: (v) => setState(() => selectedProduct = v),
+                  //     itemLabel: (id) =>
+                  //         productsState.products
+                  //             .firstWhere((p) => p.id == id)
+                  //             .name,
+                  //     validator: (v) =>
+                  //         v == null ? "Please select product" : null,
+                  //   ),
+
+                    /// -------- PRODUCT --------
+                    // Show product dropdown only if warehouse is selected
+                    if (selectedWareHouse != null)
+                      _buildProductDropdown(productsState),
 
                   SizedBox(height: ResponsiveUI.spacing(context, 12)),
 
@@ -300,6 +350,207 @@ void didChangeDependencies() {
     ),
   );
 }
+
+
+  // New method to build product dropdown
+  Widget _buildProductDropdown(ProductsState productsState) {
+    if (_isFetchingProducts) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Product",
+            style: TextStyle(
+              fontSize: ResponsiveUI.fontSize(context, 14),
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[800],
+            ),
+          ),
+          SizedBox(height: ResponsiveUI.spacing(context, 8)),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(
+              horizontal: ResponsiveUI.padding(context, 16),
+              vertical: ResponsiveUI.padding(context, 14),
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+              border: Border.all(color: Colors.grey[300]!),
+              color: Colors.grey[50],
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.inventory_2_outlined, color: Colors.grey[400]),
+                SizedBox(width: ResponsiveUI.spacing(context, 12)),
+                Expanded(
+                  child: Text(
+                    "Loading products...",
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                ),
+                SizedBox(
+                  width: ResponsiveUI.iconSize(context, 20),
+                  height: ResponsiveUI.iconSize(context, 20),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryBlue),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (productsState is ProductsError) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Product",
+            style: TextStyle(
+              fontSize: ResponsiveUI.fontSize(context, 14),
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[800],
+            ),
+          ),
+          SizedBox(height: ResponsiveUI.spacing(context, 8)),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(
+              horizontal: ResponsiveUI.padding(context, 16),
+              vertical: ResponsiveUI.padding(context, 14),
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+              border: Border.all(color: Colors.red[300]!),
+              color: Colors.red[50],
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.error_outline, color: Colors.red[400]),
+                SizedBox(width: ResponsiveUI.spacing(context, 12)),
+                Expanded(
+                  child: Text(
+                    "Failed to load products. Please try again.",
+                    style: TextStyle(color: Colors.red[600]),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.refresh, size: 20, color: AppColors.primaryBlue),
+                  onPressed: () {
+                    if (selectedWareHouse != null) {
+                      _fetchWarehouseProducts(selectedWareHouse!);
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (productsState is ProductsSuccess) {
+      final products = productsState.products;
+      
+      if (products.isEmpty) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Product",
+              style: TextStyle(
+                fontSize: ResponsiveUI.fontSize(context, 14),
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[800],
+              ),
+            ),
+            SizedBox(height: ResponsiveUI.spacing(context, 8)),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(
+                horizontal: ResponsiveUI.padding(context, 16),
+                vertical: ResponsiveUI.padding(context, 14),
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+                border: Border.all(color: Colors.orange[300]!),
+                color: Colors.orange[50],
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.warning_amber_outlined, color: Colors.orange[400]),
+                  SizedBox(width: ResponsiveUI.spacing(context, 12)),
+                  Expanded(
+                    child: Text(
+                      "No products available in this warehouse",
+                      style: TextStyle(color: Colors.orange[600]),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      }
+
+      return buildDropdownField<String>(
+        context,
+        value: selectedProduct,
+        items: products.map((e) => e.id).toList(),
+        label: "Product",
+        hint: "Select product",
+        icon: Icons.inventory_2_outlined,
+        onChanged: (v) => setState(() => selectedProduct = v),
+        itemLabel: (id) =>
+            products.firstWhere((p) => p.id == id).name,
+        validator: (v) =>
+            v == null ? "Please select product" : null,
+      );
+    }
+
+    // Default empty state
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Product",
+          style: TextStyle(
+            fontSize: ResponsiveUI.fontSize(context, 14),
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[800],
+          ),
+        ),
+        SizedBox(height: ResponsiveUI.spacing(context, 8)),
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(
+            horizontal: ResponsiveUI.padding(context, 16),
+            vertical: ResponsiveUI.padding(context, 14),
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+            border: Border.all(color: Colors.grey[300]!),
+            color: Colors.grey[50],
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.inventory_2_outlined, color: Colors.grey[400]),
+              SizedBox(width: ResponsiveUI.spacing(context, 12)),
+              Expanded(
+                child: Text(
+                  "Select a warehouse first",
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 
 
   BoxDecoration _buildDialogDecoration() {
@@ -556,7 +807,10 @@ void didChangeDependencies() {
   }
 
   void _handleSubmit() {
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState!.validate()  && 
+      selectedWareHouse != null && 
+      selectedProduct != null && 
+      selectedReason != null) {
       final cubit = context.read<AdjustmentCubit>();
       if (isEditMode) {
         cubit.updateAdjustment(

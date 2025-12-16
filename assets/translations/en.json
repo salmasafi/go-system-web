@@ -462,7 +462,181 @@
 "adjustment_dialog_update_details": "Update the adjustment details",
 "adjustment_dialog_add_new": "Add a new adjustment",
 "update_adjustment": "Update Adjustment",
-"create_adjustment": "Create Adjustment"
+"create_adjustment": "Create Adjustment",
+
+  "suppliers_title": "Suppliers",
+
+  "no_suppliers_title": "No Suppliers Yet",
+  "no_suppliers_message": "There are no suppliers available at the moment.",
+
+  "no_results_title": "No Results Found",
+  "no_results_message": "Try adjusting your search or filters.",
+  "clear_filters": "Clear Filters",
+
+   "invalid_supplier_id": "Invalid supplier ID",
+
+  "supplier_details_title": "Supplier Details",
+
+
+  "no_supplier_data": "No supplier data available",
+
+
+   "unknown_supplier": "Unknown",
+  "no_company": "No Company",
+
+  "delete_supplier_title": "Delete Supplier",
+  "delete_supplier_message": "Are you sure you want to delete this supplier? This action cannot be undone.",
+
+
+    "search_hint": "Search by name or company...",
+  "country_hint": "Country",
+  "city_hint": "City",
+
+  "address": "Address",
+
+    "contact_information": "Contact Information",
+  "email": "Email",
+  "phone_number": "Phone Number",
+
+
+   "location_details": "Location Details",
+
+  "create_supplier": "Create Supplier",
+  "update_supplier": "Update Supplier",
+
+   "supplier_image": "Supplier Image",
+  "supplier_name": "Supplier Name",
+  "enter_supplier_name": "Enter supplier name",
+  "company_name": "Company Name",
+  "enter_company_name": "Enter company name",
+  "email_address": "Email Address",
+  "enter_email_address": "Enter email address",
+  "enter_phone_number": "Enter phone number",
+  "enter_supplier_address": "Enter supplier address",
+  "select_country_first": "Select country first",
+  "no_options_available": "No options available",
+  "processing": "Processing...",
+
+    "edit_supplier": "Edit Supplier",
+  "new_supplier": "New Supplier",
+  "update_supplier_details": "Update supplier details",
+  "add_new_supplier": "Add a new supplier",
+
+  "failed_to_pick_image": "Failed to pick image",
+  "please_select_country": "Please select a country",
+  "please_select_city": "Please select a city",
+  "supplier_updated_successfully": "Supplier updated successfully",
+  "supplier_created_successfully": "Supplier created successfully",
+
+
+  "no_taxes": "No taxes",
+  "no_matching_taxes": "No Matching taxes",
+  "pull_to_refresh_or_check_connection": "Pull to refresh or check your connection",
+  "taxes": "Taxes",
+
+    "invalid_tax_id": "Invalid Tax ID",
+  "delete_tax": "Delete Tax",
+  "delete_tax_message": "Are you sure you want to delete this Tax?",
+
+  "tax_name_en": "Tax Name (EN)",
+  "tax_name_en_hint": "Enter tax name in English",
+  "tax_name_ar": "Tax Name (AR)",
+  "tax_name_ar_hint": "Enter tax name in Arabic",
+  "tax_type": "Tax Type",
+  "tax_type_hint": "Select Tax Type",
+  "amount": "Amount",
+  "amount_hint": "Enter Tax Amount",
+  "tax_type_fixed": "Fixed",
+  "tax_type_percentage": "Percentage",
+  "please_select_tax_type": "Please select a tax type",
+  "please_enter_tax_amount": "Please enter a tax amount",
+  "amount_must_be_valid_number": "Amount must be a valid number",
+  "amount_must_be_greater_than_zero": "Amount must be greater than zero",
+  "new_tax": "New Tax",
+  "edit_tax": "Edit Tax",
+  "add_new_tax": "Add a new Tax",
+  "update_tax_details": "Update Tax details",
+  "create_tax": "Create Tax",
+  "update_tax": "Update Tax",
+
+
+  "warehouses": "Warehouses",
+  "warehouse_deleted_success": "Warehouse deleted successfully!",
+  "warehouse_created_success": "Warehouse created successfully!",
+  "warehouse_updated_success": "Warehouse updated successfully!",
+  "no_warehouses_found": "No Warehouses Found",
+  "add_first_warehouse_message": "Add your first warehouse to get started",
+  "no_results_found": "No Results Found",
+  "try_different_keywords": "Try searching with different keywords",
+  "delete_warehouse": "Delete Warehouse",
+  "delete_warehouse_message": "Are you sure you want to delete? This action cannot be undone.",
+  "invalid_warehouse_id": "Invalid warehouse ID",
+
+  "create_warehouse": "Create Warehouse",
+  "update_warehouse": "Update Warehouse",
+
+
+   "warehouse_name": "Warehouse Name",
+  "enter_warehouse_name": "Enter warehouse name",
+
+  "enter_warehouse_address": "Enter warehouse address",
+
+  "warehouse_name_required": "Warehouse name is required",
+  "address_required": "Address is required",
+
+
+   "edit_warehouse": "Edit Warehouse",
+  "new_warehouse": "New Warehouse",
+
+  "update_warehouse_details": "Update warehouse details",
+  "add_new_warehouse": "Add a new warehouse",
+
+
+    "warehouse_default_name": "Warehouse",
+  "warehouse_no_address": "No address",
+  "warehouse_products": "Products",
+  "warehouse_stock": "Stock",
+  "warehouse_no_phone": "No phone",
+  "warehouse_no_email": "No email",
+
+
+   "zones_screen_title": "Zones",
+  "no_zones_title": "No Zones",
+  "no_matching_zones_title": "No Matching Zones",
+  "no_zones_message": "You're all caught up!",
+  "no_matching_zones_message": "Try adjusting your filters",
+  "empty_state_message_connection": "Pull to refresh or check your connection",
+
+
+  
+  "invalid_zone_id": "Invalid Zone ID",
+  "delete_zone_title": "Delete Zone",
+  "delete_zone_message": "Are you sure you want to delete this zone?",
+  "select_zone_title": "Select Zone",
+  "select_zone_message": "Are you sure you want to select this Zone as the default?",
+
+
+   "zone_name_en": "Zone Name (EN)",
+  "enter_zone_name_en": "Enter Zone name in English",
+  "zone_name_ar": "Zone Name (AR)",
+  "enter_zone_name_ar": "Enter Zone name in Arabic",
+
+  "cost": "Cost",
+  "enter_cost": "Enter cost",
+  "please_select_country_city": "Please select both country and city",
+  "edit_zone": "Edit Zone",
+  "update_zone_details": "Update Zone details",
+  "new_zone": "New Zone",
+  "add_new_zone": "Add a new Zone",
+  "update_zone": "Update Zone",
+  "create_zone": "Create Zone",
+
+
+  "payment_methods_screen_title": "Payment Methods",
+  "no_payment_methods_title": "No Payment Methods",
+  "no_matching_payment_methods_title": "No Matching Payment Methods",
+  "no_payment_methods_message": "You're all caught up!",
+  "no_matching_payment_methods_message": "Try adjusting your filters"
 
 
 }

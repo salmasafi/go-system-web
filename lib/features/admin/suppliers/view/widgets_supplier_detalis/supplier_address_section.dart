@@ -1,7 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/features/admin/suppliers/model/supplier_whis_id_model.dart' as supplier_details;
+import 'package:systego/generated/locale_keys.g.dart';
 import 'supplier_details_widgets.dart';
 
 class SupplierAddressSection extends StatelessWidget {
@@ -22,7 +24,7 @@ class SupplierAddressSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionTitle(
-          title: 'Address',
+          title: LocaleKeys.address.tr(),
           icon: Icons.home_outlined,
         ),
         SizedBox(height: ResponsiveUI.spacing(context, 12)),

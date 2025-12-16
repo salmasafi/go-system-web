@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 class CustomDeleteDialog extends StatelessWidget {
   final String title;
@@ -84,7 +86,7 @@ class CustomDeleteDialog extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      cancelText ?? 'Cancel',
+                      cancelText ?? LocaleKeys.cancel.tr(),
                       style: TextStyle(
                         color: AppColors.black,
                       ),
@@ -105,7 +107,7 @@ class CustomDeleteDialog extends StatelessWidget {
                         ),
                       ),
                     ),
-                    child: Text(deleteText ?? 'Delete'),
+                    child: Text(deleteText ?? LocaleKeys.delete.tr()),
                   ),
                 ),
               ],

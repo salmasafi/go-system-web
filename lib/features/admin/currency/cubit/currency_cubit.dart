@@ -65,10 +65,17 @@ class CurrencyCubit extends Cubit<CurrencyState> {
   Future<void> createCurrency({
     required String name,
     required String arName,
+    required double amount,
+    required bool isDefault,
   }) async {
     emit(CreateCurrencyLoading());
     try {
-      final data = {'name': name, 'ar_name': arName};
+      final data = {
+        'name': name,
+        'ar_name': arName,
+        'amount': amount,
+        'isdefault': isDefault,
+      };
 
       final response = await DioHelper.postData(
         url: EndPoint.createCurrency,
@@ -91,10 +98,17 @@ class CurrencyCubit extends Cubit<CurrencyState> {
     required String currencyId,
     required String name,
     required String arName,
+    required double amount,
+    required bool isDefault,
   }) async {
     emit(UpdateCurrencyLoading());
     try {
-      final data = {'name': name, 'ar_name': arName};
+      final data = {
+        'name': name,
+        'ar_name': arName,
+        'amount': amount,
+        'isdefault': isDefault,
+      };
 
       final response = await DioHelper.putData(
         url: EndPoint.updateCurrency(currencyId),

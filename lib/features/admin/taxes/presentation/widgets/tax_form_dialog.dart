@@ -1,8 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/widgets/custom_drop_down_menu.dart';
 import 'package:systego/features/admin/taxes/cubit/taxes_cubit.dart';
 import 'package:systego/features/admin/taxes/model/taxes_model.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
 import '../../../../../core/utils/validators.dart';
@@ -41,16 +43,16 @@ class _TaxFormDialogState extends State<TaxFormDialog>
 
   String? validateTaxAmount(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return "Please enter a tax amount";
+      return LocaleKeys.please_enter_tax_amount.tr();
     }
 
     final number = double.tryParse(value);
     if (number == null) {
-      return "Amount must be a valid number";
+      return LocaleKeys.amount_must_be_valid_number.tr();
     }
 
     if (number <= 0) {
-      return "Amount must be greater than zero";
+      return LocaleKeys.amount_must_be_greater_than_zero.tr();
     }
 
     return null;
@@ -132,13 +134,13 @@ class _TaxFormDialogState extends State<TaxFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _nameController,
-                                  label: 'Tax Name (EN)',
+                                  label: LocaleKeys.tax_name_en.tr(),
                                   icon: Icons.receipt_long_rounded,
-                                  hint: 'Enter tax name in English',
+                                  hint: LocaleKeys.tax_name_en_hint.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'tax name in english',
+                                        LocaleKeys.tax_name_en.tr(),
                                       ),
                                 ),
                                 SizedBox(
@@ -147,13 +149,13 @@ class _TaxFormDialogState extends State<TaxFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _arNameController,
-                                  label: 'Tax Name (AR)',
+                                  label: LocaleKeys.tax_name_ar.tr(),
                                   icon: Icons.receipt_long_rounded,
-                                  hint: 'Enter tax name in Arabic',
+                                  hint: LocaleKeys.tax_name_ar_hint.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'tax name in arabic',
+                                        LocaleKeys.tax_name_ar.tr(),
                                       ),
                                 ),
                                 SizedBox(
@@ -162,11 +164,15 @@ class _TaxFormDialogState extends State<TaxFormDialog>
                                 buildDropdownField<String>(
                                   context,
                                   value: selectedtaxType,
-                                  items: ["Fixed", "Percentage"],
-                                  label: 'Tax Type',
+                                   items: [
+                                    LocaleKeys.tax_type_fixed.tr(),
+                                    LocaleKeys.tax_type_percentage.tr()
+                                  ],
+                                  label: LocaleKeys.tax_type.tr(),
                                   icon: Icons.price_change_rounded,
 
-                                  hint: 'Select Tax Type',
+                                  hint: LocaleKeys.tax_type_hint.tr(),
+
                                   onChanged: (value) {
                                     setState(() {
                                       selectedtaxType = value;
@@ -175,7 +181,7 @@ class _TaxFormDialogState extends State<TaxFormDialog>
                                   itemLabel: (type) => type,
                                   validator: (value) {
                                     if (value == null) {
-                                      return 'Please select a tax type';
+                                      return LocaleKeys.please_select_tax_type.tr();
                                     }
                                     return null;
                                   },
@@ -187,9 +193,9 @@ class _TaxFormDialogState extends State<TaxFormDialog>
                                   context,
                                   controller: _amountController,
                                   keyboardType: TextInputType.number,
-                                  label: 'Amount',
+                                  label: LocaleKeys.amount.tr(),
                                   icon: Icons.attach_money_rounded,
-                                  hint: 'Enter Tax Amount',
+                                  hint:LocaleKeys.amount_hint.tr(),
                                   validator: (v) => validateTaxAmount(v),
                                 ),
                               ],
@@ -331,7 +337,7 @@ class TaxDialogHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isEditMode ? 'Edit Tax' : 'New Tax',
+                  isEditMode ? LocaleKeys.edit_tax.tr() : LocaleKeys.new_tax.tr(),
                   style: TextStyle(
                     color: AppColors.white,
                     fontSize: fontSize22,
@@ -339,7 +345,7 @@ class TaxDialogHeader extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  isEditMode ? 'Update Tax details' : 'Add a new Tax',
+                  isEditMode ? LocaleKeys.update_tax_details.tr() : LocaleKeys.add_new_tax.tr(),
                   style: TextStyle(
                     color: AppColors.white.withOpacity(0.9),
                     fontSize: fontSize13,
@@ -422,7 +428,7 @@ class TaxDialogButtons extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'Cancel',
+                LocaleKeys.cancel.tr(),
                 style: TextStyle(
                   fontSize: fontSize16,
                   fontWeight: FontWeight.w600,
@@ -461,7 +467,7 @@ class TaxDialogButtons extends StatelessWidget {
                   SizedBox(width: spacing8),
                   Flexible(
                     child: Text(
-                      isEditMode ? 'Update Tax' : 'Create Tax',
+                      isEditMode ? LocaleKeys.update_tax.tr() : LocaleKeys.create_tax.tr(),
                       style: TextStyle(
                         fontSize: value14,
                         fontWeight: FontWeight.bold,

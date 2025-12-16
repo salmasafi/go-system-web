@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/features/admin/suppliers/cubit/supplier_cubit.dart';
 import 'package:systego/features/admin/suppliers/view/supplier_details_bottom_sheet.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_gradient_divider.dart';
 import '../../../../../core/widgets/custom_popup_menu.dart';
 import '../../model/supplier_model.dart';
@@ -81,7 +84,7 @@ class SupplierCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                supplier.username ?? 'Unknown',
+                supplier.username ?? LocaleKeys.unknown_supplier.tr(),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 16),
                   fontWeight: FontWeight.bold,
@@ -92,7 +95,7 @@ class SupplierCard extends StatelessWidget {
               ),
               SizedBox(height: ResponsiveUI.spacing(context, 4)),
               Text(
-                supplier.companyName ?? 'No Company',
+                supplier.companyName ?? LocaleKeys.no_company.tr(),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 13),
                   color: AppColors.darkGray.withOpacity(0.6),
@@ -177,12 +180,10 @@ class SupplierCard extends StatelessWidget {
               size: ResponsiveUI.iconSize(context, 28),
             ),
             SizedBox(width: ResponsiveUI.spacing(context, 12)),
-            const Text('Delete Supplier'),
+            Text(LocaleKeys.delete_supplier_title.tr()),
           ],
         ),
-        content: const Text(
-          'Are you sure you want to delete this supplier? This action cannot be undone.',
-        ),
+        content: Text(LocaleKeys.delete_supplier_message.tr()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
