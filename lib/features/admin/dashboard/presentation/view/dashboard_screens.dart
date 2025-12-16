@@ -10,7 +10,6 @@ import 'package:systego/features/admin/coupon/presentation/view/coupons_screen.d
 import 'package:systego/features/admin/currency/presentation/view/currencies_screen.dart';
 import 'package:systego/features/admin/department/presentation/view/departments_screen.dart';
 import 'package:systego/features/admin/discount/presentation/view/discounts_screen.dart';
-import 'package:systego/features/admin/permission/presentation/view/permissions_screen.dart';
 import 'package:systego/features/admin/popup/presentation/view/popup_screen.dart';
 import 'package:systego/features/admin/reason/presentation/view/reasons_screen.dart';
 import 'package:systego/features/admin/suppliers/view/supplier_screen.dart';

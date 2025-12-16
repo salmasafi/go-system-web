@@ -11,7 +11,7 @@ AppBar appBarWithActions(
   IconData? actionIcon,
   bool showActions = false,
   bool showBackButton = true,
-  int notificationCount = 0, // عدد الإشعارات غير المقروءة
+  int notificationCount = 0,
 }) {
   return AppBar(
     scrolledUnderElevation: 0,
@@ -29,8 +29,8 @@ AppBar appBarWithActions(
     ),
     leading: showBackButton
         ? Container(
-            margin: EdgeInsets.only(
-              left: ResponsiveUI.padding(context, 8),
+            margin: EdgeInsetsDirectional.only(
+              start: ResponsiveUI.padding(context, 8),
               top: ResponsiveUI.padding(context, 8),
               bottom: ResponsiveUI.padding(context, 8),
             ),
@@ -51,8 +51,8 @@ AppBar appBarWithActions(
             ),
           )
         : Container(
-          margin: EdgeInsets.only(
-                left: ResponsiveUI.padding(context, 8),
+          margin: EdgeInsetsDirectional.only(
+                start: ResponsiveUI.padding(context, 8),
                 top: ResponsiveUI.padding(context, 8),
                 bottom: ResponsiveUI.padding(context, 8)),
             decoration: BoxDecoration(
@@ -79,8 +79,8 @@ AppBar appBarWithActions(
     actions: showActions
         ? [
             Container(
-              margin: EdgeInsets.only(
-                right: ResponsiveUI.padding(context, 8),
+              margin: EdgeInsetsDirectional.only(
+                end: ResponsiveUI.padding(context, 8),
                 top: ResponsiveUI.padding(context, 8),
                 bottom: ResponsiveUI.padding(context, 8),
               ),
@@ -188,8 +188,8 @@ AppBar appBarWithActionsWidget(
     ),
     leading: showBackButton
         ? Container(
-            margin: EdgeInsets.only(
-              left: ResponsiveUI.padding(context, 8),
+            margin: EdgeInsetsDirectional.only(
+              start: ResponsiveUI.padding(context, 8),
               top: ResponsiveUI.padding(context, 8),
               bottom: ResponsiveUI.padding(context, 8),
             ),

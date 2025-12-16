@@ -1,7 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/features/admin/admins_screen/presentation/widgets/admin_form_dialog.dart';
+import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/app_bar_widgets.dart';
 
@@ -38,24 +39,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: appBarWithActions(
         context,
         title: "Settings",
-        showActions: true,
-        onPressed: () => showDialog(
-          context: context,
-          builder: (context) => const AdminFormDialog(),
-        ),
+        showActions: false,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Profile Header
-            SizedBox(height: 10),
+            SizedBox(height: ResponsiveUI.spacing(context, 14)),
 
-            // Language Section
             _buildLanguageSection(),
 
-            SizedBox(height: 10),
+            SizedBox(height: ResponsiveUI.spacing(context, 14)),
           ],
         ),
       ),
@@ -69,7 +64,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         width: double.infinity,
         padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: AppColors.lightBlueBackground,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
@@ -82,15 +77,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Section Title
             Row(
               children: [
                 Icon(
                   Icons.language,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: AppColors.primaryBlue,
                   size: 24,
                 ),
-                SizedBox(width: 10),
+                SizedBox(width: ResponsiveUI.spacing(context, 10)),
                 Text(
                   "Language",
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -100,9 +94,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
             ),
 
-            SizedBox(height: 10),
+            SizedBox(height: ResponsiveUI.spacing(context, 10)),
 
-            // Language Selection
             Text(
               "Select Language",
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -111,9 +104,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
 
-            SizedBox(height: 10),
+            SizedBox(height: ResponsiveUI.spacing(context, 10)),
 
-            // Language Dropdown
             Container(
               decoration: BoxDecoration(
                 border: Border.all(
@@ -129,7 +121,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     padding: EdgeInsets.only(right: 10),
                     child: Icon(
                       Icons.arrow_drop_down,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: AppColors.primaryBlue,
                     ),
                   ),
                   items: _languages.map((String language) {
@@ -158,7 +150,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
 
-            SizedBox(height: 10),
+            SizedBox(height: ResponsiveUI.spacing(context, 10)),
           ],
         ),
       ),
@@ -166,13 +158,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showLanguageChangeSnackbar(String language) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Language changed to $language'),
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
+    CustomSnackbar.showSuccess(context, "Language changed to $language");
   }
 }

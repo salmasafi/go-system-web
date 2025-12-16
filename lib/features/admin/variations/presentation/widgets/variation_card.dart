@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/animation/animated_element.dart';
-import 'package:systego/core/widgets/custom_button_widget.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
 import 'package:systego/core/widgets/custom_popup_menu.dart';
-import 'package:systego/features/admin/variations/cubit/variation_cubit.dart';
 import 'package:systego/features/admin/variations/model/variation_model.dart';
 
 class VariationCard extends StatefulWidget {

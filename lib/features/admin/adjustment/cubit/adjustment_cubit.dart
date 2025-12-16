@@ -142,7 +142,7 @@ class AdjustmentCubit extends Cubit<AdjustmentState> {
         if (base64Image != null) 'image': base64Image,
       };
       final response = await DioHelper.putData(
-        url: EndPoint.updateadjustment(adjustmentId), // Assume '/api/admin/adjustment/$id'
+        url: EndPoint.updateadjustment(adjustmentId), 
         data: data,
       );
       if (response.statusCode == 200) {
@@ -161,7 +161,7 @@ class AdjustmentCubit extends Cubit<AdjustmentState> {
     emit(DeleteAdjustmentLoading());
     try {
       final response = await DioHelper.deleteData(
-        url: EndPoint.deleteadjustment(adjustmentId), // Assume '/api/admin/adjustment/$id'
+        url: EndPoint.deleteadjustment(adjustmentId), 
       );
       if (response.statusCode == 200) {
         adjustments.removeWhere((adjustment) => adjustment.id == adjustmentId);

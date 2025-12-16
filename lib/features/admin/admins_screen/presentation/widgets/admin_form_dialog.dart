@@ -134,7 +134,7 @@ class _AdminFormDialogState extends State<AdminFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _usernameController,
-                                  hint: "",
+                                  hint: "Username",
                                   label: "Username",
                                   icon: Icons.person,
                                   validator: (v) =>
@@ -385,8 +385,8 @@ class _AdminDialogHeader extends StatelessWidget {
               children: [
                 Text(
                   isEditMode
-                      ? LocaleKeys.edit_bank_account.tr()
-                      : LocaleKeys.new_bank_account.tr(),
+                      ? "Edit admin"
+                      : "New Admin",
                   style: TextStyle(
                     color: AppColors.white,
                     fontSize: fontSize22,
@@ -395,8 +395,8 @@ class _AdminDialogHeader extends StatelessWidget {
                 ),
                 Text(
                   isEditMode
-                      ? LocaleKeys.update_account_details.tr()
-                      : LocaleKeys.add_new_bank_account.tr(),
+                      ? "update admin"
+                      : "Add new admin",
                   style: TextStyle(
                     color: AppColors.white.withOpacity(0.9),
                     fontSize: fontSize13,
