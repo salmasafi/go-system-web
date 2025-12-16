@@ -155,7 +155,7 @@ class EndPoint {
 
   /// permissions
   static const String getAllpermissions = '/api/admin/permission';
-  static String getpermission(String id) => '/api/admin/permission/$id';
+  static String getUserPermissions(String id) => '/api/admin/permission/$id';
   static String addpermission = '/api/admin/permission';
   static String updatepermission(String id) => '/api/admin/permission/$id';
   static String deletepermission(String id) => '/api/admin/permission/$id';
@@ -173,5 +173,12 @@ class EndPoint {
   static String addreason = '/api/admin/selectreason';
   static String updatereason(String id) => '/api/admin/selectreason/$id';
   static String deletereason(String id) => '/api/admin/selectreason/$id';
+
+  /// admins
+  static const String getAllAdmins = '/api/admin/admin';
+  static String getAdmin(String id) => '/api/admin/admin/$id';
+  static String createAdmin = '/api/admin/admin';
+  static String updateAdmin(String id) => '/api/admin/admin/$id';
+  static String deleteAdmin(String id) => '/api/admin/admin/$id';
 
 }

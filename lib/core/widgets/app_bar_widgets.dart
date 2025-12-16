@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/features/admin/settings/presentation/view/settings_screen.dart';
 import '../constants/app_colors.dart';
 
 AppBar appBarWithActions(
@@ -49,7 +50,32 @@ AppBar appBarWithActions(
               padding: EdgeInsets.zero,
             ),
           )
-        : null,
+        : Container(
+          margin: EdgeInsets.only(
+                left: ResponsiveUI.padding(context, 8),
+                top: ResponsiveUI.padding(context, 8),
+                bottom: ResponsiveUI.padding(context, 8)),
+            decoration: BoxDecoration(
+              color: AppColors.lightBlueBackground,
+              borderRadius: BorderRadius.circular(
+                ResponsiveUI.borderRadius(context, 12),
+              ),
+            ),
+            child: IconButton(
+              onPressed: () {
+                Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const SettingsScreen()),
+        );
+              },
+              icon: Icon(
+                Icons.settings,
+                color: AppColors.mediumBlue700[700],
+                size: ResponsiveUI.iconSize(context, 25),
+              ),
+              padding: EdgeInsets.zero,
+            ),
+          ),
     actions: showActions
         ? [
             Container(

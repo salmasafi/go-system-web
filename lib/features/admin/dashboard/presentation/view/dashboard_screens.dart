@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/features/admin/adjustment/presentation/view/adjustments_screen.dart';
+import 'package:systego/features/admin/admins_screen/presentation/view/admins_screen.dart';
 import 'package:systego/features/admin/bank_account/presentation/view/bank_accounts_screen.dart';
 import 'package:systego/features/admin/city/presentation/view/cities_screen.dart';
 import 'package:systego/features/admin/country/presentation/view/countries_screen.dart';
@@ -61,9 +62,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     {'icon': Icons.local_offer, 'label': 'Coupons'},
     // {'icon': Icons.business, 'label': 'Departments'},
     {'icon': Icons.local_offer, 'label': 'Discounts'},
-    {'icon': Icons.business, 'label': 'Permissions'},
+    // {'icon': Icons.business, 'label': 'Permissions'},
     {'icon': Icons.business, 'label': 'Adjustment Reasons'},
     {'icon': Icons.business, 'label': 'Adjustments'},
+    {'icon': Icons.business, 'label': 'Admins'},
   ];
 
   void _navigateToPage(String label) {
@@ -194,12 +196,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
         );
         break;
 
-      case 'Permissions':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const PermissionScreen()),
-        );
-        break;
+      // case 'Permissions':
+      //   Navigator.push(
+      //     context,
+      //     MaterialPageRoute(builder: (_) => const PermissionScreen()),
+      //   );
+      //   break;
 
        case 'Adjustment Reasons':
         Navigator.push(
@@ -214,6 +216,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
           MaterialPageRoute(builder: (_) => const AdjustmentsScreen()),
         );
         break;
+
+      case 'Admins':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const AdminsScreen()),
+        );
+        break;
+
 
       default:
         ScaffoldMessenger.of(

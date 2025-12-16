@@ -125,7 +125,7 @@ class PermissionCubit extends Cubit<PermissionState> {
     emit(GetPermissionByIdLoading());
     try {
       final response = await DioHelper.getData(
-        url: EndPoint.getpermission(id),
+        url: EndPoint.getUserPermissions(id),
       );
 
       if (response.statusCode == 200) {
