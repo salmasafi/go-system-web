@@ -164,7 +164,7 @@ class CartItemTile extends StatelessWidget {
                     ),
                     if (item.selectedVariation!.variations.length > 2)
                       Padding(
-                        padding: const EdgeInsets.only(top: 4),
+                        padding: const EdgeInsets.only(top: 6),
                         child: Text(
                           '+${item.selectedVariation!.variations.length - 2} more',
                           style: TextStyle(

@@ -11,7 +11,7 @@ import 'package:systego/core/services/cache_helper.dart';
 import 'package:systego/main.dart';
 import '../../../admin/auth/presentation/view/login_screen.dart';
 import '../../../admin/dashboard/presentation/view/dashboard_screens.dart';
-import '../../../POS/home/presentation/view/pos_screen.dart';
+import '../../../POS/home/presentation/view/pos_home_screen.dart';
 import '../widgets/custom_bottom_app_bar_widget.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> screens = [
     DashboardScreen(),
     //Container(),
-    POSScreen(),
+    POSHomeScreen(),
     //Container(),
     Container(),
   ];

@@ -21,14 +21,14 @@ import '../widgets/product_grid.dart';
 import '../widgets/tab_bar.dart';
 import '../widgets/variation_selector_dialog.dart'; // جديد
 
-class POSScreen extends StatefulWidget {
-  const POSScreen({super.key});
+class POSHomeScreen extends StatefulWidget {
+  const POSHomeScreen({super.key});
 
   @override
-  State<POSScreen> createState() => _POSScreenState();
+  State<POSHomeScreen> createState() => _POSHomeScreenState();
 }
 
-class _POSScreenState extends State<POSScreen> {
+class _POSHomeScreenState extends State<POSHomeScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
