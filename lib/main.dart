@@ -25,9 +25,20 @@ import 'package:systego/features/admin/variations/cubit/variation_cubit.dart';
 import 'package:systego/translations/codegen_loader.g.dart';
 import 'core/services/cache_helper.dart';
 import 'core/services/dio_helper.dart';
+import 'features/POS/checkout/cubit/checkout_cubit/checkout_cubit.dart';
+import 'features/POS/home/cubit/pos_home_cubit.dart';
 import 'features/admin/auth/presentation/view/login_screen.dart';
+import 'features/admin/brands/cubit/brand_cubit.dart';
+import 'features/admin/categories/cubit/categories_cubit.dart';
+import 'features/admin/city/cubit/city_cubit.dart';
+import 'features/admin/country/cubit/country_cubit.dart';
+import 'features/admin/dashboard/cubit/notifications_cubit.dart';
 import 'features/admin/dashboard/presentation/view/home_screen.dart';
+import 'features/admin/product/cubit/filter_product_cubit/product_filter_cubit.dart';
+import 'features/admin/product/cubit/product_details_cubit/product_details_cubit.dart';
+import 'features/admin/suppliers/cubit/supplier_cubit.dart';
 import 'features/admin/warehouses/cubit/warehouse_cubit.dart';
+import 'features/admin/zone/cubit/zone_cubit.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -97,17 +108,17 @@ class _MainAppState extends State<MainApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<LoginCubit>(create: (context) => LoginCubit()),
-        //BlocProvider<PosCubit>(create: (context) => PosCubit()..loadPosData()),
-        //BlocProvider<CheckoutCubit>(create: (context) => CheckoutCubit()),
+        BlocProvider<PosCubit>(create: (context) => PosCubit()..loadPosData()),
+        BlocProvider<CheckoutCubit>(create: (context) => CheckoutCubit()),
         BlocProvider<WareHouseCubit>(create: (context) => WareHouseCubit()),
         BlocProvider<ProductsCubit>(create: (context) => ProductsCubit()),
-        //BlocProvider<CategoriesCubit>(create: (context) => CategoriesCubit()),
-        //BlocProvider<BrandsCubit>(create: (context) => BrandsCubit()),
-        //BlocProvider<SupplierCubit>(create: (context) => SupplierCubit()),
+        BlocProvider<CategoriesCubit>(create: (context) => CategoriesCubit()),
+        BlocProvider<BrandsCubit>(create: (context) => BrandsCubit()),
+        BlocProvider<SupplierCubit>(create: (context) => SupplierCubit()),
         BlocProvider<CurrencyCubit>(create: (context) => CurrencyCubit()),
-        //BlocProvider<CountryCubit>(create: (context) => CountryCubit()),
-        //BlocProvider<CityCubit>(create: (context) => CityCubit()),
-        //BlocProvider<ZoneCubit>(create: (context) => ZoneCubit()),
+        BlocProvider<CountryCubit>(create: (context) => CountryCubit()),
+        BlocProvider<CityCubit>(create: (context) => CityCubit()),
+        BlocProvider<ZoneCubit>(create: (context) => ZoneCubit()),
         BlocProvider<TaxesCubit>(create: (context) => TaxesCubit()),
         BlocProvider<BankAccountCubit>(create: (context) => BankAccountCubit()),
         BlocProvider<PopupCubit>(create: (context) => PopupCubit()),
@@ -125,15 +136,15 @@ class _MainAppState extends State<MainApp> {
         BlocProvider<PaymentMethodCubit>(
           create: (context) => PaymentMethodCubit(),
         ),
-        // BlocProvider<ProductDetailsCubit>(
-        //   create: (context) => ProductDetailsCubit(),
-        // ),
-        // BlocProvider<ProductFiltersCubit>(
-        //   create: (context) => ProductFiltersCubit(),
-        // ),
-        // BlocProvider<NotificationsCubit>(
-        //   create: (_) => NotificationsCubit()..getNotifications(),
-        // ),
+        BlocProvider<ProductDetailsCubit>(
+          create: (context) => ProductDetailsCubit(),
+        ),
+        BlocProvider<ProductFiltersCubit>(
+          create: (context) => ProductFiltersCubit(),
+        ),
+        BlocProvider<NotificationsCubit>(
+          create: (_) => NotificationsCubit()..getNotifications(),
+        ),
       ],
       child: MaterialApp(
         navigatorKey: navigatorKey,

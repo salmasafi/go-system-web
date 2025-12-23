@@ -26,7 +26,7 @@ class CustomBottomAppBar extends StatelessWidget {
       curveSize: 90,
       elevation: 8,
       shadowColor: Colors.black26,
-      items:  [
+      items: [
         TabItem(
           icon: Icons.dashboard_rounded,
           title: LocaleKeys.dashboard.tr(),
@@ -38,7 +38,7 @@ class CustomBottomAppBar extends StatelessWidget {
         TabItem(
           // icon: Icons.print_rounded,
           // title: 'Print',
-               icon: Icons.point_of_sale_rounded,
+          icon: Icons.point_of_sale_rounded,
           title: LocaleKeys.point_of_sale.tr(),
         ),
         // TabItem(

@@ -25,7 +25,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    int currentIndex = 0;
+    int _currentIndex = 0;
     List<Widget> screens = [
       DashboardScreen(key: ValueKey(context.locale.languageCode)),
       //Container(),
@@ -34,10 +34,10 @@ class _HomeScreenState extends State<HomeScreen> {
       Container(),
     ];
     return Scaffold(
-      body: screens[currentIndex],
+      body: screens[_currentIndex],
       bottomNavigationBar: CustomBottomAppBar(
         key: ValueKey(context.locale.languageCode),
-        currentIndex: currentIndex,
+        currentIndex: _currentIndex,
         onTap: (index) async {
           if (index == 2) {
             await CacheHelper.clearAllData();
@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           } else {
             setState(() {
-              currentIndex = index;
+              _currentIndex = index;
             });
           }
         },
