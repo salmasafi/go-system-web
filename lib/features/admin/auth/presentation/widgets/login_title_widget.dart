@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/animation/simple_fadein_animation_widget.dart';
@@ -13,7 +15,7 @@ class LoginTitleWidget extends StatelessWidget {
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(
-          "Login",
+          LocaleKeys.login.tr(),
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,

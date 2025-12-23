@@ -174,7 +174,7 @@ class _AnimatedAdminCardState extends State<AnimatedAdminCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "WareHouse",
+                    LocaleKeys.warehouse.tr(),
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 12),
                       color: AppColors.darkGray.withOpacity(0.6),
@@ -203,7 +203,7 @@ class _AnimatedAdminCardState extends State<AnimatedAdminCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Role",
+                    LocaleKeys.role.tr(),
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 12),
                       color: AppColors.darkGray.withOpacity(0.6),

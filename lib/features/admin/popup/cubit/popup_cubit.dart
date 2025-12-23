@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:meta/meta.dart';
 import 'package:systego/core/services/dio_helper.dart';
 import 'package:systego/core/services/endpoints.dart';
@@ -8,6 +9,7 @@ import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/features/admin/popup/model/popup_model.dart';
 import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 part 'popup_state.dart';
 
@@ -84,7 +86,7 @@ Future<void> addPopup({
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreatePopupSuccess("Popup created successfully"));
+        emit(CreatePopupSuccess(LocaleKeys.popup_created_success.tr()));
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(CreatePopupError(errorMessage));
@@ -138,7 +140,7 @@ Future<void> addPopup({
       );
 
       if (response.statusCode == 200) {
-        emit(UpdatePopupSuccess("Popup updated successfully"));
+       emit(UpdatePopupSuccess(LocaleKeys.popup_updated_success.tr()));
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(UpdatePopupError(errorMessage));
@@ -158,7 +160,7 @@ Future<void> addPopup({
 
       if (response.statusCode == 200) {
         allPopups.removeWhere((popup) => popup.id == popupId);
-        emit(DeletePopupSuccess("Popup deleted successfully"));
+        emit(DeletePopupSuccess(LocaleKeys.popup_deleted_success.tr()));
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(DeletePopupError(errorMessage));

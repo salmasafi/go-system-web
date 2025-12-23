@@ -22,7 +22,11 @@ class PaymentMethodFormDialog extends StatefulWidget {
   final PaymentMethodModel? paymentMethod;
   final String? existingImageUrl;
 
-  const PaymentMethodFormDialog({super.key, this.paymentMethod, this.existingImageUrl});
+  const PaymentMethodFormDialog({
+    super.key,
+    this.paymentMethod,
+    this.existingImageUrl,
+  });
 
   @override
   State<PaymentMethodFormDialog> createState() =>
@@ -40,9 +44,9 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
   late Animation<double> _scaleAnimation;
 
   bool get isEditMode => widget.paymentMethod != null;
-   String? selectedtaxType;
-   File? _selectedImage;
-   final _picker = ImagePicker();
+  String? selectedtaxType;
+  File? _selectedImage;
+  final _picker = ImagePicker();
 
   @override
   void initState() {
@@ -62,11 +66,10 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
           widget.paymentMethod!.type[0].toUpperCase() +
           widget.paymentMethod!.type.substring(1).toLowerCase();
 
-          log("selected ${_selectedImage}");
+      log("selected ${_selectedImage}");
     }
   }
 
-  
   Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null && mounted) {
@@ -83,7 +86,6 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
       _selectedImage = null;
     });
   }
-
 
   void _setupAnimation() {
     _animationController = AnimationController(
@@ -150,20 +152,21 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
                             key: _formKey,
                             child: Column(
                               children: [
-                                 _buildImagePicker(context),
+                                _buildImagePicker(context),
                                 SizedBox(
                                   height: ResponsiveUI.spacing(context, 12),
                                 ),
                                 buildTextField(
                                   context,
                                   controller: _nameController,
-                                  label: 'Payment Method Name (EN)',
+                                  label: LocaleKeys.payment_method_name_en.tr(),
                                   icon: Icons.attach_money_rounded,
-                                  hint: 'Enter payment method name in English',
+                                  hint: LocaleKeys.enter_payment_method_name_en
+                                      .tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'payment method name in english',
+                                        LocaleKeys.payment_method_name_en.tr(),
                                       ),
                                 ),
                                 SizedBox(
@@ -172,26 +175,27 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _arNameController,
-                                  label: 'Payment Method Name (AR)',
+                                  label: LocaleKeys.payment_method_name_ar.tr(),
                                   icon: Icons.attach_money_rounded,
-                                  hint: 'Enter payment method name in Arabic',
+                                  hint: LocaleKeys.enter_payment_method_name_ar
+                                      .tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'payment method name in arabic',
+                                        LocaleKeys.payment_method_name_ar.tr(),
                                       ),
                                 ),
                                 SizedBox(
                                   height: ResponsiveUI.spacing(context, 12),
                                 ),
-                                  buildDropdownField<String>(
+                                buildDropdownField<String>(
                                   context,
                                   value: selectedtaxType,
                                   items: ["manual", "automatic"],
-                                  label: 'Tax Type',
+                                  label: LocaleKeys.tax_type.tr(),
                                   icon: Icons.attach_money_rounded,
 
-                                  hint: 'Select Tax Type',
+                                  hint: LocaleKeys.select_tax_type.tr(),
                                   onChanged: (value) {
                                     setState(() {
                                       selectedtaxType = value;
@@ -200,7 +204,8 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
                                   itemLabel: (type) => type,
                                   validator: (value) {
                                     if (value == null) {
-                                      return 'Please select a tax type';
+                                      return LocaleKeys.please_select_tax_type
+                                          .tr();
                                     }
                                     return null;
                                   },
@@ -212,13 +217,13 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
                                   context,
                                   controller: _descriptionController,
                                   keyboardType: TextInputType.number,
-                                  label: 'Description',
+                                  label: LocaleKeys.description.tr(),
                                   icon: Icons.description,
-                                  hint: 'Enter description',
+                                  hint: LocaleKeys.enter_description.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        'description',
+                                        LocaleKeys.description.tr(),
                                       ),
                                   maxLines: 4,
                                 ),
@@ -274,7 +279,6 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
     }
   }
 
-  
   Widget _buildImagePicker(BuildContext context) {
     final borderRadius12 = ResponsiveUI.borderRadius(context, 12);
     final iconSize40 = ResponsiveUI.iconSize(context, 40);
@@ -288,7 +292,7 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Payment Icon",
+          LocaleKeys.payment_icon.tr(),
           style: TextStyle(
             fontSize: fontSize14,
             fontWeight: FontWeight.w600,
@@ -345,7 +349,6 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
               Widget imageWidget;
 
               if (isBase64) {
-
                 final parts = widget.existingImageUrl!.split(',');
 
                 if (parts.length == 2) {
@@ -413,31 +416,29 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(borderRadius12 - 2),
 
-                      child:
-                          imageWidget,
+                      child: imageWidget,
                     ),
                   ),
 
-                   Positioned(
-              top: 8,
-              right: 8,
-              child: GestureDetector(
-                onTap: _pickImage,
-                child: Container(
-                  padding: EdgeInsets.all(padding8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey,
-                    borderRadius: BorderRadius.circular(20),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: GestureDetector(
+                      onTap: _pickImage,
+                      child: Container(
+                        padding: EdgeInsets.all(padding8),
+                        decoration: BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Icon(
+                          Icons.edit,
+                          color: Colors.white,
+                          size: iconSize24,
+                        ),
+                      ),
+                    ),
                   ),
-                  child: Icon(
-                    Icons.edit,
-                    color: Colors.white,
-                    size: iconSize24,
-                  ),
-                ),
-              ),
-            ),
-
                 ],
               );
             },
@@ -503,7 +504,6 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
 
   void _handleSubmit() {
     if (_formKey.currentState!.validate()) {
-      
       final cubit = context.read<PaymentMethodCubit>();
       if (isEditMode) {
         cubit.updatePaymentMethod(
@@ -594,7 +594,9 @@ class PaymentMethodDialogHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isEditMode ? 'Edit Payment Method' : 'New Payment Method',
+                  isEditMode
+                      ? LocaleKeys.edit_payment_method.tr()
+                      : LocaleKeys.new_payment_method.tr(),
                   style: TextStyle(
                     color: AppColors.white,
                     fontSize: fontSize22,
@@ -603,8 +605,8 @@ class PaymentMethodDialogHeader extends StatelessWidget {
                 ),
                 Text(
                   isEditMode
-                      ? 'Update Payment Method details'
-                      : 'Add a new Payment Method',
+                      ? LocaleKeys.update_payment_method_details.tr()
+                      : LocaleKeys.add_a_new_payment_method.tr(),
                   style: TextStyle(
                     color: AppColors.white.withOpacity(0.9),
                     fontSize: fontSize13,
@@ -687,7 +689,7 @@ class PaymentMethodDialogButtons extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'Cancel',
+                LocaleKeys.cancel.tr(),
                 style: TextStyle(
                   fontSize: fontSize16,
                   fontWeight: FontWeight.w600,
@@ -727,8 +729,8 @@ class PaymentMethodDialogButtons extends StatelessWidget {
                   Flexible(
                     child: Text(
                       isEditMode
-                          ? 'Update Payment Method'
-                          : 'Create Payment Method',
+                          ? LocaleKeys.update_payment_method.tr()
+                          : LocaleKeys.create_payment_method.tr(),
                       style: TextStyle(
                         fontSize: value14,
                         fontWeight: FontWeight.bold,

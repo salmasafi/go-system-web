@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../core/services/dio_helper.dart';
 import '../../../../core/services/endpoints.dart';
 import '../../../../core/utils/error_handler.dart';
@@ -88,9 +90,7 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(
-          CreatePaymentMethodSuccess('Payment method is created successfully'),
-        );
+        emit(CreatePaymentMethodSuccess(LocaleKeys.payment_method_created_success.tr()));
       } else {
         final errorMessage = _extractErrorMessage(response);
         emit(CreatePaymentMethodError(errorMessage));
@@ -136,9 +136,7 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
       );
 
       if (response.statusCode == 200) {
-        emit(
-          UpdatePaymentMethodSuccess('Payment method is updated successfully'),
-        );
+        emit(UpdatePaymentMethodSuccess(LocaleKeys.payment_method_updated_success.tr()));
       } else {
         final errorMessage = _extractErrorMessage(response);
         emit(UpdatePaymentMethodError(errorMessage));
@@ -160,9 +158,7 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
         allPaymentMethods.removeWhere(
           (paymentMethod) => paymentMethod.id == paymentMethodId,
         );
-        emit(
-          DeletePaymentMethodSuccess('Payment method is deleted successfully'),
-        );
+         emit(DeletePaymentMethodSuccess(LocaleKeys.payment_method_deleted_success.tr()));
       } else {
         final errorMessage = _extractErrorMessage(response);
         emit(DeletePaymentMethodError(errorMessage));

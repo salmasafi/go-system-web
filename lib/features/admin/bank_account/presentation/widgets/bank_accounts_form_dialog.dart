@@ -211,7 +211,7 @@ void didChangeDependencies() {
                                           vertical: 20,
                                         ),
                                         child: Text(
-                                          "No warehouses found",
+                                          LocaleKeys.no_warehouses_found.tr(),
                                           style: TextStyle(
                                             color: Colors.grey[600],
                                           ),
@@ -224,8 +224,8 @@ void didChangeDependencies() {
                                       context,
                                       value: selectedWareHouse,
                                       items: warehouseIds,
-                                      label: "Warehouse",
-                                      hint: "select warehouse",
+                                      label: LocaleKeys.warehouse.tr(),
+                                      hint:  LocaleKeys.select_warehouse.tr(),
                                       icon: Icons.warehouse_rounded,
                                       onChanged: (value) {
                                         setState(() {
@@ -240,7 +240,7 @@ void didChangeDependencies() {
                                       },
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
-                                          return "please select warehouse";
+                                          return LocaleKeys.please_select_warehouse.tr();
                                         }
                                         return null;
                                       },
@@ -285,9 +285,9 @@ void didChangeDependencies() {
                                 buildTextField(
                                   context,
                                   controller: _descriptionController,
-                                  label: "Description",
+                                  label: LocaleKeys.description.tr(),
                                   icon: Icons.note_alt_rounded,
-                                  hint: "Enter a Discription",
+                                  hint: LocaleKeys.enter_description.tr(),
                                   maxLines: 3,
                                 ),
                                 SizedBox(
@@ -325,7 +325,7 @@ void didChangeDependencies() {
                                 Row(
                                   children: [
                                     Text(
-                                      "In POS",
+                                      LocaleKeys.in_pos.tr(),
                                       style: TextStyle(
                                         fontSize: ResponsiveUI.fontSize(
                                           context,
@@ -666,7 +666,7 @@ void didChangeDependencies() {
       final balance = double.tryParse(_balanceController.text) ?? 0.0;
       final description = _descriptionController.text.trim();
       if (selectedWareHouse == null) {
-        CustomSnackbar.showError(context, "Please select a warehouse");
+        CustomSnackbar.showError(context, LocaleKeys.please_select_warehouse.tr(),);
         return;
       }
 

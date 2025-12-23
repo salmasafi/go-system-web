@@ -107,7 +107,7 @@ class _AnimatedReasonCardState extends State<AnimatedReasonCard> {
         SizedBox(width: ResponsiveUI.spacing(context, 14)),
         Expanded(
           child: Text(
-            reason.reason.isNotEmpty ? reason.reason : 'No reason text',
+            reason.reason.isNotEmpty ? reason.reason : LocaleKeys.no_reason_text.tr(),
             style: TextStyle(
               fontSize: ResponsiveUI.fontSize(context, 16),
               fontWeight: FontWeight.w600,

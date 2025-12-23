@@ -188,7 +188,7 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Description:",
+                LocaleKeys.description.tr(),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 12),
                   color: AppColors.darkGray.withOpacity(0.6),
@@ -217,7 +217,7 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Warehouse:",
+                    LocaleKeys.warehouse.tr(),
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 12),
                       color: AppColors.darkGray.withOpacity(0.6),
@@ -246,7 +246,7 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Balance:",
+                   LocaleKeys.balance.tr(),
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 12),
                       color: AppColors.darkGray.withOpacity(0.6),
@@ -301,7 +301,7 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    account.inPos ? "In POS" : "not in POS",
+                    account.inPos ? LocaleKeys.in_pos.tr() : LocaleKeys.not_in_pos.tr(),
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 12),
                       color: account.inPos

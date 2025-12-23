@@ -71,7 +71,7 @@ class _AdminsListState extends State<AdminsList> {
     if (admin.id.isEmpty) {
       CustomSnackbar.showError(
         context,
-        "LocaleKeys.invalid_admin_id.tr()",
+        LocaleKeys.invalid_admin_id.tr(),
       );
       return;
     }
@@ -80,9 +80,9 @@ class _AdminsListState extends State<AdminsList> {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => CustomDeleteDialog(
-        title: "Delete Admin",
+        title: LocaleKeys.delete_admin.tr(),
         message:
-            'Are You sure you want to delete this admin? ${admin.username}',
+            '${LocaleKeys.delete_admin_message.tr()} ${admin.username}',
         onDelete: () {
           Navigator.pop(dialogContext);
           context.read<AdminsCubit>().deleteAdmin(admin.id);

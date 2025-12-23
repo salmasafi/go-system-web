@@ -1,5 +1,7 @@
 import 'dart:developer';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../core/services/dio_helper.dart';
 import '../../../../core/services/endpoints.dart';
 import '../../../../core/utils/error_handler.dart';
@@ -83,7 +85,7 @@ class CurrencyCubit extends Cubit<CurrencyState> {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateCurrencySuccess('Currency is created successfully'));
+        emit(CreateCurrencySuccess(LocaleKeys.currency_created_success.tr()));
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(CreateCurrencyError(errorMessage));
@@ -116,7 +118,7 @@ class CurrencyCubit extends Cubit<CurrencyState> {
       );
 
       if (response.statusCode == 200) {
-        emit(UpdateCurrencySuccess('Currency updated successfully'));
+        emit(UpdateCurrencySuccess(LocaleKeys.currency_updated_success.tr()));
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(UpdateCurrencyError(errorMessage));
@@ -136,7 +138,7 @@ class CurrencyCubit extends Cubit<CurrencyState> {
 
       if (response.statusCode == 200) {
         allCurrencies.removeWhere((currency) => currency.id == currencyId);
-        emit(DeleteCurrencySuccess('Currency deleted successfully'));
+        emit(DeleteCurrencySuccess(LocaleKeys.currency_deleted_success.tr()));
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(DeleteCurrencyError(errorMessage));

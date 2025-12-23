@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
@@ -5,6 +6,7 @@ import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
 import 'package:systego/core/widgets/custom_popup_menu.dart';
 import 'package:systego/features/admin/popup/model/popup_model.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 class AnimatedPopupCard extends StatefulWidget {
   final PopupModel popup;
@@ -162,7 +164,7 @@ class _AnimatedPopupCardState extends State<AnimatedPopupCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Popup Description (En)',
+                   LocaleKeys.popup_description_en.tr(),
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 12),
                       color: AppColors.darkGray.withOpacity(0.6),
@@ -275,7 +277,7 @@ class _AnimatedPopupCardState extends State<AnimatedPopupCard> {
           Icon(Icons.broken_image_outlined, size: 40, color: Colors.grey[400]),
           SizedBox(height: 8),
           Text(
-            'Failed to load image',
+            LocaleKeys.failed_to_load_image.tr(),
             style: TextStyle(color: Colors.grey[500], fontSize: 12),
           ),
         ],

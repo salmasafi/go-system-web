@@ -134,21 +134,21 @@ class _AdminFormDialogState extends State<AdminFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _usernameController,
-                                  hint: "Username",
-                                  label: "Username",
+                                  hint: LocaleKeys.username.tr(),
+                                  label:LocaleKeys.username.tr(),
                                   icon: Icons.person,
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                     v,
-                                    "Username",
+                                    LocaleKeys.username.tr(),
                                   ),
                                 ),
                                 SizedBox(height: ResponsiveUI.spacing(context, 12)),
                                 buildTextField(
                                   context,
                                   controller: _emailController,
-                                  label: "Email",
-                                  hint: "Email",
+                                  label: LocaleKeys.email.tr(),
+                                  hint: LocaleKeys.email.tr(),
                                   icon: Icons.email,
                                   validator: LoginValidator.validateEmail,
                                 ),
@@ -156,8 +156,8 @@ class _AdminFormDialogState extends State<AdminFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _phoneController,
-                                  label: "Phone",
-                                  hint: "phone",
+                                  label: LocaleKeys.phone.tr(),
+                                  hint: LocaleKeys.phone.tr(),
                                   icon: Icons.phone,
                                   validator: LoginValidator.validatePhone,
                                 ),
@@ -165,16 +165,16 @@ class _AdminFormDialogState extends State<AdminFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _passwordController,
-                                  label: "Password",
-                                  hint: "Password",
+                                  label: LocaleKeys.password.tr(),
+                                  hint: LocaleKeys.password.tr(),
                                   icon: Icons.business,
                                 ),
                                 SizedBox(height: ResponsiveUI.spacing(context, 12)),
                                 buildTextField(
                                   context,
                                   controller: _companyController,
-                                  label: "Company name",
-                                  hint: "Company name",
+                                  label: LocaleKeys.company_name.tr(),
+                                  hint: LocaleKeys.company_name.tr(),
                                   icon: Icons.business,
                                 ),
                                 SizedBox(height: ResponsiveUI.spacing(context, 12)),
@@ -189,10 +189,10 @@ class _AdminFormDialogState extends State<AdminFormDialog>
                                   context,
                                   value: selectedRole,
                                   items: ["admin", "superadmin"],
-                                  label: 'Role',
+                                  label: LocaleKeys.role.tr(),
                                   icon: Icons.security,
 
-                                  hint: 'Select Role',
+                                  hint: LocaleKeys.select_role.tr(),
                                   onChanged: (value) {
                                     setState(() {
                                       selectedRole = value;
@@ -201,7 +201,7 @@ class _AdminFormDialogState extends State<AdminFormDialog>
                                   itemLabel: (type) => type,
                                   validator: (value) {
                                     if (value == null) {
-                                      return 'Please select a Role';
+                                      return LocaleKeys.please_select_role.tr();
                                     }
                                     return null;
                                   },
@@ -222,8 +222,8 @@ class _AdminFormDialogState extends State<AdminFormDialog>
                                         context,
                                         value: selectedWarehouse,
                                         items: ids,
-                                        label: "Warehouse",
-                                        hint: "select warehouse",
+                                        label: LocaleKeys.warehouse.tr(),
+                                        hint: LocaleKeys.select_warehouse.tr(),
                                         onChanged: (v) =>
                                             setState(() => selectedWarehouse = v),
                                         itemLabel: (id) {
@@ -385,8 +385,8 @@ class _AdminDialogHeader extends StatelessWidget {
               children: [
                 Text(
                   isEditMode
-                      ? "Edit admin"
-                      : "New Admin",
+                      ? LocaleKeys.edit_admin.tr()
+                      : LocaleKeys.new_admin.tr(),
                   style: TextStyle(
                     color: AppColors.white,
                     fontSize: fontSize22,
@@ -395,8 +395,8 @@ class _AdminDialogHeader extends StatelessWidget {
                 ),
                 Text(
                   isEditMode
-                      ? "update admin"
-                      : "Add new admin",
+                      ? LocaleKeys.update_admin.tr()
+                      : LocaleKeys.add_new_admin.tr(),
                   style: TextStyle(
                     color: AppColors.white.withOpacity(0.9),
                     fontSize: fontSize13,

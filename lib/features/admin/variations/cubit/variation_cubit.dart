@@ -1,11 +1,13 @@
 import 'dart:developer';
 import 'package:bloc/bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:meta/meta.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/services/dio_helper.dart';
 import 'package:systego/core/services/endpoints.dart';
 import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/features/admin/variations/model/variation_model.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 part 'variation_state.dart';
 
@@ -83,7 +85,7 @@ class VariationCubit extends Cubit<VariationState> {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateVariationSuccess("Variation created successfully"));
+        emit(CreateVariationSuccess(LocaleKeys.variation_created_success.tr()));
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(CreateVariationError(errorMessage));
@@ -116,7 +118,7 @@ class VariationCubit extends Cubit<VariationState> {
     );
 
     if (response.statusCode == 200) {
-      emit(UpdateVariationSuccess("Variation updated successfully"));
+      emit(UpdateVariationSuccess(LocaleKeys.variation_updated_success.tr()));
     } else {
       final errorMessage = ErrorHandler.handleError(response);
       emit(UpdateVariationError(errorMessage));
@@ -139,7 +141,7 @@ Future<void> deleteOption(String optionId) async {
 
       if (response.statusCode == 200) {
         allVariations.removeWhere((v) => v.id == optionId);
-        emit(DeleteOptionSuccess("Option deleted successfully"));
+        emit(DeleteOptionSuccess(LocaleKeys.option_deleted_success.tr()));
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(DeleteOptionError(errorMessage));
@@ -159,7 +161,7 @@ Future<void> deleteOption(String optionId) async {
 
       if (response.statusCode == 200) {
         allVariations.removeWhere((v) => v.id == variationId);
-        emit(DeleteVariationSuccess("Variation deleted successfully"));
+        emit(DeleteVariationSuccess(LocaleKeys.variation_deleted_success.tr()));
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(DeleteVariationError(errorMessage));

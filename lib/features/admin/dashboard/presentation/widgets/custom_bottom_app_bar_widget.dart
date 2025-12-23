@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:systego/core/constants/app_colors.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 class CustomBottomAppBar extends StatelessWidget {
   final int currentIndex;
@@ -24,10 +26,10 @@ class CustomBottomAppBar extends StatelessWidget {
       curveSize: 90,
       elevation: 8,
       shadowColor: Colors.black26,
-      items: const [
+      items:  [
         TabItem(
           icon: Icons.dashboard_rounded,
-          title: 'Dashboard',
+          title: LocaleKeys.dashboard.tr(),
         ),
         // TabItem(
         //   icon: Icons.category_rounded,
@@ -37,7 +39,7 @@ class CustomBottomAppBar extends StatelessWidget {
           // icon: Icons.print_rounded,
           // title: 'Print',
                icon: Icons.point_of_sale_rounded,
-          title: 'Point Of Sale',
+          title: LocaleKeys.point_of_sale.tr(),
         ),
         // TabItem(
         //   icon: Icons.bar_chart_rounded,
@@ -45,7 +47,7 @@ class CustomBottomAppBar extends StatelessWidget {
         // ),
         TabItem(
           icon: Icons.exit_to_app_rounded, //Icons.more_horiz_rounded,
-          title: 'Exit',  //'More',
+          title: LocaleKeys.exit.tr(),
         ),
       ],
       initialActiveIndex: currentIndex,

@@ -45,8 +45,8 @@ class LogoAndTitleWidget extends StatelessWidget {
               letterSpacing: 1.2,
             ),
           ),
-          const Text(
-            "Manage Your Business",
+          Text(
+            LocaleKeys.manage_your_business.tr(),
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey,

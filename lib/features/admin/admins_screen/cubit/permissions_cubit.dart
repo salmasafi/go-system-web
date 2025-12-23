@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:bloc/bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:meta/meta.dart';
 import 'package:systego/core/services/dio_helper.dart';
 import 'package:systego/core/services/endpoints.dart';
 import 'package:systego/features/admin/admins_screen/model/permission_model.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 part 'permissions_state.dart';
 
@@ -28,7 +30,7 @@ class PermissionsCubit extends Cubit<PermissionsState> {
 
         emit(PermissionsLoaded(permissions));
       } else {
-        emit(PermissionsError('Failed to load permissions'));
+        emit(PermissionsError(LocaleKeys.permissions_load_failed.tr()));
       }
     } catch (e) {
       log('Error getting permissions: $e');
@@ -59,9 +61,9 @@ class PermissionsCubit extends Cubit<PermissionsState> {
 
       if (response.statusCode == 200) {
         emit(PermissionsUpdateSuccess(
-            'Permissions updated successfully'));
+            LocaleKeys.permissions_updated.tr()));
       } else {
-        emit(PermissionsUpdateError('Failed to update permissions'));
+        emit(PermissionsUpdateError(LocaleKeys.permissions_update_failed.tr()));
       }
     } catch (e) {
       emit(PermissionsUpdateError(e.toString()));

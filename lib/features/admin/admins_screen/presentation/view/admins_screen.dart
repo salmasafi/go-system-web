@@ -74,8 +74,8 @@ class _AdminsScreenState extends State<AdminsScreen> {
           if (admins.isEmpty) {
             return CustomEmptyState(
               icon: Icons.supervised_user_circle,
-              title: "no admins",
-              message: "no admins",
+              title: LocaleKeys.no_admins.tr(),
+              message: LocaleKeys.no_admins.tr(),
               onRefresh: _refresh,
               actionLabel: LocaleKeys.retry.tr(),
               onAction: _refresh,
@@ -90,7 +90,7 @@ class _AdminsScreenState extends State<AdminsScreen> {
         } else {
           return CustomEmptyState(
             icon: Icons.supervised_user_circle,
-            title: "no admins",
+            title: LocaleKeys.no_admins.tr(),
             message: LocaleKeys.empty_message_connection.tr(),
             onRefresh: _refresh,
             actionLabel: LocaleKeys.retry.tr(),
@@ -106,7 +106,7 @@ class _AdminsScreenState extends State<AdminsScreen> {
     return Scaffold(
       appBar: appBarWithActions(
         context,
-        title: "Admins",
+        title: LocaleKeys.admins.tr(),
         showActions: true,
         onPressed: () => showDialog(
           context: context,

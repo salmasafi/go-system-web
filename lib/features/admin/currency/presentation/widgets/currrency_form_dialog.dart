@@ -129,13 +129,13 @@ class _CurrencyFormDialogState extends State<CurrencyFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _amountController,
-                                  label: "Amount",
+                                  label: LocaleKeys.amount.tr(),
                                   icon: Icons.monetization_on_rounded,
-                                  hint: "Amount",
+                                  hint: LocaleKeys.amount.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
-                                        "Amount",
+                                        LocaleKeys.amount.tr(),
                                       ),
                                 ),
                                 SizedBox(
@@ -160,7 +160,7 @@ class _CurrencyFormDialogState extends State<CurrencyFormDialog>
                                 Row(
                                   children: [
                                     Text(
-                                      "Default",
+                                     LocaleKeys.default_value.tr(),
                                       style: TextStyle(
                                         fontSize: ResponsiveUI.fontSize(
                                           context,
@@ -471,4 +471,3 @@ class CurrencyDialogButtons extends StatelessWidget {
     );
   }
 }
-

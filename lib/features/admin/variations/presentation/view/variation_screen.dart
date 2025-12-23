@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
@@ -9,6 +10,7 @@ import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_sh
 import 'package:systego/features/admin/variations/cubit/variation_cubit.dart';
 import 'package:systego/features/admin/variations/presentation/view/create_variation_screen.dart';
 import 'package:systego/features/admin/variations/presentation/widgets/variation_list.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 
 class VariationScreen extends StatefulWidget {
@@ -67,10 +69,10 @@ class _VariationScreenState extends State<VariationScreen> {
           if (variations.isEmpty) {
             return CustomEmptyState(
               icon: Icons.list_alt,
-              title: 'No variations',
-              message: 'You\'re all caught up!',
+              title: LocaleKeys.no_variations_title.tr(),
+              message: LocaleKeys.no_variations_message.tr(),
               onRefresh: _refresh,
-              actionLabel: 'Retry',
+              actionLabel: LocaleKeys.retry.tr(),
               onAction: _refresh,
             );
           } else {
@@ -83,10 +85,10 @@ class _VariationScreenState extends State<VariationScreen> {
         } else {
           return CustomEmptyState(
             icon: Icons.list_alt,
-            title: 'No Variations',
-            message: 'Pull to refresh or check your connection',
+            title: LocaleKeys.no_variations_alt_title.tr(),
+            message: LocaleKeys.no_variations_alt_message.tr(),
             onRefresh: _refresh,
-            actionLabel: 'Retry',
+            actionLabel: LocaleKeys.retry.tr(),
             onAction: _refresh,
           );
         }
@@ -99,7 +101,7 @@ class _VariationScreenState extends State<VariationScreen> {
     return Scaffold(
       appBar: appBarWithActions(
         context,
-        title: 'Variations',
+        title: LocaleKeys.variations_title.tr(),
         showActions: true,
         onPressed: () async {
           final result = await Navigator.push(

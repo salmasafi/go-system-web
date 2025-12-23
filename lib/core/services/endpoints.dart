@@ -181,4 +181,20 @@ class EndPoint {
   static String updateAdmin(String id) => '/api/admin/admin/$id';
   static String deleteAdmin(String id) => '/api/admin/admin/$id';
 
+
+  /// cashiers
+  static const String getAllCashiers = '/api/admin/cashier';
+  static String getCashier(String id) => '/api/admin/cashier/$id';
+  static String createCashier = '/api/admin/cashier';
+  static String updateCashier(String id) => '/api/admin/cashier/$id';
+  static String deleteCashier(String id) => '/api/admin/cashier/$id';
+
+
+  /// expencesCategories
+  static const String getAllexpencesCategories = '/api/admin/expensecategory';
+  static String getExpencesCategory(String id) => '/api/admin/expensecategory/$id';
+  static String addExpencesCategory = '/api/admin/expensecategory';
+  static String updateExpencesCategory(String id) => '/api/admin/expensecategory/$id';
+  static String deleteExpencesCategory(String id) => '/api/admin/expensecategory/$id';
+
 }

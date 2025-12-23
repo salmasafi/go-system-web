@@ -232,11 +232,13 @@
 
 import 'dart:developer' as dev;
 import 'package:bloc/bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:meta/meta.dart';
 import 'package:systego/core/services/dio_helper.dart';
 import 'package:systego/core/services/endpoints.dart';
 import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/features/admin/admins_screen/model/admins_model.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 part 'admins_state.dart';
 
@@ -321,7 +323,7 @@ class AdminsCubit extends Cubit<AdminsState> {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateAdminSuccess('Admin created successfully'));
+        emit(CreateAdminSuccess(LocaleKeys.admin_created.tr()));
       } else {
         emit(CreateAdminError(ErrorHandler.handleError(response)));
       }
@@ -359,7 +361,7 @@ class AdminsCubit extends Cubit<AdminsState> {
       );
 
       if (response.statusCode == 200) {
-        emit(UpdateAdminSuccess('Admin updated successfully'));
+        emit(UpdateAdminSuccess(LocaleKeys.update_admin.tr()));
       } else {
         emit(UpdateAdminError(ErrorHandler.handleError(response)));
       }
@@ -378,7 +380,7 @@ class AdminsCubit extends Cubit<AdminsState> {
 
       if (response.statusCode == 200) {
         allAdmins.removeWhere((admin) => admin.id == adminId);
-        emit(DeleteAdminSuccess('Admin deleted successfully'));
+        emit(DeleteAdminSuccess(LocaleKeys.admin_deleted.tr()));
       } else {
         emit(DeleteAdminError(ErrorHandler.handleError(response)));
       }

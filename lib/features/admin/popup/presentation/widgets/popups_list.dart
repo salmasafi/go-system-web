@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
@@ -5,6 +6,7 @@ import 'package:systego/features/admin/popup/cubit/popup_cubit.dart';
 import 'package:systego/features/admin/popup/model/popup_model.dart';
 import 'package:systego/features/admin/popup/presentation/view/edit_popup_screen.dart';
 import 'package:systego/features/admin/popup/presentation/widgets/popup_card_widget.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../../warehouses/view/widgets/custom_delete_dialog.dart';
 
@@ -52,7 +54,7 @@ class _PopupsListState extends State<PopupsList> {
 
   void _showDeleteDialog(BuildContext context, PopupModel popup) {
     if (popup.id.isEmpty) {
-      CustomSnackbar.showError(context, 'Invalid popup id');
+      CustomSnackbar.showError(context, LocaleKeys.invalid_popup_id.tr());
       return;
     }
 
@@ -60,9 +62,9 @@ class _PopupsListState extends State<PopupsList> {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => CustomDeleteDialog(
-        title: 'Delete Pop Up',
+        title:  LocaleKeys.delete_popup_title.tr(),
         message:
-            'Are you sure you want to delete this popup?\n"${popup.titleEn}"',
+            '${LocaleKeys.delete_popup_message.tr()}\n"${popup.titleEn}"',
         onDelete: () {
           Navigator.pop(dialogContext);
           context.read<PopupCubit>().deletePopup(popup.id);

@@ -1,6 +1,8 @@
 import 'dart:developer';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/features/admin/warehouses/cubit/warehouse_state.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../core/services/dio_helper.dart';
 import '../../../../core/services/endpoints.dart';
 import '../model/ware_house_model.dart';
@@ -54,7 +56,7 @@ class WareHouseCubit extends Cubit<WarehousesState> {
       } else {
         log(' Failed with status: ${response.statusCode}');
         emit(
-          WarehousesError('Failed to load warehouses: ${response.statusCode}'),
+          WarehousesError('${LocaleKeys.failed_to_load_warehouses.tr()} ${response.statusCode}'),
         );
       }
     } catch (error) {
@@ -78,7 +80,7 @@ class WareHouseCubit extends Cubit<WarehousesState> {
       } else {
         log(' Failed with status: ${response.statusCode}');
         emit(
-          WarehousesError('Failed to load warehouses: ${response.statusCode}'),
+          WarehousesError('${LocaleKeys.failed_to_load_warehouses.tr()} ${response.statusCode}'),
         );
       }
     } catch (error) {
@@ -125,7 +127,7 @@ class WareHouseCubit extends Cubit<WarehousesState> {
       } else {
         log(' Failed to create warehouse: ${response.statusCode}');
         emit(
-          WarehousesError('Failed to create warehouse: ${response.statusCode}'),
+          WarehousesError('${LocaleKeys.failed_to_create_warehouse.tr()} ${response.statusCode}'),
         );
       }
     } catch (error) {
@@ -172,7 +174,7 @@ class WareHouseCubit extends Cubit<WarehousesState> {
       } else {
         log(' Failed to update warehouse: ${response.statusCode}');
         emit(
-          WarehousesError('Failed to update warehouse: ${response.statusCode}'),
+          WarehousesError('${LocaleKeys.failed_to_update_warehouse.tr()} ${response.statusCode}'),
         );
       }
     } catch (error) {
@@ -210,8 +212,8 @@ class WareHouseCubit extends Cubit<WarehousesState> {
         await getWarehouses();
       } else {
         log(' Failed to delete warehouse: ${response.statusCode}');
-        emit(
-          WarehousesError('Failed to delete warehouse: ${response.statusCode}'),
+       emit(
+          WarehousesError('${LocaleKeys.failed_to_delete_warehouse.tr()} ${response.statusCode}'),
         );
       }
     } catch (error) {

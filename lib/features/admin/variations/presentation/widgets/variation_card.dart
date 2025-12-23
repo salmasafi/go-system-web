@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
@@ -5,6 +6,7 @@ import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
 import 'package:systego/core/widgets/custom_popup_menu.dart';
 import 'package:systego/features/admin/variations/model/variation_model.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 class VariationCard extends StatefulWidget {
   final VariationModel variation;
@@ -151,7 +153,7 @@ class _VariationCardState extends State<VariationCard> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Options: ${allOptions.map((o) => o.name).join(', ')}',
+          '${LocaleKeys.options_label.tr()} ${allOptions.map((o) => o.name).join(', ')}',
           style: TextStyle(
             fontSize: ResponsiveUI.fontSize(context, 12),
             color: AppColors.darkGray.withOpacity(0.6),
@@ -159,14 +161,14 @@ class _VariationCardState extends State<VariationCard> {
         ),
         SizedBox(height: ResponsiveUI.spacing(context, 4)),
         Text(
-          'Active: ${activeOptions.isEmpty ? "no active items" : activeOptions.map((o) => o.name).join(', ')}',
+          '${LocaleKeys.active_label.tr()} ${activeOptions.isEmpty ? LocaleKeys.no_active_items.tr() : activeOptions.map((o) => o.name).join(', ')}',
           style: TextStyle(
             fontSize: ResponsiveUI.fontSize(context, 14),
             color: AppColors.successGreen,
           ),
         ),
         Text(
-          'Inactive: ${inactiveOptions.isEmpty ? "no inactive items" : inactiveOptions.map((o) => o.name).join(', ')}',
+          '${LocaleKeys.inactive_label.tr()} ${inactiveOptions.isEmpty ?  LocaleKeys.no_inactive_items.tr() : inactiveOptions.map((o) => o.name).join(', ')}',
           style: TextStyle(
             fontSize: ResponsiveUI.fontSize(context, 14),
             color: AppColors.darkGray.withOpacity(0.6),

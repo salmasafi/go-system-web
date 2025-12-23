@@ -192,7 +192,7 @@ class _EditPermissionsBottomSheetState
                       horizontal: ResponsiveUI.padding(context, 16),
                     ),
                     child: Text(
-                      "Edit Admin Permissions",
+                      LocaleKeys.edit_admin_permissions.tr(),
                       style: TextStyle(
                         fontSize: ResponsiveUI.fontSize(context, 20),
                         fontWeight: FontWeight.bold,
@@ -254,8 +254,8 @@ class _EditPermissionsBottomSheetState
                           child: CustomElevatedButton(
                             onPressed: isLoading ? null : _submitUpdate,
                             text: isLoading
-                                ? "Saving"
-                                : "Save",
+                                ? LocaleKeys.saving.tr()
+                                : LocaleKeys.save.tr(),
                             isLoading: isLoading,
                           ),
                         ),

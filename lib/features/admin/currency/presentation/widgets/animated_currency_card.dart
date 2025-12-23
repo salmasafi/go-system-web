@@ -143,7 +143,7 @@ class _AnimatedCurrencyCardState extends State<AnimatedCurrencyCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
               Text(
-                "Amount",
+                LocaleKeys.amount.tr(),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 12),
                   color: AppColors.darkGray.withOpacity(0.6),
@@ -176,7 +176,7 @@ class _AnimatedCurrencyCardState extends State<AnimatedCurrencyCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
               Text(
-                "Default Currency",
+                 LocaleKeys.default_currency.tr(),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 12),
                   color: AppColors.successGreen,

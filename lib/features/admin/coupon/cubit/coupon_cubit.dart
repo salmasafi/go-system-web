@@ -1,10 +1,12 @@
 import 'dart:developer';
 import 'package:bloc/bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:meta/meta.dart';
 import 'package:systego/core/services/dio_helper.dart';
 import 'package:systego/core/services/endpoints.dart';
 import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/features/admin/coupon/model/coupon_model.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 part 'coupon_state.dart';
 
@@ -64,7 +66,7 @@ class CouponsCubit extends Cubit<CouponsState> {
           await DioHelper.postData(url: EndPoint.addCoupon, data: data);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateCouponSuccess("Coupon created successfully"));
+        emit(CreateCouponSuccess(LocaleKeys.coupon_created_success.tr()));
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(CreateCouponError(errorMessage));
@@ -104,7 +106,7 @@ class CouponsCubit extends Cubit<CouponsState> {
       );
 
       if (response.statusCode == 200) {
-        emit(UpdateCouponSuccess("Coupon updated successfully"));
+        emit(UpdateCouponSuccess(LocaleKeys.coupon_updated_success.tr()));
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(UpdateCouponError(errorMessage));
@@ -125,7 +127,7 @@ class CouponsCubit extends Cubit<CouponsState> {
 
       if (response.statusCode == 200) {
         allCoupons.removeWhere((c) => c.id == couponId);
-        emit(DeleteCouponSuccess("Coupon deleted successfully"));
+        emit(DeleteCouponSuccess(LocaleKeys.coupon_deleted_success.tr()));
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(DeleteCouponError(errorMessage));

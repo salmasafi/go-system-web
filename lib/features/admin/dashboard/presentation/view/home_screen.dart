@@ -6,13 +6,14 @@
 // - Removed hardcoded notificationCount: 5; now dynamic.
 // - Added onPressed stub for notifications (implement navigation later).
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/services/cache_helper.dart';
+import 'package:systego/features/admin/dashboard/presentation/view/dashboard_screens.dart';
 import 'package:systego/main.dart';
+import '../../../../POS/home/presentation/view/pos_home_screen.dart';
 import '../../../auth/presentation/view/login_screen.dart';
 import '../widgets/custom_bottom_app_bar_widget.dart';
-import 'dashboard_screens.dart';
-import '../../../../POS/home/presentation/view/pos_home_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,21 +23,21 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
-  List<Widget> screens = [
-    DashboardScreen(),
-    //Container(),
-    POSHomeScreen(),
-    //Container(),
-    Container(),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    int currentIndex = 0;
+    List<Widget> screens = [
+      DashboardScreen(key: ValueKey(context.locale.languageCode)),
+      //Container(),
+      POSHomeScreen(),
+      //Container(),
+      Container(),
+    ];
     return Scaffold(
-      body: screens[_currentIndex],
+      body: screens[currentIndex],
       bottomNavigationBar: CustomBottomAppBar(
-        currentIndex: _currentIndex,
+        key: ValueKey(context.locale.languageCode),
+        currentIndex: currentIndex,
         onTap: (index) async {
           if (index == 2) {
             await CacheHelper.clearAllData();
@@ -46,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           } else {
             setState(() {
-              _currentIndex = index;
+              currentIndex = index;
             });
           }
         },

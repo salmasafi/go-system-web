@@ -119,7 +119,7 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
     return Scaffold(
       appBar: appBarWithActions(
         context,
-        title: "Financial Accounts",
+        title: LocaleKeys.financial_accounts.tr(),
         showActions: true,
         onPressed: () => showDialog(
           context: context,

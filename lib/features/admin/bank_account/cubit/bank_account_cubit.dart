@@ -1,6 +1,7 @@
 import 'dart:developer' as dev;
 import 'dart:io';
 import 'package:bloc/bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:meta/meta.dart';
 import 'package:systego/core/services/dio_helper.dart';
 import 'package:systego/core/services/endpoints.dart';
@@ -8,6 +9,7 @@ import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/features/admin/bank_account/model/bank_account_model.dart';
 import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 part 'bank_accounts_state.dart';
 
@@ -54,7 +56,7 @@ class BankAccountCubit extends Cubit<BankAccountState> {
       if (response.statusCode == 200 || response.statusCode == 201) {
         emit(
           SelectBankAccountSuccess(
-            '$name ${"is now the default bank account"}',
+            '$name ${LocaleKeys.default_bank_account_message.tr()}',
           ),
         );
       } else {
@@ -69,7 +71,7 @@ class BankAccountCubit extends Cubit<BankAccountState> {
 
   Future<void> addBankAccount({
     required String name,
-     required String wareHouseId,
+    required String wareHouseId,
     required String description,
     required double balance,
     required File? image,
@@ -91,7 +93,6 @@ class BankAccountCubit extends Cubit<BankAccountState> {
         'description': description,
         'warehouseId': wareHouseId,
         if (base64Image != null) 'image': base64Image,
-        
       };
 
       // log("${data}");
@@ -104,7 +105,11 @@ class BankAccountCubit extends Cubit<BankAccountState> {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateBankAccountSuccess('Financial account created successfully'));
+        emit(
+          CreateBankAccountSuccess(
+            LocaleKeys.financial_account_created_successfully.tr(),
+          ),
+        );
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(CreateBankAccountError(errorMessage));
@@ -117,8 +122,8 @@ class BankAccountCubit extends Cubit<BankAccountState> {
 
   Future<void> updateBankAccount({
     required String accountId,
-     required String name,
-     required String wareHouseId,
+    required String name,
+    required String wareHouseId,
     required String description,
     required double balance,
     required File? image,
@@ -127,14 +132,12 @@ class BankAccountCubit extends Cubit<BankAccountState> {
   }) async {
     emit(UpdateBankAccountLoading());
     try {
-
-     String? base64Image;
+      String? base64Image;
       if (image != null) {
         base64Image = await _convertFileToBase64(image);
       }
-      
 
-       final data = {
+      final data = {
         'name': name,
         'balance': balance,
         'status': status,
@@ -142,12 +145,9 @@ class BankAccountCubit extends Cubit<BankAccountState> {
         'description': description,
         'warehouseId': wareHouseId,
         if (base64Image != null) 'image': base64Image,
-        
       };
 
       dev.log('Sending data: $data');
-
-
 
       final response = await DioHelper.putData(
         url: EndPoint.updateBankAccount(accountId),
@@ -155,7 +155,11 @@ class BankAccountCubit extends Cubit<BankAccountState> {
       );
 
       if (response.statusCode == 200) {
-        emit(UpdateBankAccountSuccess('Financial account updated successfully'));
+        emit(
+          UpdateBankAccountSuccess(
+            LocaleKeys.financial_account_updated_successfully.tr(),
+          ),
+        );
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(UpdateBankAccountError(errorMessage));
@@ -175,7 +179,11 @@ class BankAccountCubit extends Cubit<BankAccountState> {
 
       if (response.statusCode == 200) {
         allAccounts.removeWhere((account) => account.id == accountId);
-        emit(DeleteBankAccountSuccess('Financial account deleted successfully'));
+        emit(
+          DeleteBankAccountSuccess(
+            LocaleKeys.financial_account_deleted_successfully.tr(),
+          ),
+        );
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(DeleteBankAccountError(errorMessage));
@@ -186,12 +194,10 @@ class BankAccountCubit extends Cubit<BankAccountState> {
     }
   }
 
-
-
-   Future<String?> _convertFileToBase64(File imageFile) async {
+  Future<String?> _convertFileToBase64(File imageFile) async {
     try {
       final bytes = await imageFile.readAsBytes();
-      
+
       String? mimeType;
       final ext = imageFile.path.toLowerCase().split('.').last;
       if (ext == 'png') {
@@ -208,5 +214,4 @@ class BankAccountCubit extends Cubit<BankAccountState> {
       return null;
     }
   }
-
 }

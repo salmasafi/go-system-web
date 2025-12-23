@@ -1,6 +1,8 @@
 import 'dart:developer';
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../core/services/dio_helper.dart';
 import '../../../../core/services/endpoints.dart';
 import '../../../../core/utils/error_handler.dart';
@@ -19,9 +21,9 @@ class ReasonCubit extends Cubit<ReasonState> {
       final data = errorOrResponse.data;
       if (data is Map<String, dynamic>) {
         return data['message']?.toString() ??
-            'Server error: ${errorOrResponse.statusCode}';
+            '${LocaleKeys.server_error.tr()} ${errorOrResponse.statusCode}';
       }
-      return 'Server error: ${errorOrResponse.statusCode}';
+      return '${LocaleKeys.server_error.tr()} ${errorOrResponse.statusCode}';
     }
     return ErrorHandler.handleError(errorOrResponse);
   }
@@ -75,7 +77,7 @@ Future<void> getReasons() async {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateReasonSuccess('Reason created successfully'));
+        emit(CreateReasonSuccess(LocaleKeys.reason_created_success.tr()));
         await getReasons(); // Refresh list
       } else {
         final errorMessage = _extractErrorMessage(response);
@@ -103,7 +105,7 @@ Future<void> getReasons() async {
       );
 
       if (response.statusCode == 200) {
-        emit(UpdateReasonSuccess('Reason updated successfully'));
+        emit(UpdateReasonSuccess(LocaleKeys.reason_updated_success.tr()));
         await getReasons(); // Refresh list
       } else {
         final errorMessage = _extractErrorMessage(response);
@@ -124,7 +126,7 @@ Future<void> getReasons() async {
 
       if (response.statusCode == 200) {
         reasons.removeWhere((reason) => reason.id == reasonId);
-        emit(DeleteReasonSuccess('Reason deleted successfully'));
+        emit(DeleteReasonSuccess(LocaleKeys.reason_deleted_success.tr()));
       } else {
         final errorMessage = _extractErrorMessage(response);
         emit(DeleteReasonError(errorMessage));

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
@@ -8,6 +9,7 @@ import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:systego/core/widgets/custom_textfield/custom_text_field_widget.dart';
 import 'package:systego/features/admin/variations/cubit/variation_cubit.dart';
 import 'package:systego/features/admin/variations/model/variation_model.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 class EditVariationBottomSheet extends StatefulWidget {
   final VariationModel variation;
@@ -95,11 +97,11 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
 
   void _submitUpdate() async {
     if (_nameEnController.text.trim().isEmpty) {
-      CustomSnackbar.showWarning(context, 'Please enter Variation name (EN)');
+      CustomSnackbar.showWarning(context, LocaleKeys.variation_name_en_required.tr(),);
       return;
     }
     if (_nameArController.text.trim().isEmpty) {
-      CustomSnackbar.showWarning(context, 'Please enter Variation name (AR)');
+      CustomSnackbar.showWarning(context, LocaleKeys.variation_name_ar_required.tr(),);
       return;
     }
 
@@ -214,7 +216,7 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
                         ),
                         SizedBox(height: ResponsiveUI.spacing(context, 12)),
                         Text(
-                          'Edit Variation',
+                          LocaleKeys.edit_variation_title.tr(),
                           style: TextStyle(
                             fontSize: ResponsiveUI.fontSize(context, 20),
                             fontWeight: FontWeight.bold,
@@ -224,21 +226,21 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
                         SizedBox(height: ResponsiveUI.spacing(context, 16)),
                         _buildTextField(
                           controller: _nameEnController,
-                          title: 'Variation Name (EN)',
-                          hint: 'Enter Variation name in english',
+                          title: LocaleKeys.variation_name_en_label.tr(),
+                          hint: LocaleKeys.variation_name_en_hint.tr(),
                         ),
                         SizedBox(height: ResponsiveUI.spacing(context, 12)),
                         _buildTextField(
                           controller: _nameArController,
-                          title: 'Variation Name (Ar)',
-                          hint: 'Enter Variation name in arabic',
+                          title: LocaleKeys.variation_name_ar_label.tr(),
+                          hint: LocaleKeys.variation_name_ar_hint.tr(),
                         ),
                         SizedBox(height: ResponsiveUI.spacing(context, 20)),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Options',
+                               LocaleKeys.options_title.tr(),
                               style: TextStyle(
                                 fontSize: ResponsiveUI.fontSize(context, 16),
                                 fontWeight: FontWeight.bold,
@@ -246,8 +248,8 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
                             ),
                             TextButton(
                               onPressed: _addOption,
-                              child: const Text(
-                                'Add Option',
+                              child: Text(
+                                 LocaleKeys.add_option.tr(),
                                 style: TextStyle(color: AppColors.primaryBlue),
                               ),
                             ),
@@ -271,7 +273,7 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
                                     controller: TextEditingController(
                                       text: option.name,
                                     ),
-                                    hintText: 'Option name',
+                                    hintText: LocaleKeys.option_name_hint.tr(),
                                     hasBoxDecoration: false,
                                     hasBorder: true,
                                   ),
@@ -293,20 +295,20 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
                                     final confirmed = await showDialog<bool>(
                                       context: context,
                                       builder: (context) => AlertDialog(
-                                        title: const Text('Delete Option'),
-                                        content: const Text(
-                                          'Are you sure you want to delete this option?',
+                                        title: Text(LocaleKeys.delete_option_title.tr(),),
+                                        content: Text(
+                                          LocaleKeys.delete_option_message.tr(),
                                         ),
                                         actions: [
                                           TextButton(
                                             onPressed: () =>
                                                 Navigator.pop(context, false),
-                                            child: const Text('Cancel'),
+                                            child: Text(LocaleKeys.cancel.tr()),
                                           ),
                                           TextButton(
                                             onPressed: () =>
                                                 Navigator.pop(context, true),
-                                            child: const Text('Delete'),
+                                            child: Text(LocaleKeys.delete.tr()),
                                           ),
                                         ],
                                       ),
@@ -328,8 +330,8 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
                           child: CustomElevatedButton(
                             onPressed: isLoading ? null : _submitUpdate,
                             text: isLoading
-                                ? 'Updating...'
-                                : 'Update Variation',
+                                ? LocaleKeys.updating.tr()
+                                : LocaleKeys.update_variation.tr(),
                             isLoading: isLoading,
                           ),
                         ),

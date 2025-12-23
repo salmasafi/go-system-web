@@ -1,11 +1,13 @@
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:meta/meta.dart';
 import 'package:systego/core/services/dio_helper.dart';
 import 'package:systego/core/services/endpoints.dart';
 import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/features/admin/taxes/model/taxes_model.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 part 'taxes_state.dart';
 
@@ -48,7 +50,7 @@ class TaxesCubit extends Cubit<TaxesState> {
       if (response.statusCode == 200 || response.statusCode == 201) {
         emit(
           ChangeTaxStatusSuccess(
-            '$name ${status ? "tax now activated" : "tax now deactivated"}',
+            '$name ${status ? LocaleKeys.tax_activated.tr() : LocaleKeys.tax_deactivated.tr()}',
           ),
         );
       } else {
@@ -83,7 +85,7 @@ class TaxesCubit extends Cubit<TaxesState> {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateTaxSuccess('Tax is created successfully'));
+        emit(CreateTaxSuccess(LocaleKeys.tax_created_success.tr()));
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(CreateTaxError(errorMessage));
@@ -117,7 +119,7 @@ class TaxesCubit extends Cubit<TaxesState> {
       );
 
       if (response.statusCode == 200) {
-        emit(UpdateTaxSuccess('Tax updated successfully'));
+        emit(UpdateTaxSuccess(LocaleKeys.tax_updated_success.tr()));
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(UpdateTaxError(errorMessage));
@@ -137,7 +139,7 @@ class TaxesCubit extends Cubit<TaxesState> {
 
       if (response.statusCode == 200) {
         allTaxes.removeWhere((tax) => tax.id == taxId);
-        emit(DeleteTaxSuccess('Tax deleted successfully'));
+        emit(DeleteTaxSuccess(LocaleKeys.tax_deleted_success.tr()));
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         emit(DeleteTaxError(errorMessage));

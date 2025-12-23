@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
@@ -7,6 +8,7 @@ import 'package:systego/core/widgets/custom_button_widget.dart';
 import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:systego/core/widgets/custom_textfield/custom_text_field_widget.dart';
 import 'package:systego/features/admin/variations/cubit/variation_cubit.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 class CreateVariationScreen extends StatefulWidget {
   const CreateVariationScreen({super.key});
@@ -49,20 +51,20 @@ class _CreateVariationScreenState extends State<CreateVariationScreen> {
 
   void _validateAndSubmit() {
     if (_nameEnController.text.trim().isEmpty) {
-      CustomSnackbar.showWarning(context, 'Please enter Variation name in English');
+      CustomSnackbar.showWarning(context, LocaleKeys.variation_name_en_required.tr(),);
       return;
     }
     if (_nameArController.text.trim().isEmpty) {
-      CustomSnackbar.showWarning(context, 'Please enter Variation name in Arabic');
+      CustomSnackbar.showWarning(context, LocaleKeys.variation_name_ar_required.tr(),);
       return;
     }
     if (_options.isEmpty) {
-      CustomSnackbar.showWarning(context, 'Please add at least one option');
+      CustomSnackbar.showWarning(context, LocaleKeys.add_at_least_one_option.tr(),);
       return;
     }
     for (var option in _options) {
       if ((option["name"] as String).trim().isEmpty) {
-        CustomSnackbar.showWarning(context, 'All options must have a name');
+        CustomSnackbar.showWarning(context, LocaleKeys.all_options_must_have_name.tr(),);
         return;
       }
     }
@@ -110,7 +112,7 @@ class _CreateVariationScreenState extends State<CreateVariationScreen> {
       children: [
         SizedBox(height: ResponsiveUI.spacing(context, 16)),
         Text(
-          'Options',
+          LocaleKeys.options.tr(),
           style: TextStyle(
             fontSize: ResponsiveUI.fontSize(context, 14),
             color: AppColors.darkGray,
@@ -131,7 +133,7 @@ class _CreateVariationScreenState extends State<CreateVariationScreen> {
                     controller: TextEditingController(text: option["name"])
                       ..selection = TextSelection.fromPosition(
                           TextPosition(offset: option["name"].length)),
-                    hintText: 'Option name',
+                    hintText: LocaleKeys.option_name.tr(),
                     hasBoxDecoration: false,
                     hasBorder: true,
                     onChanged: (value) => _updateOptionName(index, value),
@@ -157,7 +159,7 @@ class _CreateVariationScreenState extends State<CreateVariationScreen> {
         TextButton.icon(
           onPressed: _addOption,
           icon: const Icon(Icons.add, color: AppColors.primaryBlue,),
-          label: const Text('Add Option', style: TextStyle(
+          label:  Text( LocaleKeys.add_option.tr(), style: TextStyle(
             color: AppColors.primaryBlue
           ),),
         ),
@@ -181,7 +183,7 @@ class _CreateVariationScreenState extends State<CreateVariationScreen> {
 
         return Scaffold(
           backgroundColor: const Color.fromARGB(255, 243, 249, 254),
-          appBar: appBarWithActions(context, title: "New Variation"),
+          appBar: appBarWithActions(context, title: LocaleKeys.new_variation.tr(),),
           body: SafeArea(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 16)),
@@ -190,13 +192,13 @@ class _CreateVariationScreenState extends State<CreateVariationScreen> {
                 children: [
                   _buildTextField(
                     controller: _nameEnController,
-                    title: 'Variation Name (En)',
-                    hint: 'Enter variation name in English',
+                    title: LocaleKeys.variation_name_en.tr(),
+                    hint: LocaleKeys.enter_variation_name_en.tr(),
                   ),
                   _buildTextField(
                     controller: _nameArController,
-                    title: 'Variation Name (Ar)',
-                    hint: 'Enter variation name in Arabic',
+                    title: LocaleKeys.variation_name_ar.tr(),
+                    hint: LocaleKeys.enter_variation_name_ar.tr(),
                   ),
                   _buildOptions(),
                   SizedBox(height: ResponsiveUI.spacing(context, 24)),
@@ -205,7 +207,7 @@ class _CreateVariationScreenState extends State<CreateVariationScreen> {
                     height: ResponsiveUI.value(context, 48),
                     child: CustomElevatedButton(
                       onPressed: isLoading ? null : _validateAndSubmit,
-                      text: isLoading ? 'Saving Variation' : 'Save Variation',
+                      text: isLoading ?  LocaleKeys.saving_variation.tr() : LocaleKeys.save_variation.tr(),
                       isLoading: isLoading,
                     ),
                   ),

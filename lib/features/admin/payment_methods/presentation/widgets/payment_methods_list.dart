@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../../warehouses/view/widgets/custom_delete_dialog.dart';
 import '../../cubit/payment_method_cubit.dart';
@@ -45,7 +47,7 @@ class PaymentMethodsList extends StatelessWidget {
 
   void _showDeleteDialog(BuildContext context, PaymentMethodModel paymentMethod) {
     if (paymentMethod.id.isEmpty) {
-      CustomSnackbar.showError(context, 'Invalid PaymentMethod ID');
+      CustomSnackbar.showError(context,  LocaleKeys.invalid_payment_method_id.tr());
       return;
     }
 
@@ -53,8 +55,8 @@ class PaymentMethodsList extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => CustomDeleteDialog(
-        title: 'Delete PaymentMethod',
-        message: 'Are you sure you want to delete this payment method?\n"${paymentMethod.name}"',
+        title: LocaleKeys.delete_payment_method.tr(),
+        message: '${LocaleKeys.delete_payment_method_message.tr()}\n"${paymentMethod.name}"',
         onDelete: () {
           Navigator.pop(dialogContext);
           context.read<PaymentMethodCubit>().deletePaymentMethod(paymentMethod.id);

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
@@ -7,6 +8,7 @@ import 'package:systego/core/widgets/custom_button_widget.dart';
 import 'package:systego/core/widgets/custom_textfield/custom_text_field_widget.dart';
 import 'package:systego/core/widgets/animation/simple_fadein_animation_widget.dart';
 import 'package:systego/features/admin/dashboard/presentation/view/home_screen.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../cubit/login_cubit.dart';
 import '../../cubit/login_state.dart';
@@ -40,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: BlocConsumer<LoginCubit, LoginState>(
         listener: (context, state) {
           if (state is LoginSuccess) {
-            CustomSnackbar.showSuccess(context, 'Login successful!');
+            CustomSnackbar.showSuccess(context, LocaleKeys.login_successful.tr());
       
             // Navigate to home screen
             Navigator.pushReplacement(
@@ -80,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           hasBorder: false,
                           hasBoxDecoration: true,
                           controller: _emailController,
-                          labelText: "Email",
+                          labelText:  LocaleKeys.email.tr(),
                           hintText: "admin@example.com",
                           keyboardType: TextInputType.emailAddress,
                           prefixIcon: Icons.email_outlined,
@@ -94,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           hasBorder: false,
                           hasBoxDecoration: true,
                           controller: _passwordController,
-                          labelText: "Password",
+                          labelText: LocaleKeys.password.tr(),
                           isPassword: true,
                           obscureText: _obscurePassword,
                           onObscureChanged: (value) {
@@ -120,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     );
                                   }
                                 },
-                          text: "Login",
+                          text: LocaleKeys.login.tr(),
                           isLoading: isLoading,
                         ),
                       ),

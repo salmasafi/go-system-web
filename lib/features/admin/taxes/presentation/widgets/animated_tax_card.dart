@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
@@ -5,6 +6,7 @@ import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
 import 'package:systego/core/widgets/custom_popup_menu.dart';
 import 'package:systego/features/admin/taxes/model/taxes_model.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 class AnimatedTaxCard extends StatefulWidget {
   final TaxModel tax;
@@ -171,7 +173,7 @@ class _AnimatedCountryCardState extends State<AnimatedTaxCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Type:',
+                LocaleKeys.tax_type_label.tr(),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 12),
                   color: AppColors.darkGray.withOpacity(0.6),
@@ -202,7 +204,7 @@ class _AnimatedCountryCardState extends State<AnimatedTaxCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Amount:',
+                LocaleKeys.tax_amount_label.tr(),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 12),
                   color: AppColors.darkGray.withOpacity(0.6),

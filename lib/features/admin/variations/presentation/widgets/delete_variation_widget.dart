@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 
 class DeleteVariationDialog extends StatelessWidget {
   final String variationName;
@@ -55,7 +57,7 @@ class DeleteVariationDialog extends StatelessWidget {
 
   Widget _buildTitle(BuildContext context) {
     return Text(
-      'Delete Variation',
+      LocaleKeys.delete_variation_title.tr(),
       style: TextStyle(
         fontSize: ResponsiveUI.fontSize(context, 20),
         fontWeight: FontWeight.bold,
@@ -66,7 +68,7 @@ class DeleteVariationDialog extends StatelessWidget {
 
   Widget _buildMessage(BuildContext context) {
     return Text(
-      'Are you sure you want to delete "$variationName"?\nThis action cannot be undone.',
+      '${LocaleKeys.delete_variation_message.tr()} $variationName',
       textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: ResponsiveUI.fontSize(context, 14),
@@ -103,7 +105,7 @@ class DeleteVariationDialog extends StatelessWidget {
         ),
       ),
       child: Text(
-        'Cancel',
+        LocaleKeys.cancel.tr(),
         style: TextStyle(
           fontSize: ResponsiveUI.fontSize(context, 15),
           color: Colors.grey[700],
@@ -127,7 +129,7 @@ class DeleteVariationDialog extends StatelessWidget {
         ),
       ),
       child: Text(
-        'Delete',
+        LocaleKeys.delete.tr(),
         style: TextStyle(
           fontSize: ResponsiveUI.fontSize(context, 15),
           color: Colors.white,
