@@ -6,7 +6,7 @@ import 'package:systego/core/utils/validators.dart';
 import 'package:systego/core/widgets/custom_button_widget.dart';
 import 'package:systego/core/widgets/custom_textfield/custom_text_field_widget.dart';
 import 'package:systego/core/widgets/animation/simple_fadein_animation_widget.dart';
-import 'package:systego/features/home/presentation/view/home_screen.dart';
+import 'package:systego/features/admin/dashboard/presentation/view/home_screen.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../cubit/login_cubit.dart';
 import '../../cubit/login_state.dart';

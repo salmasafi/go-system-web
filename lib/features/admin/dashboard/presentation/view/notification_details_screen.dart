@@ -7,7 +7,7 @@ import 'package:systego/core/widgets/app_bar_widgets.dart';
 import 'package:systego/core/widgets/custom_button_widget.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
 import 'package:intl/intl.dart';
-import '../../../admin/product/presentation/screens/product_details_screen.dart';
+import '../../../product/presentation/screens/product_details_screen.dart';
 import '../../cubit/notifications_cubit.dart';
 import '../../model/notification_model.dart';
 

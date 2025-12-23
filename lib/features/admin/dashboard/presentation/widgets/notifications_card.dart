@@ -5,7 +5,7 @@ import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
 import 'package:systego/core/widgets/custom_popup_menu.dart';
 import 'package:intl/intl.dart';
-import '../../model/notification_model.dart';
+import 'package:systego/features/admin/dashboard/model/notification_model.dart';
 
 class AnimatedNotificationCard extends StatefulWidget {
   final NotificationModel notification;
