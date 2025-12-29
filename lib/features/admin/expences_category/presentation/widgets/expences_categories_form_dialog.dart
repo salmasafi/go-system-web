@@ -95,7 +95,10 @@ class _ExpenseCategoryFormDialogState extends State<ExpenseCategoryFormDialog>
               decoration: _buildDecoration(context),
               child: Column(
                 children: [
-                  _buildHeader(context),
+                  ExpencesCategoriesDialogHeader(
+                    isEditMode: isEditMode,
+                    onClose: () => Navigator.of(context).pop(),
+                  ),
                   Expanded(
                     child: Stack(
                       children: [
@@ -201,46 +204,6 @@ class _ExpenseCategoryFormDialogState extends State<ExpenseCategoryFormDialog>
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.primaryBlue,
-            AppColors.primaryBlue.withOpacity(0.8),
-          ],
-        ),
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(ResponsiveUI.borderRadius(context, 24)),
-        ),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.category, color: Colors.white, size: 28),
-          SizedBox(width: ResponsiveUI.spacing(context, 15)),
-          Text(
-            isEditMode
-                ? LocaleKeys.edit_expense_category.tr()
-                : LocaleKeys.new_expense_category.tr(),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 22,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const Spacer(),
-          InkWell(
-            onTap: () => Navigator.pop(context),
-            child: const Icon(Icons.close, color: Colors.white, size: 26),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _handleSubmit() {
     if (_formKey.currentState!.validate()) {
       final cubit = context.read<ExpenseCategoryCubit>();
@@ -271,6 +234,104 @@ class _ExpenseCategoryFormDialogState extends State<ExpenseCategoryFormDialog>
     } else if (state is UpdateExpenseCategoryError) {
       CustomSnackbar.showError(context, state.errorMessage);
     }
+  }
+}
+
+
+class ExpencesCategoriesDialogHeader extends StatelessWidget {
+  final bool isEditMode;
+  final VoidCallback onClose;
+
+  const ExpencesCategoriesDialogHeader({
+    super.key,
+    required this.isEditMode,
+    required this.onClose,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final paddingHorizontal = ResponsiveUI.padding(context, 24);
+    final paddingVertical = ResponsiveUI.padding(context, 20);
+    final iconSize28 = ResponsiveUI.iconSize(context, 28);
+    final fontSize22 = ResponsiveUI.fontSize(context, 22);
+    final spacing16 = ResponsiveUI.spacing(context, 16);
+    final padding10 = ResponsiveUI.padding(context, 10);
+    final borderRadius12 = ResponsiveUI.borderRadius(context, 12);
+    final borderRadius24 = ResponsiveUI.borderRadius(context, 24);
+    final iconSize24 = ResponsiveUI.iconSize(context, 24);
+    final padding8 = ResponsiveUI.padding(context, 8);
+    final borderRadius20 = ResponsiveUI.borderRadius(context, 20);
+
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: paddingHorizontal,
+        vertical: paddingVertical,
+      ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.primaryBlue,
+            AppColors.primaryBlue.withOpacity(0.8),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(borderRadius24),
+          topRight: Radius.circular(borderRadius24),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(padding10),
+            decoration: BoxDecoration(
+              color: AppColors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(borderRadius12),
+            ),
+            child: Icon(
+              isEditMode ? Icons.edit : Icons.add,
+              color: AppColors.white,
+              size: iconSize28,
+            ),
+          ),
+          SizedBox(width: spacing16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isEditMode
+                     ? LocaleKeys.edit_expense_category.tr()
+                : LocaleKeys.new_expense_category.tr(),
+                  style: TextStyle(
+                    color: AppColors.white,
+                    fontSize: fontSize22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                
+              ],
+            ),
+          ),
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(borderRadius20),
+              onTap: onClose,
+              child: Container(
+                padding: EdgeInsets.all(padding8),
+                child: Icon(
+                  Icons.close,
+                  color: AppColors.white,
+                  size: iconSize24,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

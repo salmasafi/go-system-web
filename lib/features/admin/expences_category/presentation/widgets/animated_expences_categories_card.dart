@@ -84,7 +84,7 @@ class AnimatedExpenseCategoryCard extends StatelessWidget {
         CircleAvatar(
           radius: ResponsiveUI.borderRadius(context, 25),
           backgroundColor:
-              category.status ? AppColors.primaryBlue : AppColors.red,
+              AppColors.primaryBlue,
           child: Icon(
             Icons.category,
             color: AppColors.white,
@@ -164,7 +164,7 @@ class AnimatedExpenseCategoryCard extends StatelessWidget {
           style: TextStyle(
             fontSize: ResponsiveUI.fontSize(context, 14),
             fontWeight: FontWeight.w500,
-            color: isActive ? AppColors.successGreen : AppColors.darkGray,
+            color: isActive ? AppColors.successGreen : AppColors.red.withOpacity(0.8),
           ),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,

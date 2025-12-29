@@ -17,10 +17,7 @@ import 'package:systego/generated/locale_keys.g.dart';
 class CashierFormDialog extends StatefulWidget {
   final CashierModel? cashier;
 
-  const CashierFormDialog({
-    super.key, 
-    this.cashier,
-  });
+  const CashierFormDialog({super.key, this.cashier});
 
   @override
   State<CashierFormDialog> createState() => _CashierFormDialogState();
@@ -32,10 +29,9 @@ class _CashierFormDialogState extends State<CashierFormDialog>
 
   final _nameController = TextEditingController();
   final _arNameController = TextEditingController();
-  
+
   String? selectedWarehouse;
   bool status = true;
-  bool cashierActive = true;
 
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
@@ -53,15 +49,16 @@ class _CashierFormDialogState extends State<CashierFormDialog>
     if (isEditMode) {
       _nameController.text = widget.cashier!.name;
       _arNameController.text = widget.cashier!.arName;
-      selectedWarehouse =  widget.cashier!.warehouse.id;
+      selectedWarehouse = widget.cashier!.warehouse.id;
       status = widget.cashier!.status;
-      cashierActive = widget.cashier!.cashierActive;
-    } 
+    }
   }
 
   void _setupAnimation() {
-    _animationController =
-        AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
     _scaleAnimation = CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeOutBack,
@@ -69,7 +66,7 @@ class _CashierFormDialogState extends State<CashierFormDialog>
     _animationController.forward();
   }
 
-    @override
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -130,9 +127,13 @@ class _CashierFormDialogState extends State<CashierFormDialog>
                                   hint: LocaleKeys.enter_cashier_name.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
-                                          v, LocaleKeys.name.tr()),
+                                        v,
+                                        LocaleKeys.name.tr(),
+                                      ),
                                 ),
-                                SizedBox(height: 12),
+                                SizedBox(
+                                  height: ResponsiveUI.spacing(context, 12),
+                                ),
                                 buildTextField(
                                   context,
                                   controller: _arNameController,
@@ -141,9 +142,14 @@ class _CashierFormDialogState extends State<CashierFormDialog>
                                   hint: LocaleKeys.enter_arabic_name.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
-                                          v, LocaleKeys.arabic_name.tr()),
+                                        v,
+                                        LocaleKeys.arabic_name.tr(),
+                                      ),
                                 ),
-                                SizedBox(height: 12),
+                                SizedBox(
+                                  height: ResponsiveUI.spacing(context, 12),
+                                ),
+
                                 // buildDropdownField<Warehouse>(
                                 //   context,
                                 //   value: selectedWarehouse,
@@ -158,12 +164,12 @@ class _CashierFormDialogState extends State<CashierFormDialog>
                                 //   validator: (v) =>
                                 //       v == null ? LocaleKeys.please_select_warehouse.tr() : null,
                                 // ),
-
                                 BlocBuilder<WareHouseCubit, WarehousesState>(
                                   builder: (context, state) {
                                     if (state is WarehousesLoaded) {
-                                      final ids =
-                                          state.warehouses.map((e) => e.id).toList();
+                                      final ids = state.warehouses
+                                          .map((e) => e.id)
+                                          .toList();
                                       final names = state.warehouses
                                           .map((e) => e.name)
                                           .toList();
@@ -174,8 +180,9 @@ class _CashierFormDialogState extends State<CashierFormDialog>
                                         items: ids,
                                         label: LocaleKeys.warehouse.tr(),
                                         hint: LocaleKeys.select_warehouse.tr(),
-                                        onChanged: (v) =>
-                                            setState(() => selectedWarehouse = v),
+                                        onChanged: (v) => setState(
+                                          () => selectedWarehouse = v,
+                                        ),
                                         itemLabel: (id) {
                                           final i = ids.indexOf(id);
                                           return i != -1 ? names[i] : '';
@@ -185,9 +192,37 @@ class _CashierFormDialogState extends State<CashierFormDialog>
                                     return const SizedBox.shrink();
                                   },
                                 ),
-                                SizedBox(height: 20),
-                                _buildStatusSwitches(context),
-                                SizedBox(height: 20),
+                                SizedBox(
+                                  height: ResponsiveUI.spacing(context, 20),
+                                ),
+                                 Row(
+                                  children: [
+                                    Text(
+                                     LocaleKeys.status.tr(),
+                                      style: TextStyle(
+                                        fontSize: ResponsiveUI.fontSize(
+                                          context,
+                                          14,
+                                        ),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    Switch(
+                                      value: status,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          status = value;
+                                        });
+                                      },
+                                      activeColor: AppColors.white,
+                                      activeTrackColor: AppColors.primaryBlue,
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: ResponsiveUI.spacing(context, 20),
+                                ),
                                 if (isEditMode) _buildInfoSection(context),
                               ],
                             ),
@@ -212,82 +247,86 @@ class _CashierFormDialogState extends State<CashierFormDialog>
     );
   }
 
-  Widget _buildStatusSwitches(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          LocaleKeys.status.tr(),
-          style: TextStyle(
-            fontSize: ResponsiveUI.fontSize(context, 14),
-            fontWeight: FontWeight.w600,
-            color: AppColors.darkGray,
-          ),
-        ),
-        SizedBox(height: 12),
-        Card(
-          color: AppColors.lightBlueBackground,
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
-          ),
-          child: Padding(
-            padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      LocaleKeys.cashier_status.tr(),
-                      style: TextStyle(
-                        fontSize: ResponsiveUI.fontSize(context, 14),
-                        color: AppColors.darkGray,
-                      ),
-                    ),
-                    Switch(
-                      value: status,
-                      onChanged: (value) {
-                        setState(() => status = value);
-                      },
-                      activeColor: AppColors.successGreen,
-                    ),
-                  ],
-                ),
-                Divider(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      LocaleKeys.cashier_active.tr(),
-                      style: TextStyle(
-                        fontSize: ResponsiveUI.fontSize(context, 14),
-                        color: AppColors.darkGray,
-                      ),
-                    ),
-                    Switch(
-                      value: cashierActive,
-                      onChanged: (value) {
-                        setState(() => cashierActive = value);
-                      },
-                      activeColor: AppColors.primaryBlue,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget _buildStatusSwitches(BuildContext context) {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Text(
+  //         LocaleKeys.status.tr(),
+  //         style: TextStyle(
+  //           fontSize: ResponsiveUI.fontSize(context, 14),
+  //           fontWeight: FontWeight.w600,
+  //           color: AppColors.darkGray,
+  //         ),
+  //       ),
+  //       SizedBox(height: ResponsiveUI.spacing(context, 12)),
+  //       Card(
+  //         color: AppColors.lightBlueBackground,
+  //         elevation: 2,
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(
+  //             ResponsiveUI.borderRadius(context, 12),
+  //           ),
+  //         ),
+  //         child: Padding(
+  //           padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+  //           child: Column(
+  //             children: [
+  //               Row(
+  //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                 children: [
+  //                   Text(
+  //                     LocaleKeys.cashier_status.tr(),
+  //                     style: TextStyle(
+  //                       fontSize: ResponsiveUI.fontSize(context, 14),
+  //                       color: AppColors.darkGray,
+  //                     ),
+  //                   ),
+  //                   Switch(
+  //                     value: status,
+  //                     onChanged: (value) {
+  //                       setState(() => status = value);
+  //                     },
+  //                     activeColor: AppColors.successGreen,
+  //                   ),
+  //                 ],
+  //               ),
+  //               Divider(height: 20),
+  //               Row(
+  //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                 children: [
+  //                   Text(
+  //                     LocaleKeys.cashier_active.tr(),
+  //                     style: TextStyle(
+  //                       fontSize: ResponsiveUI.fontSize(context, 14),
+  //                       color: AppColors.darkGray,
+  //                     ),
+  //                   ),
+  //                   Switch(
+  //                     value: cashierActive,
+  //                     onChanged: (value) {
+  //                       setState(() => cashierActive = value);
+  //                     },
+  //                     activeColor: AppColors.primaryBlue,
+  //                   ),
+  //                 ],
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _buildInfoSection(BuildContext context) {
     return Card(
       color: AppColors.lightBlueBackground,
       elevation: 2,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+        borderRadius: BorderRadius.circular(
+          ResponsiveUI.borderRadius(context, 12),
+        ),
       ),
       child: Padding(
         padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
@@ -302,7 +341,7 @@ class _CashierFormDialogState extends State<CashierFormDialog>
                 color: AppColors.darkGray,
               ),
             ),
-            SizedBox(height: 12),
+            SizedBox(height: ResponsiveUI.spacing(context, 12)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -323,12 +362,12 @@ class _CashierFormDialogState extends State<CashierFormDialog>
                 ),
               ],
             ),
-            SizedBox(height: 8),
+            SizedBox(height: ResponsiveUI.spacing(context, 8)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                 LocaleKeys.bank_accounts_count.tr(),
+                  LocaleKeys.bank_accounts_count.tr(),
                   style: TextStyle(
                     fontSize: ResponsiveUI.fontSize(context, 14),
                     color: AppColors.shadowGray,
@@ -353,13 +392,15 @@ class _CashierFormDialogState extends State<CashierFormDialog>
   BoxDecoration _buildDecoration(BuildContext context) {
     return BoxDecoration(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 24)),
+      borderRadius: BorderRadius.circular(
+        ResponsiveUI.borderRadius(context, 24),
+      ),
       boxShadow: [
         BoxShadow(
           color: Colors.black.withOpacity(0.2),
           blurRadius: 30,
           offset: const Offset(0, 10),
-        )
+        ),
       ],
     );
   }
@@ -369,7 +410,10 @@ class _CashierFormDialogState extends State<CashierFormDialog>
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.primaryBlue, AppColors.primaryBlue.withOpacity(0.8)],
+          colors: [
+            AppColors.primaryBlue,
+            AppColors.primaryBlue.withOpacity(0.8),
+          ],
         ),
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(ResponsiveUI.borderRadius(context, 24)),
@@ -378,9 +422,11 @@ class _CashierFormDialogState extends State<CashierFormDialog>
       child: Row(
         children: [
           Icon(Icons.person_outline, color: Colors.white, size: 28),
-          const SizedBox(width: 15),
+          SizedBox(width: ResponsiveUI.spacing(context, 15)),
           Text(
-            isEditMode ? LocaleKeys.edit_cashier.tr() : LocaleKeys.new_cashier.tr(),
+            isEditMode
+                ? LocaleKeys.edit_cashier.tr()
+                : LocaleKeys.new_cashier.tr(),
             style: const TextStyle(
               fontSize: 22,
               color: Colors.white,
@@ -391,7 +437,7 @@ class _CashierFormDialogState extends State<CashierFormDialog>
           InkWell(
             onTap: () => Navigator.pop(context),
             child: const Icon(Icons.close, color: Colors.white, size: 26),
-          )
+          ),
         ],
       ),
     );
@@ -406,17 +452,15 @@ class _CashierFormDialogState extends State<CashierFormDialog>
           cashierId: widget.cashier!.id,
           name: _nameController.text.trim(),
           arName: _arNameController.text.trim(),
-           warehouseId: selectedWarehouse,
+          warehouseId: selectedWarehouse,
           status: status,
-          cashierActive: cashierActive,
         );
       } else {
         cubit.createCashier(
           name: _nameController.text.trim(),
           arName: _arNameController.text.trim(),
-           warehouseId: selectedWarehouse,
+          warehouseId: selectedWarehouse,
           status: status,
-          cashierActive: cashierActive,
         );
       }
     }
@@ -525,7 +569,9 @@ class CashierDialogButtons extends StatelessWidget {
                   SizedBox(width: spacing8),
                   Flexible(
                     child: Text(
-                      isEditMode ? LocaleKeys.update_cashier.tr() : LocaleKeys.create_cashier.tr(),
+                      isEditMode
+                          ? LocaleKeys.update_cashier.tr()
+                          : LocaleKeys.create_cashier.tr(),
                       style: TextStyle(
                         fontSize: value14,
                         fontWeight: FontWeight.bold,

@@ -42,7 +42,8 @@ class EndPoint {
   static String deleteProduct(String id) => '/api/admin/product/$id';
   static String productByCode = '/api/admin/product/code';
 
-  static String getWareHouseProducts(String id) => '/api/admin/product_warehouse/$id';
+  static String getWareHouseProducts(String id) =>
+      '/api/admin/product_warehouse/$id';
 
   // Currency
   static const String getCurrencies = '/api/admin/currency';
@@ -101,7 +102,6 @@ class EndPoint {
   /// POS checkout
   static String posCreateSale = '/api/admin/pos/sales';
 
-
   /// Tax
   static const String getAllTaxes = '/api/admin/taxes';
   static String selectTax(String id) => '/api/admin/taxes/$id';
@@ -152,7 +152,6 @@ class EndPoint {
   static String updateDiscount(String id) => '/api/admin/discount/$id';
   static String deleteDiscount(String id) => '/api/admin/discount/$id';
 
-
   /// permissions
   static const String getAllpermissions = '/api/admin/permission';
   static String getUserPermissions(String id) => '/api/admin/permission/$id';
@@ -181,7 +180,6 @@ class EndPoint {
   static String updateAdmin(String id) => '/api/admin/admin/$id';
   static String deleteAdmin(String id) => '/api/admin/admin/$id';
 
-
   /// cashiers
   static const String getAllCashiers = '/api/admin/cashier';
   static String getCashier(String id) => '/api/admin/cashier/$id';
@@ -189,12 +187,47 @@ class EndPoint {
   static String updateCashier(String id) => '/api/admin/cashier/$id';
   static String deleteCashier(String id) => '/api/admin/cashier/$id';
 
-
   /// expencesCategories
   static const String getAllexpencesCategories = '/api/admin/expensecategory';
-  static String getExpencesCategory(String id) => '/api/admin/expensecategory/$id';
+  static String getExpencesCategory(String id) =>
+      '/api/admin/expensecategory/$id';
   static String addExpencesCategory = '/api/admin/expensecategory';
-  static String updateExpencesCategory(String id) => '/api/admin/expensecategory/$id';
-  static String deleteExpencesCategory(String id) => '/api/admin/expensecategory/$id';
+  static String updateExpencesCategory(String id) =>
+      '/api/admin/expensecategory/$id';
+  static String deleteExpencesCategory(String id) =>
+      '/api/admin/expensecategory/$id';
 
+  /// pandels
+  static const String getAllPandels = '/api/admin/pandel';
+  static String getPandelById(String id) => '/api/admin/pandel/$id';
+  static const String addPandel = '/api/admin/pandel';
+  static String updatePandel(String id) => '/api/admin/pandel/$id';
+  static String deletePandel(String id) => '/api/admin/pandel/$id';
+
+  /// customers
+  static const String getAllCustomers = '/api/admin/customer';
+  static String getCustomerById(String id) => '/api/admin/customer/$id';
+  static const String addCustomer = '/api/admin/customer';
+  static String updateCustomer(String id) => '/api/admin/customer/$id';
+  static String deleteCustomer(String id) => '/api/admin/customer/$id';
+  static String createCustomerGroup = '/api/admin/pos_customer';
+  static const String getCustomerGroup = '/api/admin/customer/groups';
+  static String getCustomerGroupById(String id) => '/api/admin/groups/$id';
+  static String getCustomerDue(String id) => '/api/admin/customer/due';
+
+  /// permission
+  static const String getAllRoles = '/api/admin/permission';
+  static String getAllRoleSelection(String id) =>
+      '/api/admin/permission/selection';
+  static const String createRolePermission = '/api/admin/permission';
+  static String deleteRole(String id) => '/api/admin/permission/$id';
+  static String updateRole(String id) => '/api/admin/permission/$id';
+
+  /// revenue
+  static const String getAllRevenues = '/api/admin/revenue';
+  static const String addRevenue = '/api/admin/revenue';
+  static String deleteRevenue(String id) => '/api/admin/revenue/$id';
+  static String getRevenueById(String id) => '/api/admin/revenue/$id';
+  static String updateRevenue(String id) => '/api/admin/revenue/$id';
+  static String getRevenueSelection = '/api/admin/revenue/selection';
 }

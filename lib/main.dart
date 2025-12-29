@@ -39,6 +39,10 @@ import 'features/admin/product/cubit/product_details_cubit/product_details_cubit
 import 'features/admin/suppliers/cubit/supplier_cubit.dart';
 import 'features/admin/warehouses/cubit/warehouse_cubit.dart';
 import 'features/admin/zone/cubit/zone_cubit.dart';
+import 'package:systego/features/admin/revenue/cubit/revenue_cubit.dart';
+import 'package:systego/features/admin/customer/cubit/customer_cubit.dart';
+import 'package:systego/features/admin/roloes_and_permissions/cubit/roles_cubit.dart';
+import 'package:systego/features/admin/pandel/cubit/pandel_cubit.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -128,10 +132,16 @@ class _MainAppState extends State<MainApp> {
         BlocProvider<DiscountsCubit>(create: (context) => DiscountsCubit()),
         BlocProvider<PermissionCubit>(create: (context) => PermissionCubit()),
         BlocProvider<ReasonCubit>(create: (context) => ReasonCubit()),
+        BlocProvider<PandelCubit>(create: (context) => PandelCubit()),
+        BlocProvider<RevenueCubit>(create: (context) => RevenueCubit()),
+        BlocProvider<CustomerCubit>(create: (context) => CustomerCubit()),
+        BlocProvider<RolesCubit>(create: (context) => RolesCubit()),
         BlocProvider<AdjustmentCubit>(create: (context) => AdjustmentCubit()),
         BlocProvider<PermissionsCubit>(create: (context) => PermissionsCubit()),
         BlocProvider<CashierCubit>(create: (context) => CashierCubit()),
-        BlocProvider<ExpenseCategoryCubit>(create: (context) => ExpenseCategoryCubit()),
+        BlocProvider<ExpenseCategoryCubit>(
+          create: (context) => ExpenseCategoryCubit(),
+        ),
         BlocProvider<AdminsCubit>(create: (context) => AdminsCubit()),
         BlocProvider<PaymentMethodCubit>(
           create: (context) => PaymentMethodCubit(),

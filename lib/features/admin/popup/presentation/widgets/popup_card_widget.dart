@@ -97,7 +97,7 @@ class _AnimatedPopupCardState extends State<AnimatedPopupCard> {
         CircleAvatar(
           radius: ResponsiveUI.borderRadius(context, 25),
           backgroundColor: AppColors.lightBlueBackground,
-          child: popup.imageEn.isEmpty
+          child: popup.image.isEmpty
               ? Icon(
                   Icons.account_balance,
                   color: AppColors.white,
@@ -105,7 +105,7 @@ class _AnimatedPopupCardState extends State<AnimatedPopupCard> {
                 )
               : ClipOval(
                   child: Image.network(
-                    popup.imageEn,
+                    popup.image,
                     fit: BoxFit.cover,
                     width: ResponsiveUI.borderRadius(context, 50),
                     height: ResponsiveUI.borderRadius(context, 50),

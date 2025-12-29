@@ -52,6 +52,8 @@ class PaymentMethodModel {
   final String icon;
   final bool isActive;
   final int version;
+   final DateTime createdAt;
+  final DateTime updatedAt;
 
   PaymentMethodModel({
     required this.id,
@@ -62,6 +64,8 @@ class PaymentMethodModel {
     required this.icon,
     required this.isActive,
     required this.version,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   // Fix: Handle null 'country' in JSON (e.g., second PaymentMethod in your response has "country": null)
@@ -76,6 +80,8 @@ class PaymentMethodModel {
       icon: json['icon'],
       isActive: json['isActive'],
       version: json['__v'] as int,
+      createdAt: DateTime.parse(json['createdAt']),
+      updatedAt: DateTime.parse(json['updatedAt']),
     );
   }
 
@@ -89,6 +95,8 @@ class PaymentMethodModel {
       'isActive': isActive,
       'type': type,
       '__v': version,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
     };
   }
 }

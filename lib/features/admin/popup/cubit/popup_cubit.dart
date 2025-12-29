@@ -53,22 +53,21 @@ Future<void> addPopup({
     required String descriptionAr,
     required String descriptionEn,
     required String link,
-    required File? imageAr,
-    required File? imageEn,
+    required File? image,
   }) async {
     emit(CreatePopupLoading());
 
     try {
-      String? base64ImageAr;
-      String? base64ImageEn;
+      String? base64Image;
+      // String? base64ImageEn;
 
-      if (imageAr != null) {
-        base64ImageAr = await _convertFileToBase64(imageAr);
+      if (image != null) {
+        base64Image = await _convertFileToBase64(image);
       }
 
-      if (imageEn != null) {
-        base64ImageEn = await _convertFileToBase64(imageEn);
-      }
+      // if (imageEn != null) {
+      //   base64ImageEn = await _convertFileToBase64(imageEn);
+      // }
 
       final data = {
         "title_ar": titleAr,
@@ -76,9 +75,11 @@ Future<void> addPopup({
         "description_ar": descriptionAr,
         "description_En": descriptionEn,
         "link": link,
-        if (base64ImageAr != null) "image_ar": base64ImageAr,
-        if (base64ImageEn != null) "image_En": base64ImageEn,
+        if (base64Image != null) "image": base64Image,
+        // if (base64ImageEn != null) "image_En": base64ImageEn,
       };
+
+      log("add popup Data ${data}");
 
       final response = await DioHelper.postData(
         url: EndPoint.addPopup,
@@ -106,22 +107,22 @@ Future<void> addPopup({
     required String descriptionAr,
     required String descriptionEn,
     required String link,
-    required File? imageAr,
-    required File? imageEn,
+    required File? image,
+    // required File? imageEn,
   }) async {
     emit(UpdatePopupLoading());
     try {
 
-      String? base64ImageAr;
-      String? base64ImageEn;
+      // String? base64ImageAr;
+      String? base64Image;
 
-      if (imageAr != null) {
-        base64ImageAr = await _convertFileToBase64(imageAr);
+      if (image != null) {
+        base64Image = await _convertFileToBase64(image);
       }
 
-      if (imageEn != null) {
-        base64ImageEn = await _convertFileToBase64(imageEn);
-      }
+      // if (imageEn != null) {
+      //   base64ImageEn = await _convertFileToBase64(imageEn);
+      // }
 
 
       final data = {
@@ -130,8 +131,8 @@ Future<void> addPopup({
         "description_ar": descriptionAr,
         "description_En": descriptionEn,
         "link": link,
-        if (base64ImageAr != null) "image_ar": base64ImageAr,
-        if (base64ImageEn != null) "image_En": base64ImageEn,
+        if (base64Image != null) "image": base64Image,
+        // if (base64ImageEn != null) "image_En": base64ImageEn,
       };
 
       final response = await DioHelper.putData(

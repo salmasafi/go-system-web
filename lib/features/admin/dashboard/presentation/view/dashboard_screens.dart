@@ -25,9 +25,15 @@ import 'package:systego/features/admin/zone/presentation/view/zones_screen.dart'
 import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/app_bar_widgets.dart';
+import '../../../payment_methods/presentation/view/payment_methods_screen.dart';
 import '../../cubit/notifications_cubit.dart';
 import '../widgets/custom_grid_card_widget.dart';
 import 'notifications_screen.dart';
+import 'package:systego/features/admin/revenue/presentation/view/revenue_screen.dart';
+import 'package:systego/features/admin/customer_group/presentation/view/customers_group_screen.dart';
+import 'package:systego/features/admin/customer/presentation/view/customers_screens.dart';
+import 'package:systego/features/admin/roloes_and_permissions/presentation/view/roles_screen.dart';
+import 'package:systego/features/admin/pandel/presentation/view/pandel_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -165,6 +171,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
       'label': LocaleKeys.expense_categories_title.tr(),
       'id': DashboardItem.expenseCategories,
     },
+    {
+      'icon': Icons.business,
+      'label': LocaleKeys.revenues_title.tr(),
+      'id': DashboardItem.revenue,
+    },
+    {
+      'icon': Icons.business,
+      'label': LocaleKeys.customer_groups_title.tr(),
+      'id': DashboardItem.customerGroups,
+    },
+    {
+      'icon': Icons.business,
+      'label': LocaleKeys.customers_title.tr(),
+      'id': DashboardItem.customers,
+    },
+    {
+      'icon': Icons.business,
+      'label': LocaleKeys.roles_title.tr(),
+      'id': DashboardItem.roles,
+    },
+    {
+      'icon': Icons.business,
+      'label': LocaleKeys.payment_methods_screen_title.tr(),
+      'id': DashboardItem.payment,
+    },  {
+      'icon': Icons.business,
+      'label': LocaleKeys.pandels_title.tr(),
+      'id': DashboardItem.pandels,
+    },
   ];
 
   void _navigateToPage(DashboardItem id) {
@@ -281,7 +316,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const CashiersScreen()),
-        ); // Fix import if needed
+        );
         break;
       case DashboardItem.expenseCategories:
         Navigator.push(
@@ -289,7 +324,44 @@ class _DashboardScreenState extends State<DashboardScreen> {
           MaterialPageRoute(builder: (_) => const ExpenseCategoriesScreen()),
         ); // Note: Fix 'expences' typo in import if it's ExpencesCategoriesScreen
         break;
+      case DashboardItem.revenue:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const RevenueScreen()),
+        );
+        break;
+
+      case DashboardItem.customerGroups:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const CustomerGroupsScreen()),
+        );
+        break;
+      case DashboardItem.customers:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const CustomerScreen()),
+        );
+        break;
+
+      case DashboardItem.roles:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const RolesScreen()),
+        );
+        break;
+
+      case DashboardItem.payment:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const PaymentMethodsScreen()),
+        );
+        break;
+    case DashboardItem.pandels:
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const PandelScreen()));  // Note: Fix 'expences' typo in import if it's ExpencesCategoriesScreen
+      break;
     }
+    
   }
 
   @override
@@ -380,5 +452,11 @@ enum DashboardItem {
   admins,
   cashiers,
   expenseCategories,
+  revenue,
+  customerGroups,
+  pandels,
+  customers,
+  roles,
+  payment,
   // Add more as needed
 }

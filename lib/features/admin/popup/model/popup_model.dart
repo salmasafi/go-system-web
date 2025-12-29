@@ -49,8 +49,7 @@ class PopupModel {
   final String titleAr;
   final String descriptionAr;
   final String descriptionEn;
-  final String imageAr;
-  final String imageEn;
+  final String image;
   final String link;
   final int version;
 
@@ -60,8 +59,7 @@ class PopupModel {
     required this.titleAr,
     required this.descriptionAr,
     required this.descriptionEn,
-    required this.imageAr,
-    required this.imageEn,
+    required this.image,
     required this.link,
     required this.version,
   });
@@ -73,8 +71,7 @@ class PopupModel {
       titleAr: json['title_ar'] as String,
       descriptionAr: json['description_ar'] as String,
       descriptionEn: json['description_En'] as String,
-      imageAr: json['image_ar'] as String,
-      imageEn: json['image_En'] as String,
+      image: json['image'] as String,
       link: json['link'] as String,
       version: json['__v'] as int,
     );
@@ -87,8 +84,7 @@ class PopupModel {
       'title_ar': titleAr,
       'description_ar': descriptionAr,
       'description_En': descriptionEn,
-      'image_En': imageEn,
-      'image_ar': imageAr,
+      'image': image,
       'link': link,
       '__v': version
     };

@@ -1,9 +1,11 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
 import 'package:systego/core/widgets/custom_popup_menu.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../../../warehouses/view/widgets/custom_stat_chip.dart';
 import '../../model/payment_method_model.dart';
 
@@ -94,14 +96,48 @@ class _AnimatedPaymentMethodCardState extends State<AnimatedPaymentMethodCard> {
   Widget _buildHeader(PaymentMethodModel paymentMethod) {
     return Row(
       children: [
+        // CircleAvatar(
+        //   radius: ResponsiveUI.borderRadius(context, 25),
+        //   backgroundColor: AppColors.primaryBlue.withOpacity(0.8),
+        //   child: Icon(
+        //     Icons.attach_money_rounded,
+        //     color: AppColors.white,
+        //     size: ResponsiveUI.fontSize(context, 24),
+        //   ),
+        // ),
+
         CircleAvatar(
           radius: ResponsiveUI.borderRadius(context, 25),
-          backgroundColor: AppColors.primaryBlue.withOpacity(0.8),
-          child: Icon(
-            Icons.attach_money_rounded,
-            color: AppColors.white,
-            size: ResponsiveUI.fontSize(context, 24),
-          ),
+          backgroundColor: AppColors.lightBlueBackground,
+          child: paymentMethod.icon.isEmpty
+              ? Icon(
+                 Icons.attach_money_rounded,
+                  color: AppColors.white,
+                  size: ResponsiveUI.fontSize(context, 24),
+                )
+              : ClipOval(
+                  child: Image.network(
+                    paymentMethod.icon,
+                    fit: BoxFit.cover,
+                    width: ResponsiveUI.borderRadius(context, 50),
+                    height: ResponsiveUI.borderRadius(context, 50),
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                              : null,
+                          color: AppColors.primaryBlue,
+                        ),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return _buildErrorPlaceholder();
+                    },
+                  ),
+                ),
         ),
         SizedBox(width: ResponsiveUI.spacing(context, 14)),
         Expanded(
@@ -139,6 +175,32 @@ class _AnimatedPaymentMethodCardState extends State<AnimatedPaymentMethodCard> {
       ],
     );
   }
+
+  
+  Widget _buildErrorPlaceholder() {
+    final borderRadius12 = ResponsiveUI.borderRadius(context, 12);
+    final height120 = ResponsiveUI.value(context, 120);
+    return Container(
+      width: double.infinity,
+      height: height120,
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(borderRadius12),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.broken_image_outlined, size: 40, color: Colors.grey[400]),
+          SizedBox(height: 8),
+          Text(
+            LocaleKeys.failed_to_load_image.tr(),
+            style: TextStyle(color: Colors.grey[500], fontSize: 12),
+          ),
+        ],
+      ),
+    );
+  }
+
 
   Widget _buildFooter(PaymentMethodModel paymentMethod) {
     return Row(

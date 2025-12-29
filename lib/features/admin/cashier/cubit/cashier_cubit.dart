@@ -47,7 +47,6 @@ class CashierCubit extends Cubit<CashierState> {
     required String arName,
     String? warehouseId,
     required bool status,
-    required bool cashierActive,
   }) async {
     emit(CreateCashierLoading());
 
@@ -57,7 +56,6 @@ class CashierCubit extends Cubit<CashierState> {
         "ar_name": arName,
         "warehouse_id": warehouseId,
         "status": status,
-        "cashier_active": cashierActive,
       };
 
       final response =
@@ -83,7 +81,6 @@ class CashierCubit extends Cubit<CashierState> {
     required String arName,
    String? warehouseId,
     required bool status,
-    required bool cashierActive,
   }) async {
     emit(UpdateCashierLoading());
 
@@ -93,7 +90,6 @@ class CashierCubit extends Cubit<CashierState> {
         "ar_name": arName,
         "warehouse_id": warehouseId,
         "status": status,
-        "cashier_active": cashierActive,
       };
 
       final response = await DioHelper.putData(

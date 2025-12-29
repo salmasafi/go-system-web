@@ -62,9 +62,7 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
       _arNameController.text = widget.paymentMethod!.arName;
       _typeController.text = widget.paymentMethod!.type;
       _descriptionController.text = widget.paymentMethod!.description;
-      selectedtaxType =
-          widget.paymentMethod!.type[0].toUpperCase() +
-          widget.paymentMethod!.type.substring(1).toLowerCase();
+      selectedtaxType = widget.paymentMethod!.type.toLowerCase();
 
       log("selected ${_selectedImage}");
     }
@@ -216,7 +214,6 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
                                 buildTextField(
                                   context,
                                   controller: _descriptionController,
-                                  keyboardType: TextInputType.number,
                                   label: LocaleKeys.description.tr(),
                                   icon: Icons.description,
                                   hint: LocaleKeys.enter_description.tr(),

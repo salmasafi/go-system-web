@@ -15,7 +15,6 @@ import 'package:systego/features/admin/warehouses/cubit/warehouse_state.dart';
 import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
-import '../../../../../core/utils/validators.dart';
 import '../../../../../core/widgets/custom_loading/build_overlay_loading.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../../../../core/widgets/custom_textfield/build_text_field.dart';
@@ -27,7 +26,11 @@ import '../../model/adjustment_model.dart';
 class AdjustmentFormDialog extends StatefulWidget {
   final AdjustmentModel? adjustment;
   final String? existingImageUrl;
-  const AdjustmentFormDialog({super.key, this.adjustment, this.existingImageUrl});
+  const AdjustmentFormDialog({
+    super.key,
+    this.adjustment,
+    this.existingImageUrl,
+  });
 
   @override
   State<AdjustmentFormDialog> createState() => _AdjustmentFormDialogState();
@@ -47,15 +50,14 @@ class _AdjustmentFormDialogState extends State<AdjustmentFormDialog>
   // Dropdown state
   // ReasonModel? selectedReason;
 
-   List<String> availableProducts = [];
-  
+  List<String> availableProducts = [];
+
   final reasons = AdjustmentCubit.reasons;
   String? selectedWareHouse;
   String? selectedProduct;
   String? selectedReason;
   bool get isEditMode => widget.adjustment != null;
-    bool _isFetchingProducts = false;
-
+  bool _isFetchingProducts = false;
 
   @override
   void initState() {
@@ -90,24 +92,21 @@ class _AdjustmentFormDialogState extends State<AdjustmentFormDialog>
       selectedWareHouse = widget.adjustment!.warehouseId;
       selectedProduct = widget.adjustment!.productId;
       selectedReason = widget.adjustment!.selectReasonId;
-
-
     }
   }
 
-    @override
-void didChangeDependencies() {
-  super.didChangeDependencies();
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    // context.read<ProductsCubit>().getProducts();
-    context.read<WareHouseCubit>().getWarehouses();
-    context.read<ReasonCubit>().getReasons();
-     if (isEditMode && selectedWareHouse != null) {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // context.read<ProductsCubit>().getProducts();
+      context.read<WareHouseCubit>().getWarehouses();
+      context.read<ReasonCubit>().getReasons();
+      if (isEditMode && selectedWareHouse != null) {
         _fetchWarehouseProducts(selectedWareHouse!);
       }
-  });
-}
-
+    });
+  }
 
   void _setupAnimation() {
     _animationController = AnimationController(
@@ -132,77 +131,72 @@ void didChangeDependencies() {
     super.dispose();
   }
 
-   // New method to fetch warehouse products
+  // New method to fetch warehouse products
   void _fetchWarehouseProducts(String warehouseId) {
     setState(() {
       _isFetchingProducts = true;
       selectedProduct = null; // Reset product selection
       availableProducts = [];
     });
-    
+
     context.read<ProductsCubit>().getWareHouseProducts(warehouseId);
   }
 
   @override
   Widget build(BuildContext context) {
-    final maxWidth = ResponsiveUI.isMobile(context)
-        ? ResponsiveUI.screenWidth(context) * 0.95
-        : ResponsiveUI.contentMaxWidth(context);
-    final maxHeight = ResponsiveUI.screenHeight(context) * 0.85;
     return ScaleTransition(
       scale: _scaleAnimation,
       child: Dialog(
         backgroundColor: Colors.transparent,
         elevation: 0,
         child: BlocConsumer<AdjustmentCubit, AdjustmentState>(
-  listener: _handleStateChanges,
-  builder: (context, adjustmentState) {
-    final warehouseState = context.watch<WareHouseCubit>().state;
-    final productsState = context.watch<ProductsCubit>().state;
-    final reasonState = context.watch<ReasonCubit>().state;
+          listener: _handleStateChanges,
+          builder: (context, adjustmentState) {
+            final warehouseState = context.watch<WareHouseCubit>().state;
+            final productsState = context.watch<ProductsCubit>().state;
+            final reasonState = context.watch<ReasonCubit>().state;
 
-    final isDataLoading =
-        warehouseState is WarehousesLoading ||
-        // productsState is ProductsLoading ||
-        reasonState is GetReasonsLoading;
+            final isDataLoading =
+                warehouseState is WarehousesLoading ||
+                // productsState is ProductsLoading ||
+                reasonState is GetReasonsLoading;
 
-    final isSubmitting =
-        adjustmentState is CreateAdjustmentLoading ||
-        adjustmentState is UpdateAdjustmentLoading;
+            final isSubmitting =
+                adjustmentState is CreateAdjustmentLoading ||
+                adjustmentState is UpdateAdjustmentLoading;
 
-    return Stack(
-      children: [
-        _buildDialogContent(
-          context,
-          warehouseState,
-          productsState,
-          reasonState,
-          isSubmitting,
+            return Stack(
+              children: [
+                _buildDialogContent(
+                  context,
+                  warehouseState,
+                  productsState,
+                  reasonState,
+                  isSubmitting,
+                ),
+
+                /// 🔵 GLOBAL LOADING OVERLAY
+                if (isDataLoading || isSubmitting)
+                  buildLoadingOverlay(context, 45),
+              ],
+            );
+          },
         ),
-
-        /// 🔵 GLOBAL LOADING OVERLAY
-        if (isDataLoading || isSubmitting)
-          buildLoadingOverlay(context, 45),
-      ],
-    );
-  },
-),
-
       ),
     );
   }
 
   Widget _buildDialogContent(
-  BuildContext context,
-  WarehousesState warehouseState,
-  ProductsState productsState,
-  ReasonState reasonState,
-  bool isSubmitting,
-) {
-   // Reset products when warehouse changes
+    BuildContext context,
+    WarehousesState warehouseState,
+    ProductsState productsState,
+    ReasonState reasonState,
+    bool isSubmitting,
+  ) {
+    // Reset products when warehouse changes
     if (productsState is ProductsSuccess && selectedWareHouse != null) {
-      if(productsState.products.isEmpty){
-         _isFetchingProducts = false;
+      if (productsState.products.isEmpty) {
+        _isFetchingProducts = false;
       }
       // Update available products list
       final currentProducts = productsState.products.map((e) => e.id).toList();
@@ -215,142 +209,142 @@ void didChangeDependencies() {
     } else if (productsState is ProductsError) {
       _isFetchingProducts = false;
     }
-  return Container(
-    constraints: BoxConstraints(
-      maxWidth: ResponsiveUI.isMobile(context)
-          ? ResponsiveUI.screenWidth(context) * 0.95
-          : ResponsiveUI.contentMaxWidth(context),
-      maxHeight: ResponsiveUI.screenHeight(context) * 0.85,
-    ),
-    decoration: _buildDialogDecoration(),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        AdjustmentDialogHeader(
-          isEditMode: isEditMode,
-          onClose: () => Navigator.of(context).pop(),
-        ),
-        Flexible(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.all(ResponsiveUI.padding(context, 24)),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  _buildImagePicker(context),
-                  SizedBox(height: ResponsiveUI.spacing(context, 12)),
+    return Container(
+      constraints: BoxConstraints(
+        maxWidth: ResponsiveUI.isMobile(context)
+            ? ResponsiveUI.screenWidth(context) * 0.95
+            : ResponsiveUI.contentMaxWidth(context),
+        maxHeight: ResponsiveUI.screenHeight(context) * 0.85,
+      ),
+      decoration: _buildDialogDecoration(),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AdjustmentDialogHeader(
+            isEditMode: isEditMode,
+            onClose: () => Navigator.of(context).pop(),
+          ),
+          Flexible(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(ResponsiveUI.padding(context, 24)),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    _buildImagePicker(context),
+                    SizedBox(height: ResponsiveUI.spacing(context, 12)),
 
-                  /// -------- WAREHOUSE --------
-                  if (warehouseState is WarehousesLoaded)
-                    buildDropdownField<String>(
-                      context,
-                      value: selectedWareHouse,
-                      items: warehouseState.warehouses.map((e) => e.id).toList(),
-                      label: "Warehouse",
-                      hint: "Select warehouse",
-                      icon: Icons.warehouse_rounded,
-                      // onChanged: (v) => setState(() => selectedWareHouse = v),
-                      onChanged: (v) {
+                    /// -------- WAREHOUSE --------
+                    if (warehouseState is WarehousesLoaded)
+                      buildDropdownField<String>(
+                        context,
+                        value: selectedWareHouse,
+                        items: warehouseState.warehouses
+                            .map((e) => e.id)
+                            .toList(),
+                        label: "Warehouse",
+                        hint: "Select warehouse",
+                        icon: Icons.warehouse_rounded,
+                        // onChanged: (v) => setState(() => selectedWareHouse = v),
+                        onChanged: (v) {
                           setState(() {
                             selectedWareHouse = v;
-                            selectedProduct = null; // Reset product when warehouse changes
+                            selectedProduct =
+                                null; // Reset product when warehouse changes
                             availableProducts = []; // Clear products list
                           });
                           if (v != null) {
                             _fetchWarehouseProducts(v);
                           }
                         },
-                      itemLabel: (id) =>
-                          warehouseState.warehouses
-                              .firstWhere((w) => w.id == id)
-                              .name,
-                      validator: (v) =>
-                          v == null ? "Please select warehouse" : null,
-                    ),
+                        itemLabel: (id) => warehouseState.warehouses
+                            .firstWhere((w) => w.id == id)
+                            .name,
+                        validator: (v) =>
+                            v == null ? "Please select warehouse" : null,
+                      ),
 
-                  SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                    SizedBox(height: ResponsiveUI.spacing(context, 12)),
 
-                  // /// -------- PRODUCT --------
-                  // if (productsState is ProductsSuccess)
-                  //   buildDropdownField<String>(
-                  //     context,
-                  //     value: selectedProduct,
-                  //     items: productsState.products.map((e) => e.id).toList(),
-                  //     label: "Product",
-                  //     hint: "Select product",
-                  //     icon: Icons.inventory_2_outlined,
-                  //     onChanged: (v) => setState(() => selectedProduct = v),
-                  //     itemLabel: (id) =>
-                  //         productsState.products
-                  //             .firstWhere((p) => p.id == id)
-                  //             .name,
-                  //     validator: (v) =>
-                  //         v == null ? "Please select product" : null,
-                  //   ),
+                    // /// -------- PRODUCT --------
+                    // if (productsState is ProductsSuccess)
+                    //   buildDropdownField<String>(
+                    //     context,
+                    //     value: selectedProduct,
+                    //     items: productsState.products.map((e) => e.id).toList(),
+                    //     label: "Product",
+                    //     hint: "Select product",
+                    //     icon: Icons.inventory_2_outlined,
+                    //     onChanged: (v) => setState(() => selectedProduct = v),
+                    //     itemLabel: (id) =>
+                    //         productsState.products
+                    //             .firstWhere((p) => p.id == id)
+                    //             .name,
+                    //     validator: (v) =>
+                    //         v == null ? "Please select product" : null,
+                    //   ),
 
                     /// -------- PRODUCT --------
                     // Show product dropdown only if warehouse is selected
                     if (selectedWareHouse != null)
                       _buildProductDropdown(productsState),
 
-                  SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                    SizedBox(height: ResponsiveUI.spacing(context, 12)),
 
-                  /// -------- REASON --------
-                  if (reasonState is GetReasonsSuccess)
-                    buildDropdownField<String>(
+                    /// -------- REASON --------
+                    if (reasonState is GetReasonsSuccess)
+                      buildDropdownField<String>(
+                        context,
+                        value: selectedReason,
+                        items: reasonState.reasonData.reasons
+                            .map((e) => e.id)
+                            .toList(),
+                        label: "Reason",
+                        hint: "Select reason",
+                        icon: Icons.adjust_rounded,
+                        onChanged: (v) => setState(() => selectedReason = v),
+                        itemLabel: (id) => reasonState.reasonData.reasons
+                            .firstWhere((r) => r.id == id)
+                            .reason,
+                        validator: (v) =>
+                            v == null ? "Please select reason" : null,
+                      ),
+
+                    SizedBox(height: ResponsiveUI.spacing(context, 12)),
+
+                    buildTextField(
                       context,
-                      value: selectedReason,
-                      items: reasonState.reasonData.reasons
-                          .map((e) => e.id)
-                          .toList(),
-                      label: "Reason",
-                      hint: "Select reason",
-                      icon: Icons.adjust_rounded,
-                      onChanged: (v) => setState(() => selectedReason = v),
-                      itemLabel: (id) =>
-                          reasonState.reasonData.reasons
-                              .firstWhere((r) => r.id == id)
-                              .reason,
-                      validator: (v) =>
-                          v == null ? "Please select reason" : null,
+                      controller: _quantityController,
+                      keyboardType: TextInputType.number,
+                      label: LocaleKeys.quantity.tr(),
+                      icon: Icons.numbers_rounded,
+                      hint: LocaleKeys.hint_quantity.tr(),
                     ),
 
-                  SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                    SizedBox(height: ResponsiveUI.spacing(context, 12)),
 
-                  buildTextField(
-                    context,
-                    controller: _quantityController,
-                    keyboardType: TextInputType.number,
-                    label: LocaleKeys.quantity.tr(),
-                    icon: Icons.numbers_rounded,
-                    hint: LocaleKeys.hint_quantity.tr(),
-                  ),
-
-                  SizedBox(height: ResponsiveUI.spacing(context, 12)),
-
-                  buildTextField(
-                    context,
-                    controller: _noteController,
-                    label: LocaleKeys.note.tr(),
-                    icon: Icons.note_rounded,
-                    hint: LocaleKeys.hint_note.tr(),
-                  ),
-                ],
+                    buildTextField(
+                      context,
+                      controller: _noteController,
+                      label: LocaleKeys.note.tr(),
+                      icon: Icons.note_rounded,
+                      hint: LocaleKeys.hint_note.tr(),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-        AdjustmentDialogButtons(
-          isEditMode: isEditMode,
-          isLoading: isSubmitting,
-          onCancel: () => Navigator.of(context).pop(),
-          onSubmit: _handleSubmit,
-        ),
-      ],
-    ),
-  );
-}
-
+          AdjustmentDialogButtons(
+            isEditMode: isEditMode,
+            isLoading: isSubmitting,
+            onCancel: () => Navigator.of(context).pop(),
+            onSubmit: _handleSubmit,
+          ),
+        ],
+      ),
+    );
+  }
 
   // New method to build product dropdown
   Widget _buildProductDropdown(ProductsState productsState) {
@@ -374,7 +368,9 @@ void didChangeDependencies() {
               vertical: ResponsiveUI.padding(context, 14),
             ),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+              borderRadius: BorderRadius.circular(
+                ResponsiveUI.borderRadius(context, 12),
+              ),
               border: Border.all(color: Colors.grey[300]!),
               color: Colors.grey[50],
             ),
@@ -393,7 +389,9 @@ void didChangeDependencies() {
                   height: ResponsiveUI.iconSize(context, 20),
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryBlue),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.primaryBlue,
+                    ),
                   ),
                 ),
               ],
@@ -423,7 +421,9 @@ void didChangeDependencies() {
               vertical: ResponsiveUI.padding(context, 14),
             ),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+              borderRadius: BorderRadius.circular(
+                ResponsiveUI.borderRadius(context, 12),
+              ),
               border: Border.all(color: Colors.red[300]!),
               color: Colors.red[50],
             ),
@@ -438,7 +438,11 @@ void didChangeDependencies() {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.refresh, size: 20, color: AppColors.primaryBlue),
+                  icon: Icon(
+                    Icons.refresh,
+                    size: 20,
+                    color: AppColors.primaryBlue,
+                  ),
                   onPressed: () {
                     if (selectedWareHouse != null) {
                       _fetchWarehouseProducts(selectedWareHouse!);
@@ -454,7 +458,7 @@ void didChangeDependencies() {
 
     if (productsState is ProductsSuccess) {
       final products = productsState.products;
-      
+
       if (products.isEmpty) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -475,7 +479,9 @@ void didChangeDependencies() {
                 vertical: ResponsiveUI.padding(context, 14),
               ),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+                borderRadius: BorderRadius.circular(
+                  ResponsiveUI.borderRadius(context, 12),
+                ),
                 border: Border.all(color: Colors.orange[300]!),
                 color: Colors.orange[50],
               ),
@@ -504,10 +510,8 @@ void didChangeDependencies() {
         hint: "Select product",
         icon: Icons.inventory_2_outlined,
         onChanged: (v) => setState(() => selectedProduct = v),
-        itemLabel: (id) =>
-            products.firstWhere((p) => p.id == id).name,
-        validator: (v) =>
-            v == null ? "Please select product" : null,
+        itemLabel: (id) => products.firstWhere((p) => p.id == id).name,
+        validator: (v) => v == null ? "Please select product" : null,
       );
     }
 
@@ -531,7 +535,9 @@ void didChangeDependencies() {
             vertical: ResponsiveUI.padding(context, 14),
           ),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+            borderRadius: BorderRadius.circular(
+              ResponsiveUI.borderRadius(context, 12),
+            ),
             border: Border.all(color: Colors.grey[300]!),
             color: Colors.grey[50],
           ),
@@ -551,7 +557,6 @@ void didChangeDependencies() {
       ],
     );
   }
-
 
   BoxDecoration _buildDialogDecoration() {
     return BoxDecoration(
@@ -580,7 +585,6 @@ void didChangeDependencies() {
     }
   }
 
-  
   Widget _buildImagePicker(BuildContext context) {
     final borderRadius12 = ResponsiveUI.borderRadius(context, 12);
     final iconSize40 = ResponsiveUI.iconSize(context, 40);
@@ -807,10 +811,10 @@ void didChangeDependencies() {
   }
 
   void _handleSubmit() {
-    if (_formKey.currentState!.validate()  && 
-      selectedWareHouse != null && 
-      selectedProduct != null && 
-      selectedReason != null) {
+    if (_formKey.currentState!.validate() &&
+        selectedWareHouse != null &&
+        selectedProduct != null &&
+        selectedReason != null) {
       final cubit = context.read<AdjustmentCubit>();
       if (isEditMode) {
         cubit.updateAdjustment(
@@ -824,7 +828,7 @@ void didChangeDependencies() {
         );
       } else {
         cubit.createAdjustment(
-          warehouseId:selectedWareHouse!,
+          warehouseId: selectedWareHouse!,
           productId: selectedProduct!,
           quantity: _quantityController.text.trim(),
           reasonId: selectedReason!,
@@ -898,7 +902,9 @@ class AdjustmentDialogHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isEditMode ? LocaleKeys.edit_adjustment.tr() : LocaleKeys.new_adjustment.tr(),
+                  isEditMode
+                      ? LocaleKeys.edit_adjustment.tr()
+                      : LocaleKeys.new_adjustment.tr(),
                   style: TextStyle(
                     color: AppColors.white,
                     fontSize: fontSize22,
@@ -906,7 +912,9 @@ class AdjustmentDialogHeader extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  isEditMode ? LocaleKeys.adjustment_dialog_update_details.tr() : LocaleKeys.adjustment_dialog_add_new.tr(),
+                  isEditMode
+                      ? LocaleKeys.adjustment_dialog_update_details.tr()
+                      : LocaleKeys.adjustment_dialog_add_new.tr(),
                   style: TextStyle(
                     color: AppColors.white.withOpacity(0.9),
                     fontSize: fontSize13,
@@ -1026,7 +1034,9 @@ class AdjustmentDialogButtons extends StatelessWidget {
                   SizedBox(width: spacing8),
                   Flexible(
                     child: Text(
-                      isEditMode ? LocaleKeys.update_adjustment.tr() : LocaleKeys.create_adjustment.tr(),
+                      isEditMode
+                          ? LocaleKeys.update_adjustment.tr()
+                          : LocaleKeys.create_adjustment.tr(),
                       style: TextStyle(
                         fontSize: value14,
                         fontWeight: FontWeight.bold,

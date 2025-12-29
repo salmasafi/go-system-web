@@ -108,8 +108,8 @@ class _EditPopupBottomSheetState extends State<EditPopupBottomSheet> {
       descriptionEn: _descriptionEnController.text.trim(),
       descriptionAr: _descriptionArController.text.trim(),
       link: _linkController.text.trim(),
-      imageEn: _selectedEnImage,
-      imageAr: _selectedArImage,
+      image: _selectedEnImage,
+      // imageAr: _selectedArImage,
     );
   }
 
@@ -374,19 +374,19 @@ class _EditPopupBottomSheetState extends State<EditPopupBottomSheet> {
 
                     _buildImagePicker(
                       selectedLocalImage: _selectedEnImage,
-                      existingImageUrl: widget.popup.imageEn,
+                      existingImageUrl: widget.popup.image,
                       title: LocaleKeys.popup_english_image.tr(),
                       onPick: () => _pickImage(true),
                       onRemove: () => _removeImage(true),
                     ),
 
-                    _buildImagePicker(
-                      selectedLocalImage: _selectedArImage,
-                      existingImageUrl: widget.popup.imageAr,
-                      title: LocaleKeys.popup_arabic_image.tr(),
-                      onPick: () => _pickImage(false),
-                      onRemove: () => _removeImage(false),
-                    ),
+                    // _buildImagePicker(
+                    //   selectedLocalImage: _selectedArImage,
+                    //   existingImageUrl: widget.popup.imageAr,
+                    //   title: LocaleKeys.popup_arabic_image.tr(),
+                    //   onPick: () => _pickImage(false),
+                    //   onRemove: () => _removeImage(false),
+                    // ),
 
                     SizedBox(height: ResponsiveUI.spacing(context, 24)),
                     SizedBox(

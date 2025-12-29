@@ -227,8 +227,8 @@ class _CreatePopupScreenState extends State<CreatePopupScreen> {
           descriptionEn: _descriptionEnController.text.trim(),
           descriptionAr: _descriptionArController.text.trim(),
           link: _linkController.text.trim(),
-          imageEn: _selectedEnImage,
-          imageAr: _selectedArImage,
+          image: _selectedEnImage,
+          // imageAr: _selectedArImage,
         );
   }
 
@@ -303,12 +303,12 @@ class _CreatePopupScreenState extends State<CreatePopupScreen> {
                     onRemove: () => _removeImage(true),
                   ),
 
-                  _buildImagePicker(
-                    selectedImage: _selectedArImage,
-                    title: LocaleKeys.popup_arabic_image.tr(),
-                    onPick: () => _pickImage(false),
-                    onRemove: () => _removeImage(false),
-                  ),
+                  // _buildImagePicker(
+                  //   selectedImage: _selectedArImage,
+                  //   title: LocaleKeys.popup_arabic_image.tr(),
+                  //   onPick: () => _pickImage(false),
+                  //   onRemove: () => _removeImage(false),
+                  // ),
 
                   SizedBox(height: ResponsiveUI.spacing(context, 24)),
                   SizedBox(
