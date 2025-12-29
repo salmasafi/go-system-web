@@ -42,6 +42,8 @@ class EndPoint {
   static String deleteProduct(String id) => '/api/admin/product/$id';
   static String productByCode = '/api/admin/product/code';
 
+  static String generateProductCode = '/api/admin/product/generate-code';
+
   static String getWareHouseProducts(String id) =>
       '/api/admin/product_warehouse/$id';
 
@@ -236,4 +238,8 @@ class EndPoint {
   static String getRevenueById(String id) => '/api/admin/revenue/$id';
   static String updateRevenue(String id) => '/api/admin/revenue/$id';
   static String getRevenueSelection = '/api/admin/revenue/selection';
+
+
+  /// units
+  static String getUnits = '/api/admin/units';
 }

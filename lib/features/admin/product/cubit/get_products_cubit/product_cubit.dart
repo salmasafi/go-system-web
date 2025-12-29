@@ -54,6 +54,40 @@ class ProductsCubit extends Cubit<ProductsState> {
     }
   }
 
+
+  Future<void> generateProductCode() async {
+    emit(ProductsLoading());
+
+    try {
+
+      final response = await DioHelper.getData(url: EndPoint.generateProductCode);
+
+      log('Response received: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        if (data['success'] == true && data['data'] != null) {
+          final productCode = data['data']['code'] as String;
+         
+
+          emit(ProductCodeSuccess(productCode));
+        } else {
+          final errorMessage = data['message'] ?? 'Failed to fetch products';
+          log('generate code: $errorMessage');
+          emit(ProductsError(errorMessage));
+        }
+      } else {
+        final errorMessage = ErrorHandler.handleError(response);
+        log('Response error: $errorMessage');
+        emit(ProductsError(errorMessage));
+      }
+    } catch (error) {
+      log('Products fetch error caught: $error');
+      final errorMessage = ErrorHandler.handleError(error);
+      emit(ProductsError(errorMessage));
+    }
+  }
+
   Future<void> addProductWithData({
     required String name,
     required String arName,
@@ -63,7 +97,9 @@ class ProductsCubit extends Cubit<ProductsState> {
     required String? code,
     required List<String> categoryIds,
     required String brandId,
-    required String unit,
+    required String productUnit,
+    required String purchaseUnit,
+    required String saleUnit,
     required double price,
     required bool expAbility,
     required DateTime? expiryDate,
@@ -93,7 +129,9 @@ class ProductsCubit extends Cubit<ProductsState> {
       'image': image,
       'categoryId': categoryIds,
       'brandId': brandId,
-      'unit': unit,
+      'purchase_unit': purchaseUnit,
+      'product_unit': productUnit,
+      'sale_unit': saleUnit,
       'price': price,
       'exp_ability': expAbility,
       if (expAbility) 'date_of_expiery': expiryDate.toString(),
@@ -102,7 +140,7 @@ class ProductsCubit extends Cubit<ProductsState> {
       'whole_price': wholePrice,
       'start_quantaty': startQuantity, // Note: API has typo "quantaty"
       'quantity': quantity,
-      //'taxesId': taxesId,
+      'taxesId': taxesId,
       'product_has_imei': productHasImei,
       'different_price': differentPrice,
       'show_quantity': showQuantity,

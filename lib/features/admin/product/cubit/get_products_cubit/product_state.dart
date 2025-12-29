@@ -13,6 +13,12 @@ class ProductsSuccess extends ProductsState {
   ProductsSuccess(this.products);
 }
 
+class ProductCodeSuccess extends ProductsState {
+  final String code;
+
+  ProductCodeSuccess(this.code);
+}
+
 
 class WareHouseProductsSuccess extends ProductsState {
   final List<Product> products;
