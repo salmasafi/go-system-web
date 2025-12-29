@@ -8,7 +8,7 @@ import 'package:systego/features/admin/discount/model/discount_model.dart';
 import '../../../../core/services/dio_helper.dart';
 import '../../../../core/services/endpoints.dart';
 import '../../../../core/utils/error_handler.dart';
-import '../../../admin/cashier/model/cashirer_model.dart';
+import '../../cashier/model/cashier_model.dart';
 import '../model/shift_model.dart';
 
 class PosCubit extends Cubit<PosState> {
@@ -107,7 +107,7 @@ class PosCubit extends Cubit<PosState> {
   Future<void> getCashiers() async {
     emit(PosLoading());
     try {
-      final response = await DioHelper.getData(url: EndPoint.getAllCashiers);
+      final response = await DioHelper.getData(url: EndPoint.posCashiers);
       if (response.statusCode == 200 && response.data['success'] == true) {
         final data = response.data['data']['cashiers'] as List;
         cashiersList = data.map((e) => CashierModel.fromJson(e)).toList();

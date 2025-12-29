@@ -220,6 +220,8 @@ class _POSHomeScreenState extends State<POSHomeScreen> {
           appBar: PreferredSize(
             preferredSize: const Size.fromHeight(kToolbarHeight),
             child: AppBar(
+              //forceMaterialTransparency: true,
+              scrolledUnderElevation: 1,
               backgroundColor: Colors.white,
               elevation: 0,
               // عرض اسم الكاشير بدلاً من المستخدم
@@ -467,9 +469,8 @@ class _POSHomeScreenState extends State<POSHomeScreen> {
       );
     }
 
-    return 
-    // Column(
-    //   children: [
+    return Column(
+      children: [
         // const Padding(
         //   padding: EdgeInsets.all(20.0),
         //   child: Text(
@@ -551,8 +552,8 @@ class _POSHomeScreenState extends State<POSHomeScreen> {
               );
             },
           ),
-      //   ),
-      // ],
+        ),
+      ],
     );
   }
 }
