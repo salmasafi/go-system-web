@@ -15,6 +15,9 @@ import 'package:systego/features/admin/product/cubit/get_products_cubit/product_
 import 'package:systego/features/admin/product/cubit/get_products_cubit/product_state.dart';
 import 'package:systego/features/admin/product/cubit/product_filter_state.dart';
 import 'package:systego/features/admin/product/models/filter_models.dart';
+import 'package:systego/features/admin/units/cubit/unit_cubit.dart';
+import 'package:systego/features/admin/units/cubit/unit_state.dart';
+import 'package:systego/features/admin/units/model/unit_model.dart';
 import '../../../../../core/utils/image_handler.dart';
 import '../../cubit/filter_product_cubit/product_filter_cubit.dart';
 import '../../models/product_to_add.dart';
@@ -41,7 +44,9 @@ class _AddProductScreenState extends State<AddProductScreen>
   final _lowStockController = TextEditingController();
   final _minQuantityController = TextEditingController();
   final _maxToShowController = TextEditingController();
-  final _unitController = TextEditingController();
+  final _productUnitController = TextEditingController();
+  final _saleUnitController = TextEditingController();
+  final _purchaseUnitController = TextEditingController();
   final _codeController = TextEditingController();
 
   // Images
@@ -51,6 +56,10 @@ class _AddProductScreenState extends State<AddProductScreen>
   // Dropdowns
   List<CategoryFilter>? _selectedCategories;
   BrandFilter? _selectedBrand;
+
+  UnitModel? _selectedSaleUnit;
+  UnitModel? _selectedPurchaseUnit;
+  UnitModel? _selectedProductUnit;
 
   // Checkboxes
   bool _hasExpiry = false;
@@ -72,6 +81,8 @@ class _AddProductScreenState extends State<AddProductScreen>
   void initState() {
     super.initState();
     context.read<ProductFiltersCubit>().getFilters();
+    context.read<ProductsCubit>().generateProductCode();
+    context.read<UnitsCubit>().getUnits();
     _variations = context.read<ProductFiltersCubit>().variations;
 
     // Set default values
@@ -177,6 +188,8 @@ class _AddProductScreenState extends State<AddProductScreen>
           Navigator.pop(context, true);
         } else if (state is ProductsError) {
           CustomSnackbar.showError(context, state.message);
+        } else if (state is ProductCodeSuccess) {
+          _codeController.text = state.code.toString();
         }
       },
       builder: (context, state) {
@@ -277,6 +290,7 @@ class _AddProductScreenState extends State<AddProductScreen>
                           );
                         },
                       ),
+                     
                     ],
                   ),
 
@@ -290,12 +304,55 @@ class _AddProductScreenState extends State<AddProductScreen>
                       // Row(
                       //   children: [
                       //Expanded(child:
-                      buildTextField(
-                        context,
-                        controller: _unitController,
-                        label: 'Unit *',
-                        icon: Icons.scale,
-                        hint: 'piece, kg, etc.',
+                      // buildTextField(
+                      //   context,
+                      //   controller: _saleUnitController,
+                      //   label: 'Sale Unit *',
+                      //   icon: Icons.scale,
+                      //   hint: 'piece, kg, etc.',
+                      // ),
+
+                      // buildTextField(
+                      //   context,
+                      //   controller: _purchaseUnitController,
+                      //   label: 'Purchase Unit *',
+                      //   icon: Icons.scale,
+                      //   hint: 'piece, kg, etc.',
+                      // ),
+
+                      // buildTextField(
+                      //   context,
+                      //   controller: _productUnitController,
+                      //   label: 'Product Unit *',
+                      //   icon: Icons.scale,
+                      //   hint: 'piece, kg, etc.',
+                      // ),
+
+                       BlocBuilder<UnitsCubit, UnitsState>(
+                        builder: (context, unitState) {
+                          if (unitState is UnitsLoading) {
+                            return _buildLoadingDropdown('Loading units...');
+                          }
+                          if (unitState is UnitsSuccess) {
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                
+                                _buildPurchaseUnitDropdown(unitState.units),
+                                SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                                _buildSaleUnitDropdown(unitState.units),
+                                SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                                _buildProductUnitDropdown(unitState.units),
+                                 SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                              ],
+                            );
+                          }
+                          return EmptyStateWidget(
+                            message: 'No units available',
+                            icon: Icons.category,
+                            color: AppColors.warningOrange,
+                          );
+                        },
                       ),
                       //),
                       //     SizedBox(width: ResponsiveUI.spacing(context, 12)),
@@ -779,6 +836,54 @@ class _AddProductScreenState extends State<AddProductScreen>
     );
   }
 
+  Widget _buildProductUnitDropdown(List<UnitModel> units) {
+    return buildDropdownField<UnitModel>(
+      context,
+      items: units,
+      hint: 'Select Product Unit',
+      onChanged: (value) {
+        setState(() {
+          _selectedProductUnit = value;
+        });
+      },
+      itemLabel: (brand) => brand.name,
+      value: _selectedProductUnit,
+      label: 'Product Unit',
+    );
+  }
+
+  Widget _buildPurchaseUnitDropdown(List<UnitModel> units) {
+    return buildDropdownField<UnitModel>(
+      context,
+      items: units,
+      hint: 'Select Purchase Unit',
+      onChanged: (value) {
+        setState(() {
+          _selectedPurchaseUnit = value;
+        });
+      },
+      itemLabel: (brand) => brand.name,
+      value: _selectedPurchaseUnit,
+      label: 'Purchase Unit',
+    );
+  }
+
+  Widget _buildSaleUnitDropdown(List<UnitModel> units) {
+    return buildDropdownField<UnitModel>(
+      context,
+      items: units,
+      hint: 'Select Sale Unit',
+      onChanged: (value) {
+        setState(() {
+          _selectedSaleUnit = value;
+        });
+      },
+      itemLabel: (brand) => brand.name,
+      value: _selectedSaleUnit,
+      label: 'Sale Unit',
+    );
+  }
+
   // Only the _saveProduct() method is updated — rest of your file stays the same
 
   void _saveProduct() async {
@@ -803,10 +908,7 @@ class _AddProductScreenState extends State<AddProductScreen>
       CustomSnackbar.showError(context, 'Please select a brand');
       return;
     }
-    if (_unitController.text.trim().isEmpty) {
-      CustomSnackbar.showError(context, 'Please enter unit (e.g. piece)');
-      return;
-    }
+    
 
     // Parse numeric fields safely
     final double mainPrice = double.tryParse(_priceController.text) ?? 0.0;
@@ -882,7 +984,9 @@ class _AddProductScreenState extends State<AddProductScreen>
       image: mainImageBase64,
       categoryIds: _selectedCategories!.map((c) => c.id).toList(),
       brandId: _selectedBrand!.id,
-      unit: _unitController.text.trim(),
+      purchaseUnit: _selectedPurchaseUnit!.id, // or .name depending on API
+      saleUnit: _selectedSaleUnit!.id, // or .name depending on API
+      productUnit: _selectedProductUnit!.id,
       price: _differentPrice ? 0.0 : mainPrice, // MUST be 0 if variations used
       expAbility: _hasExpiry,
       code: _codeController.text.trim(),
@@ -916,7 +1020,9 @@ class _AddProductScreenState extends State<AddProductScreen>
     _lowStockController.dispose();
     _minQuantityController.dispose();
     _maxToShowController.dispose();
-    _unitController.dispose();
+    _productUnitController.dispose();
+    _purchaseUnitController.dispose();
+    _saleUnitController.dispose();
     _codeController.dispose();
     for (var variation in _priceVariations) {
       variation.dispose();

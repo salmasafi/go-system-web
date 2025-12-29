@@ -21,6 +21,7 @@ import 'package:systego/features/admin/popup/cubit/popup_cubit.dart';
 import 'package:systego/features/admin/product/cubit/get_products_cubit/product_cubit.dart';
 import 'package:systego/features/admin/reason/cubit/reason_cubit.dart';
 import 'package:systego/features/admin/taxes/cubit/taxes_cubit.dart';
+import 'package:systego/features/admin/units/cubit/unit_cubit.dart';
 import 'package:systego/features/admin/variations/cubit/variation_cubit.dart';
 import 'package:systego/translations/codegen_loader.g.dart';
 import 'core/services/cache_helper.dart';
@@ -136,6 +137,7 @@ class _MainAppState extends State<MainApp> {
         BlocProvider<RevenueCubit>(create: (context) => RevenueCubit()),
         BlocProvider<CustomerCubit>(create: (context) => CustomerCubit()),
         BlocProvider<RolesCubit>(create: (context) => RolesCubit()),
+        BlocProvider<UnitsCubit>(create: (context) => UnitsCubit()),
         BlocProvider<AdjustmentCubit>(create: (context) => AdjustmentCubit()),
         BlocProvider<PermissionsCubit>(create: (context) => PermissionsCubit()),
         BlocProvider<CashierCubit>(create: (context) => CashierCubit()),
