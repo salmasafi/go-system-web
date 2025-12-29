@@ -17,6 +17,7 @@ import '../../../../admin/product/presentation/screens/barcode_scanner_screen.da
 import '../../../checkout/presentation/widgets/cart_bottom_sheet.dart';
 import '../../../checkout/presentation/widgets/cart_fab.dart';
 import '../../../checkout/presentation/widgets/cart_summary.dart';
+import '../../../orders/presentation/views/orders_screen.dart';
 import '../widgets/filter_by_category_brand_widgets.dart';
 import '../widgets/header_section.dart';
 import '../widgets/product_details_dialog.dart';
@@ -303,6 +304,19 @@ class _POSHomeScreenState extends State<POSHomeScreen> {
                         (route) => false,
                       );
                       // هنا يجب عليك توجيه المستخدم لصفحة تسجيل الدخول
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.history,
+                      color: AppColors.primaryBlue,
+                    ), // تأكد من اللون
+                    tooltip: "Sales History",
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const OrdersScreen()),
+                      );
                     },
                   ),
                 ],

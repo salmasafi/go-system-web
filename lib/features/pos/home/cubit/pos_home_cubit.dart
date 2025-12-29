@@ -1,4 +1,5 @@
 // lib/features/pos/home/cubit/pos_home_cubit.dart
+
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,12 +32,7 @@ class PosCubit extends Cubit<PosState> {
   List<BankAccount> accounts = [];
   BankAccount? selectedAccount;
 
-  // Cashier
-  // ShiftModel? currentShift;
-  // bool hasOpenShift = false; // من login
-  // CashierModel? selectedCashier;
-  // List<CashierModel> allCashiers = [];
-  // متغيرات الشيفت والكاشير
+  // Cashier & Shift
   List<CashierModel> cashiersList = [];
   CashierModel? selectedCashier;
   ShiftModel? currentShift;
@@ -71,11 +67,10 @@ class PosCubit extends Cubit<PosState> {
   PaymentMethod? selectedPaymentMethod;
   Customer? selectedCustomer;
 
-  // Expose current selected IDs
   String? get currentCategoryId => selectedCategoryId;
   String? get currentBrandId => selectedBrandId;
 
-  // Clear filter and go back to featured
+  // ─── Helpers ───
   void clearFilter() {
     selectedTab = 'featured';
     selectedCategoryId = null;
@@ -101,9 +96,8 @@ class PosCubit extends Cubit<PosState> {
     return ErrorHandler.handleError(errorOrResponse);
   }
 
-  // Cashier
+  // ─── Cashier & Shift Logic ───
 
-  // 1. جلب قائمة الكاشير (للاختيار فقط)
   Future<void> getCashiers() async {
     emit(PosLoading());
     try {
@@ -111,21 +105,18 @@ class PosCubit extends Cubit<PosState> {
       if (response.statusCode == 200 && response.data['success'] == true) {
         final data = response.data['data']['cashiers'] as List;
         cashiersList = data.map((e) => CashierModel.fromJson(e)).toList();
-        emit(PosCashiersLoaded(cashiersList)); // State جديد يجب إضافته
+        emit(PosCashiersLoaded(cashiersList));
       }
     } catch (e) {
       emit(PosError(e.toString()));
     }
   }
 
-  // 2. اختيار الكاشير
   void selectCashier(CashierModel cashier) {
     selectedCashier = cashier;
-    // بعد اختيار الكاشير، نتحقق مما إذا كان لديه شيفت مفتوح (يمكنك تحسين هذا بجلب حالة الشيفت من الـ API)
     emit(PosInitial());
   }
 
-  // 3. بدء الشيفت
   Future<void> startShift() async {
     if (selectedCashier == null) return;
     emit(PosLoading());
@@ -138,34 +129,29 @@ class PosCubit extends Cubit<PosState> {
       if (response.statusCode == 200 && response.data['success'] == true) {
         currentShift = ShiftModel.fromJson(response.data['data']['shift']);
         isShiftOpen = true;
-        // الآن نقوم بتحميل المنتجات لأن الشيفت بدأ
         await loadPosData();
-        //emit(PosShiftStarted()); // State جديد
       } else {
-        emit(PosError(response.data['data']['message']));
+        emit(PosError(response.data['data']['message'] ?? 'Failed to start shift'));
       }
     } catch (e) {
       emit(PosError(e.toString()));
     }
   }
 
-  // 4. إنهاء الشيفت وعرض التقرير
   Future<Map<String, dynamic>?> endShift() async {
     emit(PosLoading());
     try {
       final response = await DioHelper.putData(
-        // انتبه الـ Method PUT حسب الـ Postman الخاص بك
         url: EndPoint.endShift,
-        data: {}, // أرسل cash_in_drawer إذا تطلب الأمر
+        data: {}, 
       );
 
       if (response.statusCode == 200) {
         isShiftOpen = false;
         currentShift = null;
-        selectedCashier = null; // إعادة تعيين الكاشير لإجبار الاختيار مرة أخرى
-        //emit(PosShiftEnded()); // State جديد
-        //return response.data['data']; // إرجاع التقرير لعرضه
-        refreshCartProducts();
+        selectedCashier = null;
+        // هنا يمكن إرجاع البيانات إذا أردت استخدامها
+        refreshCartProducts(); // لتحديث الواجهة (إخفاء المنتجات)
       }
     } catch (e) {
       emit(PosError(e.toString()));
@@ -173,123 +159,24 @@ class PosCubit extends Cubit<PosState> {
     return null;
   }
 
-  // 5. تسجيل الخروج بدون إنهاء (Pause)
   Future<void> logoutShift() async {
     try {
       await DioHelper.postData(url: EndPoint.logoutShift, data: {});
-      // هنا مجرد خروج من الشاشة أو التطبيق
       emit(PosLoggedOut());
     } catch (e) {
       emit(PosError(e.toString()));
     }
   }
 
-  // Future<void> getCashiers() async {
-  //   try {
-  //     final response = await DioHelper.getData(url: EndPoint.getAllCashiers);
-  //     if (response.statusCode == 200) {
-  //       final model = CashierResponse.fromJson(response.data);
-  //       if (model.success) {
-  //         allCashiers = model.data.cashiers;
-  //         emit(
-  //           PosCashiersLoaded(allCashiers),
-  //         ); // state جديد، أضفه في state.dart
-  //       }
-  //     }
-  //   } catch (e) {
-  //     emit(PosError(_extractErrorMessage(e)));
-  //   }
-  // }
+  // ─── Main Data Loading ───
 
-  // void selectCashier(CashierModel cashier) {
-  //   selectedCashier = cashier;
-  //   emit(PosCashierSelected()); // state جديد
-  // }
-
-  // Load current shift (call after login or init)
-  // Future<void> getCurrentShift() async {
-  //   try {
-  //     final response = await DioHelper.getData(
-  //       url: EndPoint.currentShift,
-  //     ); // افترض endpoint، غير إذا مختلف
-  //     if (response.statusCode == 200) {
-  //       currentShift = ShiftModel.fromJson(response.data['data']['shift']);
-  //       hasOpenShift = currentShift?.status == 'open';
-  //       emit(PosShiftLoaded());
-  //     }
-  //   } catch (e) {
-  //     hasOpenShift = false;
-  //     emit(PosError(_extractErrorMessage(e)));
-  //   }
-  // }
-
-  // // Start shift
-  // Future<void> startShift() async {
-  //   if (selectedCashier == null) {
-  //     emit(PosError('Select cashier first'));
-  //     return;
-  //   }
-  //   emit(PosLoading());
-  //   try {
-  //     final response = await DioHelper.postData(
-  //       url: EndPoint.startShift, // '/api/admin/cashier-shift/start'
-  //       data: {'cashier_id': selectedCashier!.id},
-  //     );
-  //     if (response.statusCode == 200) {
-  //       currentShift = ShiftModel.fromJson(response.data['data']['shift']);
-  //       hasOpenShift = true;
-  //       emit(PosShiftStarted());
-  //       await loadPosData(); // reload products after start
-  //     }
-  //   } catch (e) {
-  //     emit(PosError(_extractErrorMessage(e)));
-  //   }
-  // }
-
-  // // End shift (with report)
-  // Future<Map<String, dynamic>?> endShift(double cashInDrawer) async {
-  //   // أضف input إذا لازم
-  //   emit(PosLoading());
-  //   try {
-  //     final response = await DioHelper.putData(
-  //       url: EndPoint.endShift, // '/api/admin/cashier-shift/end/report'
-  //       data: {'cash_in_drawer': cashInDrawer}, // إذا لازم، غير حسب API
-  //     );
-  //     if (response.statusCode == 200) {
-  //       currentShift = null;
-  //       hasOpenShift = false;
-  //       emit(PosShiftEnded());
-  //       return response.data['data']['report']; // للعرض في report screen
-  //     }
-  //   } catch (e) {
-  //     emit(PosError(_extractErrorMessage(e)));
-  //   }
-  //   return null;
-  // }
-
-  // // Logout without ending shift
-  // Future<void> logout() async {
-  //   try {
-  //     await DioHelper.postData(
-  //       url: EndPoint.logoutShift, data: {},
-  //     ); // '/api/admin/cashier-shift/logout'
-  //     // مسح token أو navigate to login، لكن لا تغير hasOpenShift
-  //     emit(PosLoggedOut());
-  //   } catch (e) {
-  //     emit(PosError(_extractErrorMessage(e)));
-  //   }
-  // }
-
-  // Load all initial data
   Future<void> loadPosData() async {
     emit(PosLoading());
     try {
-      // إذا لم يكن هناك شيفت مفتوح، لا تجلب المنتجات
       if (!isShiftOpen) {
-        await getCashiers(); // بدلاً من المنتجات، اجلب الكاشيرز
+        await getCashiers();
         return;
       }
-      // ... باقي كود جلب المنتجات والفئات الطبيعي
 
       await Future.wait([
         getCategories(),
@@ -297,6 +184,7 @@ class PosCubit extends Cubit<PosState> {
         getSelections(),
         getFeaturedProducts(),
       ]);
+      
       emit(PosLoaded());
       await selectTab();
     } catch (e) {
@@ -334,98 +222,62 @@ class PosCubit extends Cubit<PosState> {
       final response = await DioHelper.getData(url: EndPoint.posFeatured);
       if (response.statusCode == 200) {
         final data = response.data['data']['products'] as List;
+        // هنا يتم استخدام الموديل المحدث الذي يعالج variations
         featuredProducts = data.map((e) => Product.fromList(e)).toList();
+        
+        log("Loaded ${featuredProducts.length} featured products.");
       }
     } catch (e) {
       log('Featured error: $e');
+      emit(PosError("Failed to load products: ${e.toString()}"));
     }
   }
 
   Future<void> getSelections() async {
-    taxes = [
-      Tax(id: 'null', name: 'No Tax', amount: 0.0, type: 'fixed', status: true),
-    ];
+    // Reset defaults
+    taxes = [Tax(id: 'null', name: 'No Tax', amount: 0.0, type: 'fixed', status: true)];
     selectedTax = null;
-
-    discounts = [
-      DiscountModel(
-        id: 'null',
-        name: 'No Discount',
-        amount: 0.0,
-        type: 'fixed',
-        status: true,
-        createdAt: '',
-        updatedAt: '',
-        version: null,
-      ),
-    ];
+    discounts = [DiscountModel(id: 'null', name: 'No Discount', amount: 0.0, type: 'fixed', status: true, createdAt: '', updatedAt: '', version: null)];
     selectedDiscount = null;
 
     try {
       final response = await DioHelper.getData(url: EndPoint.posSelections);
       if (response.statusCode == 200) {
-        // في pos_home_cubit.dart → داخل getSelections()
         final json = response.data['data'];
-        log('$json');
-        warehouses = (json['warehouses'] as List)
-            .map((e) => Warehouse.fromJson(e))
-            .toList();
+        
+        warehouses = (json['warehouses'] as List).map((e) => Warehouse.fromJson(e)).toList();
         selectedWarhouse = warehouses.isNotEmpty ? warehouses.first : null;
 
-        customers = (json['customers'] as List)
-            .map((e) => Customer.fromJson(e))
-            .toList();
+        customers = (json['customers'] as List).map((e) => Customer.fromJson(e)).toList();
         selectedCustomer = customers.isNotEmpty ? customers.first : null;
 
-        // ←←← الجديد: نضيف Account + Tax + Currency
-        accounts = (json['accounts'] as List? ?? [])
-            .map((e) => BankAccount.fromJson(e))
-            .toList();
+        accounts = (json['accounts'] as List? ?? []).map((e) => BankAccount.fromJson(e)).toList();
+        selectedAccount = accounts.isNotEmpty ? accounts.first : null;
 
-        // var filteredAccounts = accounts.isNotEmpty
-        //     ? accounts.where((element) => element.isDefault)
-        //     : null;
-        selectedAccount = accounts.first;
         List<Tax> taxesFromJson = ((json['taxes'] as List?) ?? [])
             .map<Tax>((dynamic e) => Tax.fromJson(e as Map<String, dynamic>))
             .toList();
-
-        //taxes.addAll(taxesFromJson);
-
         var filteredTaxes = taxesFromJson.isNotEmpty
-            ? taxesFromJson.where((element) => element.status)
+            ? taxesFromJson.where((element) => element.status).toList()
             : null;
-        taxes.addAll(filteredTaxes ?? []);
-
+        if(filteredTaxes != null) taxes.addAll(filteredTaxes);
         selectedTax = taxes.first;
 
-        List<DiscountModel> discountsFromJson =
-            ((json['discounts'] as List?) ?? [])
-                .map<DiscountModel>(
-                  (dynamic e) =>
-                      DiscountModel.fromJson(e as Map<String, dynamic>),
-                )
-                .toList();
-
-        //discounts.addAll(discountsFromJson);
-
+        List<DiscountModel> discountsFromJson = ((json['discounts'] as List?) ?? [])
+            .map<DiscountModel>((dynamic e) => DiscountModel.fromJson(e as Map<String, dynamic>))
+            .toList();
         var filteredDiscounts = discountsFromJson.isNotEmpty
-            ? discountsFromJson.where((element) => element.status)
+            ? discountsFromJson.where((element) => element.status).toList()
             : null;
-        discounts.addAll(filteredDiscounts ?? []);
-
+        if(filteredDiscounts != null) discounts.addAll(filteredDiscounts);
         selectedDiscount = discounts.first;
 
-        currencies = (json['currencies'] as List? ?? [])
-            .map((e) => Currency.fromJson(e))
-            .toList();
+        currencies = (json['currencies'] as List? ?? []).map((e) => Currency.fromJson(e)).toList();
         selectedCurrency = currencies.isNotEmpty ? currencies.first : null;
 
-        paymentMethods = (json['paymentMethods'] as List)
-            .map((e) => PaymentMethod.fromJson(e))
-            .toList();
+        paymentMethods = (json['paymentMethods'] as List).map((e) => PaymentMethod.fromJson(e)).toList();
         selectedPaymentMethod = paymentMethods.isNotEmpty
-            ? paymentMethods.where((element) => element.name == 'Cash').first
+            ? paymentMethods.firstWhere((element) => element.name == 'Cash', orElse: () => paymentMethods.first)
             : null;
       }
     } catch (e) {
@@ -433,24 +285,23 @@ class PosCubit extends Cubit<PosState> {
     }
   }
 
+  // ─── Filter & Selection Updates ───
+
   void changeAccount(BankAccount account) {
     selectedAccount = account;
-    emit(PosDataLoaded(featuredProducts)); // أو أي state
+    // تحديث الواجهة إذا لزم
   }
 
   void changeTax(Tax? tax) {
     selectedTax = tax;
-    emit(PosDataLoaded(featuredProducts));
   }
 
   void changeDiscount(DiscountModel? discount) {
     selectedDiscount = discount;
-    emit(PosDataLoaded(featuredProducts));
   }
 
   void changeCurrency(Currency currency) {
     selectedCurrency = currency;
-    emit(PosDataLoaded(featuredProducts));
   }
 
   Future<void> changeWarhouseValue(Warehouse warehouse) async {
@@ -467,6 +318,8 @@ class PosCubit extends Cubit<PosState> {
     selectedPaymentMethod = paymentMethod;
     selectTab();
   }
+
+  // ─── Product Listing & Filtering ───
 
   Future<void> getProductsByCategory(String? categoryId) async {
     emit(PosProductsLoading());
@@ -514,10 +367,7 @@ class PosCubit extends Cubit<PosState> {
     }
   }
 
-  Future<void> selectTab({
-    String tab = 'featured',
-    bool noFliterRefresh = false,
-  }) async {
+  Future<void> selectTab({String tab = 'featured', bool noFliterRefresh = false}) async {
     selectedTab = tab;
     if (tab == 'featured') {
       hideFilterPanels();
@@ -534,18 +384,7 @@ class PosCubit extends Cubit<PosState> {
   }
 
   Future<void> refreshCartProducts() async {
-    if (selectedTab == 'featured') {
-      hideFilterPanels();
-      emit(PosDataLoaded(featuredProducts));
-    } else if (selectedTab == 'category') {
-      showFilterPanel(isCategory: true);
-      emit(PosDataLoaded(categoryProducts));
-    } else if (selectedTab == 'brand') {
-      showFilterPanel(isCategory: false);
-      emit(PosDataLoaded(brandProducts));
-    } else {
-      emit(PosDataLoaded([]));
-    }
+    await selectTab(tab: selectedTab, noFliterRefresh: true);
   }
 
   Future<void> showFilterPanel({required bool isCategory}) async {
@@ -558,25 +397,19 @@ class PosCubit extends Cubit<PosState> {
     }
   }
 
-  Future<void> hideFilterPanels({
-    bool isCategoryRefresh = false,
-    bool isBrandRefresh = false,
-  }) async {
+  Future<void> hideFilterPanels({bool isCategoryRefresh = false, bool isBrandRefresh = false}) async {
     showCategoryFilters = false;
     showBrandFilters = false;
 
-    if (isCategoryRefresh || isBrandRefresh) {
-      if (isCategoryRefresh) {
-        emit(PosDataLoaded(categoryProducts));
-      } else {
-        emit(PosDataLoaded(brandProducts));
-      }
+    if (isCategoryRefresh) {
+      emit(PosDataLoaded(categoryProducts));
+    } else if (isBrandRefresh) {
+      emit(PosDataLoaded(brandProducts));
     }
   }
 
-  // ────────────────────────────────────────────────────────────────
-  //  NEW: Get product by barcode
-  // ────────────────────────────────────────────────────────────────
+  // ─── Barcode Scanning ───
+
   Future<Product?> getProductByCode(String code) async {
     emit(PosLoading());
     try {
@@ -593,21 +426,18 @@ class PosCubit extends Cubit<PosState> {
         } else {
           emit(PosError('Product not found'));
           selectTab();
-
           return null;
         }
       } else {
         final msg = _extractErrorMessage(response);
         emit(PosError(msg));
         selectTab();
-
         return null;
       }
     } catch (e) {
       final msg = _extractErrorMessage(e);
       emit(PosError(msg));
       selectTab();
-
       return null;
     }
   }

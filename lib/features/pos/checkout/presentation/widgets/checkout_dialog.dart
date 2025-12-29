@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
@@ -13,7 +14,7 @@ import '../../model/checkout_models.dart';
 import 'receipt_dialog.dart';
 
 class POSCheckoutDialog extends StatefulWidget {
-  final double totalAmount;
+  final double totalAmount; // This is the Subtotal
   final List<CartItem> cartItems;
   final PaymentMethod selectedPaymentMethod;
 
@@ -32,25 +33,25 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   final _formKey = GlobalKey<FormState>();
 
   // ---------- Controllers ----------
-  final _totalPayingCtrl =
-      TextEditingController(); // Cash / Card / GiftCard / Points
+  final _totalPayingCtrl = TextEditingController();
   final _cardNumberCtrl = TextEditingController();
   final _cardHolderCtrl = TextEditingController();
   final _giftCardCtrl = TextEditingController();
-  final _paymentReceiverCtrl = TextEditingController();
-  final _paymentNoteCtrl = TextEditingController();
   final _saleNoteCtrl = TextEditingController();
-  final _staffNoteCtrl = TextEditingController();
 
   // ---------- Runtime values ----------
-  double _totalPaying = 0.0;
   double _subTotal = 0.0;
-  double _change = 0.0;
-  double _due = 0.0;
+  double _grandTotal = 0.0; // الإجمالي النهائي المطلوب دفعه
+  double _totalPaying = 0.0; // المبلغ الذي أدخله المستخدم
+  double _change = 0.0; // الباقي
+  double _remainingDue = 0.0; // المبلغ المتبقي (للعرض)
+
   String _selectedCardType = 'Visa';
   final List<String> _cardTypes = ['Visa', 'MasterCard'];
+
   List<Tax> _taxes = [];
   late Tax? _selectedTax;
+
   List<DiscountModel> _discounts = [];
   late DiscountModel? _selectedDiscount;
 
@@ -63,73 +64,68 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     super.initState();
     posCubit = context.read<PosCubit>();
     _subTotal = widget.totalAmount;
+
+    // 1. Setup Lists
     _taxes = posCubit.taxes;
     _discounts = posCubit.discounts;
 
-    // Set selectedTax, ensuring it's from the list
-    if (posCubit.selectedTax != null) {
-      // Find matching tax by id
-      _selectedTax = posCubit.selectedTax;
-    } else {
-      _selectedTax = _taxes.first;
-    }
+    // 2. Setup Defaults
+    _selectedTax =
+        posCubit.selectedTax ?? (_taxes.isNotEmpty ? _taxes.first : null);
+    _selectedDiscount =
+        posCubit.selectedDiscount ??
+        (_discounts.isNotEmpty ? _discounts.first : null);
 
-    if (_selectedTax!.type == 'percentage') {
-      currentTaxAmount = (_selectedTax!.amount * _subTotal);
-    } else {
-      currentTaxAmount = _selectedTax!.amount;
-    }
+    // 3. Initial Calculation
+    _calculateValues();
 
-    // Set selectedDiscount, ensuring it's from the list
-    if (posCubit.selectedDiscount != null) {
-      // Find matching discount by id
-      _selectedDiscount = posCubit.selectedDiscount;
-    } else {
-      _selectedDiscount = _discounts.first;
-    }
-
-    if (_selectedDiscount!.type == 'percentage') {
-      currentDiscountAmount = (_selectedDiscount!.amount * _subTotal);
-    } else {
-      currentDiscountAmount = _selectedDiscount!.amount;
-    }
-
-    _due = (_subTotal - currentDiscountAmount) + currentTaxAmount;
-    _totalPayingCtrl.addListener(_calc);
+    // 4. Listeners
+    _totalPayingCtrl.addListener(_calculateValues);
   }
 
-  void _calc() {
+  // ─── Core Calculation Logic (المنطق الحسابي الصحيح) ───
+  void _calculateValues() {
     setState(() {
+      // 1. Get Payment Input
       _totalPaying = double.tryParse(_totalPayingCtrl.text) ?? 0.0;
 
-      double taxAmount = 0.0;
-      if (_selectedTax != null) {
-        if (_selectedTax!.type == 'percentage') {
-          taxAmount = _selectedTax!.amount * _subTotal;
-        } else {
-          taxAmount = _selectedTax!.amount;
-        }
-      }
-      currentTaxAmount = taxAmount;
-
-      double discountAmount = 0.0;
+      // 2. Calculate Discount First (Usually applied on Subtotal)
+      double discountVal = 0.0;
       if (_selectedDiscount != null) {
         if (_selectedDiscount!.type == 'percentage') {
-          discountAmount = _selectedDiscount!.amount * (_subTotal + taxAmount);
+          discountVal = _subTotal * _selectedDiscount!.amount;
         } else {
-          discountAmount = _selectedDiscount!.amount;
+          discountVal = _selectedDiscount!.amount;
         }
       }
-      currentDiscountAmount = discountAmount;
+      currentDiscountAmount = discountVal;
 
-      _due = (_subTotal + taxAmount) - discountAmount;
+      // 3. Calculate Tax Base (Subtotal - Discount)
+      // الضرائب عادة تحسب على المبلغ بعد الخصم
+      double taxableAmount = _subTotal - currentDiscountAmount;
+      if (taxableAmount < 0) taxableAmount = 0;
 
-      if (_totalPaying >= _due) {
-        _change = _totalPaying - _due;
-        _due = 0.0;
+      // 4. Calculate Tax
+      double taxVal = 0.0;
+      if (_selectedTax != null) {
+        if (_selectedTax!.type == 'percentage') {
+          taxVal = taxableAmount * _selectedTax!.amount;
+        } else {
+          taxVal = _selectedTax!.amount;
+        }
+      }
+      currentTaxAmount = taxVal;
+
+      // 5. Calculate Grand Total
+      _grandTotal = taxableAmount + currentTaxAmount;
+
+      // 6. Calculate Change & Due
+      if (_totalPaying >= _grandTotal) {
+        _change = _totalPaying - _grandTotal;
+        _remainingDue = 0.0;
       } else {
         _change = 0.0;
-        _due = _due - _totalPaying;
+        _remainingDue = _grandTotal - _totalPaying;
       }
     });
   }
@@ -140,15 +136,12 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     _cardNumberCtrl.dispose();
     _cardHolderCtrl.dispose();
     _giftCardCtrl.dispose();
-    _paymentReceiverCtrl.dispose();
-    _paymentNoteCtrl.dispose();
     _saleNoteCtrl.dispose();
-    _staffNoteCtrl.dispose();
     super.dispose();
   }
 
   // --------------------------------------------------------------
-  //  BUILD
+  //  UI BUILD
   // --------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
@@ -182,7 +175,6 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
                     children: [
                       _paymentMethodDisplay(),
                       SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                      // <<< DYNAMIC SECTION >>>
                       _dynamicFields(),
                       SizedBox(height: ResponsiveUI.spacing(context, 16)),
                       _notesSection(),
@@ -204,7 +196,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   }
 
   // --------------------------------------------------------------
-  //  COMMON PARTS
+  //  WIDGETS
   // --------------------------------------------------------------
   Widget _header() => Container(
     padding: EdgeInsets.all(ResponsiveUI.padding(context, 15)),
@@ -218,26 +210,12 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     ),
     child: Row(
       children: [
-        Container(
-          padding: EdgeInsets.all(ResponsiveUI.padding(context, 8)),
-          decoration: BoxDecoration(
-            color: AppColors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(
-            Icons.point_of_sale,
-            color: AppColors.white,
-            size: ResponsiveUI.iconSize(context, 28),
-          ),
-        ),
-        SizedBox(width: ResponsiveUI.spacing(context, 18)),
+        Icon(Icons.point_of_sale, color: AppColors.white, size: 28),
+        SizedBox(width: 15),
         Expanded(
           child: Text(
             'Complete payment',
-            style: TextStyle(
-              color: AppColors.white,
-              fontSize: ResponsiveUI.fontSize(context, 20),
-            ),
+            style: TextStyle(color: AppColors.white, fontSize: 20),
           ),
         ),
         IconButton(
@@ -249,182 +227,113 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   );
 
   Widget _paymentMethodDisplay() => Container(
-    padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+    padding: EdgeInsets.all(16),
     decoration: BoxDecoration(
       color: AppColors.lightBlueBackground,
-      borderRadius: BorderRadius.circular(
-        ResponsiveUI.borderRadius(context, 12),
-      ),
+      borderRadius: BorderRadius.circular(12),
       border: Border.all(color: AppColors.primaryBlue.withOpacity(0.3)),
     ),
     child: Row(
       children: [
-        Icon(
-          Icons.payment,
-          color: AppColors.primaryBlue,
-          size: ResponsiveUI.iconSize(context, 24),
-        ),
-        SizedBox(width: ResponsiveUI.spacing(context, 12)),
+        Icon(Icons.payment, color: AppColors.primaryBlue),
+        SizedBox(width: 12),
         Text(
           widget.selectedPaymentMethod.name,
-          style: TextStyle(
-            fontSize: ResponsiveUI.fontSize(context, 16),
-            fontWeight: FontWeight.w600,
-            color: AppColors.darkGray,
-          ),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ],
     ),
   );
 
   Widget _summaryPanel() => Container(
-    margin: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 20)),
-    padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+    margin: EdgeInsets.symmetric(horizontal: 20),
+    padding: EdgeInsets.all(16),
     decoration: BoxDecoration(
-      gradient: LinearGradient(
-        colors: [
-          AppColors.linkBlue.withOpacity(0.1),
-          AppColors.primaryBlue.withOpacity(0.05),
-        ],
-      ),
-      borderRadius: BorderRadius.circular(
-        ResponsiveUI.borderRadius(context, 16),
-      ),
-      border: Border.all(
-        color: AppColors.primaryBlue.withOpacity(0.3),
-        width: 1.5,
-      ),
+      color: AppColors.shadowGray[50],
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: AppColors.primaryBlue.withOpacity(0.3)),
     ),
     child: Column(
       children: [
-        _row('Total Payable', _due, AppColors.darkGray, bold: true),
-        Divider(
-          color: AppColors.shadowGray.withOpacity(0.3),
-          height: ResponsiveUI.spacing(context, 20),
-        ),
-
-
-        _row('Sub total  ', _subTotal, AppColors.categoryPurple),
-
-        Divider(
-          color: AppColors.shadowGray.withOpacity(0.3),
-          height: ResponsiveUI.spacing(context, 20),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _row('Taxes  ', currentTaxAmount, AppColors.warningOrange),
-            _row('Discount  ', currentDiscountAmount, AppColors.successGreen),
-          ],
-        ),
-
-        Divider(
-          color: AppColors.shadowGray.withOpacity(0.3),
-          height: ResponsiveUI.spacing(context, 20),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _row('Change  ', _change, AppColors.clearPink),
-            _row('Due  ', _due, AppColors.red),
-          ],
+        _row(
+          'Grand Total',
+          _grandTotal,
+          AppColors.darkGray,
+          bold: true,
+        ), // Changed form Due to Grand Total
+        Divider(),
+        _row('Subtotal', _subTotal, AppColors.categoryPurple),
+        SizedBox(height: 5),
+        _row('Tax (+)', currentTaxAmount, AppColors.warningOrange),
+        SizedBox(height: 5),
+        _row('Discount (-)', currentDiscountAmount, AppColors.successGreen),
+        Divider(),
+        _row('Paid Amount', _totalPaying, Colors.black),
+        _row('Change', _change, AppColors.clearPink),
+        SizedBox(height: 5),
+        _row(
+          'Remaining Due',
+          _remainingDue,
+          _remainingDue > 0 ? AppColors.red : Colors.green,
+          bold: true,
         ),
       ],
     ),
   );
 
   Widget _row(String label, double amount, Color color, {bool bold = false}) =>
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: ResponsiveUI.fontSize(context, bold ? 16 : 14),
-              fontWeight: bold ? FontWeight.bold : FontWeight.w600,
-              color: AppColors.darkGray,
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: bold ? 16 : 14,
+                fontWeight: bold ? FontWeight.bold : FontWeight.w600,
+                color: AppColors.darkGray,
+              ),
             ),
-          ),
-          Text(
-            '\$${amount.toStringAsFixed(2)}',
-            style: TextStyle(
-              fontSize: ResponsiveUI.fontSize(context, bold ? 18 : 16),
-              fontWeight: FontWeight.bold,
-              color: color,
+            Text(
+              '\$${amount.toStringAsFixed(2)}',
+              style: TextStyle(
+                fontSize: bold ? 18 : 16,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       );
 
   Widget _footer() => Container(
-    padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
-    decoration: BoxDecoration(
-      color: AppColors.shadowGray[50],
-      borderRadius: BorderRadius.vertical(
-        bottom: Radius.circular(ResponsiveUI.borderRadius(context, 20)),
-      ),
-    ),
+    padding: EdgeInsets.all(20),
     child: Row(
       children: [
         Expanded(
           child: OutlinedButton(
             onPressed: () => Navigator.pop(context),
             style: OutlinedButton.styleFrom(
-              padding: EdgeInsets.symmetric(
-                vertical: ResponsiveUI.padding(context, 14),
-              ),
-              side: BorderSide(color: AppColors.shadowGray[300]!, width: 1.5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(
-                  ResponsiveUI.borderRadius(context, 12),
-                ),
-              ),
+              padding: EdgeInsets.symmetric(vertical: 14),
             ),
-            child: Text(
-              'Cancel',
-              style: TextStyle(
-                fontSize: ResponsiveUI.fontSize(context, 16),
-                fontWeight: FontWeight.w600,
-                color: AppColors.shadowGray[700],
-              ),
-            ),
+            child: Text('Cancel', style: TextStyle(color: AppColors.darkGray)),
           ),
         ),
-        SizedBox(width: ResponsiveUI.spacing(context, 12)),
+        SizedBox(width: 12),
         Expanded(
           flex: 2,
-          child: ElevatedButton(
-            onPressed: //_due > 0 ? null :
-                _submit,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.mediumBlue700,
-              foregroundColor: AppColors.white,
-              disabledBackgroundColor: AppColors.shadowGray[300],
-              padding: EdgeInsets.symmetric(
-                vertical: ResponsiveUI.padding(context, 14),
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(
-                  ResponsiveUI.borderRadius(context, 12),
-                ),
-              ),
+          child: ElevatedButton.icon(
+            onPressed: _submit,
+            icon: Icon(Icons.check_circle_outline),
+            label: Text(
+              'Complete Sale',
+              style: TextStyle(color: AppColors.white),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.check_circle_outline,
-                  size: ResponsiveUI.iconSize(context, 20),
-                ),
-                SizedBox(width: ResponsiveUI.spacing(context, 8)),
-                Text(
-                  'Complete Sale',
-                  style: TextStyle(
-                    fontSize: ResponsiveUI.fontSize(context, 16),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+            style: ElevatedButton.styleFrom(
+              iconColor: AppColors.white,
+              backgroundColor: AppColors.mediumBlue700,
+              padding: EdgeInsets.symmetric(vertical: 14),
             ),
           ),
         ),
@@ -432,456 +341,158 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     ),
   );
 
-  // --------------------------------------------------------------
-  //  NOTES (always the same)
-  // --------------------------------------------------------------
-  Widget _notesSection() => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      // Text(
-      //   'Additional Notes',
-      //   style: TextStyle(
-      //     fontSize: ResponsiveUI.fontSize(context, 16),
-      //     fontWeight: FontWeight.bold,
-      //     color: AppColors.darkGray,
-      //   ),
-      // ),
-      // SizedBox(height: ResponsiveUI.spacing(context, 12)),
-      Row(
-        children: [
-          Expanded(
-            child: buildTextField(
-              context,
-              controller: _saleNoteCtrl,
-              label: 'Sale Note',
-              icon: Icons.shopping_bag_outlined,
-              hint: 'Enter sale note',
-              maxLines: 1,
-            ),
-          ),
-          // SizedBox(width: ResponsiveUI.spacing(context, 12)),
-          // Expanded(
-          //   child: buildTextField(
-          //     context,
-          //     controller: _staffNoteCtrl,
-          //     label: 'Staff Note',
-          //     icon: Icons.badge_outlined,
-          //     hint: 'Enter staff note',
-          //     maxLines: 3,
-          //   ),
-          // ),
-        ],
-      ),
-    ],
+  Widget _notesSection() => TextField(
+    controller: _saleNoteCtrl,
+    decoration: InputDecoration(
+      labelText: 'Sale Note',
+      prefixIcon: Icon(Icons.note_alt_outlined),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+    ),
   );
 
-  // --------------------------------------------------------------
-  //  DYNAMIC FIELDS – **exact match to your screenshots**
-  // --------------------------------------------------------------
   Widget _dynamicFields() {
     final method = widget.selectedPaymentMethod.name.toLowerCase();
-
-    // ---------- CASH ----------
-    if (method.contains('cash')) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Text(
-          //   'Cash Received',
-          //   style: TextStyle(
-          //     fontSize: ResponsiveUI.fontSize(context, 16),
-          //     fontWeight: FontWeight.bold,
-          //     color: AppColors.darkGray,
-          //   ),
-          // ),
-          // SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          buildTextField(
-            context,
-            controller: _totalPayingCtrl,
-            label: 'Cash Received',
-            icon: Icons.payments_outlined,
-            hint: 'Enter amount',
-            keyboardType: TextInputType.numberWithOptions(decimal: true),
-          ),
-        ],
-      );
-    }
-
-    // ---------- CARD ----------
+    // Simplified logic: If Cash, just amount. If Card, check requirements.
     if (method.contains('card') && !method.contains('gift')) {
       return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Card Information',
-            style: TextStyle(
-              fontSize: ResponsiveUI.fontSize(context, 16),
-              fontWeight: FontWeight.bold,
-              color: AppColors.darkGray,
-            ),
-          ),
-          SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: buildTextField(
-                  context,
-                  controller: _cardNumberCtrl,
-                  label: 'Card Number',
-                  icon: Icons.credit_card,
-                  hint: 'Enter card number',
-                  keyboardType: TextInputType.number,
-                ),
-              ),
-              SizedBox(width: ResponsiveUI.spacing(context, 12)),
-              Expanded(child: _cardTypeDropdown()),
-            ],
-          ),
-          SizedBox(height: ResponsiveUI.spacing(context, 12)),
           buildTextField(
             context,
-            controller: _cardHolderCtrl,
-            label: 'Card Holder Name',
-            icon: Icons.person_outline,
-            hint: 'Enter cardholder name',
-          ),
-          SizedBox(height: ResponsiveUI.spacing(context, 16)),
-          buildTextField(
-            context,
-            controller: _totalPayingCtrl,
-            label: 'Total Paying',
-            icon: Icons.payments_outlined,
-            hint: 'Enter amount paying',
-            keyboardType: TextInputType.numberWithOptions(decimal: true),
-          ),
-        ],
-      );
-    }
-
-    // ---------- GIFT CARD ----------
-    if (method.contains('gift')) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Gift Card *',
-            style: TextStyle(
-              fontSize: ResponsiveUI.fontSize(context, 16),
-              fontWeight: FontWeight.bold,
-              color: AppColors.darkGray,
-            ),
-          ),
-          SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          buildTextField(
-            context,
-            controller: _giftCardCtrl,
-            label: 'Gift Card',
-            icon: Icons.card_giftcard,
-            hint: 'Enter gift card code',
-          ),
-          SizedBox(height: ResponsiveUI.spacing(context, 16)),
-          buildTextField(
-            context,
-            controller: _totalPayingCtrl,
-            label: 'Total Paying',
-            icon: Icons.payments_outlined,
-            hint: 'Enter amount paying',
-            keyboardType: TextInputType.numberWithOptions(decimal: true),
-          ),
-        ],
-      );
-    }
-
-    // ---------- POINTS ----------
-    if (method.contains('points')) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          //Text(
-          //   'Points',
-          //   style: TextStyle(
-          //     fontSize: ResponsiveUI.fontSize(context, 16),
-          //     fontWeight: FontWeight.bold,
-          //     color: AppColors.darkGray,
-          //   ),
-          // ),
-          // SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          buildTextField(
-            context,
-            controller: _totalPayingCtrl,
-            label: 'Points Used',
-            icon: Icons.star,
-            hint: 'Enter points',
+            controller: _cardNumberCtrl,
+            label: 'Card Number',
+            icon: Icons.credit_card,
             keyboardType: TextInputType.number,
+            hint: 'Enter Card Number',
           ),
+          SizedBox(height: 12),
+          _cardTypeDropdown(),
         ],
       );
     }
-
-    // ---------- MULTIPLE PAYMENT ----------
-    if (method.contains('multiple')) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          buildTextField(
-            context,
-            controller: _totalPayingCtrl,
-            label: 'Paying Amount *',
-            icon: Icons.payments_outlined,
-            hint: '0',
-            keyboardType: TextInputType.numberWithOptions(decimal: true),
-          ),
-
-          SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          DropdownButtonFormField<String>(
-            value: 'Cash',
-            decoration: InputDecoration(
-              labelText: 'Paid By',
-              prefixIcon: Icon(
-                Icons.account_balance_wallet,
-                color: AppColors.primaryBlue,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(
-                  ResponsiveUI.borderRadius(context, 12),
-                ),
-              ),
-            ),
-            items: [
-              'Cash',
-              'Gift Card',
-              'Credit Card',
-              'Points',
-            ].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
-            onChanged: (_) {},
-          ),
-
-          SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          buildTextField(
-            context,
-            controller: TextEditingController(),
-            label: 'Cash Received',
-            icon: Icons.money,
-            hint: '0',
-            keyboardType: TextInputType.numberWithOptions(decimal: true),
-          ),
-
-          SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          ElevatedButton.icon(
-            onPressed: () {},
-            icon: Icon(Icons.add, color: AppColors.white),
-            label: Text(
-              'More Payment',
-              style: TextStyle(color: AppColors.white),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryBlue,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(
-                  ResponsiveUI.borderRadius(context, 12),
-                ),
-              ),
-            ),
-          ),
-        ],
-      );
-    }
-
-    // ---------- DEFAULT (any other method) ----------
     return buildTextField(
       context,
       controller: _totalPayingCtrl,
-      label: 'Total Paying',
-      icon: Icons.payments_outlined,
-      hint: 'Enter amount',
+      label: 'Amount Received',
+      icon: Icons.attach_money,
+      hint: _grandTotal.toStringAsFixed(2), // Hint is the required amount
       keyboardType: TextInputType.numberWithOptions(decimal: true),
     );
   }
 
-  Widget _cardTypeDropdown() => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        'Card Type',
-        style: TextStyle(
-          fontSize: ResponsiveUI.fontSize(context, 14),
-          fontWeight: FontWeight.w600,
-          color: AppColors.darkGray,
-        ),
-      ),
-      SizedBox(height: ResponsiveUI.spacing(context, 8)),
-      Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: ResponsiveUI.padding(context, 12),
-        ),
-        decoration: BoxDecoration(
-          color: AppColors.lightBlueBackground,
-          borderRadius: BorderRadius.circular(
-            ResponsiveUI.borderRadius(context, 12),
-          ),
-          border: Border.all(color: AppColors.shadowGray.withOpacity(0.3)),
-        ),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton<String>(
-            value: _selectedCardType,
-            isExpanded: true,
-            icon: Icon(Icons.arrow_drop_down, color: AppColors.primaryBlue),
-            items: _cardTypes
-                .map((t) => DropdownMenuItem(value: t, child: Text(t)))
-                .toList(),
-            onChanged: (v) => setState(() => _selectedCardType = v!),
-          ),
-        ),
-      ),
-    ],
+  Widget _cardTypeDropdown() => DropdownButtonFormField<String>(
+    value: _selectedCardType,
+    decoration: InputDecoration(
+      labelText: 'Card Type',
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+    ),
+    items: _cardTypes
+        .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+        .toList(),
+    onChanged: (v) => setState(() => _selectedCardType = v!),
   );
 
-  Widget _taxDropdown() => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        'Select Tax',
-        style: TextStyle(
-          fontSize: ResponsiveUI.fontSize(context, 14),
-          fontWeight: FontWeight.w600,
-          color: AppColors.darkGray,
-        ),
-      ),
-      SizedBox(height: ResponsiveUI.spacing(context, 8)),
-      Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: ResponsiveUI.padding(context, 12),
-        ),
-        decoration: BoxDecoration(
-          color: AppColors.lightBlueBackground,
-          borderRadius: BorderRadius.circular(
-            ResponsiveUI.borderRadius(context, 12),
+  Widget _taxDropdown() => DropdownButtonFormField<Tax>(
+    value: _selectedTax,
+    decoration: InputDecoration(
+      labelText: 'Tax',
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+    ),
+    items: _taxes
+        .map(
+          (t) => DropdownMenuItem(
+            value: t,
+            child: Text(
+              '${t.name} (${t.type == 'fixed' ? t.amount : '${t.amount * 100}%'})',
+            ),
           ),
-          border: Border.all(color: AppColors.shadowGray.withOpacity(0.3)),
-        ),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton<Tax>(
-            value: _selectedTax,
-            isExpanded: true,
-            icon: Icon(Icons.arrow_drop_down, color: AppColors.primaryBlue),
-            items: _taxes
-                .map(
-                  (t) => DropdownMenuItem<Tax>(
-                    value: t,
-                    child: Text(
-                      '${t.name} - ${(t.type == 'fixed') ? '${t.amount}EGP' : '${(t.amount * 100).toStringAsFixed(1)}%'}',
-                    ),
-                  ),
-                )
-                .toList(),
-            onChanged: (v) {
-              setState(() {
-                _selectedTax = v;
-                _calc();
-              });
-            },
-          ),
-        ),
-      ),
-    ],
+        )
+        .toList(),
+    onChanged: (v) {
+      setState(() {
+        _selectedTax = v;
+        _calculateValues();
+      });
+    },
   );
 
-  Widget _discountDropdown() => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        'Select Discount',
-        style: TextStyle(
-          fontSize: ResponsiveUI.fontSize(context, 14),
-          fontWeight: FontWeight.w600,
-          color: AppColors.darkGray,
-        ),
-      ),
-      SizedBox(height: ResponsiveUI.spacing(context, 8)),
-      Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: ResponsiveUI.padding(context, 12),
-        ),
-        decoration: BoxDecoration(
-          color: AppColors.lightBlueBackground,
-          borderRadius: BorderRadius.circular(
-            ResponsiveUI.borderRadius(context, 12),
+  Widget _discountDropdown() => DropdownButtonFormField<DiscountModel>(
+    value: _selectedDiscount,
+    decoration: InputDecoration(
+      labelText: 'Discount',
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+    ),
+    items: _discounts
+        .map(
+          (d) => DropdownMenuItem(
+            value: d,
+            child: Text(
+              '${d.name} (${d.type == 'fixed' ? d.amount : '${d.amount * 100}%'})',
+            ),
           ),
-          border: Border.all(color: AppColors.shadowGray.withOpacity(0.3)),
-        ),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton<DiscountModel>(
-            value: _selectedDiscount,
-            isExpanded: true,
-            icon: Icon(Icons.arrow_drop_down, color: AppColors.primaryBlue),
-            items: _discounts
-                .map(
-                  (d) => DropdownMenuItem<DiscountModel>(
-                    value: d,
-                    child: Text(
-                      '${d.name} - ${(d.type == 'fixed') ? '${d.amount}EGP' : '${(d.amount * 100).toStringAsFixed(1)}%'}',
-                    ),
-                  ),
-                )
-                .toList(),
-            onChanged: (v) {
-              setState(() {
-                _selectedDiscount = v;
-                _calc();
-              });
-            },
-          ),
-        ),
-      ),
-    ],
+        )
+        .toList(),
+    onChanged: (v) {
+      setState(() {
+        _selectedDiscount = v;
+        _calculateValues();
+      });
+    },
   );
 
   // --------------------------------------------------------------
-  //  SUBMIT
+  //  SUBMIT LOGIC
   // --------------------------------------------------------------
   void _submit() async {
-    if (_due > 0 &&
-        !widget.selectedPaymentMethod.name.toLowerCase().contains('cash')) {
-      CustomSnackbar.showError(context, 'Please pay full amount');
+    // 1. Basic Validation
+    // إذا كان الكاش، يمكن قبول دفع جزئي إذا كان النظام يسمح بالديون (Due)
+    // إذا لم يسمح، يمكن إلغاء التعليق التالي:
+    /*
+    if (_remainingDue > 0 && !widget.selectedPaymentMethod.name.toLowerCase().contains('cash')) {
+      CustomSnackbar.showError(context, 'Please pay full amount for non-cash methods');
       return;
     }
-
-    double paidAmount = _totalPaying >= _due ? _totalPaying : _due;
-
-    //paidAmount = paidAmount - ((_selectedTax != null) ? _selectedTax!.amount : 0);
+    */
 
     final posCubit = context.read<PosCubit>();
     final checkOutCubit = context.read<CheckoutCubit>();
 
+    // تحديد المبلغ المدفوع فعلياً (لا يمكن أن يزيد عن الإجمالي في الدفع)
+    // لكن في الكاش يمكن أن يدفع أكثر ونرجع الباقي.
+    // للباك إند: نرسل ما تم تحصيله بحد أقصى قيمة الفاتورة.
+    double actualPaidToSend = _totalPaying >= _grandTotal
+        ? _grandTotal
+        : _totalPaying;
+
+    // Call Create Sale
     final success = await checkOutCubit.createSale(
-      cartItems: widget.cartItems,
-      totalAmount: _due,
       posCubit: posCubit,
-      paymentNote: _paymentNoteCtrl.text.isEmpty ? null : _paymentNoteCtrl.text,
+      totalAmount: _grandTotal, // الإجمالي النهائي
+      paidAmount: actualPaidToSend, // المبلغ المدفوع (سيتم حساب Due داخلياً)
+      note: _saleNoteCtrl.text.isEmpty ? null : _saleNoteCtrl.text,
+      isPending: false, // تعتبر عملية بيع وليست مسودة (Draft)
     );
 
     if (success && mounted) {
-      //posCubit.updateCartWithEmptyList();
-      // اعرض الإيصال
+      Navigator.pop(context); // Close the checkout dialog first
+
+      // Show Receipt
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (_) {
-          // final checkOutCubit = context.read<CheckoutCubit>();
-          // final cartItems = checkOutCubit.cartItems;
           return POSReceiptDialog(
             recieptData: RecieptData(
               cartItems: widget.cartItems,
-              totalAmount: widget.totalAmount, // Subtotal فقط
+              totalAmount: _subTotal,
               taxAmount: currentTaxAmount,
-              selectedTax: _selectedTax, // عشان يظهر اسم الضريبة
+              selectedTax: _selectedTax,
               discountAmount: currentDiscountAmount,
-              selectedDiscount: _selectedDiscount, // عشان يظهر اسم الخصم
-              paidAmount: paidAmount,
+              selectedDiscount: _selectedDiscount,
+              paidAmount:
+                  _totalPaying, // نعرض ما دفعه العميل فعلاً ليشمل الباقي
               change: _change,
-              reference: context.read<CheckoutCubit>().reference ?? '',
-              pointsEarned: context.read<CheckoutCubit>().pointsEarned ?? 0,
+              reference: checkOutCubit.reference ?? 'N/A',
+              pointsEarned: checkOutCubit.pointsEarned ?? 0,
               paymentMethod: widget.selectedPaymentMethod,
             ),
           );

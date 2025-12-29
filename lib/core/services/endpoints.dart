@@ -101,6 +101,10 @@ class EndPoint {
   static String posBrandProducts(String brandId) =>
       '/api/admin/pos-home/brands/$brandId/products';
 
+  static String getAllSales = '/api/admin/pos/sales';
+  static String getPendingSales = '/api/admin/pos/sales/pending';
+  static String getDueSales = '/api/admin/pos/sales/dues';
+
   /// POS checkout
   static String posCreateSale = '/api/admin/pos/sales';
 
@@ -238,7 +242,6 @@ class EndPoint {
   static String getRevenueById(String id) => '/api/admin/revenue/$id';
   static String updateRevenue(String id) => '/api/admin/revenue/$id';
   static String getRevenueSelection = '/api/admin/revenue/selection';
-
 
   /// units
   static String getUnits = '/api/admin/units';
