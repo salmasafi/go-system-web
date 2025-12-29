@@ -104,6 +104,11 @@ class EndPoint {
   /// POS checkout
   static String posCreateSale = '/api/admin/pos/sales';
 
+  /// POS shit
+  static String logoutShift = '/api/admin/cashier-shift/logout';
+  static String endShift = '/api/admin/cashier-shift/end';
+  static String startShift = '/api/admin/cashier-shift/start';
+
   /// Tax
   static const String getAllTaxes = '/api/admin/taxes';
   static String selectTax(String id) => '/api/admin/taxes/$id';
