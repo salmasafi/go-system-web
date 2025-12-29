@@ -2,10 +2,7 @@ class CashierResponse {
   final bool success;
   final CashierData data;
 
-  CashierResponse({
-    required this.success,
-    required this.data,
-  });
+  CashierResponse({required this.success, required this.data});
 
   factory CashierResponse.fromJson(Map<String, dynamic> json) {
     return CashierResponse(
@@ -15,10 +12,7 @@ class CashierResponse {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'success': success,
-      'data': data.toJson(),
-    };
+    return {'success': success, 'data': data.toJson()};
   }
 }
 
@@ -26,10 +20,7 @@ class CashierData {
   final String message;
   final List<CashierModel> cashiers;
 
-  CashierData({
-    required this.message,
-    required this.cashiers,
-  });
+  CashierData({required this.message, required this.cashiers});
 
   factory CashierData.fromJson(Map<String, dynamic> json) {
     return CashierData(
@@ -52,27 +43,27 @@ class CashierModel {
   final String id;
   final String name;
   final String arName;
-  final Warehouse warehouse;
+  final WarehouseFromCashier warehouse;
   final bool status;
   final bool cashierActive;
   final String createdAt;
   final String updatedAt;
   final int version;
   final List<User> users;
-  final List<BankAccount> bankAccounts;
+  final List<BankAccountFromCashier> bankAccounts;
 
-   CashierModel copyWith({
+  CashierModel copyWith({
     String? id,
     String? name,
     String? arName,
-    Warehouse? warehouse,
+    WarehouseFromCashier? warehouse,
     bool? status,
     bool? cashierActive,
     String? createdAt,
     String? updatedAt,
     int? version,
     List<User>? users,
-    List<BankAccount>? bankAccounts,
+    List<BankAccountFromCashier>? bankAccounts,
   }) {
     return CashierModel(
       id: id ?? this.id,
@@ -108,17 +99,22 @@ class CashierModel {
       id: json['_id'],
       name: json['name'],
       arName: json['ar_name'],
-      warehouse: Warehouse.fromJson(json['warehouse_id']),
+      warehouse: WarehouseFromCashier.fromJson(json['warehouse_id']),
       status: json['status'],
       cashierActive: json['cashier_active'],
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
       version: json['__v'],
-      users: (json['users'] as List<dynamic>)
-          .map((item) => User.fromJson(item))
-          .toList(),
+      users:
+          (json['warehouseUsers']
+                  as List<
+                    dynamic
+                  >?) // Changed to 'warehouseUsers'; added null check for safety
+              ?.map((item) => User.fromJson(item))
+              .toList() ??
+          [], // Default to empty list if null
       bankAccounts: (json['bankAccounts'] as List<dynamic>)
-          .map((item) => BankAccount.fromJson(item))
+          .map((item) => BankAccountFromCashier.fromJson(item))
           .toList(),
     );
   }
@@ -134,26 +130,46 @@ class CashierModel {
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       '__v': version,
-      'users': users.map((e) => e.toJson()).toList(),
+      'users': users
+          .map((e) => e.toJson())
+          .toList(), // If API expects 'warehouseUsers', change this key accordingly
       'bankAccounts': bankAccounts.map((e) => e.toJson()).toList(),
       'id': id,
     };
   }
 }
 
-class Warehouse {
+class BankAccountFromCashier {
   final String id;
   final String name;
+  final List<String> warehouseId;
+  final double balance;
+  final bool status;
+  final bool inPOS;
 
-  Warehouse({
+  BankAccountFromCashier({
     required this.id,
     required this.name,
+    required this.warehouseId,
+    required this.balance,
+    required this.status,
+    required this.inPOS,
   });
 
-  factory Warehouse.fromJson(Map<String, dynamic> json) {
-    return Warehouse(
+  factory BankAccountFromCashier.fromJson(Map<String, dynamic> json) {
+    return BankAccountFromCashier(
       id: json['_id'],
       name: json['name'],
+      warehouseId:
+          json['warehouseId'] !=
+              null // Handle null case
+          ? (json['warehouseId'] as List<dynamic>)
+                .map((item) => item.toString())
+                .toList()
+          : [], // Default to empty list if missing
+      balance: (json['balance'] as num).toDouble(),
+      status: json['status'],
+      inPOS: json['in_POS'],
     );
   }
 
@@ -161,7 +177,26 @@ class Warehouse {
     return {
       '_id': id,
       'name': name,
+      'warehouseId': warehouseId,
+      'balance': balance,
+      'status': status,
+      'in_POS': inPOS,
     };
+  }
+}
+
+class WarehouseFromCashier {
+  final String id;
+  final String name;
+
+  WarehouseFromCashier({required this.id, required this.name});
+
+  factory WarehouseFromCashier.fromJson(Map<String, dynamic> json) {
+    return WarehouseFromCashier(id: json['_id'], name: json['name']);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'_id': id, 'name': name};
   }
 }
 
@@ -201,48 +236,6 @@ class User {
       'role': role,
       'status': status,
       'warehouseId': warehouseId,
-    };
-  }
-}
-
-class BankAccount {
-  final String id;
-  final String name;
-  final List<String> warehouseId;
-  final double balance;
-  final bool status;
-  final bool inPOS;
-
-  BankAccount({
-    required this.id,
-    required this.name,
-    required this.warehouseId,
-    required this.balance,
-    required this.status,
-    required this.inPOS,
-  });
-
-  factory BankAccount.fromJson(Map<String, dynamic> json) {
-    return BankAccount(
-      id: json['_id'],
-      name: json['name'],
-      warehouseId: (json['warehouseId'] as List<dynamic>)
-          .map((item) => item.toString())
-          .toList(),
-      balance: (json['balance'] as num).toDouble(),
-      status: json['status'],
-      inPOS: json['in_POS'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'name': name,
-      'warehouseId': warehouseId,
-      'balance': balance,
-      'status': status,
-      'in_POS': inPOS,
     };
   }
 }

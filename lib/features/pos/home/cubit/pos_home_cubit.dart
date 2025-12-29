@@ -8,6 +8,8 @@ import 'package:systego/features/admin/discount/model/discount_model.dart';
 import '../../../../core/services/dio_helper.dart';
 import '../../../../core/services/endpoints.dart';
 import '../../../../core/utils/error_handler.dart';
+import '../../../admin/cashier/model/cashirer_model.dart';
+import '../model/shift_model.dart';
 
 class PosCubit extends Cubit<PosState> {
   PosCubit() : super(PosInitial());
@@ -28,6 +30,17 @@ class PosCubit extends Cubit<PosState> {
   List<PaymentMethod> paymentMethods = [];
   List<BankAccount> accounts = [];
   BankAccount? selectedAccount;
+
+  // Cashier
+  // ShiftModel? currentShift;
+  // bool hasOpenShift = false; // من login
+  // CashierModel? selectedCashier;
+  // List<CashierModel> allCashiers = [];
+  // متغيرات الشيفت والكاشير
+  List<CashierModel> cashiersList = [];
+  CashierModel? selectedCashier;
+  ShiftModel? currentShift;
+  bool isShiftOpen = false;
 
   List<Tax> taxes = [
     Tax(id: 'null', name: 'No Tax', amount: 0.0, type: 'fixed', status: true),
@@ -88,10 +101,196 @@ class PosCubit extends Cubit<PosState> {
     return ErrorHandler.handleError(errorOrResponse);
   }
 
+  // Cashier
+
+  // 1. جلب قائمة الكاشير (للاختيار فقط)
+  Future<void> getCashiers() async {
+    emit(PosLoading());
+    try {
+      final response = await DioHelper.getData(url: EndPoint.getAllCashiers);
+      if (response.statusCode == 200 && response.data['success'] == true) {
+        final data = response.data['data']['cashiers'] as List;
+        cashiersList = data.map((e) => CashierModel.fromJson(e)).toList();
+        emit(PosCashiersLoaded(cashiersList)); // State جديد يجب إضافته
+      }
+    } catch (e) {
+      emit(PosError(e.toString()));
+    }
+  }
+
+  // 2. اختيار الكاشير
+  void selectCashier(CashierModel cashier) {
+    selectedCashier = cashier;
+    // بعد اختيار الكاشير، نتحقق مما إذا كان لديه شيفت مفتوح (يمكنك تحسين هذا بجلب حالة الشيفت من الـ API)
+    emit(PosInitial());
+  }
+
+  // 3. بدء الشيفت
+  Future<void> startShift() async {
+    if (selectedCashier == null) return;
+    emit(PosLoading());
+    try {
+      final response = await DioHelper.postData(
+        url: EndPoint.startShift,
+        data: {'cashier_id': selectedCashier!.id},
+      );
+
+      if (response.statusCode == 200 && response.data['success'] == true) {
+        currentShift = ShiftModel.fromJson(response.data['data']['shift']);
+        isShiftOpen = true;
+        // الآن نقوم بتحميل المنتجات لأن الشيفت بدأ
+        await loadPosData();
+        //emit(PosShiftStarted()); // State جديد
+      } else {
+        emit(PosError(response.data['data']['message']));
+      }
+    } catch (e) {
+      emit(PosError(e.toString()));
+    }
+  }
+
+  // 4. إنهاء الشيفت وعرض التقرير
+  Future<Map<String, dynamic>?> endShift() async {
+    emit(PosLoading());
+    try {
+      final response = await DioHelper.putData(
+        // انتبه الـ Method PUT حسب الـ Postman الخاص بك
+        url: EndPoint.endShift,
+        data: {}, // أرسل cash_in_drawer إذا تطلب الأمر
+      );
+
+      if (response.statusCode == 200) {
+        isShiftOpen = false;
+        currentShift = null;
+        selectedCashier = null; // إعادة تعيين الكاشير لإجبار الاختيار مرة أخرى
+        //emit(PosShiftEnded()); // State جديد
+        //return response.data['data']; // إرجاع التقرير لعرضه
+        refreshCartProducts();
+      }
+    } catch (e) {
+      emit(PosError(e.toString()));
+    }
+    return null;
+  }
+
+  // 5. تسجيل الخروج بدون إنهاء (Pause)
+  Future<void> logoutShift() async {
+    try {
+      await DioHelper.postData(url: EndPoint.logoutShift, data: {});
+      // هنا مجرد خروج من الشاشة أو التطبيق
+      emit(PosLoggedOut());
+    } catch (e) {
+      emit(PosError(e.toString()));
+    }
+  }
+
+  // Future<void> getCashiers() async {
+  //   try {
+  //     final response = await DioHelper.getData(url: EndPoint.getAllCashiers);
+  //     if (response.statusCode == 200) {
+  //       final model = CashierResponse.fromJson(response.data);
+  //       if (model.success) {
+  //         allCashiers = model.data.cashiers;
+  //         emit(
+  //           PosCashiersLoaded(allCashiers),
+  //         ); // state جديد، أضفه في state.dart
+  //       }
+  //     }
+  //   } catch (e) {
+  //     emit(PosError(_extractErrorMessage(e)));
+  //   }
+  // }
+
+  // void selectCashier(CashierModel cashier) {
+  //   selectedCashier = cashier;
+  //   emit(PosCashierSelected()); // state جديد
+  // }
+
+  // Load current shift (call after login or init)
+  // Future<void> getCurrentShift() async {
+  //   try {
+  //     final response = await DioHelper.getData(
+  //       url: EndPoint.currentShift,
+  //     ); // افترض endpoint، غير إذا مختلف
+  //     if (response.statusCode == 200) {
+  //       currentShift = ShiftModel.fromJson(response.data['data']['shift']);
+  //       hasOpenShift = currentShift?.status == 'open';
+  //       emit(PosShiftLoaded());
+  //     }
+  //   } catch (e) {
+  //     hasOpenShift = false;
+  //     emit(PosError(_extractErrorMessage(e)));
+  //   }
+  // }
+
+  // // Start shift
+  // Future<void> startShift() async {
+  //   if (selectedCashier == null) {
+  //     emit(PosError('Select cashier first'));
+  //     return;
+  //   }
+  //   emit(PosLoading());
+  //   try {
+  //     final response = await DioHelper.postData(
+  //       url: EndPoint.startShift, // '/api/admin/cashier-shift/start'
+  //       data: {'cashier_id': selectedCashier!.id},
+  //     );
+  //     if (response.statusCode == 200) {
+  //       currentShift = ShiftModel.fromJson(response.data['data']['shift']);
+  //       hasOpenShift = true;
+  //       emit(PosShiftStarted());
+  //       await loadPosData(); // reload products after start
+  //     }
+  //   } catch (e) {
+  //     emit(PosError(_extractErrorMessage(e)));
+  //   }
+  // }
+
+  // // End shift (with report)
+  // Future<Map<String, dynamic>?> endShift(double cashInDrawer) async {
+  //   // أضف input إذا لازم
+  //   emit(PosLoading());
+  //   try {
+  //     final response = await DioHelper.putData(
+  //       url: EndPoint.endShift, // '/api/admin/cashier-shift/end/report'
+  //       data: {'cash_in_drawer': cashInDrawer}, // إذا لازم، غير حسب API
+  //     );
+  //     if (response.statusCode == 200) {
+  //       currentShift = null;
+  //       hasOpenShift = false;
+  //       emit(PosShiftEnded());
+  //       return response.data['data']['report']; // للعرض في report screen
+  //     }
+  //   } catch (e) {
+  //     emit(PosError(_extractErrorMessage(e)));
+  //   }
+  //   return null;
+  // }
+
+  // // Logout without ending shift
+  // Future<void> logout() async {
+  //   try {
+  //     await DioHelper.postData(
+  //       url: EndPoint.logoutShift, data: {},
+  //     ); // '/api/admin/cashier-shift/logout'
+  //     // مسح token أو navigate to login، لكن لا تغير hasOpenShift
+  //     emit(PosLoggedOut());
+  //   } catch (e) {
+  //     emit(PosError(_extractErrorMessage(e)));
+  //   }
+  // }
+
   // Load all initial data
   Future<void> loadPosData() async {
     emit(PosLoading());
     try {
+      // إذا لم يكن هناك شيفت مفتوح، لا تجلب المنتجات
+      if (!isShiftOpen) {
+        await getCashiers(); // بدلاً من المنتجات، اجلب الكاشيرز
+        return;
+      }
+      // ... باقي كود جلب المنتجات والفئات الطبيعي
+
       await Future.wait([
         getCategories(),
         getBrands(),

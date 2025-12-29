@@ -1,8 +1,5 @@
 class UserModel {
-  UserModel({
-    this.success,
-    this.data,
-  });
+  UserModel({this.success, this.data});
 
   UserModel.fromJson(dynamic json) {
     success = json['success'];
@@ -23,11 +20,7 @@ class UserModel {
 }
 
 class Data {
-  Data({
-    this.message,
-    this.token,
-    this.user,
-  });
+  Data({this.message, this.token, this.user});
 
   Data.fromJson(dynamic json) {
     message = json['message'];
@@ -60,6 +53,7 @@ class User {
     this.role,
     this.roles,
     this.actions,
+    this.hasOpenShift = false,
   });
 
   User.fromJson(dynamic json) {
@@ -71,7 +65,10 @@ class User {
     role = json['role'];
     // Fix: Convert dynamic lists to List<dynamic>
     roles = json['roles'] != null ? List<dynamic>.from(json['roles']) : null;
-    actions = json['actions'] != null ? List<dynamic>.from(json['actions']) : null;
+    actions = json['actions'] != null
+        ? List<dynamic>.from(json['actions'])
+        : null;
+    hasOpenShift = json['hasOpenShift'] ?? false;
   }
 
   String? id;
@@ -82,6 +79,7 @@ class User {
   String? role;
   List<dynamic>? roles;
   List<dynamic>? actions;
+  bool? hasOpenShift;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -93,6 +91,7 @@ class User {
     map['role'] = role;
     map['roles'] = roles;
     map['actions'] = actions;
+    map['hasOpenShift'] = hasOpenShift;
     return map;
   }
 }
