@@ -337,13 +337,13 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     controller: _saleNoteCtrl,
     label: 'Sale Note',
     icon: Icons.note_alt_outlined,
-    hint: _grandTotal.toStringAsFixed(2),
-    keyboardType: TextInputType.numberWithOptions(decimal: true),
+    hint: 'Type a sale note',
+    keyboardType: TextInputType.text,
   );
 
   Widget _dynamicFields() {
     final method = widget.selectedPaymentMethod.name.toLowerCase();
-    if (method.contains('card') && !method.contains('gift')) {
+    if (method.contains('card')) {
       return Column(
         children: [
           buildTextField(

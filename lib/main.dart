@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/services/session_helper.dart';
-import 'package:systego/features/POS/orders/cubit/orders_cubit.dart';
+import 'package:systego/features/POS/sales/cubit/sales_cubit.dart';
 import 'package:systego/features/admin/adjustment/cubit/adjustment_cubit.dart';
 import 'package:systego/features/admin/admins_screen/cubit/admins_cubit.dart';
 import 'package:systego/features/admin/admins_screen/cubit/permissions_cubit.dart';

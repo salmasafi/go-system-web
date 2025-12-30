@@ -53,8 +53,7 @@ class _POSFilterBarState extends State<POSFilterBar> {
                     onClose: () => cubit.hideFilterPanels(
                       isCategoryRefresh: true,
                     ), // Only hide
-                    onFilterClear: () =>
-                        cubit.clearFilter(), // Clear + back to featured
+                    onFilterClear: () => cubit.clearFilter(),
                   ),
                 ),
 
