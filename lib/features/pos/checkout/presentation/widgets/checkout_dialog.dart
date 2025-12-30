@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
@@ -8,7 +7,7 @@ import 'package:systego/features/POS/checkout/model/reciept_data.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
 import 'package:systego/features/POS/home/model/pos_models.dart';
 import 'package:systego/features/admin/discount/model/discount_model.dart';
-import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
+import '../../../../../core/widgets/custom_drop_down_menu.dart';
 import '../../cubit/checkout_cubit/checkout_cubit.dart';
 import '../../model/checkout_models.dart';
 import 'receipt_dialog.dart';
@@ -255,12 +254,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     ),
     child: Column(
       children: [
-        _row(
-          'Grand Total',
-          _grandTotal,
-          AppColors.darkGray,
-          bold: true,
-        ), // Changed form Due to Grand Total
+        _row('Grand Total', _grandTotal, AppColors.darkGray, bold: true),
         Divider(),
         _row('Subtotal', _subTotal, AppColors.categoryPurple),
         SizedBox(height: 5),
@@ -326,13 +320,10 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
           child: ElevatedButton.icon(
             onPressed: _submit,
             icon: Icon(Icons.check_circle_outline),
-            label: Text(
-              'Complete Sale',
-              style: TextStyle(color: AppColors.white),
-            ),
+            label: Text('Complete Sale'),
             style: ElevatedButton.styleFrom(
-              iconColor: AppColors.white,
               backgroundColor: AppColors.mediumBlue700,
+              foregroundColor: AppColors.white,
               padding: EdgeInsets.symmetric(vertical: 14),
             ),
           ),
@@ -341,18 +332,17 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     ),
   );
 
-  Widget _notesSection() => TextField(
+  Widget _notesSection() => buildTextField(
+    context,
     controller: _saleNoteCtrl,
-    decoration: InputDecoration(
-      labelText: 'Sale Note',
-      prefixIcon: Icon(Icons.note_alt_outlined),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-    ),
+    label: 'Sale Note',
+    icon: Icons.note_alt_outlined,
+    hint: _grandTotal.toStringAsFixed(2),
+    keyboardType: TextInputType.numberWithOptions(decimal: true),
   );
 
   Widget _dynamicFields() {
     final method = widget.selectedPaymentMethod.name.toLowerCase();
-    // Simplified logic: If Cash, just amount. If Card, check requirements.
     if (method.contains('card') && !method.contains('gift')) {
       return Column(
         children: [
@@ -374,70 +364,61 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
       controller: _totalPayingCtrl,
       label: 'Amount Received',
       icon: Icons.attach_money,
-      hint: _grandTotal.toStringAsFixed(2), // Hint is the required amount
+      hint: _grandTotal.toStringAsFixed(2),
       keyboardType: TextInputType.numberWithOptions(decimal: true),
     );
   }
 
-  Widget _cardTypeDropdown() => DropdownButtonFormField<String>(
+  // ---- DROPDOWN REPLACEMENTS START ----
+
+  Widget _cardTypeDropdown() => buildDropdownField<String>(
+    context,
     value: _selectedCardType,
-    decoration: InputDecoration(
-      labelText: 'Card Type',
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-    ),
-    items: _cardTypes
-        .map((t) => DropdownMenuItem(value: t, child: Text(t)))
-        .toList(),
-    onChanged: (v) => setState(() => _selectedCardType = v!),
+    items: _cardTypes,
+    label: 'Card Type',
+    hint: 'Select Type',
+    icon: Icons.credit_card_outlined,
+    onChanged: (v) {
+      if (v != null) setState(() => _selectedCardType = v);
+    },
+    itemLabel: (item) => item,
   );
 
-  Widget _taxDropdown() => DropdownButtonFormField<Tax>(
+  Widget _taxDropdown() => buildDropdownField<Tax>(
+    context,
     value: _selectedTax,
-    decoration: InputDecoration(
-      labelText: 'Tax',
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-    ),
-    items: _taxes
-        .map(
-          (t) => DropdownMenuItem(
-            value: t,
-            child: Text(
-              '${t.name} (${t.type == 'fixed' ? t.amount : '${t.amount * 100}%'})',
-            ),
-          ),
-        )
-        .toList(),
+    items: _taxes,
+    label: 'Tax',
+    hint: 'Select Tax',
+    icon: Icons.percent,
     onChanged: (v) {
       setState(() {
         _selectedTax = v;
         _calculateValues();
       });
     },
+    itemLabel: (t) =>
+        '${t.name} (${t.type == 'fixed' ? t.amount : '${t.amount * 100}%'})',
   );
 
-  Widget _discountDropdown() => DropdownButtonFormField<DiscountModel>(
+  Widget _discountDropdown() => buildDropdownField<DiscountModel>(
+    context,
     value: _selectedDiscount,
-    decoration: InputDecoration(
-      labelText: 'Discount',
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-    ),
-    items: _discounts
-        .map(
-          (d) => DropdownMenuItem(
-            value: d,
-            child: Text(
-              '${d.name} (${d.type == 'fixed' ? d.amount : '${d.amount * 100}%'})',
-            ),
-          ),
-        )
-        .toList(),
+    items: _discounts,
+    label: 'Discount',
+    hint: 'Select Discount',
+    icon: Icons.discount_outlined,
     onChanged: (v) {
       setState(() {
         _selectedDiscount = v;
         _calculateValues();
       });
     },
+    itemLabel: (d) =>
+        '${d.name} (${d.type == 'fixed' ? d.amount : '${d.amount * 100}%'})',
   );
+
+  // ---- DROPDOWN REPLACEMENTS END ----
 
   // --------------------------------------------------------------
   //  SUBMIT LOGIC

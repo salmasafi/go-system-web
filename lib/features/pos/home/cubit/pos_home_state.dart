@@ -1,6 +1,6 @@
 // lib/features/pos/home/cubit/pos_home_state.dart
 
-import '../../cashier/model/cashier_model.dart';
+import '../../shift/model/cashier_model.dart';
 import '../model/pos_models.dart';
 
 // lib/features/pos/home/cubit/pos_home_state.dart

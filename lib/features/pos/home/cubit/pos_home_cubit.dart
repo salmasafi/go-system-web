@@ -9,8 +9,8 @@ import 'package:systego/features/admin/discount/model/discount_model.dart';
 import '../../../../core/services/dio_helper.dart';
 import '../../../../core/services/endpoints.dart';
 import '../../../../core/utils/error_handler.dart';
-import '../../cashier/model/cashier_model.dart';
-import '../model/shift_model.dart';
+import '../../shift/model/cashier_model.dart';
+import '../../shift/model/shift_model.dart';
 
 class PosCubit extends Cubit<PosState> {
   PosCubit() : super(PosInitial());
@@ -18,6 +18,8 @@ class PosCubit extends Cubit<PosState> {
   String selectedTab = 'featured';
   bool showCategoryFilters = false;
   bool showBrandFilters = false;
+  bool isCategoryProductsLoading = false;
+  bool isBrandProductsLoading = false;
 
   List<Category> categories = [];
   List<Brand> brands = [];
@@ -131,7 +133,9 @@ class PosCubit extends Cubit<PosState> {
         isShiftOpen = true;
         await loadPosData();
       } else {
-        emit(PosError(response.data['data']['message'] ?? 'Failed to start shift'));
+        emit(
+          PosError(response.data['data']['message'] ?? 'Failed to start shift'),
+        );
       }
     } catch (e) {
       emit(PosError(e.toString()));
@@ -143,15 +147,15 @@ class PosCubit extends Cubit<PosState> {
     try {
       final response = await DioHelper.putData(
         url: EndPoint.endShift,
-        data: {}, 
+        data: {},
       );
 
       if (response.statusCode == 200) {
         isShiftOpen = false;
         currentShift = null;
         selectedCashier = null;
-        // هنا يمكن إرجاع البيانات إذا أردت استخدامها
-        refreshCartProducts(); // لتحديث الواجهة (إخفاء المنتجات)
+
+        emit(PosShiftEnded());
       }
     } catch (e) {
       emit(PosError(e.toString()));
@@ -184,7 +188,7 @@ class PosCubit extends Cubit<PosState> {
         getSelections(),
         getFeaturedProducts(),
       ]);
-      
+
       emit(PosLoaded());
       await selectTab();
     } catch (e) {
@@ -224,7 +228,7 @@ class PosCubit extends Cubit<PosState> {
         final data = response.data['data']['products'] as List;
         // هنا يتم استخدام الموديل المحدث الذي يعالج variations
         featuredProducts = data.map((e) => Product.fromList(e)).toList();
-        
+
         log("Loaded ${featuredProducts.length} featured products.");
       }
     } catch (e) {
@@ -235,23 +239,42 @@ class PosCubit extends Cubit<PosState> {
 
   Future<void> getSelections() async {
     // Reset defaults
-    taxes = [Tax(id: 'null', name: 'No Tax', amount: 0.0, type: 'fixed', status: true)];
+    taxes = [
+      Tax(id: 'null', name: 'No Tax', amount: 0.0, type: 'fixed', status: true),
+    ];
     selectedTax = null;
-    discounts = [DiscountModel(id: 'null', name: 'No Discount', amount: 0.0, type: 'fixed', status: true, createdAt: '', updatedAt: '', version: null)];
+    discounts = [
+      DiscountModel(
+        id: 'null',
+        name: 'No Discount',
+        amount: 0.0,
+        type: 'fixed',
+        status: true,
+        createdAt: '',
+        updatedAt: '',
+        version: null,
+      ),
+    ];
     selectedDiscount = null;
 
     try {
       final response = await DioHelper.getData(url: EndPoint.posSelections);
       if (response.statusCode == 200) {
         final json = response.data['data'];
-        
-        warehouses = (json['warehouses'] as List).map((e) => Warehouse.fromJson(e)).toList();
+
+        warehouses = (json['warehouses'] as List)
+            .map((e) => Warehouse.fromJson(e))
+            .toList();
         selectedWarhouse = warehouses.isNotEmpty ? warehouses.first : null;
 
-        customers = (json['customers'] as List).map((e) => Customer.fromJson(e)).toList();
+        customers = (json['customers'] as List)
+            .map((e) => Customer.fromJson(e))
+            .toList();
         selectedCustomer = customers.isNotEmpty ? customers.first : null;
 
-        accounts = (json['accounts'] as List? ?? []).map((e) => BankAccount.fromJson(e)).toList();
+        accounts = (json['accounts'] as List? ?? [])
+            .map((e) => BankAccount.fromJson(e))
+            .toList();
         selectedAccount = accounts.isNotEmpty ? accounts.first : null;
 
         List<Tax> taxesFromJson = ((json['taxes'] as List?) ?? [])
@@ -260,24 +283,35 @@ class PosCubit extends Cubit<PosState> {
         var filteredTaxes = taxesFromJson.isNotEmpty
             ? taxesFromJson.where((element) => element.status).toList()
             : null;
-        if(filteredTaxes != null) taxes.addAll(filteredTaxes);
+        if (filteredTaxes != null) taxes.addAll(filteredTaxes);
         selectedTax = taxes.first;
 
-        List<DiscountModel> discountsFromJson = ((json['discounts'] as List?) ?? [])
-            .map<DiscountModel>((dynamic e) => DiscountModel.fromJson(e as Map<String, dynamic>))
-            .toList();
+        List<DiscountModel> discountsFromJson =
+            ((json['discounts'] as List?) ?? [])
+                .map<DiscountModel>(
+                  (dynamic e) =>
+                      DiscountModel.fromJson(e as Map<String, dynamic>),
+                )
+                .toList();
         var filteredDiscounts = discountsFromJson.isNotEmpty
             ? discountsFromJson.where((element) => element.status).toList()
             : null;
-        if(filteredDiscounts != null) discounts.addAll(filteredDiscounts);
+        if (filteredDiscounts != null) discounts.addAll(filteredDiscounts);
         selectedDiscount = discounts.first;
 
-        currencies = (json['currencies'] as List? ?? []).map((e) => Currency.fromJson(e)).toList();
+        currencies = (json['currencies'] as List? ?? [])
+            .map((e) => Currency.fromJson(e))
+            .toList();
         selectedCurrency = currencies.isNotEmpty ? currencies.first : null;
 
-        paymentMethods = (json['paymentMethods'] as List).map((e) => PaymentMethod.fromJson(e)).toList();
+        paymentMethods = (json['paymentMethods'] as List)
+            .map((e) => PaymentMethod.fromJson(e))
+            .toList();
         selectedPaymentMethod = paymentMethods.isNotEmpty
-            ? paymentMethods.firstWhere((element) => element.name == 'Cash', orElse: () => paymentMethods.first)
+            ? paymentMethods.firstWhere(
+                (element) => element.name == 'Cash',
+                orElse: () => paymentMethods.first,
+              )
             : null;
       }
     } catch (e) {
@@ -287,42 +321,50 @@ class PosCubit extends Cubit<PosState> {
 
   // ─── Filter & Selection Updates ───
 
-  void changeAccount(BankAccount account) {
-    selectedAccount = account;
-    // تحديث الواجهة إذا لزم
-  }
+  // void changeTax(Tax? tax) {
+  //   selectedTax = tax;
+  // }
 
-  void changeTax(Tax? tax) {
-    selectedTax = tax;
-  }
+  // void changeDiscount(DiscountModel? discount) {
+  //   selectedDiscount = discount;
+  // }
 
-  void changeDiscount(DiscountModel? discount) {
-    selectedDiscount = discount;
-  }
+  // void changeCurrency(Currency currency) {
+  //   selectedCurrency = currency;
+  // }
 
-  void changeCurrency(Currency currency) {
-    selectedCurrency = currency;
-  }
+  // Future<void> changeWarhouseValue(Warehouse warehouse) async {
+  //   selectedWarhouse = warehouse;
+  //   selectTab();
+  // }
 
-  Future<void> changeWarhouseValue(Warehouse warehouse) async {
-    selectedWarhouse = warehouse;
-    selectTab();
-  }
+  // Future<void> changeCustomerValue(Customer customer) async {
+  //   selectedCustomer = customer;
+  //   selectTab();
+  // }
 
-  Future<void> changeCustomerValue(Customer customer) async {
-    selectedCustomer = customer;
-    selectTab();
-  }
+  // Future<void> changePaymentMethodValue(PaymentMethod paymentMethod) async {
+  //   selectedPaymentMethod = paymentMethod;
+  //   selectTab();
+  // }
 
-  Future<void> changePaymentMethodValue(PaymentMethod paymentMethod) async {
-    selectedPaymentMethod = paymentMethod;
-    selectTab();
-  }
+  // ─── Product Listing & Filtering ───
 
   // ─── Product Listing & Filtering ───
 
   Future<void> getProductsByCategory(String? categoryId) async {
+    isCategoryProductsLoading = true;
+
+    // 1. إغلاق الفلتر فوراً
+    showCategoryFilters = false;
+    showBrandFilters = false;
+
+    // 2. تصفير القائمة القديمة لمنع ظهور بيانات سابقة
+    categoryProducts = [];
+
+    // 3. إظهار التحميل
     emit(PosProductsLoading());
+
     if (categoryId != null) {
       try {
         final response = await DioHelper.getData(
@@ -332,20 +374,36 @@ class PosCubit extends Cubit<PosState> {
           final data = response.data['data']['products'] as List;
           categoryProducts = data.map((e) => Product.fromList(e)).toList();
           selectedCategoryId = categoryId;
-          hideFilterPanels();
+
+          // hideFilterPanels(); // لا نحتاج لاستدعائها هنا لأننا أغلقناها في البداية
+
+          isCategoryProductsLoading = false;
           emit(PosDataLoaded(categoryProducts));
         }
       } catch (e) {
         final msg = _extractErrorMessage(e);
+        isCategoryProductsLoading = false;
         emit(PosError(msg));
       }
     } else {
+      isCategoryProductsLoading = false;
       emit(PosDataLoaded([]));
     }
   }
 
   Future<void> getProductsByBrand(String? brandId) async {
+    isBrandProductsLoading = true;
+
+    // 1. إغلاق الفلتر فوراً
+    showCategoryFilters = false;
+    showBrandFilters = false;
+
+    // 2. تصفير القائمة القديمة
+    brandProducts = [];
+
+    // 3. إظهار التحميل
     emit(PosProductsLoading());
+
     if (brandId != null) {
       try {
         final response = await DioHelper.getData(
@@ -355,19 +413,27 @@ class PosCubit extends Cubit<PosState> {
           final data = response.data['data']['products'] as List;
           brandProducts = data.map((e) => Product.fromList(e)).toList();
           selectedBrandId = brandId;
-          hideFilterPanels();
+
+          // hideFilterPanels(); // تم الإغلاق مسبقاً
+
+          isBrandProductsLoading = false;
           emit(PosDataLoaded(brandProducts));
         }
       } catch (e) {
         final msg = _extractErrorMessage(e);
+        isBrandProductsLoading = false;
         emit(PosError(msg));
       }
     } else {
+      isBrandProductsLoading = false;
       emit(PosDataLoaded([]));
     }
   }
 
-  Future<void> selectTab({String tab = 'featured', bool noFliterRefresh = false}) async {
+  Future<void> selectTab({
+    String tab = 'featured',
+    bool noFliterRefresh = false,
+  }) async {
     selectedTab = tab;
     if (tab == 'featured') {
       hideFilterPanels();
@@ -397,7 +463,10 @@ class PosCubit extends Cubit<PosState> {
     }
   }
 
-  Future<void> hideFilterPanels({bool isCategoryRefresh = false, bool isBrandRefresh = false}) async {
+  Future<void> hideFilterPanels({
+    bool isCategoryRefresh = false,
+    bool isBrandRefresh = false,
+  }) async {
     showCategoryFilters = false;
     showBrandFilters = false;
 

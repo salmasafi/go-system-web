@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/error_handler.dart';
-import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:systego/features/POS/checkout/cubit/checkout_cubit/checkout_cubit.dart';
@@ -32,7 +31,9 @@ class POSHomeScreen extends StatefulWidget {
   State<POSHomeScreen> createState() => _POSHomeScreenState();
 }
 
-class _POSHomeScreenState extends State<POSHomeScreen> {
+class _POSHomeScreenState extends State<POSHomeScreen>
+    with WidgetsBindingObserver {
+  // إضافة WidgetsBindingObserver لمراقبة حالة التطبيق (اختياري للتحسين)
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   Timer? _shiftTimer;
@@ -41,32 +42,62 @@ class _POSHomeScreenState extends State<POSHomeScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<PosCubit>().loadPosData();
-    _startLocalTimer();
+    // إضافة مراقب لحالة التطبيق (استئناف/توقف)
+    WidgetsBinding.instance.addObserver(this);
+
+    // تحميل البيانات وبدء المؤقت فوراً إذا كان هناك شيفت
+    final cubit = context.read<PosCubit>();
+    cubit.loadPosData().then((_) {
+      if (mounted && cubit.isShiftOpen) {
+        _startLocalTimer();
+      }
+    });
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _searchController.dispose();
     _shiftTimer?.cancel();
     super.dispose();
   }
 
-  // ─── Shift Timer Logic ───
+  // مراقبة حالة التطبيق: عند العودة للتطبيق من الخلفية، نقوم بتحديث العداد فوراً
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _startLocalTimer();
+    }
+  }
+
+  // ─── Shift Timer Logic (Updated) ───
   void _startLocalTimer() {
     _shiftTimer?.cancel();
-    _shiftTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+
+    // دالة مساعدة لتحديث الوقت فوراً دون انتظار ثانية
+    void updateTime() {
       final cubit = context.read<PosCubit>();
       if (cubit.isShiftOpen && cubit.currentShift != null) {
+        // الحساب دائماً يعتمد على الفرق بين "الآن" ووقت البداية القادم من السيرفر
+        // هذا يضمن الدقة حتى لو أغلق التطبيق وفتح بعد ساعات
         final duration = DateTime.now().difference(
           cubit.currentShift!.startTime,
         );
+
         if (mounted) {
           setState(() {
             _shiftDuration = _formatDuration(duration);
           });
         }
       }
+    }
+
+    // تحديث فوري
+    updateTime();
+
+    // تحديث دوري كل ثانية
+    _shiftTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      updateTime();
     });
   }
 
@@ -76,6 +107,8 @@ class _POSHomeScreenState extends State<POSHomeScreen> {
     String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
   }
+
+  // ... rest of the code (addToCart, build, etc.) remains unchanged
 
   // ─── Cart & Barcode Logic ───
   void _addToCart(Product product) {
@@ -166,7 +199,6 @@ class _POSHomeScreenState extends State<POSHomeScreen> {
   }
 
   // ─── UI Handling Methods ───
-
   // دالة لعرض التقرير بعد انتهاء الشيفت
   void _showReportDialog(Map<String, dynamic> reportData) {
     showDialog(
@@ -207,7 +239,9 @@ class _POSHomeScreenState extends State<POSHomeScreen> {
           );
         }
         if (state is PosShiftEnded) {
-          // يمكن استدعاء الـ Dialog هنا إذا كان التقرير في الـ state
+          context
+              .read<PosCubit>()
+              .refreshCartProducts(); // لتحديث الواجهة (إخفاء المنتجات)
         }
       },
       builder: (context, state) {
@@ -250,7 +284,7 @@ class _POSHomeScreenState extends State<POSHomeScreen> {
                   IconButton(
                     icon: const Icon(
                       Icons.stop_circle_outlined,
-                      color: Colors.red,
+                      color: AppColors.red,
                     ),
                     tooltip: "End Shift",
                     onPressed: () async {
@@ -281,12 +315,6 @@ class _POSHomeScreenState extends State<POSHomeScreen> {
                         // if (report != null && mounted) {
                         //   _showReportDialog(report);
                         // }
-                        // navigatorKey.currentState?.pushAndRemoveUntil(
-                        //   MaterialPageRoute(
-                        //     builder: (context) => const LoginScreen(),
-                        //   ),
-                        //   (route) => false,
-                        // );
                       }
                     },
                   ),
@@ -324,7 +352,7 @@ class _POSHomeScreenState extends State<POSHomeScreen> {
             ),
           ),
 
-          body: _buildBody(cubit, state, cartItems),
+          body: _buildBody(),
 
           // ... (Cart FAB & BottomSheet logic remains same)
           bottomSheet: (cubit.isShiftOpen && cartItems.isNotEmpty)
@@ -347,116 +375,103 @@ class _POSHomeScreenState extends State<POSHomeScreen> {
   }
 
   // ─── Main Body Logic ───
-  Widget _buildBody(PosCubit cubit, PosState state, List<dynamic> cartItems) {
-    if (state is PosLoading) {
-      return const CustomLoadingState();
-    }
+  Widget _buildBody() {
+    return BlocBuilder<CheckoutCubit, CheckoutState>(
+      builder: (context, state) {
+        final cubit = context.read<PosCubit>();
 
-    // الحالة 1: لم يتم اختيار كاشير بعد
-    if (cubit.selectedCashier == null) {
-      return _buildCashierSelectionList(cubit);
-    }
+        if (state is PosLoading) {
+          return const CustomLoadingState();
+        }
 
-    // الحالة 2: تم اختيار كاشير، لكن الشيفت مغلق
-    if (!cubit.isShiftOpen) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.storefront,
-              size: 80,
-              color: AppColors.primaryBlue.withOpacity(0.5),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              "Hello, ${cubit.selectedCashier!.name}",
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            const Text("Start your shift to begin selling"),
-            const SizedBox(height: 30),
-            ElevatedButton.icon(
-              onPressed: () async {
-                await cubit.startShift();
-                _startLocalTimer(); // Start UI timer
-              },
-              icon: const Icon(Icons.play_arrow),
-              label: const Text("START SHIFT"),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40,
-                  vertical: 15,
+        // الحالة 1: لم يتم اختيار كاشير بعد
+        if (cubit.selectedCashier == null) {
+          return _buildCashierSelectionList(cubit);
+        }
+
+        // الحالة 2: تم اختيار كاشير، لكن الشيفت مغلق
+        if (!cubit.isShiftOpen) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.storefront,
+                  size: 80,
+                  color: AppColors.primaryBlue.withOpacity(0.5),
                 ),
-              ),
+                const SizedBox(height: 20),
+                Text(
+                  "Hello, ${cubit.selectedCashier!.name}",
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text("Start your shift to begin selling"),
+                const SizedBox(height: 30),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    await cubit.startShift();
+                    _startLocalTimer(); // Start UI timer
+                  },
+                  icon: const Icon(Icons.play_arrow),
+                  label: const Text("START SHIFT"),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 40,
+                      vertical: 15,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextButton(
+                  onPressed: () {
+                    // إلغاء اختيار الكاشير
+                    setState(() {
+                      cubit.selectedCashier = null;
+                    });
+                    cubit.getCashiers();
+                  },
+                  child: const Text("Change Cashier"),
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
-            TextButton(
-              onPressed: () {
-                // إلغاء اختيار الكاشير
-                setState(() {
-                  cubit.selectedCashier = null;
-                });
-                cubit.getCashiers();
-              },
-              child: const Text("Change Cashier"),
-            ),
-          ],
-        ),
-      );
-    }
+          );
+        }
 
-    // الحالة 3: الشيفت مفتوح (عرض محتوى الـ POS الطبيعي)
-    return Column(
-      children: [
-        // Search + Header
-        POSHeaderSection(
-          searchController: _searchController,
-          onChanged: (query) => setState(() => _searchQuery = query),
-          onTap: () async {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const BarcodeScannerScreen()),
-            );
-            if (result != null && result is String && result != '-1') {
-              _handleBarcodeScan(result);
-            }
-          },
-        ),
-
-        // Tabs
-        const POSTabBar(),
-
-        // Filter Panel
-        const POSFilterBar(),
-
-        // Product Grid
-        Expanded(
-          child: Builder(
-            builder: (context) {
-              if (state is PosProductsLoading) {
-                return const CustomLoadingState();
-              }
-
-              if (state is PosDataLoaded &&
-                  state.displayedProducts.isNotEmpty) {
-                return POSProductGrid(
-                  products: _filterProducts(state.displayedProducts),
-                  onProductTap: _addToCart,
+        // الحالة 3: الشيفت مفتوح (عرض محتوى الـ POS الطبيعي)
+        return Column(
+          children: [
+            // Search + Header
+            POSHeaderSection(
+              searchController: _searchController,
+              onChanged: (query) => setState(() => _searchQuery = query),
+              onTap: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const BarcodeScannerScreen(),
+                  ),
                 );
-              } else if (cubit.showBrandFilters || cubit.showCategoryFilters) {
-                return const SizedBox();
-              }
+                if (result != null && result is String && result != '-1') {
+                  _handleBarcodeScan(result);
+                }
+              },
+            ),
 
-              return const CustomEmptyState(
-                icon: Icons.inventory_2_outlined,
-                title: 'No Products Found',
-                message: 'Try adjusting your search or filters',
-              );
-            },
-          ),
-        ),
-      ],
+            // Tabs
+            const POSTabBar(),
+
+            // Filter Panel
+            const POSFilterBar(),
+
+            // Product Grid
+            Expanded(child: POSProductGrid()),
+          ],
+        );
+      },
     );
   }
 

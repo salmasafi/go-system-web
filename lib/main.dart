@@ -27,7 +27,7 @@ import 'package:systego/features/admin/variations/cubit/variation_cubit.dart';
 import 'package:systego/translations/codegen_loader.g.dart';
 import 'core/services/cache_helper.dart';
 import 'core/services/dio_helper.dart';
-import 'features/POS/cashier/cubit/pos_cashier_cubit.dart';
+import 'features/POS/shift/cubit/pos_shift_cubit.dart';
 import 'features/POS/checkout/cubit/checkout_cubit/checkout_cubit.dart';
 import 'features/POS/home/cubit/pos_home_cubit.dart';
 import 'features/admin/auth/presentation/view/login_screen.dart';
@@ -115,9 +115,10 @@ class _MainAppState extends State<MainApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<LoginCubit>(create: (context) => LoginCubit()),
-        BlocProvider<PosCubit>(create: (context) => PosCubit()//..loadPosData()
+        BlocProvider<PosCubit>(
+          create: (context) => PosCubit(), //..loadPosData()
         ),
-        BlocProvider<PosCashierCubit>(create: (context) => PosCashierCubit()),
+        BlocProvider<PosShiftCubit>(create: (context) => PosShiftCubit()),
         BlocProvider<CheckoutCubit>(create: (context) => CheckoutCubit()),
         BlocProvider<OrdersCubit>(create: (context) => OrdersCubit()),
         BlocProvider<WareHouseCubit>(create: (context) => WareHouseCubit()),

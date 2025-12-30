@@ -3,12 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_state.dart';
-import 'package:systego/features/POS/home/presentation/widgets/customer_dialog.dart';
-import 'package:systego/features/POS/home/presentation/widgets/warhouse_dialog.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
-import 'bank_account_dialog.dart';
-import 'info_chip.dart';
 import 'search_bar.dart';
 
 class POSHeaderSection extends StatefulWidget {
@@ -32,7 +28,6 @@ class _POSHeaderSectionState extends State<POSHeaderSection> {
   Widget build(BuildContext context) {
     return BlocBuilder<PosCubit, PosState>(
       builder: (context, state) {
-        final cubit = context.read<PosCubit>();
         return Container(
           padding: EdgeInsets.only(
             right: ResponsiveUI.padding(context, 16),
@@ -136,18 +131,18 @@ class _POSHeaderSectionState extends State<POSHeaderSection> {
     );
   }
 
-  void _showBankAccountDialog() {
-    showDialog(
-      context: context,
-      builder: (_) => POSBankAccountDialog(), // هنعملها دلوقتي
-    );
-  }
+  // void _showBankAccountDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (_) => POSBankAccountDialog(), // هنعملها دلوقتي
+  //   );
+  // }
 
-  void _showWarhouseDialog() {
-    showDialog(context: context, builder: (_) => POSWarhouseDialog());
-  }
+  // void _showWarhouseDialog() {
+  //   showDialog(context: context, builder: (_) => POSWarhouseDialog());
+  // }
 
-  void _showCustomerDialog() {
-    showDialog(context: context, builder: (_) => POSCustomerDialog());
-  }
+  // void _showCustomerDialog() {
+  //   showDialog(context: context, builder: (_) => POSCustomerDialog());
+  // }
 }

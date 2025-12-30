@@ -107,7 +107,8 @@ class CustomWarehouseDetailsSheet extends StatelessWidget {
           gradient: LinearGradient(
             colors: [AppColors.primaryBlue, AppColors.darkBlue],
           ),
-          padding: 16, image: null,
+          padding: 16,
+          image: null,
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -115,7 +116,7 @@ class CustomWarehouseDetailsSheet extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                warehouse.name ?? 'N/A',
+                warehouse.name,
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,

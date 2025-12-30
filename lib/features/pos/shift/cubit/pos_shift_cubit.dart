@@ -1,17 +1,13 @@
 import 'dart:developer';
-import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/services/dio_helper.dart';
 import 'package:systego/core/services/endpoints.dart';
 import 'package:systego/core/utils/error_handler.dart';
+import 'package:systego/features/POS/shift/model/cashier_model.dart';
+part 'pos_shift_state.dart';
 
-// تأكد من استيراد ملف الموديل الجديد الذي أنشأناه بالأعلى
-import 'package:systego/features/pos/cashier/model/cashier_model.dart'; 
-
-part 'pos_cashier_state.dart';
-
-class PosCashierCubit extends Cubit<PosCashierState> {
-  PosCashierCubit() : super(PosCashierInitial());
+class PosShiftCubit extends Cubit<PosShiftState> {
+  PosShiftCubit() : super(PosShiftInitial());
 
   List<CashierModel> allCashiers = [];
   CashierModel? selectedCashier;

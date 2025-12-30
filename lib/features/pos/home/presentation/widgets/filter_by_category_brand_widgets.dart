@@ -194,8 +194,6 @@ class GenericFilterPanel extends StatelessWidget {
                       return GestureDetector(
                         onTap: () {
                           onSelected(selected ? null : it.id);
-                          //Optional: auto-hide panel after selection?
-                          onClose();
                         },
                         child: Container(
                           margin: EdgeInsets.all(
