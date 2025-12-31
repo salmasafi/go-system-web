@@ -206,6 +206,7 @@ class AnimatedCheckboxTile extends StatelessWidget {
                     icon: Icons.qr_code,
                     hint: 'Enter unique code',
                     keyboardType: TextInputType.visiblePassword,
+                     readOnly: true
                   ),
                   SizedBox(height: ResponsiveUI.spacing(context, 20)),
                   buildTextField(

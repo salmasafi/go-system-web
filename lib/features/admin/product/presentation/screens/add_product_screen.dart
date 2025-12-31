@@ -81,9 +81,12 @@ class _AddProductScreenState extends State<AddProductScreen>
   void initState() {
     super.initState();
     context.read<ProductFiltersCubit>().getFilters();
-    context.read<ProductsCubit>().generateProductCode();
-    context.read<UnitsCubit>().getUnits();
+    
     _variations = context.read<ProductFiltersCubit>().variations;
+
+    // _codeController.text = await _generateCode();
+
+    _initializeControllers();
 
     // Set default values
     _minQuantityController.text = '50';
@@ -92,6 +95,21 @@ class _AddProductScreenState extends State<AddProductScreen>
     _startQuantityController.text = '0';
     _quantityController.text = '1';
     _wholePriceController.text = '0';
+  }
+
+  Future<void> _initializeControllers() async {
+    context.read<UnitsCubit>().getUnits();
+    try {
+      final code = await _generateCode();
+      
+      if (!mounted) return;
+
+      setState(() {
+        _codeController.text = code;
+      });
+    } catch (e) {
+      debugPrint("Error generating code: $e");
+    }
   }
 
   Future<void> _pickMainImage() async {
@@ -161,23 +179,55 @@ class _AddProductScreenState extends State<AddProductScreen>
     return result;
   }
 
-  void _generateVariations() {
-    final combos = _generateOptionCombinations();
-    setState(() {
-      for (var variation in _priceVariations) {
-        variation.dispose();
-      }
-      _priceVariations = combos.map((combo) {
-        return PriceVariation(
-          priceController: TextEditingController(),
-          codeController: TextEditingController(),
-          quantityController: TextEditingController(text: '0'),
-          selectedOptions: combo,
-          galleryImages: [],
-        );
-      }).toList();
-    });
-  }
+  // void _generateVariations() {
+  //   final combos = _generateOptionCombinations();
+  //   setState(() {
+  //     for (var variation in _priceVariations) {
+  //       variation.dispose();
+  //     }
+  //     _priceVariations = combos.map((combo) {
+  //       final code = await _generateCode();
+  //       return PriceVariation(
+  //         priceController: TextEditingController(),
+  //         codeController: TextEditingController(text: code),
+  //         quantityController: TextEditingController(text: '0'),
+  //         selectedOptions: combo,
+  //         galleryImages: [],
+  //       );
+  //     }).toList();
+  //   });
+  // }
+
+  Future<void> _generateVariations() async {
+  final combos = _generateOptionCombinations();
+
+  final variationFutures = combos.map((combo) async {
+    final code = await _generateCode(); // This await is now valid
+    
+    return PriceVariation(
+      priceController: TextEditingController(),
+      codeController: TextEditingController(text: code),
+      quantityController: TextEditingController(text: '0'),
+      selectedOptions: combo,
+      galleryImages: [],
+    );
+  });
+
+  final newVariations = await Future.wait(variationFutures);
+
+  if (!mounted) return; 
+  
+  setState(() {
+    for (var variation in _priceVariations) {
+      variation.dispose();
+    }
+    _priceVariations = newVariations;
+  });
+}
+
+  Future<String> _generateCode() async {
+  return await context.read<ProductsCubit>().generateCode();
+}
 
   @override
   Widget build(BuildContext context) {
@@ -188,9 +238,10 @@ class _AddProductScreenState extends State<AddProductScreen>
           Navigator.pop(context, true);
         } else if (state is ProductsError) {
           CustomSnackbar.showError(context, state.message);
-        } else if (state is ProductCodeSuccess) {
-          _codeController.text = state.code.toString();
         }
+        //  else if (state is ProductCodeSuccess) {
+        //   _codeController.text = state.code.toString();
+        // }
       },
       builder: (context, state) {
         return Scaffold(
@@ -694,6 +745,7 @@ class _AddProductScreenState extends State<AddProductScreen>
             label: 'Product Code *',
             icon: Icons.qr_code,
             hint: 'Enter unique code',
+            readOnly: true
           ),
           SizedBox(height: ResponsiveUI.spacing(context, 12)),
           buildTextField(

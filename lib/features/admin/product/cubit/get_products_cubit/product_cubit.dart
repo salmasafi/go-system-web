@@ -55,7 +55,7 @@ class ProductsCubit extends Cubit<ProductsState> {
   }
 
 
-  Future<void> generateProductCode() async {
+  Future<String> generateCode() async {
     emit(ProductsLoading());
 
     try {
@@ -70,21 +70,20 @@ class ProductsCubit extends Cubit<ProductsState> {
           final productCode = data['data']['code'] as String;
          
 
-          emit(ProductCodeSuccess(productCode));
+          return productCode;
         } else {
           final errorMessage = data['message'] ?? 'Failed to fetch products';
           log('generate code: $errorMessage');
-          emit(ProductsError(errorMessage));
+          return '';
         }
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         log('Response error: $errorMessage');
-        emit(ProductsError(errorMessage));
+        return '';
       }
     } catch (error) {
       log('Products fetch error caught: $error');
-      final errorMessage = ErrorHandler.handleError(error);
-      emit(ProductsError(errorMessage));
+      return '';
     }
   }
 
