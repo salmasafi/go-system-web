@@ -10,7 +10,7 @@ import 'package:systego/core/services/dio_helper.dart';
 import 'package:systego/core/services/endpoints.dart';
 import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/features/admin/customer/model/customer_model.dart';
-import 'package:systego/features/admin/customer_group/model/customer_group.dart';
+import 'package:systego/features/admin/customer_group/model/customer_group_model.dart';
 import 'package:systego/generated/locale_keys.g.dart';
 
 part 'customer_state.dart';

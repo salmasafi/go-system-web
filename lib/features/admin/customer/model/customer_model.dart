@@ -1,3 +1,79 @@
+class Country {
+  final String id;
+  final String name;
+
+  Country({
+    required this.id,
+    required this.name,
+  });
+
+  factory Country.fromJson(Map<String, dynamic> json) {
+    return Country(
+      id: json['_id'] ?? json['id'] ?? '',
+      name: json['name'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'name': name,
+    };
+  }
+}
+
+class City {
+  final String id;
+  final String name;
+
+  City({
+    required this.id,
+    required this.name,
+  });
+
+  factory City.fromJson(Map<String, dynamic> json) {
+    return City(
+      id: json['_id'] ?? '',
+      name: json['name'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'name': name,
+    };
+  }
+}
+
+class SimpleCustomerGroup {
+  final String id;
+  final String name;
+  final bool status;
+
+  SimpleCustomerGroup({
+    required this.id,
+    required this.name,
+    required this.status,
+  });
+
+  factory SimpleCustomerGroup.fromJson(Map<String, dynamic> json) {
+    return SimpleCustomerGroup(
+      id: json['_id'] ?? '',
+      name: json['name'] ?? '',
+      status: json['status'] ?? false,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'name': name,
+      'status': status,
+    };
+  }
+}
+
 class CustomerResponse {
   final bool success;
   final CustomerData data;
@@ -54,9 +130,9 @@ class CustomerModel {
   final String email;
   final String phoneNumber;
   final String address;
-  final String country;
-  final String city;
-  final String? customerGroupId;
+  final Country? country;
+  final City? city;
+  final SimpleCustomerGroup? customerGroup;
   final bool isDue;
   final double amountDue;
   final int totalPointsEarned;
@@ -70,9 +146,9 @@ class CustomerModel {
     required this.email,
     required this.phoneNumber,
     required this.address,
-    required this.country,
-    required this.city,
-    this.customerGroupId,
+    this.country,
+    this.city,
+    this.customerGroup,
     required this.isDue,
     required this.amountDue,
     required this.totalPointsEarned,
@@ -82,15 +158,35 @@ class CustomerModel {
   });
 
   factory CustomerModel.fromJson(Map<String, dynamic> json) {
+    final dynamic groupJson = json['customer_group_id'];
+    SimpleCustomerGroup? group;
+    if (groupJson is String && groupJson.isNotEmpty) {
+      group = SimpleCustomerGroup(id: groupJson, name: '', status: false);
+    } else if (groupJson is Map<String, dynamic>) {
+      group = SimpleCustomerGroup.fromJson(groupJson);
+    }
+
+    final dynamic countryJson = json['country'];
+    Country? countryObj;
+    if (countryJson is Map<String, dynamic>) {
+      countryObj = Country.fromJson(countryJson);
+    } // If string, ignore or handle if needed, but currently set to null
+
+    final dynamic cityJson = json['city'];
+    City? cityObj;
+    if (cityJson is Map<String, dynamic>) {
+      cityObj = City.fromJson(cityJson);
+    } // If string, set to null
+
     return CustomerModel(
       id: json['_id'],
       name: json['name'],
       email: json['email'] ?? '',
-      phoneNumber: json['phone_number'],
+      phoneNumber: json['phone_number'] ?? '',
       address: json['address'] ?? '',
-      country: json['country'],
-      city: json['city'],
-      customerGroupId: json['customer_group_id'],
+      country: countryObj,
+      city: cityObj,
+      customerGroup: group,
       isDue: json['is_Due'] ?? false,
       amountDue: (json['amount_Due'] as num?)?.toDouble() ?? 0.0,
       totalPointsEarned: (json['total_points_earned'] as num?)?.toInt() ?? 0,
@@ -107,9 +203,9 @@ class CustomerModel {
       'email': email,
       'phone_number': phoneNumber,
       'address': address,
-      'country': country,
-      'city': city,
-      if (customerGroupId != null) 'customer_group_id': customerGroupId,
+      'country': country?.toJson(),
+      'city': city?.toJson(),
+      'customer_group_id': customerGroup?.toJson(),
       'is_Due': isDue,
       'amount_Due': amountDue,
       'total_points_earned': totalPointsEarned,

@@ -1,3 +1,5 @@
+import '../../customer/model/customer_model.dart';
+
 class CustomerGroupResponse {
   final bool success;
   final CustomerGroupData data;
@@ -12,10 +14,7 @@ class CustomerGroupResponse {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'success': success,
-      'data': data.toJson(),
-    };
+    return {'success': success, 'data': data.toJson()};
   }
 }
 
@@ -23,10 +22,7 @@ class CustomerGroupData {
   final String message;
   final List<CustomerGroup> groups;
 
-  CustomerGroupData({
-    required this.message,
-    required this.groups,
-  });
+  CustomerGroupData({required this.message, required this.groups});
 
   factory CustomerGroupData.fromJson(Map<String, dynamic> json) {
     return CustomerGroupData(
@@ -52,6 +48,7 @@ class CustomerGroup {
   final DateTime createdAt;
   final DateTime updatedAt;
   final int version;
+  final List<CustomerModel> customers;
 
   CustomerGroup({
     required this.id,
@@ -60,16 +57,24 @@ class CustomerGroup {
     required this.createdAt,
     required this.updatedAt,
     required this.version,
+    required this.customers,
   });
 
   factory CustomerGroup.fromJson(Map<String, dynamic> json) {
     return CustomerGroup(
-      id: json['_id'] as String,
-      name: json['name'] as String,
+      id: (json['_id'] as String?) ?? '',
+      name: (json['name'] as String?) ?? '',
       status: json['status'] as bool,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
-      version: json['__v'] as int,
+      createdAt: DateTime.parse(
+        (json['createdAt'] as String?) ?? '1970-01-01T00:00:00.000Z',
+      ),
+      updatedAt: DateTime.parse(
+        (json['updatedAt'] as String?) ?? '1970-01-01T00:00:00.000Z',
+      ),
+      version: json['__v'] as int? ?? 0,
+      customers: (json['customers'] as List<dynamic>? ?? [])
+          .map((e) => CustomerModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 
@@ -81,6 +86,7 @@ class CustomerGroup {
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
       '__v': version,
+      'customers': customers.map((e) => e.toJson()).toList(),
     };
   }
 }

@@ -92,23 +92,22 @@ class AdminModel {
     String? warehouseId;
     String? warehouseName;
 
-    // warehouse can be object or string
-    if (json['warehouse_id'] is Map<String, dynamic>) {
-      warehouseId = json['warehouse_id']['_id'];
-      warehouseName = json['warehouse_id']['name'];
-    } else if (json['warehouseId'] is String) {
-      warehouseId = json['warehouseId'];
+    // warehouse can be object or null
+    final warehouse = json['warehouse'];
+    if (warehouse is Map<String, dynamic>) {
+      warehouseId = warehouse['id'] as String?;
+      warehouseName = warehouse['name'] as String?;
     }
 
     return AdminModel(
-      id: json['_id'] as String,
+      id: json['id'] as String,
       username: json['username']?.toString() ?? '',
       email: json['email']?.toString() ?? '',
       companyName: json['company_name']?.toString() ?? '',
       phone: json['phone']?.toString() ?? '',
       role: json['role']?.toString() ?? '',
       status: json['status']?.toString() ?? '',
-      positionId: json['positionId']?.toString(),
+      positionId: json['role_id']?['id']?.toString(),
       address: json['address']?.toString(),
       state: json['state']?.toString(),
       postalCode: json['postal_code']?.toString(),
@@ -125,7 +124,7 @@ class AdminModel {
 
   Map<String, dynamic> toJson() {
     return {
-      '_id': id,
+      'id': id,
       'username': username,
       'email': email,
       'company_name': companyName,

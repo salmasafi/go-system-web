@@ -4,7 +4,7 @@ import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
-import 'package:systego/features/admin/customer_group/model/customer_group.dart';
+import 'package:systego/features/admin/customer_group/model/customer_group_model.dart';
 import 'package:systego/generated/locale_keys.g.dart';
 
 class AnimatedCustomerGroupCard extends StatelessWidget {

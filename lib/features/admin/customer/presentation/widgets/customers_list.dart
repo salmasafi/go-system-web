@@ -223,7 +223,7 @@ class _CustomersListState extends State<CustomersList> {
                               ),
                             ),
                             Text(
-                              customer.country,
+                              customer.country?.name ?? '',
                               style: TextStyle(
                                 fontSize: ResponsiveUI.fontSize(context, 14),
                                 fontWeight: FontWeight.w500,
@@ -245,7 +245,7 @@ class _CustomersListState extends State<CustomersList> {
                               ),
                             ),
                             Text(
-                              customer.city,
+                              customer.city?.name ?? '',
                               style: TextStyle(
                                 fontSize: ResponsiveUI.fontSize(context, 14),
                                 fontWeight: FontWeight.w500,
@@ -322,14 +322,14 @@ class _CustomersListState extends State<CustomersList> {
               SizedBox(height: ResponsiveUI.spacing(context, 16)),
 
               // Customer Group
-              if (customer.customerGroupId != null && customer.customerGroupId!.isNotEmpty)
+              if (customer.customerGroup != null && customer.customerGroup!.id.isNotEmpty)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildInfoRow(
                       icon: Icons.group,
                       label: LocaleKeys.customer_group.tr(),
-                      value: customer.customerGroupId!,
+                      value: customer.customerGroup!.name,
                     ),
                     SizedBox(height: ResponsiveUI.spacing(context, 12)),
                   ],

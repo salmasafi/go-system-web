@@ -78,7 +78,7 @@ class CategoryItem {
       id: json['_id'] as String,
       name: json['name'] as String,
       arName: json['ar_name'] ?? '',// as String,
-      image: json['image'] as String,
+      image: json['image'] ?? '',
       productQuantity: json['product_quantity'] as int,
       createdAt: json['createdAt'] as String,
       updatedAt: json['updatedAt'] as String,
