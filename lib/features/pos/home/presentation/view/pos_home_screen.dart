@@ -5,22 +5,33 @@ import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
+
+// Cubits
 import 'package:systego/features/POS/checkout/cubit/checkout_cubit/checkout_cubit.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_state.dart';
+import 'package:systego/features/POS/shift/cubit/pos_shift_cubit.dart';
+
+// Models
 import 'package:systego/features/POS/home/model/pos_models.dart';
+
+// Services & Screens
 import '../../../../../core/services/cache_helper.dart';
-import '../../../../../main.dart';
 import '../../../../admin/auth/presentation/view/login_screen.dart';
 import '../../../../admin/product/presentation/screens/barcode_scanner_screen.dart';
 import '../../../checkout/presentation/widgets/cart_bottom_sheet.dart';
 import '../../../checkout/presentation/widgets/cart_fab.dart';
 import '../../../checkout/presentation/widgets/cart_summary.dart';
 import '../../../sales/presentation/views/sales_screen.dart';
+import '../../../shift/presentation/views/cashier_selection_screen.dart';
+import '../../../shift/presentation/views/start_shift_screen.dart';
+
+
+// Widgets
 import '../widgets/filter_by_category_brand_widgets.dart';
 import '../widgets/header_section.dart';
 import '../widgets/product_details_dialog.dart';
-import '../widgets/product_grid.dart';
+import '../widgets/product_grid.dart'; // هذا الملف سنكتبه في الجزء الثاني
 import '../widgets/tab_bar.dart';
 import '../widgets/variation_selector_dialog.dart';
 
@@ -33,7 +44,7 @@ class POSHomeScreen extends StatefulWidget {
 
 class _POSHomeScreenState extends State<POSHomeScreen>
     with WidgetsBindingObserver {
-  // إضافة WidgetsBindingObserver لمراقبة حالة التطبيق (اختياري للتحسين)
+  
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   Timer? _shiftTimer;
@@ -42,16 +53,16 @@ class _POSHomeScreenState extends State<POSHomeScreen>
   @override
   void initState() {
     super.initState();
-    // إضافة مراقب لحالة التطبيق (استئناف/توقف)
     WidgetsBinding.instance.addObserver(this);
 
-    // تحميل البيانات وبدء المؤقت فوراً إذا كان هناك شيفت
-    final cubit = context.read<PosCubit>();
-    cubit.loadPosData().then((_) {
-      if (mounted && cubit.isShiftOpen) {
-        _startLocalTimer();
-      }
-    });
+    // التحقق المبدئي: إذا كان الشيفت مفتوحاً، ابدأ المؤقت وحمل البيانات
+    final shiftCubit = context.read<PosShiftCubit>();
+    final homeCubit = context.read<PosCubit>();
+    
+    if (shiftCubit.isShiftOpen) {
+      homeCubit.loadPosData();
+      _startLocalTimer();
+    }
   }
 
   @override
@@ -62,7 +73,6 @@ class _POSHomeScreenState extends State<POSHomeScreen>
     super.dispose();
   }
 
-  // مراقبة حالة التطبيق: عند العودة للتطبيق من الخلفية، نقوم بتحديث العداد فوراً
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
@@ -70,16 +80,13 @@ class _POSHomeScreenState extends State<POSHomeScreen>
     }
   }
 
-  // ─── Shift Timer Logic (Updated) ───
+  // ─── Shift Timer Logic ───
   void _startLocalTimer() {
     _shiftTimer?.cancel();
 
-    // دالة مساعدة لتحديث الوقت فوراً دون انتظار ثانية
     void updateTime() {
-      final cubit = context.read<PosCubit>();
+      final cubit = context.read<PosShiftCubit>();
       if (cubit.isShiftOpen && cubit.currentShift != null) {
-        // الحساب دائماً يعتمد على الفرق بين "الآن" ووقت البداية القادم من السيرفر
-        // هذا يضمن الدقة حتى لو أغلق التطبيق وفتح بعد ساعات
         final duration = DateTime.now().difference(
           cubit.currentShift!.startTime,
         );
@@ -92,10 +99,7 @@ class _POSHomeScreenState extends State<POSHomeScreen>
       }
     }
 
-    // تحديث فوري
-    updateTime();
-
-    // تحديث دوري كل ثانية
+    updateTime(); 
     _shiftTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       updateTime();
     });
@@ -108,11 +112,8 @@ class _POSHomeScreenState extends State<POSHomeScreen>
     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
   }
 
-  // ... rest of the code (addToCart, build, etc.) remains unchanged
-
-  // ─── Cart & Barcode Logic ───
+  // ─── Cart Logic ───
   void _addToCart(Product product) {
-    // ... (نفس الكود السابق الخاص بك)
     final checkoutCubit = context.read<CheckoutCubit>();
     final posCubit = context.read<PosCubit>();
 
@@ -147,37 +148,6 @@ class _POSHomeScreenState extends State<POSHomeScreen>
     }
   }
 
-  void _handleBarcodeScan(String code) async {
-    final posCubit = context.read<PosCubit>();
-    setState(() {
-      _searchQuery = '';
-      _searchController.clear();
-    });
-    final product = await posCubit.getProductByCode(code);
-    if (product != null && mounted) {
-      _addToCart(product);
-    }
-  }
-
-  double get _total => context.read<CheckoutCubit>().cartItems.fold(
-    0,
-    (s, i) => s + i.product.price * i.quantity,
-  );
-
-  List<Product> _filterProducts(List<Product> products) {
-    // ... (نفس كود الفلتر السابق)
-    return products.where((product) {
-      bool matchesSearch =
-          _searchQuery.isEmpty ||
-          product.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          product.price.toString().contains(_searchQuery.toLowerCase()) ||
-          product.prices.any(
-            (v) => v.code.toLowerCase().contains(_searchQuery.toLowerCase()),
-          );
-      return matchesSearch;
-    }).toList();
-  }
-
   void _showCartDialog() {
     final posCubit = context.read<PosCubit>();
     final checkoutCubit = context.read<CheckoutCubit>();
@@ -198,169 +168,205 @@ class _POSHomeScreenState extends State<POSHomeScreen>
     );
   }
 
-  // ─── UI Handling Methods ───
-  // دالة لعرض التقرير بعد انتهاء الشيفت
-  void _showReportDialog(Map<String, dynamic> reportData) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        title: const Text("Shift Ended & Report"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Total Sales: ${reportData['total_sale_amount'] ?? 0}"),
-            Text("Cash in Drawer: ${reportData['net_cash_in_drawer'] ?? 0}"),
-            // يمكنك إضافة المزيد من التفاصيل هنا
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              context.read<PosCubit>().loadPosData(); // العودة لاختيار الكاشير
-            },
-            child: const Text("Close"),
-          ),
-        ],
-      ),
-    );
+  double get _total => context.read<CheckoutCubit>().cartItems.fold(
+        0,
+        (s, i) => s + i.product.price * i.quantity, 
+      );
+
+  // ─── Barcode Logic ───
+  void _handleBarcodeScan(String code) async {
+    final posCubit = context.read<PosCubit>();
+    setState(() {
+      _searchQuery = '';
+      _searchController.clear();
+    });
+    final product = await posCubit.getProductByCode(code);
+    if (product != null && mounted) {
+      _addToCart(product);
+    }
+  }
+
+  // ─── Filter Logic ───
+  List<Product> _filterProducts(List<Product> products) {
+    return products.where((product) {
+      bool matchesSearch = _searchQuery.isEmpty ||
+          product.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          product.price.toString().contains(_searchQuery.toLowerCase()) ||
+          product.prices.any(
+            (v) => v.code.toLowerCase().contains(_searchQuery.toLowerCase()),
+          );
+      return matchesSearch;
+    }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<PosCubit, PosState>(
-      listener: (context, state) {
-        if (state is PosError) {
-          CustomSnackbar.showError(
-            context,
-            ErrorHandler.handleError(state.message),
-          );
-        }
-        if (state is PosShiftEnded) {
-          context
-              .read<PosCubit>()
-              .refreshCartProducts(); // لتحديث الواجهة (إخفاء المنتجات)
-        }
-      },
-      builder: (context, state) {
-        final cubit = context.read<PosCubit>();
+    return MultiBlocListener(
+      listeners: [
+        // استماع لأحداث الشيفت والكاشير
+        BlocListener<PosShiftCubit, PosShiftState>(
+          listener: (context, state) {
+            if (state is PosShiftActionError) {
+              CustomSnackbar.showError(context, state.message);
+            }
+            if (state is PosSelectCashierError) {
+              CustomSnackbar.showError(context, state.message);
+            }
+
+            // عند بدء الشيفت بنجاح
+            if (state is PosShiftStarted) {
+              context.read<PosCubit>().loadPosData();
+              _startLocalTimer();
+            }
+
+            // عند إنهاء الشيفت
+            if (state is PosShiftEnded) {
+              _shiftTimer?.cancel();
+            }
+          },
+        ),
+        // استماع لأخطاء المنتجات (PosCubit)
+        BlocListener<PosCubit, PosState>(
+          listener: (context, state) {
+            if (state is PosError) {
+              CustomSnackbar.showError(
+                context,
+                ErrorHandler.handleError(state.message),
+              );
+            }
+          },
+        ),
+      ],
+      // بناء الواجهة بناءً على حالة الشيفت
+      child: BlocBuilder<PosShiftCubit, PosShiftState>(
+        builder: (context, state) {
+          final shiftCubit = context.read<PosShiftCubit>();
+          final homeCubit = context.read<PosCubit>();
+
+          // السيناريو 1: لم يتم اختيار كاشير بعد
+          if (shiftCubit.selectedCashier == null) {
+            return const CashierSelectionScreen();
+          }
+
+          // السيناريو 2: تم اختيار كاشير، لكن الشيفت مغلق
+          if (!shiftCubit.isShiftOpen) {
+            return const StartShiftScreen();
+          }
+
+          // السيناريو 3: الشيفت مفتوح -> عرض شاشة البيع (POS Layout)
+          return _buildPosLayout(homeCubit, shiftCubit);
+        },
+      ),
+    );
+  }
+
+  // ─── POS Layout (Scaffold & Body) ───
+  Widget _buildPosLayout(PosCubit homeCubit, PosShiftCubit shiftCubit) {
+    return BlocBuilder<CheckoutCubit, CheckoutState>(
+      builder: (context, checkoutState) {
         final checkoutCubit = context.read<CheckoutCubit>();
         final cartItems = checkoutCubit.cartItems;
+        final bool hasItems = cartItems.isNotEmpty;
 
         return Scaffold(
           backgroundColor: AppColors.lightBlueBackground,
-          // ─── 1. تعديل الـ AppBar ───
+          
+          // AppBar
           appBar: PreferredSize(
             preferredSize: const Size.fromHeight(kToolbarHeight),
             child: AppBar(
-              //forceMaterialTransparency: true,
               scrolledUnderElevation: 1,
-              backgroundColor: Colors.white,
+              backgroundColor: AppColors.white,
               elevation: 0,
-              // عرض اسم الكاشير بدلاً من المستخدم
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    cubit.selectedCashier?.name ?? "Select Cashier",
+                    shiftCubit.selectedCashier?.name ?? "Unknown Cashier",
                     style: const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
                   ),
-                  if (cubit.isShiftOpen)
-                    Text(
-                      "Shift Time: $_shiftDuration",
-                      style: const TextStyle(color: Colors.green, fontSize: 12),
-                    ),
+                  Text(
+                    "Shift Time: $_shiftDuration",
+                    style: const TextStyle(color: Colors.green, fontSize: 12),
+                  ),
                 ],
               ),
               actions: [
-                if (cubit.isShiftOpen) ...[
-                  // زر إنهاء الشيفت
-                  IconButton(
-                    icon: const Icon(
-                      Icons.stop_circle_outlined,
-                      color: AppColors.red,
-                    ),
-                    tooltip: "End Shift",
-                    onPressed: () async {
-                      // تأكيد إنهاء الشيفت
-                      final confirm = await showDialog<bool>(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          title: const Text("End Shift?"),
-                          content: const Text(
-                            "Are you sure you want to end this shift and generate report?",
+                // زر إنهاء الشيفت
+                IconButton(
+                  icon: const Icon(Icons.stop_circle_outlined, color: AppColors.red),
+                  tooltip: "End Shift",
+                  onPressed: () async {
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text("End Shift?"),
+                        content: const Text(
+                          "Are you sure you want to end this shift and generate report?",
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: const Text("Cancel"),
                           ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(ctx, false),
-                              child: const Text("Cancel"),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.pop(ctx, true),
-                              child: const Text("End Shift"),
-                            ),
-                          ],
-                        ),
-                      );
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, true),
+                            child: const Text("End Shift"),
+                          ),
+                        ],
+                      ),
+                    );
 
-                      if (confirm == true) {
-                        //final report =
-                        await cubit.endShift();
-                        // if (report != null && mounted) {
-                        //   _showReportDialog(report);
-                        // }
-                      }
-                    },
-                  ),
-                  // زر تسجيل الخروج (Logout)
-                  IconButton(
-                    icon: const Icon(Icons.logout, color: Colors.grey),
-                    tooltip: "Logout (Keep Shift Open)",
-                    onPressed: () async {
-                      cubit.logoutShift();
-                      await CacheHelper.clearAllData();
-                      navigatorKey.currentState?.pushAndRemoveUntil(
-                        MaterialPageRoute(
-                          builder: (context) => const LoginScreen(),
-                        ),
+                    if (confirm == true) {
+                      await shiftCubit.endShift();
+                    }
+                  },
+                ),
+                // زر تسجيل الخروج
+                IconButton(
+                  icon: const Icon(Icons.logout, color: Colors.grey),
+                  tooltip: "Logout (Keep Shift Open)",
+                  onPressed: () async {
+                    await shiftCubit.logoutShift();
+                    await CacheHelper.clearAllData();
+                    if (context.mounted) {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => const LoginScreen()),
                         (route) => false,
                       );
-                      // هنا يجب عليك توجيه المستخدم لصفحة تسجيل الدخول
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.history,
-                      color: AppColors.primaryBlue,
-                    ), // تأكد من اللون
-                    tooltip: "Sales History",
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const OrdersScreen()),
-                      );
-                    },
-                  ),
-                ],
+                    }
+                  },
+                ),
+                // زر التاريخ
+                IconButton(
+                  icon: const Icon(Icons.history, color: AppColors.primaryBlue),
+                  tooltip: "Sales History",
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const OrdersScreen()),
+                    );
+                  },
+                ),
               ],
             ),
           ),
 
-          body: _buildBody(),
+          // Body
+          body: _buildPosBody(homeCubit),
 
-          // ... (Cart FAB & BottomSheet logic remains same)
-          bottomSheet: (cubit.isShiftOpen && cartItems.isNotEmpty)
-              ? POSCartSummary(total: _total)
-              : null,
-          floatingActionButton: (cubit.isShiftOpen && cartItems.isNotEmpty)
+          // Bottom Sheet (Cart Summary)
+          bottomSheet: hasItems ? POSCartSummary(total: _total) : null,
+
+          // FAB (Cart Button)
+          floatingActionButton: hasItems
               ? AnimatedOpacity(
-                  opacity: cartItems.isNotEmpty ? 1.0 : 0.0,
+                  opacity: hasItems ? 1.0 : 0.0,
                   duration: const Duration(milliseconds: 200),
                   child: POSCartFAB(
                     itemCount: cartItems.fold(0, (s, i) => s + i.quantity),
@@ -374,74 +380,14 @@ class _POSHomeScreenState extends State<POSHomeScreen>
     );
   }
 
-  // ─── Main Body Logic ───
-  Widget _buildBody() {
-    return BlocBuilder<CheckoutCubit, CheckoutState>(
+  // ─── POS Body Content ───
+  Widget _buildPosBody(PosCubit homeCubit) {
+    return BlocBuilder<PosCubit, PosState>(
       builder: (context, state) {
-        final cubit = context.read<PosCubit>();
-
         if (state is PosLoading) {
           return const CustomLoadingState();
         }
 
-        // الحالة 1: لم يتم اختيار كاشير بعد
-        if (cubit.selectedCashier == null) {
-          return _buildCashierSelectionList(cubit);
-        }
-
-        // الحالة 2: تم اختيار كاشير، لكن الشيفت مغلق
-        if (!cubit.isShiftOpen) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.storefront,
-                  size: 80,
-                  color: AppColors.primaryBlue.withOpacity(0.5),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  "Hello, ${cubit.selectedCashier!.name}",
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                const Text("Start your shift to begin selling"),
-                const SizedBox(height: 30),
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    await cubit.startShift();
-                    _startLocalTimer(); // Start UI timer
-                  },
-                  icon: const Icon(Icons.play_arrow),
-                  label: const Text("START SHIFT"),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 15,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                TextButton(
-                  onPressed: () {
-                    // إلغاء اختيار الكاشير
-                    setState(() {
-                      cubit.selectedCashier = null;
-                    });
-                    cubit.getCashiers();
-                  },
-                  child: const Text("Change Cashier"),
-                ),
-              ],
-            ),
-          );
-        }
-
-        // الحالة 3: الشيفت مفتوح (عرض محتوى الـ POS الطبيعي)
         return Column(
           children: [
             // Search + Header
@@ -451,9 +397,7 @@ class _POSHomeScreenState extends State<POSHomeScreen>
               onTap: () async {
                 final result = await Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => const BarcodeScannerScreen(),
-                  ),
+                  MaterialPageRoute(builder: (_) => const BarcodeScannerScreen()),
                 );
                 if (result != null && result is String && result != '-1') {
                   _handleBarcodeScan(result);
@@ -467,122 +411,26 @@ class _POSHomeScreenState extends State<POSHomeScreen>
             // Filter Panel
             const POSFilterBar(),
 
-            // Product Grid
-            Expanded(child: POSProductGrid()),
+            // Product Grid (الآن سنمرر لها المنتجات المفلترة بالبحث)
+            Expanded(
+              child: Builder(
+                builder: (context) {
+                  // ملاحظة: الـ Grid سيتعامل مع حالة التحميل الخاصة بالفلتر داخلياً
+                  if (state is PosDataLoaded) {
+                    final filtered = _filterProducts(state.displayedProducts);
+                    return POSProductGrid(
+                      filteredProducts: filtered, // نمرر المنتجات بعد فلتر البحث
+                    );
+                  }
+                  
+                  // fallback
+                  return const POSProductGrid(filteredProducts: []);
+                },
+              ),
+            ),
           ],
         );
       },
-    );
-  }
-
-  // ويدجت لعرض قائمة الكاشير
-  Widget _buildCashierSelectionList(PosCubit cubit) {
-    if (cubit.cashiersList.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.store_mall_directory_outlined,
-              size: 60,
-              color: Colors.grey,
-            ),
-            const SizedBox(height: 10),
-            const Text("No Cashiers Found in this Warehouse"),
-            IconButton(
-              onPressed: () => cubit.getCashiers(),
-              icon: const Icon(Icons.refresh),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return Column(
-      children: [
-        // const Padding(
-        //   padding: EdgeInsets.all(20.0),
-        //   child: Text(
-        //     "Select Counter",
-        //     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        //   ),
-        // ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: cubit.cashiersList.length,
-            padding: const EdgeInsets.all(16),
-            itemBuilder: (context, index) {
-              final cashier = cubit.cashiersList[index];
-
-              // التحقق مما إذا كان الكاشير مشغولاً (Active)
-              // ملاحظة: تأكد أن الموديل CashierModel يحتوي على cashierActive
-              final bool isBusy = cashier.cashierActive;
-
-              return Card(
-                elevation: isBusy ? 0 : 3, // تقليل الظل للمشغول
-                color: isBusy
-                    ? Colors.grey.shade200
-                    : Colors.white, // لون باهت للمشغول
-                margin: const EdgeInsets.only(bottom: 12),
-                child: ListTile(
-                  enabled: !isBusy, // تعطيل الضغط
-                  leading: CircleAvatar(
-                    backgroundColor: isBusy
-                        ? Colors.grey
-                        : AppColors.primaryBlue,
-                    child: Icon(
-                      isBusy ? Icons.lock_clock : Icons.point_of_sale,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                  title: Text(
-                    cashier.name,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: isBusy ? Colors.grey : Colors.black,
-                      decoration: isBusy
-                          ? TextDecoration.lineThrough
-                          : null, // خط اختياري
-                    ),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        cashier.arName,
-                        style: TextStyle(color: isBusy ? Colors.grey : null),
-                      ),
-                      if (isBusy)
-                        const Text(
-                          "Currently Occupied (Active Shift)",
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                    ],
-                  ),
-                  trailing: isBusy
-                      ? const Icon(
-                          Icons.block,
-                          color: Colors.red,
-                        ) // أيقونة المنع
-                      : const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16,
-                          color: AppColors.primaryBlue,
-                        ),
-                  onTap: isBusy
-                      ? null // منع الضغط
-                      : () => cubit.selectCashier(cashier),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
     );
   }
 }

@@ -8,7 +8,13 @@ class PrintableReceipt extends StatelessWidget {
   const PrintableReceipt({super.key, required this.recieptData});
 
   String _dt() => DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now());
-  double get grandTotal => recieptData.totalAmount + recieptData.taxAmount;
+
+  // حساب الإجمالي النهائي (يجب أن يتطابق مع ما تم حسابه في Checkout Dialog)
+  // المعادلة: (Subtotal - Discount) + Tax
+  // أو Subtotal + Tax - Discount (حسب ترتيبك المفضل، الكود الحالي يفترض الطرح ثم الجمع)
+  double get grandTotal =>
+      (recieptData.totalAmount - recieptData.discountAmount) +
+      recieptData.taxAmount;
 
   // --- BIGGER FONTS CONFIGURATION ---
   TextStyle get _headerTitleStyle => const TextStyle(
@@ -52,7 +58,7 @@ class PrintableReceipt extends StatelessWidget {
           const SizedBox(height: 5),
           _thickDivider(),
           const SizedBox(height: 15),
-          _totals(),
+          _totals(), // تم تحديث هذا الجزء
           const SizedBox(height: 15),
           _grandTotal(),
           if (recieptData.paidAmount > 0) ...[
@@ -130,11 +136,12 @@ class PrintableReceipt extends StatelessWidget {
   Widget _itemsList() {
     return Column(
       children: recieptData.cartItems.map((item) {
-        final total = item.product.price * item.quantity;
+        // حساب السعر الفعلي (مع الأخذ في الاعتبار الاختلافات)
+        final unitPrice = item.selectedVariation?.price ?? item.product.price;
+        final total = unitPrice * item.quantity;
+
         return Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: 8,
-          ), // More space between items
+          padding: const EdgeInsets.symmetric(vertical: 8),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -158,7 +165,7 @@ class PrintableReceipt extends StatelessWidget {
               SizedBox(
                 width: 80,
                 child: Text(
-                  item.product.price.toStringAsFixed(2),
+                  unitPrice.toStringAsFixed(2),
                   style: _itemStyle,
                   textAlign: TextAlign.right,
                 ),
@@ -186,15 +193,56 @@ class PrintableReceipt extends StatelessWidget {
           recieptData.totalAmount.toStringAsFixed(2),
           bold: true,
         ),
+
+        // --- قسم الضريبة (Tax) ---
         if (recieptData.taxAmount > 0) ...[
           const SizedBox(height: 6),
+          _row(_getTaxLabel(), '+${recieptData.taxAmount.toStringAsFixed(2)}'),
+        ],
+
+        // --- قسم الخصم (Discount) ---
+        if (recieptData.discountAmount > 0) ...[
+          const SizedBox(height: 6),
           _row(
-            "${recieptData.selectedTax?.name ?? 'VAT'} (${recieptData.selectedTax?.amount ?? 0}%)",
-            recieptData.taxAmount.toStringAsFixed(2),
+            _getDiscountLabel(),
+            "-${recieptData.discountAmount.toStringAsFixed(2)}",
           ),
         ],
       ],
     );
+  }
+
+  // دالة مساعدة لتنسيق اسم الضريبة
+  String _getTaxLabel() {
+    if (recieptData.selectedTax != null) {
+      final taxName = recieptData.selectedTax!.name;
+      if (recieptData.selectedTax!.type == 'percentage') {
+        // معالجة القيم الصغيرة أو الصحيحة (مثلاً 14.00% -> 14%)
+        final rate = recieptData.selectedTax!.amount * 100;
+        final rateStr = rate.truncateToDouble() == rate
+            ? rate.toStringAsFixed(0)
+            : rate.toStringAsFixed(1);
+        return "$taxName ($rateStr%)";
+      }
+      return taxName;
+    }
+    return "Tax";
+  }
+
+  // دالة مساعدة لتنسيق اسم الخصم
+  String _getDiscountLabel() {
+    if (recieptData.selectedDiscount != null) {
+      final discountName = recieptData.selectedDiscount!.name;
+      if (recieptData.selectedDiscount!.type == 'percentage') {
+        final rate = recieptData.selectedDiscount!.amount * 100;
+        final rateStr = rate.truncateToDouble() == rate
+            ? rate.toStringAsFixed(0)
+            : rate.toStringAsFixed(1);
+        return "$discountName ($rateStr%)";
+      }
+      return discountName;
+    }
+    return "Discount";
   }
 
   Widget _grandTotal() {

@@ -64,11 +64,15 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
       appBar: appBarWithActions(context, title: 'Reciept Preview'),
       body: Center(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(20), 
+          padding: EdgeInsets.all(20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              PrintableReceipt(recieptData: widget.recieptData),
+              Container(
+                padding: EdgeInsets.all(20),
+                color: Colors.white,
+                child: PrintableReceipt(recieptData: widget.recieptData),
+              ),
               SizedBox(height: 10),
               Text(status, style: TextStyle(fontSize: 20)),
               SizedBox(height: 10),

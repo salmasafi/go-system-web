@@ -108,7 +108,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
       // الأساسيات
       "customer_id": posCubit.selectedCustomer?.id,
       "warehouse_id": posCubit.selectedWarhouse?.id, // مهم جداً للمخزون
-      "cashier_id": posCubit.selectedCashier?.id, // الكاشير الحالي
+      // "cashier_id": posCubit.selectedCashier?.id, // الكاشير الحالي
       
       // التواريخ والحالة
       "date": DateTime.now().toIso8601String(),

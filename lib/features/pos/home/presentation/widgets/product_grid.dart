@@ -13,13 +13,13 @@ import 'product_details_dialog.dart';
 import 'variation_selector_dialog.dart';
 
 class POSProductGrid extends StatefulWidget {
-  // final List<Product> products;
-  // final ValueChanged<Product> onProductTap;
+  // نستقبل القائمة المفلترة من البحث (اختياري)
+  // إذا كانت فارغة أو null، يمكننا استخدام القائمة من الـ state مباشرة
+  final List<Product>? filteredProducts;
 
   const POSProductGrid({
-    // required this.products,
-    // required this.onProductTap,
     super.key,
+    this.filteredProducts,
   });
 
   @override
@@ -27,8 +27,8 @@ class POSProductGrid extends StatefulWidget {
 }
 
 class _POSProductGridState extends State<POSProductGrid> {
+  // ─── Add to Cart Logic ───
   void _addToCart(Product product) {
-    // ... (نفس الكود السابق الخاص بك)
     final checkoutCubit = context.read<CheckoutCubit>();
     final posCubit = context.read<PosCubit>();
 
@@ -68,12 +68,27 @@ class _POSProductGridState extends State<POSProductGrid> {
     return BlocBuilder<PosCubit, PosState>(
       builder: (context, state) {
         final cubit = context.read<PosCubit>();
-        if (state is PosProductsLoading || state is PosLoading) {
+
+        // 1. الأولوية للتحميل: إذا كان هناك أي نوع من التحميل، اعرض اللودنج فوراً
+        // حتى لو كانت الحالة PosDataLoaded، نتحقق من الـ flags
+        if (state is PosProductsLoading || 
+            state is PosLoading || 
+            cubit.isCategoryProductsLoading || 
+            cubit.isBrandProductsLoading) {
           return const CustomLoadingState();
         }
 
+        // 2. إذا كان الفلتر مفتوحاً، اخفِ الشبكة (اختياري)
+        if (cubit.showBrandFilters || cubit.showCategoryFilters) {
+          return const SizedBox();
+        }
+
+        // 3. عرض البيانات
         if (state is PosDataLoaded) {
-          if (state.displayedProducts.isNotEmpty) {
+          // نستخدم القائمة الممررة من البحث إذا وجدت، وإلا نستخدم القائمة من الـ state
+          final productsToShow = widget.filteredProducts ?? state.displayedProducts;
+
+          if (productsToShow.isNotEmpty) {
             return AnimatedElement(
               delay: const Duration(milliseconds: 100),
               child: GridView.builder(
@@ -81,33 +96,32 @@ class _POSProductGridState extends State<POSProductGrid> {
                   right: ResponsiveUI.padding(context, 16),
                   left: ResponsiveUI.padding(context, 16),
                   top: ResponsiveUI.padding(context, 16),
-                  bottom: ResponsiveUI.padding(context, 75),
+                  bottom: ResponsiveUI.padding(context, 75), // مساحة للـ FAB/Bottom Sheet
                 ),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  childAspectRatio: 1,
+                  childAspectRatio: 0.8, // تم تعديل النسبة لتناسب الكارت
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
                 ),
-                itemCount: state.displayedProducts.length,
+                itemCount: productsToShow.length,
                 itemBuilder: (_, i) => POSProductCard(
-                  product: state.displayedProducts[i],
-                  onTap: () => _addToCart(state.displayedProducts[i]),
+                  product: productsToShow[i],
+                  onTap: () => _addToCart(productsToShow[i]),
                 ),
               ),
             );
           } else {
-            if (cubit.isBrandProductsLoading ||
-                cubit.isCategoryProductsLoading) {
-              return const CustomLoadingState();
-            } else {
-              return const SizedBox();
-            }
+            // قائمة فارغة بعد انتهاء التحميل (سواء من البحث أو الفلتر)
+            return const CustomEmptyState(
+              icon: Icons.inventory_2_outlined,
+              title: 'No Products Found',
+              message: 'Try adjusting your search or selecting a different category',
+            );
           }
-        } else if (cubit.showBrandFilters || cubit.showCategoryFilters) {
-          return const SizedBox();
         }
 
+        // 4. الحالة الافتراضية
         return const CustomEmptyState(
           icon: Icons.inventory_2_outlined,
           title: 'No Products Found',

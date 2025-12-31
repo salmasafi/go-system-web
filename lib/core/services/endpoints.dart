@@ -110,6 +110,7 @@ class EndPoint {
 
   /// POS shift
   static String posCashiers = '/api/admin/pos-home/cashiers';
+  static String selectCashier = '/api/admin/pos-home/cashiers/select';
   static String logoutShift = '/api/admin/cashier-shift/logout';
   static String endShift = '/api/admin/cashier-shift/end';
   static String startShift = '/api/admin/cashier-shift/start';

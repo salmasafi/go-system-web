@@ -1,6 +1,5 @@
 // lib/features/pos/home/cubit/pos_home_state.dart
 
-import '../../shift/model/cashier_model.dart';
 import '../model/pos_models.dart';
 
 // lib/features/pos/home/cubit/pos_home_state.dart
@@ -24,17 +23,4 @@ class PosError extends PosState {
   PosError(this.message);
 }
 
-class PosCashiersLoaded extends PosState {
-  final List<CashierModel> cashiers;
-  PosCashiersLoaded(this.cashiers);
-}
 
-class PosCashierSelected extends PosState {}
-
-class PosShiftLoaded extends PosState {}
-
-class PosShiftStarted extends PosState {}
-
-class PosShiftEnded extends PosState {}
-
-class PosLoggedOut extends PosState {}

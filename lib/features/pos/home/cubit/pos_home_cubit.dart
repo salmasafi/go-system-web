@@ -9,8 +9,6 @@ import 'package:systego/features/admin/discount/model/discount_model.dart';
 import '../../../../core/services/dio_helper.dart';
 import '../../../../core/services/endpoints.dart';
 import '../../../../core/utils/error_handler.dart';
-import '../../shift/model/cashier_model.dart';
-import '../../shift/model/shift_model.dart';
 
 class PosCubit extends Cubit<PosState> {
   PosCubit() : super(PosInitial());
@@ -33,12 +31,6 @@ class PosCubit extends Cubit<PosState> {
   List<PaymentMethod> paymentMethods = [];
   List<BankAccount> accounts = [];
   BankAccount? selectedAccount;
-
-  // Cashier & Shift
-  List<CashierModel> cashiersList = [];
-  CashierModel? selectedCashier;
-  ShiftModel? currentShift;
-  bool isShiftOpen = false;
 
   List<Tax> taxes = [
     Tax(id: 'null', name: 'No Tax', amount: 0.0, type: 'fixed', status: true),
@@ -97,91 +89,11 @@ class PosCubit extends Cubit<PosState> {
     }
     return ErrorHandler.handleError(errorOrResponse);
   }
-
-  // ─── Cashier & Shift Logic ───
-
-  Future<void> getCashiers() async {
-    emit(PosLoading());
-    try {
-      final response = await DioHelper.getData(url: EndPoint.posCashiers);
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final data = response.data['data']['cashiers'] as List;
-        cashiersList = data.map((e) => CashierModel.fromJson(e)).toList();
-        emit(PosCashiersLoaded(cashiersList));
-      }
-    } catch (e) {
-      emit(PosError(e.toString()));
-    }
-  }
-
-  void selectCashier(CashierModel cashier) {
-    selectedCashier = cashier;
-    emit(PosInitial());
-  }
-
-  Future<void> startShift() async {
-    if (selectedCashier == null) return;
-    emit(PosLoading());
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.startShift,
-        data: {'cashier_id': selectedCashier!.id},
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        currentShift = ShiftModel.fromJson(response.data['data']['shift']);
-        isShiftOpen = true;
-        await loadPosData();
-      } else {
-        emit(
-          PosError(response.data['data']['message'] ?? 'Failed to start shift'),
-        );
-      }
-    } catch (e) {
-      emit(PosError(e.toString()));
-    }
-  }
-
-  Future<Map<String, dynamic>?> endShift() async {
-    emit(PosLoading());
-    try {
-      final response = await DioHelper.putData(
-        url: EndPoint.endShift,
-        data: {},
-      );
-
-      if (response.statusCode == 200) {
-        isShiftOpen = false;
-        currentShift = null;
-        selectedCashier = null;
-
-        emit(PosShiftEnded());
-      }
-    } catch (e) {
-      emit(PosError(e.toString()));
-    }
-    return null;
-  }
-
-  Future<void> logoutShift() async {
-    try {
-      await DioHelper.postData(url: EndPoint.logoutShift, data: {});
-      emit(PosLoggedOut());
-    } catch (e) {
-      emit(PosError(e.toString()));
-    }
-  }
-
   // ─── Main Data Loading ───
 
   Future<void> loadPosData() async {
     emit(PosLoading());
     try {
-      if (!isShiftOpen) {
-        await getCashiers();
-        return;
-      }
-
       await Future.wait([
         getCategories(),
         getBrands(),
