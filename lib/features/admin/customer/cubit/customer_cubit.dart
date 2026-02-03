@@ -280,5 +280,65 @@ class CustomerCubit extends Cubit<CustomerState> {
       emit(CreateCustomerGroupError(errorMessage));
     }
   }
+
+
+  Future<void> updateCustomerGroup({
+    required String name,
+    required bool status,
+    required String id,
+  }) async {
+    emit(UpdateCustomerGroupLoading());
+
+    try {
+      final data = {
+        "name": name,
+        "status": status,
+      };
+
+      log("Add customer group data: $data");
+
+      final response = await DioHelper.putData(
+        url: EndPoint.updateCustomerGroup(id), // Update with your endpoint
+        data: data,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        emit(UpdateCustomerGroupSuccess(LocaleKeys.customer_group_updated_success.tr()));
+        await getAllCustomerGroups();
+      } else {
+        final errorMessage = ErrorHandler.handleError(response);
+        emit(UpdateCustomerGroupError(errorMessage));
+      }
+    } catch (e) {
+      final errorMessage = ErrorHandler.handleError(e);
+      emit(UpdateCustomerGroupError(errorMessage));
+    }
+  }
+
+  Future<void> deleteCustomerGroup(
+      String id,
+  ) async {
+    emit(DeleteCustomerGroupLoading());
+
+    try {
+     
+
+      final response = await DioHelper.deleteData(
+        url: EndPoint.deleteCustomerGroup(id),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        emit(DeleteCustomerGroupSuccess(LocaleKeys.customer_group_deleted_success.tr()));
+        // Refresh the list after creation
+        await getAllCustomerGroups();
+      } else {
+        final errorMessage = ErrorHandler.handleError(response);
+        emit(DeleteCustomerGroupError(errorMessage));
+      }
+    } catch (e) {
+      final errorMessage = ErrorHandler.handleError(e);
+      emit(DeleteCustomerGroupError(errorMessage));
+    }
+  }
  
 }

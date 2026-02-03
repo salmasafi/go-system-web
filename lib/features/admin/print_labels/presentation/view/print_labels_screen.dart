@@ -1,272 +1,201 @@
-// import 'dart:async';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:systego/core/constants/app_colors.dart';
-// import 'package:systego/core/utils/error_handler.dart';
-// import 'package:systego/core/widgets/app_bar_widgets.dart';
-// import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
-// import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
-// import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
-// import 'package:systego/features/POS/checkout/cubit/checkout_cubit/checkout_cubit.dart';
-// import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
-// import 'package:systego/features/POS/home/cubit/pos_home_state.dart';
-// import 'package:systego/features/admin/print_labels/model/product_model.dart';
-// import 'package:systego/features/admin/print_labels/presentation/widgets/product_details_dialog.dart';
-// import 'package:systego/features/admin/print_labels/presentation/widgets/product_grid.dart';
-// import 'package:systego/features/admin/print_labels/presentation/widgets/variation_selector_dialog.dart';
-// import 'package:systego/features/admin/product/cubit/get_products_cubit/product_cubit.dart';
-// import 'package:systego/features/admin/product/cubit/get_products_cubit/product_state.dart';
-// import 'package:systego/features/pos/checkout/presentation/widgets/cart_bottom_sheet.dart';
 
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:systego/core/constants/app_colors.dart';
+import 'package:systego/core/widgets/app_bar_widgets.dart';
+import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
+import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
+import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:systego/features/admin/print_labels/presentation/view/label_preview_screen.dart';
+import 'package:systego/features/admin/print_labels/presentation/widgets/product_details_dialog.dart';
+import 'package:systego/features/admin/print_labels/presentation/widgets/product_grid.dart';
+import 'package:systego/features/admin/print_labels/presentation/widgets/variation_selector_dialog.dart';
+import 'package:systego/features/admin/product/cubit/get_products_cubit/product_cubit.dart';
+import 'package:systego/features/admin/product/cubit/get_products_cubit/product_state.dart';
+import 'package:systego/features/admin/product/models/product_model.dart';
 
-// class PrintLabelsScreen extends StatefulWidget {
-//   const PrintLabelsScreen({super.key});
+// lib/features/admin/print_labels/models/label_selection_item.dart
 
-//   @override
-//   State<PrintLabelsScreen> createState() => _PrintLabelsScreenState();
-// }
+class LabelSelectionItem {
+  final Product product;
+  final Price? variation; // Null if it's a simple product
+  final int quantity;
 
-// class _PrintLabelsScreenState extends State<PrintLabelsScreen> {
-//   final TextEditingController _searchController = TextEditingController();
-//   Timer? _shiftTimer;
+  LabelSelectionItem({
+    required this.product,
+    this.variation,
+    required this.quantity,
+  });
+}
 
-//   @override
-//   void initState() {
-//     super.initState();
-//   }
+class PrintLabelsScreen extends StatefulWidget {
+  const PrintLabelsScreen({super.key});
 
-//   @override
-//   void dispose() {
-//     _searchController.dispose();
-//     _shiftTimer?.cancel();
-//     super.dispose();
-//   }
+  @override
+  State<PrintLabelsScreen> createState() => _PrintLabelsScreenState();
+}
 
-//     Future<void> _refresh() async {
-//     productsInit();
-//   }
+class _PrintLabelsScreenState extends State<PrintLabelsScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  
+  // Local state to hold items selected for printing
+  final List<LabelSelectionItem> _selectedItems = [];
 
-//     void productsInit() async {
-//     context.read<ProductsCubit>().getProducts();
-//   }
+  @override
+  void initState() {
+    super.initState();
+    productsInit();
+  }
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
+  Future<void> _refresh() async {
+    productsInit();
+  }
 
-//   void _addToCart(Product product) {
-//     final checkoutCubit = context.read<CheckoutCubit>();
-//     final posCubit = context.read<PosCubit>();
+  void productsInit() async {
+    context.read<ProductsCubit>().getProducts();
+  }
 
-//     if (product.differentPrice && product.prices.isNotEmpty) {
-//       showDialog(
-//         context: context,
-//         builder: (_) => VariationSelectorDialog(
-//           product: product,
-//           onVariationSelected: (variation) {
-//             // checkoutCubit.addToCart(product, variation: variation);
-//             posCubit.selectTab(
-//               tab: posCubit.selectedTab,
-//               noFliterRefresh: true,
-//             );
-//           },
-//         ),
-//       );
-//     } else {
-//       showDialog(
-//         context: context,
-//         builder: (_) => ProductDetailsDialog(
-//           product: product,
-//           onAddToCart: () {
-//             // checkoutCubit.addToCart(product);
-//             posCubit.selectTab(
-//               tab: posCubit.selectedTab,
-//               noFliterRefresh: true,
-//             );
-//           },
-//         ),
-//       );
-//     }
-//   }
+  // Logic to add item to the printing list
+  void _handleSelection(Product product, {Price? variation, int quantity = 1}) {
+    setState(() {
+      _selectedItems.add(LabelSelectionItem(
+        product: product,
+        variation: variation,
+        quantity: quantity,
+      ));
+    });
 
+    CustomSnackbar.showSuccess(
+      context, 
+      "${product.name} ${variation != null ? '(${variation.code})' : ''} added to print list"
+    );
+  }
 
-//   List<Product> _filterProducts(List<Product> products) {
-//     return products;
-//   }
+  void _onProductTap(Product product) {
+    if (product.differentPrice && product.prices.isNotEmpty) {
+      showDialog(
+        context: context,
+        builder: (_) => VariationSelectorDialog(
+          product: product,
+          onVariationSelected: (variation) {
+            // Variation dialog doesn't have qty selector, defaulting to 1
+            // You could show a second dialog here for quantity if needed
+            _handleSelection(product, variation: variation, quantity: 1);
+          },
+        ),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (_) => ProductDetailsDialog(
+          product: product,
+          // Now receives quantity from the dialog
+          onConfirm: (int quantity) {
+            _handleSelection(product, quantity: quantity);
+          },
+        ),
+      );
+    }
+  }
 
-//   void _showCartDialog() {
-//     final posCubit = context.read<PosCubit>();
-//     final checkoutCubit = context.read<CheckoutCubit>();
-//     showModalBottomSheet(
-//       context: context,
-//       isScrollControlled: true,
-//       backgroundColor: Colors.transparent,
-//       builder: (_) => POSCartBottomSheet(
-//         onQuantityChanged: (index, delta) {
-//           checkoutCubit.updateQuantity(index, delta);
-//           posCubit.refreshCartProducts();
-//         },
-//         onRemove: (index) {
-//           checkoutCubit.removeFromCart(index);
-//           posCubit.refreshCartProducts();
-//         },
-//       ),
-//     );
-//   }
+  void _navigateToPreview() {
+    if (_selectedItems.isEmpty) return;
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return BlocConsumer<PosCubit, PosState>(
-//       listener: (context, state) {
-//         if (state is PosError) {
-//           CustomSnackbar.showError(
-//             context,
-//             ErrorHandler.handleError(state.message),
-//           );
-//         }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LabelPreviewScreen(selectedItems: _selectedItems),
+      ),
+    );
+  }
 
-//       },
-//       builder: (context, state) {
-//         final cubit = context.read<PosCubit>();
-//         final checkoutCubit = context.read<CheckoutCubit>();
-//         final cartItems = checkoutCubit.cartItems;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.lightBlueBackground,
+      appBar: appBarWithActions(
+        context,
+        title: 'Select Products for Labels',
+      ),
+      body: _buildListContent(),
+      // Floating Action Button to proceed to print
+      floatingActionButton: _selectedItems.isNotEmpty
+          ? FloatingActionButton.extended(
+              onPressed: _navigateToPreview,
+              backgroundColor: AppColors.primaryBlue,
+              icon: const Icon(Icons.print, color: Colors.white),
+              label: Text(
+                'Next (${_selectedItems.length})',
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            )
+          : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
 
-//         return Scaffold(
-//           backgroundColor: AppColors.lightBlueBackground,
-//             appBar: appBarWithActions(
-//         context,
-//         title: 'Products',
-//       ),
-//           // ─── 1. تعديل الـ AppBar ───
-         
+  Widget _buildListContent() {
+    return BlocConsumer<ProductsCubit, ProductsState>(
+      listener: (context, state) {
+        if (state is ProductDeleteSuccess) {
+          CustomSnackbar.showSuccess(context, state.message);
+          productsInit();
+        } else if (state is ProductAddSuccess) {
+          CustomSnackbar.showSuccess(context, state.message);
+          productsInit();
+        }
+      },
+      builder: (context, state) {
+        if (state is ProductsLoading) {
+          return const CustomLoadingShimmer();
+        } else if (state is ProductsSuccess) {
+          final products = state.products;
 
-//           body: 
-//           // _buildBody(cubit, state, cartItems),
-
-//           _buildListContent(),
-
-       
-//           floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-//         );
-//       },
-//     );
-//   }
-
-//   Widget _buildListContent() {
-//     return BlocConsumer<ProductsCubit, ProductsState>(
-//       listener: (context, state) {
-//         if (state is ProductDeleteSuccess) {
-//           CustomSnackbar.showSuccess(context, state.message);
-//           productsInit();
-//         } else if (state is ProductAddSuccess) {
-//           CustomSnackbar.showSuccess(context, state.message);
-//           productsInit();
-//         }
-//       },
-//       builder: (context, state) {
-//         if (state is ProductsLoading) {
-//           return RefreshIndicator(
-//             onRefresh: _refresh,
-//             color: AppColors.primaryBlue,
-//             child: const CustomLoadingShimmer(),
-//           );
-//         } else if (state is ProductsSuccess) {
-//           final products = state.products;
-//           // List<Product> displayProducts = _filterProducts(products);
-
-//           if (products.isEmpty) {
-//             String title = products.isEmpty
-//                 ? 'No Products Found'
-//                 : 'No Matching Products';
-//             String message = products.isEmpty
-//                 ? 'Add your first product to get started'
-//                 : 'Try adjusting your search or filters';
-//             return Column(
-//               children: [
-//                 Expanded(
-//                   child: CustomEmptyState(
-//                     icon: Icons.inventory_2_outlined,
-//                     title: title,
-//                     message: message,
-//                     onRefresh: _refresh,
-//                     actionLabel: 'Retry',
-//                     onAction: _refresh,
-//                   ),
-//                 ),
-//               ],
-//             );
-//           } else {
-//             return RefreshIndicator(
-//               onRefresh: _refresh,
-//               color: AppColors.primaryBlue,
-//               child: Column(
-//                 children: [
-//                   Expanded(child: ProductGrid(products: products, onProductTap: _addToCart,)),
-//                 //   POSProductGrid(
-//                 //   products: _filterProducts(state.displayedProducts),
-//                 //   onProductTap: _addToCart,
-//                 // );
-//                 ],
-//               ),
-//             );
-//           }
-//         } else if (state is ProductsError) {
-//           return CustomEmptyState(
-//             icon: Icons.inventory_2_outlined,
-//             title: 'Error Occurred',
-//             message: state.message,
-//             onRefresh: _refresh,
-//             actionLabel: 'Retry',
-//             onAction: _refresh,
-//           );
-//         } else {
-//           return CustomEmptyState(
-//             icon: Icons.inventory_2_outlined,
-//             title: 'No Products Found',
-//             message: 'Pull to refresh or check your connection',
-//             onRefresh: _refresh,
-//             actionLabel: 'Retry',
-//             onAction: _refresh,
-//           );
-//         }
-//       },
-//     );
-//   }
-
-
-//   // Widget _buildBody(ProductsCubit cubit, ProductsState state, List<dynamic> cartItems) {
-//   //   if (state is ProductsLoading) {
-//   //     return const CustomLoadingState();
-//   //   }
-
-//   //   // الحالة 3: الشيفت مفتوح (عرض محتوى الـ POS الطبيعي)
-//   //   return Column(
-//   //     children: [
-//   //       // Product Grid
-//   //       Expanded(
-//   //         child: Builder(
-//   //           builder: (context) {
-//   //             if (state is PosProductsLoading) {
-//   //               return const CustomLoadingState();
-//   //             }
-
-//   //             if (state is PosDataLoaded &&
-//   //                 state.displayedProducts.isNotEmpty) {
-//   //               return POSProductGrid(
-//   //                 products: _filterProducts(state.displayedProducts),
-//   //                 onProductTap: _addToCart,
-//   //               );
-//   //             } else if (cubit.showBrandFilters || cubit.showCategoryFilters) {
-//   //               return const SizedBox();
-//   //             }
-
-//   //             return const CustomEmptyState(
-//   //               icon: Icons.inventory_2_outlined,
-//   //               title: 'No Products Found',
-//   //               message: 'Try adjusting your search or filters',
-//   //             );
-//   //           },
-//   //         ),
-//   //       ),
-//   //     ],
-//   //   );
-//   // }
-// }
+          if (products.isEmpty) {
+            return CustomEmptyState(
+              icon: Icons.inventory_2_outlined,
+              title: 'No Products Found',
+              message: 'Add your first product to get started',
+              onRefresh: _refresh,
+              actionLabel: 'Retry',
+              onAction: _refresh,
+            );
+          } else {
+            return RefreshIndicator(
+              onRefresh: _refresh,
+              color: AppColors.primaryBlue,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: ProductGrid(
+                      products: products, 
+                      onProductTap: _onProductTap, // Updated callback
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+        } else if (state is ProductsError) {
+          return CustomEmptyState(
+            icon: Icons.error_outline,
+            title: 'Error Occurred',
+            message: state.message,
+            onRefresh: _refresh,
+            actionLabel: 'Retry',
+            onAction: _refresh,
+          );
+        } else {
+          return const SizedBox();
+        }
+      },
+    );
+  }
+}

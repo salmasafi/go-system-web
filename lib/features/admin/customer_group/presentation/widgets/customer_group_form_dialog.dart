@@ -11,10 +11,12 @@ import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:systego/core/widgets/custom_textfield/build_text_field.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/features/admin/customer/cubit/customer_cubit.dart';
+import 'package:systego/features/admin/customer_group/model/customer_group.dart';
 import 'package:systego/generated/locale_keys.g.dart';
 
 class CustomerGroupFormDialog extends StatefulWidget {
-  const CustomerGroupFormDialog({super.key});
+  final CustomerGroup? customerGroup;
+  const CustomerGroupFormDialog({super.key, this.customerGroup});
 
   @override
   State<CustomerGroupFormDialog> createState() => _CustomerGroupFormDialogState();
@@ -26,6 +28,8 @@ class _CustomerGroupFormDialogState extends State<CustomerGroupFormDialog>
   final _nameController = TextEditingController();
   bool status = true;
 
+  bool get isEditMode => widget.customerGroup != null;
+
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
 
@@ -33,6 +37,14 @@ class _CustomerGroupFormDialogState extends State<CustomerGroupFormDialog>
   void initState() {
     super.initState();
     _setupAnimation();
+    _initializeControllers();
+  }
+
+    void _initializeControllers() {
+    if (isEditMode) {
+      _nameController.text = widget.customerGroup!.name;
+      status = widget.customerGroup!.status;
+    }
   }
 
   void _setupAnimation() {
@@ -77,6 +89,7 @@ class _CustomerGroupFormDialogState extends State<CustomerGroupFormDialog>
               child: Column(
                 children: [
                   CustomerGroupDialogHeader(
+                    isEditMode: isEditMode,
                     onClose: () => Navigator.of(context).pop(),
                   ),
                   Expanded(
@@ -137,6 +150,7 @@ class _CustomerGroupFormDialogState extends State<CustomerGroupFormDialog>
                     ),
                   ),
                   CustomerGroupDialogButtons(
+                    isEditMode: isEditMode,
                     isLoading: isLoading,
                     onCancel: () => Navigator.of(context).pop(),
                     onSubmit: _handleSubmit,
@@ -167,11 +181,21 @@ class _CustomerGroupFormDialogState extends State<CustomerGroupFormDialog>
   void _handleSubmit() {
     if (_formKey.currentState!.validate()) {
       final cubit = context.read<CustomerCubit>();
-      
-      cubit.addCustomerGroup(
+
+      if (isEditMode){
+        cubit.updateCustomerGroup(
+          id: widget.customerGroup!.id,
         name: _nameController.text.trim(),
         status: status,
       );
+      }else{
+        cubit.addCustomerGroup(
+        name: _nameController.text.trim(),
+        status: status,
+      );
+      }
+      
+      
     }
   }
 
@@ -179,13 +203,19 @@ class _CustomerGroupFormDialogState extends State<CustomerGroupFormDialog>
     if (state is CreateCustomerGroupSuccess) {
       CustomSnackbar.showSuccess(context, state.message);
       Navigator.pop(context);
-    } else if (state is CreateCustomerGroupError) {
+    } else if (state is UpdateCustomerGroupSuccess) {
+      CustomSnackbar.showError(context, state.message);
+      Navigator.pop(context);
+    }else if (state is CreateCustomerGroupError) {
+      CustomSnackbar.showError(context, state.error);
+    }else if (state is UpdateCustomerGroupError) {
       CustomSnackbar.showError(context, state.error);
     }
   }
 }
 
 class CustomerGroupDialogButtons extends StatelessWidget {
+   final bool isEditMode;
   final bool isLoading;
   final VoidCallback onCancel;
   final VoidCallback onSubmit;
@@ -193,6 +223,7 @@ class CustomerGroupDialogButtons extends StatelessWidget {
   const CustomerGroupDialogButtons({
     super.key,
     required this.isLoading,
+    required this.isEditMode,
     required this.onCancel,
     required this.onSubmit,
   });
@@ -267,13 +298,15 @@ class CustomerGroupDialogButtons extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    Icons.add_circle_outline,
+                    isEditMode
+                        ? Icons.check_circle_outline
+                        : Icons.add_circle_outline,
                     size: iconSize20,
                   ),
                   SizedBox(width: spacing8),
                   Flexible(
                     child: Text(
-                      LocaleKeys.create_customer_group.tr(),
+                      isEditMode ? LocaleKeys.update_customer_group.tr() : LocaleKeys.create_customer_group.tr(),
                       style: TextStyle(
                         fontSize: value14,
                         fontWeight: FontWeight.bold,
@@ -293,10 +326,12 @@ class CustomerGroupDialogButtons extends StatelessWidget {
 
 
 class CustomerGroupDialogHeader extends StatelessWidget {
+  final bool isEditMode;
   final VoidCallback onClose;
 
   const CustomerGroupDialogHeader({
     super.key,
+    required this.isEditMode,
     required this.onClose,
   });
 
@@ -343,7 +378,7 @@ class CustomerGroupDialogHeader extends StatelessWidget {
               borderRadius: BorderRadius.circular(borderRadius12),
             ),
             child: Icon(
-              Icons.group_add,
+               isEditMode ? Icons.group_add : Icons.edit,
               color: AppColors.white,
               size: iconSize28,
             ),
@@ -354,7 +389,9 @@ class CustomerGroupDialogHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  LocaleKeys.new_customer_group.tr(),
+                   isEditMode
+                      ? LocaleKeys.edit_customer_group.tr()
+                      : LocaleKeys.new_customer_group.tr(),
                   style: TextStyle(
                     color: AppColors.white,
                     fontSize: fontSize22,
@@ -362,7 +399,9 @@ class CustomerGroupDialogHeader extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  LocaleKeys.new_customer_group.tr(),
+                    isEditMode
+                      ? LocaleKeys.update_customer_group.tr()
+                      : LocaleKeys.new_customer_group.tr(),
                   style: TextStyle(
                     color: AppColors.white.withOpacity(0.9),
                     fontSize: fontSize13,

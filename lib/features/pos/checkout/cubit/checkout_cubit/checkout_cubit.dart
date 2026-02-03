@@ -61,7 +61,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   //  Create Sale Function (Updated for new Payload)
   // ────────────────────────────────────────────────────────────────
   Future<bool> createSale({
-    required PosCubit posCubit,
+    // required PosCubit posCubit,
     required double totalAmount, // grand_total
     double paidAmount = 0.0, // المبلغ المدفوع فعلياً
     String? note,
@@ -94,20 +94,20 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     // 3. Prepare Financials (Only if not pending and Amount > 0)
     List<Map<String, dynamic>> financials = [];
     if (!isPending && paidAmount > 0) {
-      // التأكد من اختيار حساب بنكي (Cash Register / Bank)
-      if (posCubit.selectedAccount != null) {
-        financials.add({
-          "account_id": posCubit.selectedAccount!.id,
-          "amount": paidAmount,
-        });
-      }
+      // // التأكد من اختيار حساب بنكي (Cash Register / Bank)
+      // if (posCubit.selectedAccount != null) {
+      //   financials.add({
+      //     "account_id": posCubit.selectedAccount!.id,
+      //     "amount": paidAmount,
+      //   });
+      // }
     }
 
     // 4. Construct the Body
     final body = {
-      // الأساسيات
-      "customer_id": posCubit.selectedCustomer?.id,
-      "warehouse_id": posCubit.selectedWarhouse?.id, // مهم جداً للمخزون
+      // // الأساسيات
+      // "customer_id": posCubit.selectedCustomer?.id,
+      // "warehouse_id": posCubit.selectedWarhouse?.id, // مهم جداً للمخزون
       // "cashier_id": posCubit.selectedCashier?.id, // الكاشير الحالي
       
       // التواريخ والحالة
@@ -122,12 +122,12 @@ class CheckoutCubit extends Cubit<CheckoutState> {
       "discount": 0,   // قيمة الخصم رقمياً
       "shipping": 0,
 
-      // العلاقات (Discounts, Taxes, Coupon)
-      if (posCubit.selectedTax != null && posCubit.selectedTax!.id != 'null')
-        "order_tax": posCubit.selectedTax!.id,
+      // // العلاقات (Discounts, Taxes, Coupon)
+      // if (posCubit.selectedTax != null && posCubit.selectedTax!.id != 'null')
+      //   "order_tax": posCubit.selectedTax!.id,
       
-      if (posCubit.selectedDiscount != null && posCubit.selectedDiscount!.id != 'null')
-        "order_discount": posCubit.selectedDiscount!.id,
+      // if (posCubit.selectedDiscount != null && posCubit.selectedDiscount!.id != 'null')
+      //   "order_discount": posCubit.selectedDiscount!.id,
       
       // "coupon_id": "", // أضفه إذا كان لديك CouponCubit
 

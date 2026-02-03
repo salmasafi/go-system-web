@@ -41,10 +41,10 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
     _emailController = TextEditingController(text: widget.customer.email);
     _phoneController = TextEditingController(text: widget.customer.phoneNumber);
     _addressController = TextEditingController(text: widget.customer.address);
-    _countryController = TextEditingController(text: widget.customer.country);
-    _cityController = TextEditingController(text: widget.customer.city);
+    _countryController = TextEditingController(text: widget.customer.country?.name);
+    _cityController = TextEditingController(text: widget.customer.city?.name);
     _customerGroupIdController = TextEditingController(
-      text: widget.customer.customerGroupId ?? ''
+      text: widget.customer.customerGroup?.id ?? ''
     );
     _isDue = widget.customer.isDue;
     _amountDue = widget.customer.amountDue;

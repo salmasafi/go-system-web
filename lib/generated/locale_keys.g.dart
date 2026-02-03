@@ -888,5 +888,32 @@ abstract class  LocaleKeys {
   static const create_customer_group = 'create_customer_group';
   static const customer_group_created_success = 'customer_group_created_success';
   static const customer_group_not_found = 'customer_group_not_found';
+  static const customer_group_deleted_success = 'customer_group_deleted_success';
+  static const customer_group_updated_success = 'customer_group_updated_success';
+  static const invalid_group_id = 'invalid_group_id';
+  static const delete_group = 'delete_group';
+  static const delete_group_message = 'delete_group_message';
+  static const edit_customer_group = 'edit_customer_group';
+  static const update_customer_group = 'update_customer_group';
+  static const transfers = 'transfers';
+  static const incoming = 'incoming';
+  static const outgoing = 'outgoing';
+  static const history = 'history';
+  static const create_transfer = 'create_transfer';
+  static const from_warehouse = 'from_warehouse';
+  static const to_warehouse = 'to_warehouse';
+  static const product_name = 'product_name';
+  static const select_product = 'select_product';
+  static const add_product = 'add_product';
+  static const receive = 'receive';
+  static const transfer_created_success = 'transfer_created_success';
+  static const transfer_received_success = 'transfer_received_success';
+  static const no_transfers = 'no_transfers';
+  static const no_transfers_message = 'no_transfers_message';
+  static const cannot_transfer_same_warehouse = 'cannot_transfer_same_warehouse';
+  static const at_least_one_product = 'at_least_one_product';
+  static const field_required = 'field_required';
+  static const submit = 'submit';
+  static const all_transfers = 'all_transfers';
 
 }

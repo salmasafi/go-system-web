@@ -1,11 +1,12 @@
+// Ensure you import the files where you defined Country, City, and CustomerGroup
+import 'package:systego/features/admin/customer_group/model/customer_group.dart'; 
+import 'package:systego/features/admin/suppliers/model/supplier_model.dart'; 
+
 class CustomerResponse {
   final bool success;
   final CustomerData data;
 
-  CustomerResponse({
-    required this.success,
-    required this.data,
-  });
+  CustomerResponse({required this.success, required this.data});
 
   factory CustomerResponse.fromJson(Map<String, dynamic> json) {
     return CustomerResponse(
@@ -13,39 +14,27 @@ class CustomerResponse {
       data: CustomerData.fromJson(json['data']),
     );
   }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'success': success,
-      'data': data.toJson(),
-    };
-  }
 }
 
 class CustomerData {
   final String message;
   final List<CustomerModel> customers;
 
-  CustomerData({
-    required this.message,
-    required this.customers,
-  });
+  CustomerData({required this.message, required this.customers});
 
   factory CustomerData.fromJson(Map<String, dynamic> json) {
     return CustomerData(
-      message: json['message'],
-      customers: (json['customers'] as List)
-          .map((e) => CustomerModel.fromJson(e))
-          .toList(),
+      message: json['message'] ?? '',
+      customers: (json['customers'] as List?)
+          ?.map((e) => CustomerModel.fromJson(e))
+          .toList() ?? [],
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'message': message,
-      'customers': customers.map((e) => e.toJson()).toList(),
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'message': message,
+        'customers': customers.map((e) => e.toJson()).toList(),
+      };
 }
 
 class CustomerModel {
@@ -54,9 +43,12 @@ class CustomerModel {
   final String email;
   final String phoneNumber;
   final String address;
-  final String country;
-  final String city;
-  final String? customerGroupId;
+  
+  // These use the classes you defined in SupplierModel
+  final Country? country; 
+  final City? city;
+  
+  final CustomerGroup? customerGroup;
   final bool isDue;
   final double amountDue;
   final int totalPointsEarned;
@@ -70,9 +62,9 @@ class CustomerModel {
     required this.email,
     required this.phoneNumber,
     required this.address,
-    required this.country,
-    required this.city,
-    this.customerGroupId,
+    this.country,
+    this.city,
+    this.customerGroup,
     required this.isDue,
     required this.amountDue,
     required this.totalPointsEarned,
@@ -83,19 +75,27 @@ class CustomerModel {
 
   factory CustomerModel.fromJson(Map<String, dynamic> json) {
     return CustomerModel(
-      id: json['_id'],
-      name: json['name'],
+      id: json['_id'] ?? '',
+      name: json['name'] ?? '',
       email: json['email'] ?? '',
-      phoneNumber: json['phone_number'],
+      // FIX: Handle number-to-string conversion safely
+      phoneNumber: json['phone_number']?.toString() ?? '',
       address: json['address'] ?? '',
-      country: json['country'],
-      city: json['city'],
-      customerGroupId: json['customer_group_id'],
+      
+      // Integrating the Country/City classes from your Supplier file
+      country: json['country'] != null ? Country.fromJson(json['country']) : null,
+      city: json['city'] != null ? City.fromJson(json['city']) : null,
+      
+      customerGroup: json['customer_group_id'] != null 
+          ? CustomerGroup.fromJson(json['customer_group_id']) 
+          : null,
+          
       isDue: json['is_Due'] ?? false,
       amountDue: (json['amount_Due'] as num?)?.toDouble() ?? 0.0,
       totalPointsEarned: (json['total_points_earned'] as num?)?.toInt() ?? 0,
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      
+      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
+      updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
       version: json['__v'] ?? 0,
     );
   }
@@ -107,9 +107,10 @@ class CustomerModel {
       'email': email,
       'phone_number': phoneNumber,
       'address': address,
-      'country': country,
-      'city': city,
-      if (customerGroupId != null) 'customer_group_id': customerGroupId,
+      // FIX: Ensure .toJson() is called on nested objects
+      'country': country?.toJson(),
+      'city': city?.toJson(),
+      'customer_group_id': customerGroup?.toJson(),
       'is_Due': isDue,
       'amount_Due': amountDue,
       'total_points_earned': totalPointsEarned,

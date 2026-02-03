@@ -41,11 +41,14 @@ class _CustomerGroupsScreenState extends State<CustomerGroupsScreen> {
       listener: (context, state) {
         if (state is GetCustomerGroupsError) {
           CustomSnackbar.showError(context, state.error);
-       
-       
         } else if (state is CreateCustomerGroupSuccess) {
           CustomSnackbar.showSuccess(context, state.message);
           customerGroupsInit();
+        }else if (state is DeleteCustomerGroupSuccess) {
+          CustomSnackbar.showSuccess(context, state.message);
+          customerGroupsInit();
+        }else if (state is DeleteCustomerGroupError) {
+          CustomSnackbar.showError(context, state.error);
         }
       },
       builder: (context, state) {

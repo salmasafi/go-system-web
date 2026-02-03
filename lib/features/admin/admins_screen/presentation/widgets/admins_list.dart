@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/features/admin/admins_screen/cubit/admins_cubit.dart';
 import 'package:systego/features/admin/admins_screen/model/admins_model.dart';
-import 'package:systego/features/admin/admins_screen/presentation/view/edit_permission_screen.dart';
 import 'package:systego/features/admin/admins_screen/presentation/widgets/admin_animated_card.dart';
+import 'package:systego/features/admin/admins_screen/presentation/widgets/admin_form_dialog.dart';
 import 'package:systego/generated/locale_keys.g.dart';
 
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
@@ -41,7 +41,6 @@ class _AdminsListState extends State<AdminsList> {
           onEdit: !isSuperAdmin 
               ? () => _showEditDialog(context, admin)
               : null,
-          //  () => _showEditDialog(context, admin),
           onDelete: () => _showDeleteDialog(context, admin),
         );
       },
@@ -52,10 +51,8 @@ class _AdminsListState extends State<AdminsList> {
     void _showEditDialog(BuildContext context, AdminModel admin) async {
     final result = await showDialog(
       context: context,
-      builder: (context) => EditPermissionsBottomSheet(
-        userId: admin.id,
-      username: admin.username,
-      email: admin.email,
+      builder: (context) => AdminFormDialog(
+       admin: admin,
       )
     );
     if (result == true && mounted) {  // Check result

@@ -446,7 +446,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
 
     // Call Create Sale
     final success = await checkOutCubit.createSale(
-      posCubit: posCubit,
+      // posCubit: posCubit,
       totalAmount: _grandTotal, // الإجمالي النهائي
       paidAmount: actualPaidToSend, // المبلغ المدفوع (سيتم حساب Due داخلياً)
       note: _saleNoteCtrl.text.isEmpty ? null : _saleNoteCtrl.text,
@@ -463,7 +463,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
         builder: (_) {
           return POSReceiptDialog(
             recieptData: RecieptData(
-              cartItems: widget.cartItems,
+              cartItems: [],
               totalAmount: _subTotal,
               taxAmount: currentTaxAmount,
               selectedTax: _selectedTax,

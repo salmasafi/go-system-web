@@ -44,32 +44,37 @@ class CustomerGroupData {
     };
   }
 }
-
 class CustomerGroup {
   final String id;
   final String name;
   final bool status;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final int version;
+  // FIX: Make these nullable because they don't exist in the nested Customer object
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final int? version;
 
   CustomerGroup({
     required this.id,
     required this.name,
     required this.status,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.version,
+    this.createdAt,
+    this.updatedAt,
+    this.version,
   });
 
   factory CustomerGroup.fromJson(Map<String, dynamic> json) {
     return CustomerGroup(
-      id: json['_id'] as String,
-      name: json['name'] as String,
-      status: json['status'] as bool,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
-      version: json['__v'] as int,
+      id: json['_id'] ?? '',
+      name: json['name'] ?? '',
+      status: json['status'] ?? false,
+      // FIX: Use tryParse or handle null safely
+      createdAt: json['createdAt'] != null 
+          ? DateTime.tryParse(json['createdAt']) 
+          : null,
+      updatedAt: json['updatedAt'] != null 
+          ? DateTime.tryParse(json['updatedAt']) 
+          : null,
+      version: json['__v'],
     );
   }
 
@@ -78,9 +83,10 @@ class CustomerGroup {
       '_id': id,
       'name': name,
       'status': status,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
-      '__v': version,
+      // FIX: Handle nulls in toJson
+      if (createdAt != null) 'createdAt': createdAt!.toIso8601String(),
+      if (updatedAt != null) 'updatedAt': updatedAt!.toIso8601String(),
+      if (version != null) '__v': version,
     };
   }
 }

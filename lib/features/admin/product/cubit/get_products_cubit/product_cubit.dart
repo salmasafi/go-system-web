@@ -389,72 +389,125 @@ class ProductsCubit extends Cubit<ProductsState> {
     }
   }
 
+  // Future<void> getWareHouseProducts(String wareHouseID) async {
+  //   emit(ProductsLoading());
+
+  //   try {
+  //     log('Starting products request...');
+
+  //     final response = await DioHelper.getData(
+  //       url: EndPoint.getWareHouseProducts(wareHouseID),
+  //     );
+
+  //     log('Response received: ${response.statusCode}');
+
+  //     if (response.statusCode == 200) {
+  //       final data = response.data;
+  //       log('data received: ${response.data}');
+  //       if (data['success'] == true && data['data'] != null) {
+  //         final productsJson =
+  //             data['data']['products'] as List<dynamic>? ?? [];
+  //         final warehouseProducts = productsJson
+  //             .map(
+  //               (json) =>
+  //                   WarehouseProduct.fromJson(json as Map<String, dynamic>),
+  //             )
+  //             .toList()
+  //             .reversed
+  //             .toList();
+  //         // Map to Product objects for the state (assuming partial mapping; adjust as needed based on full Product requirements)
+  //         final products = warehouseProducts.where((wp) => wp.productId != null).map((
+  //           wp,
+  //         ) {
+  //           // Construct a partial JSON for Product.fromJson, filling defaults for missing fields
+  //           // This assumes Product.fromJson can handle minimal fields; expand defaults as per Product model
+  //           final productJson = {
+  //             '_id': wp.productId!.id,
+  //             'name': wp.productId!.name,
+  //             'quantity': wp.quantity,
+  //             'description': '', // Default
+  //             'price': 0.0, // Default
+  //             'prices': [], // Default
+  //             'categoryId': [], // Default
+  //             'brandId': {
+  //               '_id': '',
+  //             }, // Default, assuming brandId is a map with id
+  //             // Add more defaults for other required Product fields if necessary
+  //           };
+  //           return Product.fromJson(productJson);
+  //         }).toList();
+  //         log('Products fetch successful');
+  //         log('Products ${products}');
+  //         log('Products ${products.map((p) => p.toJson())}');
+
+  //         emit(ProductsSuccess(products));
+  //       } else {
+  //         final errorMessage = data['message'] ?? 'Failed to fetch products';
+  //         log('Products fetch failed: $errorMessage');
+  //         emit(ProductsError(errorMessage));
+  //       }
+  //     } else {
+  //       final errorMessage = ErrorHandler.handleError(response);
+  //       log('Response error: $errorMessage');
+  //       emit(ProductsError(errorMessage));
+  //     }
+  //   } catch (error) {
+  //     log('Products fetch error caught: $error');
+  //     final errorMessage = ErrorHandler.handleError(error);
+  //     emit(ProductsError(errorMessage));
+  //   }
+  // }
+
   Future<void> getWareHouseProducts(String wareHouseID) async {
-    emit(ProductsLoading());
+  emit(ProductsLoading());
 
-    try {
-      log('Starting products request...');
+  try {
+    log('Starting products request...');
 
-      final response = await DioHelper.getData(
-        url: EndPoint.getWareHouseProducts(wareHouseID),
-      );
+    final response = await DioHelper.getData(
+      url: EndPoint.getWareHouseProducts(wareHouseID),
+    );
 
-      log('Response received: ${response.statusCode}');
+    log('Response received: ${response.statusCode}');
 
-      if (response.statusCode == 200) {
-        final data = response.data;
-        log('data received: ${response.data}');
-        if (data['success'] == true && data['data'] != null) {
-          final productsJson =
-              data['data']['productWarehouses'] as List<dynamic>? ?? [];
-          final warehouseProducts = productsJson
-              .map(
-                (json) =>
-                    WarehouseProduct.fromJson(json as Map<String, dynamic>),
-              )
-              .toList()
-              .reversed
-              .toList();
-          // Map to Product objects for the state (assuming partial mapping; adjust as needed based on full Product requirements)
-          final products = warehouseProducts.where((wp) => wp.productId != null).map((
-            wp,
-          ) {
-            // Construct a partial JSON for Product.fromJson, filling defaults for missing fields
-            // This assumes Product.fromJson can handle minimal fields; expand defaults as per Product model
-            final productJson = {
-              '_id': wp.productId!.id,
-              'name': wp.productId!.name,
-              'quantity': wp.quantity,
-              'description': '', // Default
-              'price': 0.0, // Default
-              'prices': [], // Default
-              'categoryId': [], // Default
-              'brandId': {
-                '_id': '',
-              }, // Default, assuming brandId is a map with id
-              // Add more defaults for other required Product fields if necessary
-            };
-            return Product.fromJson(productJson);
-          }).toList();
-          log('Products fetch successful');
-          log('Products ${products}');
-          log('Products ${products.map((p) => p.toJson())}');
-
-          emit(ProductsSuccess(products));
-        } else {
-          final errorMessage = data['message'] ?? 'Failed to fetch products';
-          log('Products fetch failed: $errorMessage');
-          emit(ProductsError(errorMessage));
+    if (response.statusCode == 200) {
+      final data = response.data;
+      log('data received: ${response.data}');
+      
+      if (data['success'] == true && data['data'] != null) {
+        final productsJson = data['data']['products'] as List<dynamic>? ?? [];
+        
+        // Directly parse the products from the JSON response
+        final products = productsJson
+            .map((json) => Product.fromJson(json as Map<String, dynamic>))
+            .toList()
+            .reversed
+            .toList();
+        
+        log('Products fetch successful');
+        log('Products count: ${products.length}');
+        
+        // Optionally log first product details for debugging
+        if (products.isNotEmpty) {
+          log('First product: ${products.first.name}, ID: ${products.first.id}');
+          log('First product quantity: ${products.first.quantity}');
         }
+
+        emit(ProductsSuccess(products));
       } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        log('Response error: $errorMessage');
+        final errorMessage = data['message'] ?? 'Failed to fetch products';
+        log('Products fetch failed: $errorMessage');
         emit(ProductsError(errorMessage));
       }
-    } catch (error) {
-      log('Products fetch error caught: $error');
-      final errorMessage = ErrorHandler.handleError(error);
+    } else {
+      final errorMessage = ErrorHandler.handleError(response);
+      log('Response error: $errorMessage');
       emit(ProductsError(errorMessage));
     }
+  } catch (error) {
+    log('Products fetch error caught: $error');
+    final errorMessage = ErrorHandler.handleError(error);
+    emit(ProductsError(errorMessage));
   }
+}
 }
