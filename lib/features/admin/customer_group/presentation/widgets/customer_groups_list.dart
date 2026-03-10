@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/features/admin/customer_group/model/customer_group_model.dart';
 import 'package:systego/features/admin/customer_group/presentation/widgets/customer_group_animated_card.dart';
-import 'package:systego/features/admin/customer_group/presentation/widgets/customer_group_form_dialog.dart';
 
 class CustomerGroupList extends StatelessWidget {
   final List<CustomerGroup> customerGroups;

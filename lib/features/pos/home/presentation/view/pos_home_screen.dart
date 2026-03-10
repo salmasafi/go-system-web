@@ -22,10 +22,9 @@ import '../../../../admin/product/presentation/screens/barcode_scanner_screen.da
 import '../../../checkout/presentation/widgets/cart_bottom_sheet.dart';
 import '../../../checkout/presentation/widgets/cart_fab.dart';
 import '../../../checkout/presentation/widgets/cart_summary.dart';
-import '../../../sales/presentation/views/sales_screen.dart';
+import '../../../history/presentation/views/history_screen.dart';
 import '../../../shift/presentation/views/cashier_selection_screen.dart';
 import '../../../shift/presentation/views/start_shift_screen.dart';
-
 
 // Widgets
 import '../widgets/filter_by_category_brand_widgets.dart';
@@ -44,7 +43,6 @@ class POSHomeScreen extends StatefulWidget {
 
 class _POSHomeScreenState extends State<POSHomeScreen>
     with WidgetsBindingObserver {
-  
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   Timer? _shiftTimer;
@@ -58,7 +56,7 @@ class _POSHomeScreenState extends State<POSHomeScreen>
     // التحقق المبدئي: إذا كان الشيفت مفتوحاً، ابدأ المؤقت وحمل البيانات
     final shiftCubit = context.read<PosShiftCubit>();
     final homeCubit = context.read<PosCubit>();
-    
+
     if (shiftCubit.isShiftOpen) {
       homeCubit.loadPosData();
       _startLocalTimer();
@@ -99,7 +97,7 @@ class _POSHomeScreenState extends State<POSHomeScreen>
       }
     }
 
-    updateTime(); 
+    updateTime();
     _shiftTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       updateTime();
     });
@@ -169,9 +167,9 @@ class _POSHomeScreenState extends State<POSHomeScreen>
   }
 
   double get _total => context.read<CheckoutCubit>().cartItems.fold(
-        0,
-        (s, i) => s + i.product.price * i.quantity, 
-      );
+    0,
+    (s, i) => s + i.product.price * i.quantity,
+  );
 
   // ─── Barcode Logic ───
   void _handleBarcodeScan(String code) async {
@@ -189,7 +187,8 @@ class _POSHomeScreenState extends State<POSHomeScreen>
   // ─── Filter Logic ───
   List<Product> _filterProducts(List<Product> products) {
     return products.where((product) {
-      bool matchesSearch = _searchQuery.isEmpty ||
+      bool matchesSearch =
+          _searchQuery.isEmpty ||
           product.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           product.price.toString().contains(_searchQuery.toLowerCase()) ||
           product.prices.any(
@@ -270,7 +269,7 @@ class _POSHomeScreenState extends State<POSHomeScreen>
 
         return Scaffold(
           backgroundColor: AppColors.lightBlueBackground,
-          
+
           // AppBar
           appBar: PreferredSize(
             preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -298,7 +297,10 @@ class _POSHomeScreenState extends State<POSHomeScreen>
               actions: [
                 // زر إنهاء الشيفت
                 IconButton(
-                  icon: const Icon(Icons.stop_circle_outlined, color: AppColors.red),
+                  icon: const Icon(
+                    Icons.stop_circle_outlined,
+                    color: AppColors.red,
+                  ),
                   tooltip: "End Shift",
                   onPressed: () async {
                     final confirm = await showDialog<bool>(
@@ -336,7 +338,9 @@ class _POSHomeScreenState extends State<POSHomeScreen>
                     if (context.mounted) {
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) => const LoginScreen()),
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
                         (route) => false,
                       );
                     }
@@ -349,7 +353,7 @@ class _POSHomeScreenState extends State<POSHomeScreen>
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const OrdersScreen()),
+                      MaterialPageRoute(builder: (_) => const HistoryScreen()),
                     );
                   },
                 ),
@@ -397,7 +401,9 @@ class _POSHomeScreenState extends State<POSHomeScreen>
               onTap: () async {
                 final result = await Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const BarcodeScannerScreen()),
+                  MaterialPageRoute(
+                    builder: (_) => const BarcodeScannerScreen(),
+                  ),
                 );
                 if (result != null && result is String && result != '-1') {
                   _handleBarcodeScan(result);
@@ -419,10 +425,11 @@ class _POSHomeScreenState extends State<POSHomeScreen>
                   if (state is PosDataLoaded) {
                     final filtered = _filterProducts(state.displayedProducts);
                     return POSProductGrid(
-                      filteredProducts: filtered, // نمرر المنتجات بعد فلتر البحث
+                      filteredProducts:
+                          filtered, // نمرر المنتجات بعد فلتر البحث
                     );
                   }
-                  
+
                   // fallback
                   return const POSProductGrid(filteredProducts: []);
                 },

@@ -67,10 +67,10 @@ class PrintableReceipt extends StatelessWidget {
             const SizedBox(height: 15),
             _cashSection(),
           ],
-          if (recieptData.pointsEarned > 0) ...[
-            const SizedBox(height: 12),
-            _loyalty(),
-          ],
+          // if (recieptData.pointsEarned > 0) ...[
+          //   const SizedBox(height: 12),
+          //   _loyalty(),
+          // ],
           const SizedBox(height: 15),
           _footer(),
         ],
@@ -95,8 +95,8 @@ class PrintableReceipt extends StatelessWidget {
         _row("Date:", _dt()),
         const SizedBox(height: 4),
         _row("Ref:", recieptData.reference),
-        const SizedBox(height: 4),
-        _row("Payment:", recieptData.paymentMethod.name),
+        // const SizedBox(height: 4),
+        // _row("Payment:", recieptData.paymentMethod.name),
       ],
     );
   }
@@ -281,18 +281,18 @@ class PrintableReceipt extends StatelessWidget {
     );
   }
 
-  Widget _loyalty() {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-      child: Center(
-        child: Text(
-          "Points Earned: ${recieptData.pointsEarned}",
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 9),
-        ),
-      ),
-    );
-  }
+  // Widget _loyalty() {
+  //   return Container(
+  //     padding: const EdgeInsets.all(10),
+  //     decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+  //     child: Center(
+  //       child: Text(
+  //         "Points Earned: ${recieptData.pointsEarned}",
+  //         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 9),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _footer() {
     return const Column(

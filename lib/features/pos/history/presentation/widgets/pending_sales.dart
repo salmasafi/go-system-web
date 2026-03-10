@@ -1,8 +1,11 @@
-// lib/features/orders/ui/tabs/pending_tab.dart
+// lib/features/History/ui/tabs/pending_tab.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../cubit/sales_cubit.dart';
-import '../../cubit/sales_state.dart';
+import 'package:systego/core/constants/app_colors.dart';
+import 'package:systego/features/POS/history/presentation/views/pending_sale_details_screen.dart';
+import '../../../../../core/widgets/custom_loading/custom_loading_state.dart';
+import '../../cubit/history_cubit.dart';
+import '../../cubit/history_state.dart';
 
 class PendingTab extends StatefulWidget {
   const PendingTab({super.key});
@@ -14,23 +17,25 @@ class _PendingTabState extends State<PendingTab> {
   @override
   void initState() {
     super.initState();
-    context.read<OrdersCubit>().getPendingSales();
+    context.read<HistoryCubit>().getPendingSales();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<OrdersCubit, OrdersState>(
+    return BlocBuilder<HistoryCubit, HistoryState>(
       buildWhen: (prev, curr) =>
           curr is PendingLoading ||
           curr is PendingLoaded ||
-          curr is OrdersError,
+          curr is HistoryError,
       builder: (context, state) {
-        if (state is PendingLoading)
-          return const Center(child: CircularProgressIndicator());
-        if (state is OrdersError) return Center(child: Text(state.message));
+        if (state is PendingLoading) {
+          return const Center(child: CustomLoadingState());
+        }
+        if (state is HistoryError) return Center(child: Text(state.message));
         if (state is PendingLoaded) {
-          if (state.pendingSales.isEmpty)
+          if (state.pendingSales.isEmpty) {
             return const Center(child: Text("No pending sales"));
+          }
 
           return ListView.builder(
             padding: const EdgeInsets.all(12),
@@ -39,21 +44,27 @@ class _PendingTabState extends State<PendingTab> {
               final sale = state.pendingSales[index];
               return Card(
                 elevation: 2,
-                color: Colors.orange[50], // تمييز لون المعلق
+                color: AppColors.white,
                 margin: const EdgeInsets.only(bottom: 10),
                 child: ListTile(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            PendingSaleDetailsScreen(saleId: sale.id),
+                      ),
+                    );
+                  },
                   leading: const CircleAvatar(
                     backgroundColor: Colors.orange,
-                    child: Icon(Icons.pause, color: Colors.white),
+                    child: Icon(Icons.pause, color: AppColors.white),
                   ),
                   title: Text(
                     sale.reference,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  subtitle: Text(
-                    "${sale.customerName} • ${sale.totalItems} Items",
-                  ),
+                  subtitle: Text(sale.customerName),
                   trailing: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -67,7 +78,10 @@ class _PendingTabState extends State<PendingTab> {
                       ),
                       const Text(
                         "Tap to resume",
-                        style: TextStyle(fontSize: 10, color: Colors.grey),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: AppColors.shadowGray,
+                        ),
                       ),
                     ],
                   ),

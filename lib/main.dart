@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/services/session_helper.dart';
-import 'package:systego/features/POS/sales/cubit/sales_cubit.dart';
+import 'package:systego/features/POS/history/cubit/history_cubit.dart';
 import 'package:systego/features/admin/adjustment/cubit/adjustment_cubit.dart';
 import 'package:systego/features/admin/admins_screen/cubit/admins_cubit.dart';
 import 'package:systego/features/admin/admins_screen/cubit/permissions_cubit.dart';
@@ -120,7 +120,7 @@ class _MainAppState extends State<MainApp> {
         ),
         BlocProvider<PosShiftCubit>(create: (context) => PosShiftCubit()),
         BlocProvider<CheckoutCubit>(create: (context) => CheckoutCubit()),
-        BlocProvider<OrdersCubit>(create: (context) => OrdersCubit()),
+        BlocProvider<HistoryCubit>(create: (context) => HistoryCubit()),
         BlocProvider<WareHouseCubit>(create: (context) => WareHouseCubit()),
         BlocProvider<ProductsCubit>(create: (context) => ProductsCubit()),
         BlocProvider<CategoriesCubit>(create: (context) => CategoriesCubit()),

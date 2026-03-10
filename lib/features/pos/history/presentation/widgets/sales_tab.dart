@@ -1,10 +1,12 @@
-// lib/features/orders/ui/tabs/sales_tab.dart
+// lib/features/History/ui/tabs/sales_tab.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:systego/features/POS/sales/presentation/views/sales_details_screen.dart';
-import '../../cubit/sales_cubit.dart';
-import '../../cubit/sales_state.dart';
+import 'package:systego/core/constants/app_colors.dart';
+import 'package:systego/features/POS/history/presentation/views/sale_details_screen.dart';
+import '../../../../../core/widgets/custom_loading/custom_loading_state.dart';
+import '../../cubit/history_cubit.dart';
+import '../../cubit/history_state.dart';
 
 class SalesTab extends StatefulWidget {
   const SalesTab({super.key});
@@ -16,21 +18,23 @@ class _SalesTabState extends State<SalesTab> {
   @override
   void initState() {
     super.initState();
-    context.read<OrdersCubit>().getAllSales();
+    context.read<HistoryCubit>().getAllSales();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<OrdersCubit, OrdersState>(
+    return BlocBuilder<HistoryCubit, HistoryState>(
       buildWhen: (prev, curr) =>
-          curr is SalesLoading || curr is SalesLoaded || curr is OrdersError,
+          curr is SalesLoading || curr is SalesLoaded || curr is HistoryError,
       builder: (context, state) {
-        if (state is SalesLoading)
-          return const Center(child: CircularProgressIndicator());
-        if (state is OrdersError) return Center(child: Text(state.message));
+        if (state is SalesLoading) {
+          return const Center(child: CustomLoadingState());
+        }
+        if (state is HistoryError) return Center(child: Text(state.message));
         if (state is SalesLoaded) {
-          if (state.sales.isEmpty)
+          if (state.sales.isEmpty) {
             return const Center(child: Text("No completed sales"));
+          }
 
           return ListView.builder(
             padding: const EdgeInsets.all(12),
@@ -38,6 +42,7 @@ class _SalesTabState extends State<SalesTab> {
             itemBuilder: (context, index) {
               final sale = state.sales[index];
               return Card(
+                color: AppColors.white,
                 elevation: 2,
                 margin: const EdgeInsets.only(bottom: 10),
                 child: ListTile(
@@ -50,8 +55,8 @@ class _SalesTabState extends State<SalesTab> {
                     );
                   },
                   leading: const CircleAvatar(
-                    backgroundColor: Colors.green,
-                    child: Icon(Icons.check, color: Colors.white),
+                    backgroundColor: AppColors.successGreen,
+                    child: Icon(Icons.check, color: AppColors.white),
                   ),
                   title: Text(
                     sale.reference,
@@ -65,7 +70,7 @@ class _SalesTabState extends State<SalesTab> {
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
-                      color: Colors.green,
+                      color: AppColors.successGreen,
                     ),
                   ),
                 ),

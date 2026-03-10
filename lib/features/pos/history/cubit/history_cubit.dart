@@ -1,11 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/services/dio_helper.dart';
 import 'package:systego/core/services/endpoints.dart';
+import '../model/pending_sale_details_model.dart';
 import '../model/sale_model.dart';
-import 'sales_state.dart';
+import 'history_state.dart';
 
-class OrdersCubit extends Cubit<OrdersState> {
-  OrdersCubit() : super(OrdersInitial());
+class HistoryCubit extends Cubit<HistoryState> {
+  HistoryCubit() : super(HistoryInitial());
 
   // قوائم منفصلة للحفاظ على البيانات عند التنقل
   List<SaleItemModel> cachedSales = [];
@@ -20,12 +21,14 @@ class OrdersCubit extends Cubit<OrdersState> {
       if (response.statusCode == 200 && response.data['success'] == true) {
         final List list = response.data['data']['sales'] ?? [];
         cachedSales = list.map((e) => SaleItemModel.fromJson(e)).toList();
+        //cachedSales = cachedSales.reversed.toList();
+
         emit(SalesLoaded(cachedSales));
       } else {
-        emit(OrdersError('Failed to load sales'));
+        emit(HistoryError('Failed to load sales'));
       }
     } catch (e) {
-      emit(OrdersError(e.toString()));
+      emit(HistoryError(e.toString()));
     }
   }
 
@@ -37,12 +40,13 @@ class OrdersCubit extends Cubit<OrdersState> {
       if (response.statusCode == 200 && response.data['success'] == true) {
         final List list = response.data['data']['sales'] ?? [];
         cachedPending = list.map((e) => PendingSaleModel.fromJson(e)).toList();
+        // cachedPending = cachedPending.reversed.toList();
         emit(PendingLoaded(cachedPending));
       } else {
-        emit(OrdersError('Failed to load pending sales'));
+        emit(HistoryError('Failed to load pending sales'));
       }
     } catch (e) {
-      emit(OrdersError(e.toString()));
+      emit(HistoryError(e.toString()));
     }
   }
 
@@ -59,10 +63,10 @@ class OrdersCubit extends Cubit<OrdersState> {
         cachedDues = list.map((e) => DueSaleModel.fromJson(e)).toList();
         emit(DuesLoaded(cachedDues, totalDue));
       } else {
-        emit(OrdersError('Failed to load dues'));
+        emit(HistoryError('Failed to load dues'));
       }
     } catch (e) {
-      emit(OrdersError(e.toString()));
+      emit(HistoryError(e.toString()));
     }
   }
 
@@ -75,7 +79,7 @@ class OrdersCubit extends Cubit<OrdersState> {
       // Endpoint: /api/admin/pos/sales/:id
       // نستخدم getAllSales لأنه الرابط الأساسي للـ sales
       final response = await DioHelper.getData(
-        url: "${EndPoint.getAllSales}$id",
+        url: "${EndPoint.getAllSales}/$id",
       );
 
       if (response.statusCode == 200 && response.data['success'] == true) {
@@ -84,13 +88,38 @@ class OrdersCubit extends Cubit<OrdersState> {
         emit(SaleDetailsLoaded(detailModel));
       } else {
         emit(
-          OrdersError(
+          HistoryError(
             response.data['message'] ?? 'Failed to load sale details',
           ),
         );
       }
     } catch (e) {
-      emit(OrdersError(e.toString()));
+      emit(HistoryError(e.toString()));
+    }
+  }
+
+  // 5. Get Pending Sale Details (New Model)
+  Future<void> getPendingSaleDetails(String id) async {
+    emit(SaleDetailsLoading());
+    try {
+      final response = await DioHelper.getData(
+        url: EndPoint.getPendingSaleDetails(id),
+      );
+
+      if (response.statusCode == 200 && response.data['success'] == true) {
+        final detailModel = PendingSaleDetailsModel.fromJson(
+          response.data['data'],
+        );
+        emit(PendingDetailsSuccess(detailModel));
+      } else {
+        emit(
+          HistoryError(
+            response.data['message'] ?? 'Failed to load pending details',
+          ),
+        );
+      }
+    } catch (e) {
+      emit(HistoryError(e.toString()));
     }
   }
 }

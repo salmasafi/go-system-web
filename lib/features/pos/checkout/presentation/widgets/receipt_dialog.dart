@@ -107,7 +107,9 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
   // }
 
   double get grandTotal =>
-      widget.recieptData.totalAmount - widget.recieptData.discountAmount + widget.recieptData.taxAmount;
+      widget.recieptData.totalAmount -
+      widget.recieptData.discountAmount +
+      widget.recieptData.taxAmount;
   @override
   void initState() {
     // needs to clear cart list
@@ -118,9 +120,10 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final isCash = widget.recieptData.paymentMethod.name.toLowerCase().contains(
-      'cash',
-    );
+    final isCash = true;
+    // widget.recieptData.paymentMethod.name.toLowerCase().contains(
+    //   'cash',
+    // );
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -155,10 +158,10 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
                       SizedBox(height: 16),
                       _buildCashDetails(),
                     ],
-                    if (widget.recieptData.pointsEarned > 0) ...[
-                      SizedBox(height: 20),
-                      _buildPointsEarned(),
-                    ],
+                    // if (widget.recieptData.pointsEarned > 0) ...[
+                    //   SizedBox(height: 20),
+                    //   _buildPointsEarned(),
+                    // ],
                     SizedBox(height: 20),
                     _buildDivider(),
                     SizedBox(height: 16),
@@ -262,10 +265,10 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
             children: [
               _buildRow('Date:', _formatDateTime()),
               _buildRow('Reference:', widget.recieptData.reference),
-              _buildRow(
-                'Payment Method:',
-                widget.recieptData.paymentMethod.name,
-              ),
+              // _buildRow(
+              //   'Payment Method:',
+              //   widget.recieptData.paymentMethod.name,
+              // ),
             ],
           ),
         ),
@@ -434,9 +437,11 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
     String taxDisplay = '';
     if (widget.recieptData.selectedTax != null) {
       if (widget.recieptData.selectedTax!.type == 'percentage') {
-        taxDisplay = '${(widget.recieptData.selectedTax!.amount * 100).toStringAsFixed(0)}%';
+        taxDisplay =
+            '${(widget.recieptData.selectedTax!.amount * 100).toStringAsFixed(0)}%';
       } else {
-        taxDisplay = '\$${widget.recieptData.selectedTax!.amount.toStringAsFixed(2)}';
+        taxDisplay =
+            '\$${widget.recieptData.selectedTax!.amount.toStringAsFixed(2)}';
       }
     } else {
       taxDisplay = '\$${widget.recieptData.taxAmount.toStringAsFixed(2)}';
@@ -445,12 +450,15 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
     String discountDisplay = '';
     if (widget.recieptData.selectedDiscount != null) {
       if (widget.recieptData.selectedDiscount!.type == 'percentage') {
-        discountDisplay = '${(widget.recieptData.selectedDiscount!.amount * 100).toStringAsFixed(0)}%';
+        discountDisplay =
+            '${(widget.recieptData.selectedDiscount!.amount * 100).toStringAsFixed(0)}%';
       } else {
-        discountDisplay = '\$${widget.recieptData.selectedDiscount!.amount.toStringAsFixed(2)}';
+        discountDisplay =
+            '\$${widget.recieptData.selectedDiscount!.amount.toStringAsFixed(2)}';
       }
     } else {
-      discountDisplay = '\$${widget.recieptData.discountAmount.toStringAsFixed(2)}';
+      discountDisplay =
+          '\$${widget.recieptData.discountAmount.toStringAsFixed(2)}';
     }
 
     return Container(
@@ -540,11 +548,15 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
           ),
         ),
         Text(
-          amount >= 0 ? '\$${amount.toStringAsFixed(2)}' : '-\$${(-amount).toStringAsFixed(2)}',
+          amount >= 0
+              ? '\$${amount.toStringAsFixed(2)}'
+              : '-\$${(-amount).toStringAsFixed(2)}',
           style: TextStyle(
             fontSize: bold ? 18 : 15,
             fontWeight: FontWeight.bold,
-            color: bold ? AppColors.primaryBlue : (amount < 0 ? AppColors.successGreen : AppColors.darkGray),
+            color: bold
+                ? AppColors.primaryBlue
+                : (amount < 0 ? AppColors.successGreen : AppColors.darkGray),
           ),
         ),
       ],
@@ -598,51 +610,51 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
     );
   }
 
-  Widget _buildPointsEarned() {
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.holdBeige.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.holdBeige.withOpacity(0.3)),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.star, color: AppColors.holdBeige),
-          SizedBox(width: 12),
-          Expanded(
-            child: Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Congratulations! You earned ',
-                    style: TextStyle(fontSize: 14),
-                  ),
-                  TextSpan(
-                    text: '${widget.recieptData.pointsEarned} points',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.holdBeige,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          //Text('Congratulations! You earned ', style: TextStyle(fontSize: 14)),
-          // Text(
-          //   '${widget.pointsEarned} points',
-          //   style: TextStyle(
-          //     fontWeight: FontWeight.bold,
-          //     color: AppColors.holdBeige,
-          //     fontSize: 16,
-          //   ),
-          // ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildPointsEarned() {
+  //   return Container(
+  //     padding: EdgeInsets.all(16),
+  //     decoration: BoxDecoration(
+  //       color: AppColors.holdBeige.withOpacity(0.1),
+  //       borderRadius: BorderRadius.circular(12),
+  //       border: Border.all(color: AppColors.holdBeige.withOpacity(0.3)),
+  //     ),
+  //     child: Row(
+  //       children: [
+  //         Icon(Icons.star, color: AppColors.holdBeige),
+  //         SizedBox(width: 12),
+  //         Expanded(
+  //           child: Text.rich(
+  //             TextSpan(
+  //               children: [
+  //                 TextSpan(
+  //                   text: 'Congratulations! You earned ',
+  //                   style: TextStyle(fontSize: 14),
+  //                 ),
+  //                 TextSpan(
+  //                   text: '${widget.recieptData.pointsEarned} points',
+  //                   style: TextStyle(
+  //                     fontWeight: FontWeight.bold,
+  //                     color: AppColors.holdBeige,
+  //                     fontSize: 16,
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         ),
+  //         //Text('Congratulations! You earned ', style: TextStyle(fontSize: 14)),
+  //         // Text(
+  //         //   '${widget.pointsEarned} points',
+  //         //   style: TextStyle(
+  //         //     fontWeight: FontWeight.bold,
+  //         //     color: AppColors.holdBeige,
+  //         //     fontSize: 16,
+  //         //   ),
+  //         // ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildFooter() {
     return Column(

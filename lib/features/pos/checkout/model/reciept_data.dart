@@ -12,8 +12,8 @@ class RecieptData {
   double paidAmount;
   double change;
   String reference;
-  int pointsEarned;
-  PaymentMethod paymentMethod;
+  // int pointsEarned;
+  // PaymentMethod paymentMethod;
   bool includeLogo = true;
 
   RecieptData({
@@ -26,8 +26,8 @@ class RecieptData {
     required this.paidAmount,
     required this.change,
     required this.reference,
-    required this.pointsEarned,
-    required this.paymentMethod,
+    // required this.pointsEarned,
+    // required this.paymentMethod,
     this.includeLogo = true,
   });
 }

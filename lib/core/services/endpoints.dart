@@ -103,6 +103,8 @@ class EndPoint {
 
   static String getAllSales = '/api/admin/pos/sales';
   static String getPendingSales = '/api/admin/pos/sales/pending';
+  static String getPendingSaleDetails(String saleId) =>
+      '/api/admin/pos/sales/sales/pending/$saleId';
   static String getDueSales = '/api/admin/pos/sales/dues';
 
   /// POS checkout
