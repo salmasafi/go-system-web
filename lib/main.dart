@@ -5,7 +5,6 @@ import 'package:systego/core/services/session_helper.dart';
 import 'package:systego/features/POS/history/cubit/history_cubit.dart';
 import 'package:systego/features/admin/adjustment/cubit/adjustment_cubit.dart';
 import 'package:systego/features/admin/admins_screen/cubit/admins_cubit.dart';
-import 'package:systego/features/admin/admins_screen/cubit/permissions_cubit.dart';
 import 'package:systego/features/admin/auth/cubit/login_cubit.dart';
 import 'package:systego/features/admin/bank_account/cubit/bank_account_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,8 +19,10 @@ import 'package:systego/features/admin/payment_methods/cubit/payment_method_cubi
 import 'package:systego/features/admin/permission/cubit/permission_cubit.dart';
 import 'package:systego/features/admin/popup/cubit/popup_cubit.dart';
 import 'package:systego/features/admin/product/cubit/get_products_cubit/product_cubit.dart';
+import 'package:systego/features/admin/purchase/cubit/purchase_cubit.dart';
 import 'package:systego/features/admin/reason/cubit/reason_cubit.dart';
 import 'package:systego/features/admin/taxes/cubit/taxes_cubit.dart';
+import 'package:systego/features/admin/transfer/cubit/transfers_cubit.dart';
 import 'package:systego/features/admin/units/cubit/unit_cubit.dart';
 import 'package:systego/features/admin/variations/cubit/variation_cubit.dart';
 import 'package:systego/translations/codegen_loader.g.dart';
@@ -145,8 +146,9 @@ class _MainAppState extends State<MainApp> {
         BlocProvider<RolesCubit>(create: (context) => RolesCubit()),
         BlocProvider<UnitsCubit>(create: (context) => UnitsCubit()),
         BlocProvider<AdjustmentCubit>(create: (context) => AdjustmentCubit()),
-        BlocProvider<PermissionsCubit>(create: (context) => PermissionsCubit()),
         BlocProvider<CashierCubit>(create: (context) => CashierCubit()),
+        BlocProvider<PurchaseCubit>(create: (context) => PurchaseCubit()),
+        BlocProvider<TransfersCubit>(create: (context) => TransfersCubit()),
         BlocProvider<ExpenseCategoryCubit>(
           create: (context) => ExpenseCategoryCubit(),
         ),

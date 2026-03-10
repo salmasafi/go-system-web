@@ -15,10 +15,13 @@ import 'package:systego/features/admin/currency/presentation/view/currencies_scr
 import 'package:systego/features/admin/discount/presentation/view/discounts_screen.dart';
 import 'package:systego/features/admin/expences_category/presentation/view/expences_categories_screen.dart';
 import 'package:systego/features/admin/popup/presentation/view/popup_screen.dart';
+import 'package:systego/features/admin/print_labels/presentation/view/print_labels_screen.dart';
 import 'package:systego/features/admin/product/presentation/screens/products_screen.dart';
+import 'package:systego/features/admin/purchase/presentation/view/purchase_screen.dart';
 import 'package:systego/features/admin/reason/presentation/view/reasons_screen.dart';
 import 'package:systego/features/admin/suppliers/view/supplier_screen.dart';
 import 'package:systego/features/admin/taxes/presentation/view/taxes_screen.dart';
+import 'package:systego/features/admin/transfer/presentation/view/transfers_screen.dart';
 import 'package:systego/features/admin/variations/presentation/view/variation_screen.dart';
 import 'package:systego/features/admin/warehouses/view/warehouses_screen.dart';
 import 'package:systego/features/admin/zone/presentation/view/zones_screen.dart';
@@ -200,6 +203,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
       'label': LocaleKeys.pandels_title.tr(),
       'id': DashboardItem.pandels,
     },
+    {
+      'icon': Icons.production_quantity_limits_rounded,
+      'label': "Products",
+      'id': DashboardItem.printLabels,
+    },
+    {
+      'icon': Icons.production_quantity_limits_rounded,
+      'label': "Purchase",
+      'id': DashboardItem.purchase,
+    },
+    {
+      'icon': Icons.production_quantity_limits_rounded,
+      'label': "Transfer",
+      'id': DashboardItem.transfer,
+    },
   ];
 
   void _navigateToPage(DashboardItem id) {
@@ -360,7 +378,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
     case DashboardItem.pandels:
       Navigator.push(context, MaterialPageRoute(builder: (_) => const PandelScreen()));  // Note: Fix 'expences' typo in import if it's ExpencesCategoriesScreen
       break;
+
+    case DashboardItem.printLabels:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const PrintLabelsScreen()),
+        );
+        break;
+
+      case DashboardItem.purchase:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const PurchaseScreen()),
+        );
+        break;
+
+      case DashboardItem.transfer:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const TransfersScreen()),
+        );
+        break;
     }
+
+    
+    
     
   }
 
@@ -458,5 +500,7 @@ enum DashboardItem {
   customers,
   roles,
   payment,
-  // Add more as needed
+  printLabels,
+  purchase,
+  transfer
 }

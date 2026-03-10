@@ -4,13 +4,16 @@ import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
-import 'package:systego/features/admin/customer_group/model/customer_group_model.dart';
+import 'package:systego/core/widgets/custom_popup_menu.dart';
 import 'package:systego/generated/locale_keys.g.dart';
+import '../../model/customer_group_model.dart';
 
 class AnimatedCustomerGroupCard extends StatelessWidget {
   final CustomerGroup customerGroup;
   final int? index;
   final VoidCallback? onTap;
+    final VoidCallback? onDelete;
+  final VoidCallback? onEdit;
   final Duration? animationDuration;
   final Duration? animationDelay;
 
@@ -19,6 +22,8 @@ class AnimatedCustomerGroupCard extends StatelessWidget {
     required this.customerGroup,
     this.index,
     this.onTap,
+     this.onDelete,
+    this.onEdit,
     this.animationDuration,
     this.animationDelay,
   });
@@ -105,17 +110,19 @@ class AnimatedCustomerGroupCard extends StatelessWidget {
                 ),
               ),
               SizedBox(height: ResponsiveUI.spacing(context, 4)),
-              Text(
-                _formatDate(customerGroup.createdAt),
-                style: TextStyle(
-                  fontSize: ResponsiveUI.fontSize(context, 12),
-                  color: AppColors.darkGray.withOpacity(0.6),
-                ),
-              ),
+              // Text(
+              //   _formatDate(customerGroup.createdAt),
+              //   style: TextStyle(
+              //     fontSize: ResponsiveUI.fontSize(context, 12),
+              //     color: AppColors.darkGray.withOpacity(0.6),
+              //   ),
+              // ),
             ],
           ),
         ),
 
+         if (onEdit != null || onDelete != null)
+          CustomPopupMenu(onEdit: onEdit, onDelete: onDelete),
         
       ],
     );
@@ -219,16 +226,16 @@ class AnimatedCustomerGroupCard extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
         SizedBox(height: ResponsiveUI.spacing(context, 2)),
-        Text(
-          _formatDateTime(customerGroup.updatedAt),
-          style: TextStyle(
-            fontSize: ResponsiveUI.fontSize(context, 14),
-            fontWeight: FontWeight.w500,
-            color: AppColors.darkGray,
-          ),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
+        // Text(
+        //   _formatDateTime(customerGroup.updatedAt),
+        //   style: TextStyle(
+        //     fontSize: ResponsiveUI.fontSize(context, 14),
+        //     fontWeight: FontWeight.w500,
+        //     color: AppColors.darkGray,
+        //   ),
+        //   maxLines: 2,
+        //   overflow: TextOverflow.ellipsis,
+        // ),
       ],
     );
   }

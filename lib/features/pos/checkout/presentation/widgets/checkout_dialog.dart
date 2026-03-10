@@ -559,7 +559,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     // هنا سنفترض أن الإيقاف يعني تأجيل العملية بالكامل
     
     final success = await checkOutCubit.createSale(
-      posCubit: posCubit,
+      //posCubit: posCubit,
       totalAmount: _grandTotal,
       paidAmount: 0, // عادة 0 عند التعليق، أو _totalPaying إذا أردت حفظ عربون
       note: _saleNoteCtrl.text.isEmpty ? "Sale on Hold" : _saleNoteCtrl.text,
@@ -592,9 +592,9 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     // - إذا paidAmount == grandTotal -> ستصبح Completed
     
     final success = await checkOutCubit.createSale(
-      posCubit: posCubit,
-      totalAmount: _grandTotal,
-      paidAmount: actualPaidToSend,
+      //posCubit: posCubit,
+      totalAmount: _grandTotal, // الإجمالي النهائي
+      paidAmount: actualPaidToSend, // المبلغ المدفوع (سيتم حساب Due داخلياً)
       note: _saleNoteCtrl.text.isEmpty ? null : _saleNoteCtrl.text,
       isPending: false, // <--- دائماً false هنا لأننا ننهي البيعة (سواء بدين أو لا)
     );
@@ -609,7 +609,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
         builder: (_) {
           return POSReceiptDialog(
             recieptData: RecieptData(
-              cartItems: widget.cartItems,
+              cartItems: [],
               totalAmount: _subTotal,
               taxAmount: currentTaxAmount,
               selectedTax: _selectedTax,

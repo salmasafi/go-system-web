@@ -883,5 +883,39 @@
   "hint_customer_group_name": "أدخل اسم المجموعة",
   "create_customer_group": "إنشاء مجموعة عملاء",
   "customer_group_created_success": "تم إنشاء مجموعة العملاء بنجاح!",
-  "customer_group_not_found": "لم يتم العثور على مجموعة العملاء"
+  "customer_group_not_found": "لم يتم العثور على مجموعة العملاء",
+
+   "customer_group_deleted_success": "تم حذف مجموعة العملاء بنجاح!",
+  "customer_group_updated_success": "تم تحديث مجموعة العملاء بنجاح!",
+
+   "invalid_group_id": "معرّف مجموعة العملاء غير صالح",
+  "delete_group": "حذف مجموعة العملاء",
+  "delete_group_message": "هل أنت متأكد أنك تريد حذف مجموعة العملاء التالية؟",
+
+   "edit_customer_group": "تعديل مجموعة العملاء",
+  "update_customer_group": "تحديث مجموعة العملاء",
+
+
+  "transfers": "التحويلات",
+  "incoming": "الوارد",
+  "outgoing": "الصادر",
+  "history": "السجل",
+  "create_transfer": "إنشاء تحويل",
+  "from_warehouse": "من مخزن",
+  "to_warehouse": "إلى مخزن",
+  "product_name": "اسم المنتج",
+  "select_product": "اختر المنتج",
+  "add_product": "إضافة منتج",
+  "receive": "استلام",
+  "transfer_created_success": "تم إنشاء التحويل بنجاح",
+  "transfer_received_success": "تم استلام التحويل بنجاح",
+  "no_transfers": "لا توجد تحويلات",
+  "no_transfers_message": "لا توجد تحويلات لعرضها في الوقت الحالي.",
+  "cannot_transfer_same_warehouse": "لا يمكن أن يكون المصدر والوجهة نفس المخزن",
+  "at_least_one_product": "يجب إضافة منتج واحد على الأقل",
+  "field_required": "مطلوب",
+  "submit": "إرسال",
+
+  "all_transfers": "جميع التحويلات"
+
 }

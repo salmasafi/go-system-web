@@ -329,7 +329,7 @@ class _CustomersListState extends State<CustomersList> {
                     _buildInfoRow(
                       icon: Icons.group,
                       label: LocaleKeys.customer_group.tr(),
-                      value: customer.customerGroup!.name,
+                      value: customer.customerGroup!.id,
                     ),
                     SizedBox(height: ResponsiveUI.spacing(context, 12)),
                   ],

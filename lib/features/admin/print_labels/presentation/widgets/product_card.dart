@@ -42,7 +42,7 @@ class ProductCard extends StatelessWidget {
                 child: Center(
                   child: product.image != null
                       ? CachedNetworkImage(
-                          imageUrl: product.image!,
+                          imageUrl: product.image,
                           fit: BoxFit.contain,
                           placeholder: (_, __) => const CustomLoadingState(),
                           errorWidget: (_, __, ___) =>

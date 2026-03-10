@@ -122,3 +122,27 @@ final class CreateCustomerGroupError extends CustomerState {
   final String error;
   CreateCustomerGroupError(this.error);
 }
+
+final class UpdateCustomerGroupLoading extends CustomerState {}
+
+final class UpdateCustomerGroupSuccess extends CustomerState {
+  final String message;
+  UpdateCustomerGroupSuccess(this.message);
+}
+
+final class UpdateCustomerGroupError extends CustomerState {
+  final String error;
+  UpdateCustomerGroupError(this.error);
+}
+
+final class DeleteCustomerGroupLoading extends CustomerState {}
+
+final class DeleteCustomerGroupSuccess extends CustomerState {
+  final String message;
+  DeleteCustomerGroupSuccess(this.message);
+}
+
+final class DeleteCustomerGroupError extends CustomerState {
+  final String error;
+  DeleteCustomerGroupError(this.error);
+}

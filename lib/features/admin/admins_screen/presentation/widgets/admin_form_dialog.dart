@@ -1,11 +1,14 @@
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/widgets/custom_drop_down_menu.dart';
 import 'package:systego/features/admin/admins_screen/cubit/admins_cubit.dart';
 import 'package:systego/features/admin/admins_screen/model/admins_model.dart';
+import 'package:systego/features/admin/roloes_and_permissions/cubit/roles_cubit.dart';
 import 'package:systego/features/admin/warehouses/cubit/warehouse_cubit.dart';
 import 'package:systego/features/admin/warehouses/cubit/warehouse_state.dart';
+
 import 'package:systego/generated/locale_keys.g.dart';
 
 import '../../../../../core/constants/app_colors.dart';
@@ -32,33 +35,27 @@ class _AdminFormDialogState extends State<AdminFormDialog>
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _companyController = TextEditingController();
-  final _roleController = TextEditingController();
   final _passwordController = TextEditingController();
 
   String? selectedWarehouse;
-  String? selectedRole;
+  String? selectedRole; // This will store role_id
+  bool selectedStatus = true;
 
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
-
-   String? sele;
 
   bool get isEditMode => widget.admin != null;
 
   @override
   void initState() {
     super.initState();
+     context.read<WareHouseCubit>().getWarehouses();
+      context.read<RolesCubit>().getAllRoles(); 
     _initControllers();
     _setupAnimation();
+    
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<WareHouseCubit>().getWarehouses();
-    });
-  }
 
   void _initControllers() {
     if (isEditMode) {
@@ -67,8 +64,14 @@ class _AdminFormDialogState extends State<AdminFormDialog>
       _emailController.text = admin.email;
       _phoneController.text = admin.phone;
       _companyController.text = admin.companyName;
-      _roleController.text = admin.role;
-      selectedWarehouse = admin.warehouseId;
+      
+      // Map IDs from the model
+      selectedWarehouse = admin.warehouse?.id; // Using the nested object from your model
+      selectedRole = admin.roleData?.id; // Using the nested object from your model
+      selectedStatus = admin.status == 'active';
+    } else {
+      // Default status for new admin
+      selectedStatus = true;
     }
   }
 
@@ -88,7 +91,7 @@ class _AdminFormDialogState extends State<AdminFormDialog>
     _emailController.dispose();
     _phoneController.dispose();
     _companyController.dispose();
-    _roleController.dispose();
+    _passwordController.dispose();
     _animationController.dispose();
     super.dispose();
   }
@@ -131,11 +134,12 @@ class _AdminFormDialogState extends State<AdminFormDialog>
                             key: _formKey,
                             child: Column(
                               children: [
+                                // Username
                                 buildTextField(
                                   context,
                                   controller: _usernameController,
                                   hint: LocaleKeys.username.tr(),
-                                  label:LocaleKeys.username.tr(),
+                                  label: LocaleKeys.username.tr(),
                                   icon: Icons.person,
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
@@ -144,6 +148,8 @@ class _AdminFormDialogState extends State<AdminFormDialog>
                                   ),
                                 ),
                                 SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                                
+                                // Email
                                 buildTextField(
                                   context,
                                   controller: _emailController,
@@ -153,6 +159,8 @@ class _AdminFormDialogState extends State<AdminFormDialog>
                                   validator: LoginValidator.validateEmail,
                                 ),
                                 SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                                
+                                // Phone
                                 buildTextField(
                                   context,
                                   controller: _phoneController,
@@ -162,48 +170,79 @@ class _AdminFormDialogState extends State<AdminFormDialog>
                                   validator: LoginValidator.validatePhone,
                                 ),
                                 SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                                buildTextField(
+                                
+                                // Password (Required for New, Optional for Edit)
+                                if(!isEditMode)...[
+                                   buildTextField(
                                   context,
                                   controller: _passwordController,
                                   label: LocaleKeys.password.tr(),
-                                  hint: LocaleKeys.password.tr(),
-                                  icon: Icons.business,
+                                  hint: isEditMode 
+                                      ? "Leave empty to keep current" 
+                                      : LocaleKeys.password.tr(),
+                                  icon: Icons.lock,
+                                  validator: (value) {
+                                    if (!isEditMode) {
+                                      // Required when creating
+                                      return LoginValidator.validatePassword(value);
+                                    }
+                                    // Optional when updating (validate only if entered)
+                                    if (value != null && value.isNotEmpty) {
+                                       if (value.length < 6) return "LocaleKeys.password_too_short.tr()";
+                                    }
+                                    return null;
+                                  },
                                 ),
                                 SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                                ],
+                               
+                                
+                                // Company Name
                                 buildTextField(
                                   context,
                                   controller: _companyController,
                                   label: LocaleKeys.company_name.tr(),
                                   hint: LocaleKeys.company_name.tr(),
                                   icon: Icons.business,
+                                  validator: (v) => LoginValidator.validateRequired(
+                                    v, 
+                                    LocaleKeys.company_name.tr()
+                                  ),
                                 ),
                                 SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                                // buildTextField(
-                                //   context,
-                                //   controller: _roleController,
-                                //   label: "Role",
-                                //   hint: "role",
-                                //   icon: Icons.security,
-                                // ),
-                                 buildDropdownField<String>(
-                                  context,
-                                  value: selectedRole,
-                                  items: ["admin", "superadmin"],
-                                  label: LocaleKeys.role.tr(),
-                                  icon: Icons.security,
 
-                                  hint: LocaleKeys.select_role.tr(),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      selectedRole = value;
-                                    });
-                                  },
-                                  itemLabel: (type) => type,
-                                  validator: (value) {
-                                    if (value == null) {
-                                      return LocaleKeys.please_select_role.tr();
+                                // ================= ROLES =================
+                                BlocBuilder<RolesCubit, RolesState>(
+                                  builder: (context, state) {
+                                    if (state is RolesLoaded) {
+                                      final ids = state.roles.map((e) => e.id).toList();
+                                      final names = state.roles.map((e) => e.name).toList();
+
+                                      return buildDropdownField<String>(
+                                        context,
+                                        value: selectedRole,
+                                        items: ids,
+                                        label: LocaleKeys.role.tr(),
+                                        hint: LocaleKeys.select_role.tr(),
+                                        icon: Icons.security,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            selectedRole = value;
+                                          });
+                                        },
+                                        itemLabel: (id) {
+                                           final i = ids.indexOf(id);
+                                           return i != -1 ? names[i] : '';
+                                        },
+                                        validator: (value) {
+                                          if (value == null) {
+                                            return LocaleKeys.please_select_role.tr();
+                                          }
+                                          return null;
+                                        },
+                                      );
                                     }
-                                    return null;
+                                    return const LinearProgressIndicator(); // Show loading or empty
                                   },
                                 ),
                                 SizedBox(height: ResponsiveUI.spacing(context, 12)),
@@ -212,11 +251,8 @@ class _AdminFormDialogState extends State<AdminFormDialog>
                                 BlocBuilder<WareHouseCubit, WarehousesState>(
                                   builder: (context, state) {
                                     if (state is WarehousesLoaded) {
-                                      final ids =
-                                          state.warehouses.map((e) => e.id).toList();
-                                      final names = state.warehouses
-                                          .map((e) => e.name)
-                                          .toList();
+                                      final ids = state.warehouses.map((e) => e.id).toList();
+                                      final names = state.warehouses.map((e) => e.name).toList();
 
                                       return buildDropdownField<String>(
                                         context,
@@ -224,20 +260,69 @@ class _AdminFormDialogState extends State<AdminFormDialog>
                                         items: ids,
                                         label: LocaleKeys.warehouse.tr(),
                                         hint: LocaleKeys.select_warehouse.tr(),
+                                        icon: Icons.store,
                                         onChanged: (v) =>
                                             setState(() => selectedWarehouse = v),
                                         itemLabel: (id) {
                                           final i = ids.indexOf(id);
                                           return i != -1 ? names[i] : '';
                                         },
+                                        validator: (value) {
+                                          if (value == null) {
+                                            return LocaleKeys.select_warehouse.tr();
+                                          }
+                                          return null;
+                                        },
                                       );
                                     }
-                                    return const SizedBox.shrink();
+                                    return const LinearProgressIndicator();
                                   },
                                 ),
-
                                 SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                               
+
+                                // ================= STATUS =================
+                                // buildDropdownField<String>(
+                                //   context,
+                                //   value: selectedStatus,
+                                //   items: ['active', 'inactive'],
+                                //   label: "Status", // Add to LocaleKeys later
+                                //   hint: "Select Status",
+                                //   icon: Icons.toggle_on,
+                                //   onChanged: (value) {
+                                //     setState(() {
+                                //       selectedStatus = value;
+                                //     });
+                                //   },
+                                //   itemLabel: (val) => val.capitalize(),
+                                //   validator: (value) =>
+                                //       value == null ? "Please select status" : null,
+                                // ),
+
+                                Row(
+                                  children: [
+                                    Text(
+                                      LocaleKeys.active.tr(),
+                                      style: TextStyle(
+                                        fontSize: ResponsiveUI.fontSize(
+                                          context,
+                                          14,
+                                        ),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    Switch(
+                                      value: selectedStatus,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          selectedStatus = value;
+                                        });
+                                      },
+                                      activeColor: AppColors.white,
+                                      activeTrackColor: AppColors.primaryBlue,
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
                           ),
@@ -274,24 +359,21 @@ class _AdminFormDialogState extends State<AdminFormDialog>
         ],
       );
 
-
   void _handleStateChanges(BuildContext context, AdminsState state) {
-  if (state is CreateAdminSuccess || state is UpdateAdminSuccess) {
-    Navigator.pop(context);
-  } 
-  else if (state is CreateAdminError) {
-    CustomSnackbar.showError(context, state.error);
-  } 
-  else if (state is UpdateAdminError) {
-    CustomSnackbar.showError(context, state.error);
+    if (state is CreateAdminSuccess || state is UpdateAdminSuccess) {
+      Navigator.pop(context);
+    } else if (state is CreateAdminError) {
+      CustomSnackbar.showError(context, state.error);
+    } else if (state is UpdateAdminError) {
+      CustomSnackbar.showError(context, state.error);
+    }
   }
-}
-
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
 
     final cubit = context.read<AdminsCubit>();
+    final password = _passwordController.text.trim();
 
     if (isEditMode) {
       cubit.updateAdmin(
@@ -299,27 +381,36 @@ class _AdminFormDialogState extends State<AdminFormDialog>
         username: _usernameController.text.trim(),
         email: _emailController.text.trim(),
         phone: _phoneController.text.trim(),
-        role: selectedRole!,
+        roleId: selectedRole!,
         companyName: _companyController.text.trim(),
-        warehouseId: selectedWarehouse,
-        // password: _passwordController.text.trim(),
+        warehouseId: selectedWarehouse!,
+        status: selectedStatus == true ? "active" : "inactive",
+        // Only send password if user typed something
+        password: password.isNotEmpty ? password : null,
       );
     } else {
       cubit.createAdmin(
         username: _usernameController.text.trim(),
         email: _emailController.text.trim(),
         phone: _phoneController.text.trim(),
-        role: selectedRole!,
+        roleId: selectedRole!,
         companyName: _companyController.text.trim(),
-        warehouseId: selectedWarehouse,
-        password: _passwordController.text.trim(),
+        warehouseId: selectedWarehouse!,
+         status: selectedStatus == true ? "active" : "inactive",
+        password: password,
       );
     }
   }
 }
 
+// Helper extension for capitalizing status
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+  }
+}
 
-
+// ... _AdminDialogHeader and _AdminDialogButtons remain the same as your code ...
 class _AdminDialogHeader extends StatelessWidget {
   final bool isEditMode;
   final VoidCallback onClose;
@@ -509,12 +600,13 @@ class _AdminDialogButtons extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    isEditMode
-                        ? Icons.check_circle_outline
-                        : Icons.add_circle_outline,
-                    size: iconSize20,
-                  ),
+
+                    Icon(
+                      isEditMode
+                          ? Icons.check_circle_outline
+                          : Icons.add_circle_outline,
+                      size: iconSize20,
+                    ),
                   SizedBox(width: spacing8),
                   Flexible(
                     child: Text(

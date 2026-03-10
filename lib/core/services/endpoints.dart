@@ -230,6 +230,9 @@ class EndPoint {
   static String getCustomerGroupById(String id) => '/api/admin/groups/$id';
   static String getCustomerDue(String id) => '/api/admin/customer/due';
 
+  static String updateCustomerGroup(String id) => '/api/admin/customer/group/$id';
+  static String deleteCustomerGroup(String id) => '/api/admin/customer/group/$id';
+
   /// permission
   static const String getAllRoles = '/api/admin/permission';
   static String getAllRoleSelection(String id) =>
@@ -248,4 +251,7 @@ class EndPoint {
 
   /// units
   static String getUnits = '/api/admin/units';
+
+  /// purchase
+  static String getPurchase = '/api/admin/purchase';
 }

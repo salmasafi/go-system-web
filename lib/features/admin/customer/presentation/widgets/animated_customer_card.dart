@@ -228,7 +228,7 @@ class _AnimatedCustomerCardState extends State<AnimatedCustomerCard> {
             _buildInfoItem(
               icon: Icons.public,
               label: LocaleKeys.location.tr(),
-              value: '${customer.city}, ${customer.country}',
+              value: '${customer.city?.name}, ${customer.country?.name}',
             ),
           ],
         ),
