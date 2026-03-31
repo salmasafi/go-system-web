@@ -18,7 +18,7 @@ class DeletePermissionDialog extends StatelessWidget {
         borderRadius:
             BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
       ),
-      elevation: 8,
+      elevation: ResponsiveUI.value(context, 8),
       backgroundColor: Colors.white,
       child: Padding(
         padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
@@ -47,7 +47,7 @@ class DeletePermissionDialog extends StatelessWidget {
       width: ResponsiveUI.value(context, 70),
       height: ResponsiveUI.value(context, 70),
       decoration: BoxDecoration(
-        color: Colors.red.withOpacity(0.1),
+        color: Colors.red.withValues(alpha: 0.1),
         shape: BoxShape.circle,
       ),
       child: Icon(
@@ -84,7 +84,7 @@ class DeletePermissionDialog extends StatelessWidget {
       style: TextStyle(
         fontSize: ResponsiveUI.fontSize(context, 14),
         color: Colors.grey[600],
-        height: 1.5,
+        height: ResponsiveUI.value(context, 1.5),
       ),
     );
   }
@@ -152,3 +152,4 @@ class DeletePermissionDialog extends StatelessWidget {
     );
   }
 }
+

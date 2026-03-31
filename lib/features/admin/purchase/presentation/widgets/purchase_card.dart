@@ -45,14 +45,14 @@ class AnimatedPurchaseCard extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryBlue.withOpacity(0.08),
+              color: AppColors.primaryBlue.withValues(alpha: 0.08),
               blurRadius: ResponsiveUI.borderRadius(context, 10),
               offset: const Offset(0, 5),
             ),
           ],
           border: Border.all(
-            color: AppColors.primaryBlue.withOpacity(0.1),
-            width: 1,
+            color: AppColors.primaryBlue.withValues(alpha: 0.1),
+            width: ResponsiveUI.value(context, 1),
           ),
         ),
         child: Material(
@@ -95,7 +95,7 @@ class AnimatedPurchaseCard extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: ResponsiveUI.borderRadius(context, 25),
-          backgroundColor: AppColors.primaryBlue.withOpacity(0.1),
+          backgroundColor: AppColors.primaryBlue.withValues(alpha: 0.1),
           child: (supplierImage != null && supplierImage.isNotEmpty)
               ? ClipOval(
                   child: Image.network(
@@ -135,7 +135,7 @@ class AnimatedPurchaseCard extends StatelessWidget {
                 "Ref: ${purchase.reference}",
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 12),
-                  color: AppColors.darkGray.withOpacity(0.6),
+                  color: AppColors.darkGray.withValues(alpha: 0.6),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -188,10 +188,10 @@ class AnimatedPurchaseCard extends StatelessWidget {
             vertical: ResponsiveUI.padding(context, 6),
           ),
           decoration: BoxDecoration(
-            color: _getStatusColor(purchase.paymentStatus).withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
+            color: _getStatusColor(purchase.paymentStatus).withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
             border: Border.all(
-              color: _getStatusColor(purchase.paymentStatus).withOpacity(0.3),
+              color: _getStatusColor(purchase.paymentStatus).withValues(alpha: 0.3),
             ),
           ),
           child: Text(
@@ -212,7 +212,7 @@ class AnimatedPurchaseCard extends StatelessWidget {
               "Total", // LocaleKeys.total.tr()
               style: TextStyle(
                 fontSize: ResponsiveUI.fontSize(context, 11),
-                color: AppColors.darkGray.withOpacity(0.6),
+                color: AppColors.darkGray.withValues(alpha: 0.6),
               ),
             ),
             Text(
@@ -243,20 +243,20 @@ class AnimatedPurchaseCard extends StatelessWidget {
             Icon(
               icon,
               size: ResponsiveUI.fontSize(context, 14),
-              color: AppColors.darkGray.withOpacity(0.5),
+              color: AppColors.darkGray.withValues(alpha: 0.5),
             ),
-            SizedBox(width: 4),
+            SizedBox(width: ResponsiveUI.value(context, 4)),
             Text(
               label,
               style: TextStyle(
                 fontSize: ResponsiveUI.fontSize(context, 11),
-                color: AppColors.darkGray.withOpacity(0.5),
+                color: AppColors.darkGray.withValues(alpha: 0.5),
                 fontWeight: FontWeight.w500,
               ),
             ),
           ],
         ),
-        SizedBox(height: 4),
+        SizedBox(height: ResponsiveUI.value(context, 4)),
         Text(
           value,
           maxLines: 1,

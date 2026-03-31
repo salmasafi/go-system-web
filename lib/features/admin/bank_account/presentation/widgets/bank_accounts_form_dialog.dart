@@ -184,9 +184,9 @@ void didChangeDependencies() {
 
                                     // Loading state
                                     if (state is WarehousesLoading) {
-                                      return const Padding(
+                                      return Padding(
                                         padding: EdgeInsets.symmetric(
-                                          vertical: 20,
+                                          vertical: ResponsiveUI.padding(context, 20),
                                         ),
                                         child: Center(
                                           child: CircularProgressIndicator(),
@@ -207,8 +207,8 @@ void didChangeDependencies() {
                                     // If we have no warehouses at all (even after loading)
                                     if (warehouseIds.isEmpty) {
                                       return Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 20,
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: ResponsiveUI.padding(context, 20),
                                         ),
                                         child: Text(
                                           LocaleKeys.no_warehouses_found.tr(),
@@ -378,7 +378,7 @@ void didChangeDependencies() {
       ),
       boxShadow: [
         BoxShadow(
-          color: AppColors.black.withOpacity(0.2),
+          color: AppColors.black.withValues(alpha: 0.2),
           blurRadius: ResponsiveUI.value(context, 30),
           offset: Offset(0, ResponsiveUI.value(context, 10)),
         ),
@@ -416,7 +416,7 @@ void didChangeDependencies() {
                 height: height120,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(borderRadius12),
-                  border: Border.all(color: AppColors.primaryBlue, width: 2),
+                  border: Border.all(color: AppColors.primaryBlue, width: ResponsiveUI.value(context, 2)),
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(borderRadius12 - 2),
@@ -427,15 +427,15 @@ void didChangeDependencies() {
                 ),
               ),
               Positioned(
-                top: 8,
-                right: 8,
+                top: ResponsiveUI.padding(context, 8),
+                right: ResponsiveUI.padding(context, 8),
                 child: GestureDetector(
                   onTap: _clearImage,
                   child: Container(
                     padding: EdgeInsets.all(padding8),
                     decoration: BoxDecoration(
                       color: Colors.red,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
                     ),
                     child: Icon(
                       Icons.close,
@@ -519,7 +519,7 @@ void didChangeDependencies() {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(borderRadius12),
 
-                      border: Border.all(color: Colors.grey[300]!, width: 2),
+                      border: Border.all(color: Colors.grey[300]!, width: ResponsiveUI.value(context, 2)),
                     ),
 
                     child: ClipRRect(
@@ -530,15 +530,15 @@ void didChangeDependencies() {
                   ),
 
                   Positioned(
-                    top: 8,
-                    right: 8,
+                    top: ResponsiveUI.padding(context, 8),
+                    right: ResponsiveUI.padding(context, 8),
                     child: GestureDetector(
                       onTap: _pickImage,
                       child: Container(
                         padding: EdgeInsets.all(padding8),
                         decoration: BoxDecoration(
                           color: Colors.grey,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
                         ),
                         child: Icon(
                           Icons.edit,
@@ -560,7 +560,7 @@ void didChangeDependencies() {
               height: height120,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(borderRadius12),
-                border: Border.all(color: Colors.grey[300]!, width: 2),
+                border: Border.all(color: Colors.grey[300]!, width: ResponsiveUI.value(context, 2)),
                 color: Colors.grey[50],
               ),
               child: Column(
@@ -600,11 +600,11 @@ void didChangeDependencies() {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.broken_image_outlined, size: 40, color: Colors.grey[400]),
-          SizedBox(height: 8),
+          Icon(Icons.broken_image_outlined, size: ResponsiveUI.iconSize(context, 40), color: Colors.grey[400]),
+          SizedBox(height: ResponsiveUI.value(context, 8)),
           Text(
             LocaleKeys.failed_to_load_image.tr(),
-            style: TextStyle(color: Colors.grey[500], fontSize: 12),
+            style: TextStyle(color: Colors.grey[500], fontSize: ResponsiveUI.fontSize(context, 12)),
           ),
         ],
       ),
@@ -730,7 +730,7 @@ class BankAccountDialogHeader extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             AppColors.primaryBlue,
-            AppColors.primaryBlue.withOpacity(0.8),
+            AppColors.darkBlue,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -745,7 +745,7 @@ class BankAccountDialogHeader extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(padding10),
             decoration: BoxDecoration(
-              color: AppColors.white.withOpacity(0.2),
+              color: AppColors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(borderRadius12),
             ),
             child: Icon(
@@ -774,7 +774,7 @@ class BankAccountDialogHeader extends StatelessWidget {
                       ? LocaleKeys.update_account_details.tr()
                       : LocaleKeys.add_new_bank_account.tr(),
                   style: TextStyle(
-                    color: AppColors.white.withOpacity(0.9),
+                    color: AppColors.white.withValues(alpha: 0.9),
                     fontSize: fontSize13,
                   ),
                 ),
@@ -913,3 +913,4 @@ class BankAccountDialogButtons extends StatelessWidget {
     );
   }
 }
+

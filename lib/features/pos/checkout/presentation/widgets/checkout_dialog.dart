@@ -134,12 +134,14 @@ class POSCheckoutDialog extends StatefulWidget {
   final double totalAmount; // This is the Subtotal
   final List<CartItem> cartItems;
   final PaymentMethod selectedPaymentMethod;
+  final String customerId;
 
   const POSCheckoutDialog({
     super.key,
     required this.totalAmount,
     required this.cartItems,
     required this.selectedPaymentMethod,
+    required this.customerId,
   });
 
   @override
@@ -172,9 +174,19 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   List<DiscountModel> _discounts = [];
   late DiscountModel? _selectedDiscount;
 
+  List<BankAccount> _accounts = [];
+  BankAccount? _selectedAccount;
+
   double currentTaxAmount = 0;
   double currentDiscountAmount = 0;
   late PosCubit posCubit;
+  bool _autoSyncAmountField = true;
+  bool _isProgrammaticAmountUpdate = false;
+
+  String? _normalizeSelectionId(String? id) {
+    if (id == null || id.isEmpty || id == 'null') return null;
+    return id;
+  }
 
   @override
   void initState() {
@@ -184,12 +196,26 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
 
     _taxes = posCubit.taxes;
     _discounts = posCubit.discounts;
+    _accounts = posCubit.accounts;
 
-    _selectedTax = posCubit.selectedTax ?? (_taxes.isNotEmpty ? _taxes.first : null);
-    _selectedDiscount = posCubit.selectedDiscount ?? (_discounts.isNotEmpty ? _discounts.first : null);
+    _selectedTax =
+        posCubit.selectedTax ?? (_taxes.isNotEmpty ? _taxes.first : null);
+    _selectedDiscount =
+        posCubit.selectedDiscount ??
+        (_discounts.isNotEmpty ? _discounts.first : null);
+    _selectedAccount =
+        posCubit.selectedAccount ??
+        (_accounts.isNotEmpty ? _accounts.first : null);
 
     _calculateValues();
-    _totalPayingCtrl.addListener(_calculateValues);
+    _totalPayingCtrl.addListener(_onAmountFieldChanged);
+
+    // Initialize the payment amount with the grand total after calculation
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final formatted = _grandTotal.toStringAsFixed(2);
+      _isProgrammaticAmountUpdate = true;
+      _totalPayingCtrl.text = formatted;
+    });
   }
 
   // ─── Core Calculation Logic ───
@@ -226,6 +252,24 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
       // 4. Grand Total
       _grandTotal = taxableAmount + currentTaxAmount;
 
+      if (_autoSyncAmountField) {
+        final formatted = _grandTotal.toStringAsFixed(2);
+        if (_totalPayingCtrl.text != formatted) {
+          _isProgrammaticAmountUpdate = true;
+          _totalPayingCtrl.text = formatted;
+        }
+        _totalPaying = _grandTotal;
+      }
+
+      if (_totalPaying > _grandTotal) {
+        _totalPaying = _grandTotal;
+        final formatted = _grandTotal.toStringAsFixed(2);
+        if (_totalPayingCtrl.text != formatted) {
+          _isProgrammaticAmountUpdate = true;
+          _totalPayingCtrl.text = formatted;
+        }
+      }
+
       // 5. Change & Due Calculation
       if (_totalPaying >= _grandTotal) {
         _change = _totalPaying - _grandTotal;
@@ -234,7 +278,17 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
         _change = 0.0;
         _remainingDue = _grandTotal - _totalPaying;
       }
+      _autoSyncAmountField = false;
     });
+  }
+
+  void _onAmountFieldChanged() {
+    if (_isProgrammaticAmountUpdate) {
+      _isProgrammaticAmountUpdate = false;
+      return;
+    }
+    _autoSyncAmountField = false;
+    _calculateValues();
   }
 
   @override
@@ -264,7 +318,9 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
         ),
         decoration: BoxDecoration(
           color: AppColors.white,
-          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
+          borderRadius: BorderRadius.circular(
+            ResponsiveUI.borderRadius(context, 20),
+          ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -278,15 +334,15 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _paymentMethodDisplay(),
-                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
                       _dynamicFields(),
-                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                      _notesSection(),
                       SizedBox(height: ResponsiveUI.spacing(context, 16)),
                       _taxDropdown(),
                       SizedBox(height: ResponsiveUI.spacing(context, 16)),
                       _discountDropdown(),
+                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                      _accountDropdown(),
+                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                      _notesSection(),
                     ],
                   ),
                 ),
@@ -304,7 +360,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     padding: EdgeInsets.all(ResponsiveUI.padding(context, 15)),
     decoration: BoxDecoration(
       gradient: LinearGradient(
-        colors: [AppColors.primaryBlue, AppColors.primaryBlue.withOpacity(0.8)],
+        colors: [AppColors.primaryBlue, AppColors.darkBlue],
       ),
       borderRadius: BorderRadius.vertical(
         top: Radius.circular(ResponsiveUI.borderRadius(context, 20)),
@@ -312,12 +368,19 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     ),
     child: Row(
       children: [
-        Icon(Icons.point_of_sale, color: AppColors.white, size: 28),
-        SizedBox(width: 15),
+        Icon(
+          Icons.point_of_sale,
+          color: AppColors.white,
+          size: ResponsiveUI.iconSize(context, 28),
+        ),
+        SizedBox(width: ResponsiveUI.value(context, 15)),
         Expanded(
           child: Text(
             'Complete payment',
-            style: TextStyle(color: AppColors.white, fontSize: 20),
+            style: TextStyle(
+              color: AppColors.white,
+              fontSize: ResponsiveUI.fontSize(context, 20),
+            ),
           ),
         ),
         IconButton(
@@ -329,45 +392,52 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   );
 
   Widget _paymentMethodDisplay() => Container(
-    padding: EdgeInsets.all(16),
+    padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
     decoration: BoxDecoration(
       color: AppColors.lightBlueBackground,
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: AppColors.primaryBlue.withOpacity(0.3)),
+      borderRadius: BorderRadius.circular(
+        ResponsiveUI.borderRadius(context, 12),
+      ),
+      border: Border.all(color: AppColors.primaryBlue.withValues(alpha: 0.3)),
     ),
     child: Row(
       children: [
         Icon(Icons.payment, color: AppColors.primaryBlue),
-        SizedBox(width: 12),
+        SizedBox(width: ResponsiveUI.value(context, 12)),
         Text(
           widget.selectedPaymentMethod.name,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            fontSize: ResponsiveUI.fontSize(context, 16),
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ],
     ),
   );
 
   Widget _summaryPanel() => Container(
-    margin: EdgeInsets.symmetric(horizontal: 20),
-    padding: EdgeInsets.all(16),
+    margin: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 20)),
+    padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
     decoration: BoxDecoration(
       color: AppColors.shadowGray[50],
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(color: AppColors.primaryBlue.withOpacity(0.3)),
+      borderRadius: BorderRadius.circular(
+        ResponsiveUI.borderRadius(context, 16),
+      ),
+      border: Border.all(color: AppColors.primaryBlue.withValues(alpha: 0.3)),
     ),
     child: Column(
       children: [
         _row('Grand Total', _grandTotal, AppColors.darkGray, bold: true),
         Divider(),
         _row('Subtotal', _subTotal, AppColors.categoryPurple),
-        SizedBox(height: 5),
+        SizedBox(height: ResponsiveUI.value(context, 5)),
         _row('Tax (+)', currentTaxAmount, AppColors.warningOrange),
-        SizedBox(height: 5),
+        SizedBox(height: ResponsiveUI.value(context, 5)),
         _row('Discount (-)', currentDiscountAmount, AppColors.successGreen),
         Divider(),
         _row('Paid Amount', _totalPaying, Colors.black),
         _row('Change', _change, AppColors.clearPink),
-        SizedBox(height: 5),
+        SizedBox(height: ResponsiveUI.value(context, 5)),
         _row(
           'Remaining Due',
           _remainingDue,
@@ -380,7 +450,9 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
 
   Widget _row(String label, double amount, Color color, {bool bold = false}) =>
       Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
+        padding: EdgeInsets.symmetric(
+          vertical: ResponsiveUI.padding(context, 2),
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -408,7 +480,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   //  FOOTER with HOLD & COMPLETE
   // --------------------------------------------------------------
   Widget _footer() => Container(
-    padding: EdgeInsets.all(20),
+    padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
     child: Row(
       children: [
         // زر الإلغاء (صغير)
@@ -417,44 +489,74 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
           child: OutlinedButton(
             onPressed: () => Navigator.pop(context),
             style: OutlinedButton.styleFrom(
-              padding: EdgeInsets.symmetric(vertical: 14),
+              padding: EdgeInsets.symmetric(
+                vertical: ResponsiveUI.padding(context, 14),
+              ),
             ),
             child: Text('Cancel', style: TextStyle(color: AppColors.darkGray)),
           ),
         ),
-        SizedBox(width: 8),
-        
+        SizedBox(width: ResponsiveUI.value(context, 8)),
+
         // زر الإيقاف المؤقت (Hold)
         Expanded(
           flex: 1,
           child: ElevatedButton.icon(
             onPressed: _hold, // استدعاء دالة الإيقاف
-            icon: Icon(Icons.pause_circle_outline, size: 20),
+            icon: Icon(
+              Icons.pause_circle_outline,
+              size: ResponsiveUI.iconSize(context, 20),
+            ),
             label: Text('Hold', overflow: TextOverflow.ellipsis),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange,
               foregroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(vertical: 14),
+              padding: EdgeInsets.symmetric(
+                vertical: ResponsiveUI.padding(context, 14),
+              ),
             ),
           ),
         ),
-        SizedBox(width: 8),
+        SizedBox(width: ResponsiveUI.value(context, 8)),
 
         // زر إتمام البيع (Complete / Due)
         Expanded(
           flex: 2,
-          child: ElevatedButton.icon(
-            onPressed: _submit, // استدعاء دالة البيع
-            icon: Icon(Icons.check_circle_outline),
-            label: Text(
-                _remainingDue > 0 ? 'Pay & Due' : 'Complete', 
-                overflow: TextOverflow.ellipsis
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: _remainingDue > 0 ? Colors.redAccent : AppColors.mediumBlue700,
-              foregroundColor: AppColors.white,
-              padding: EdgeInsets.symmetric(vertical: 14),
-            ),
+          child: BlocBuilder<CheckoutCubit, CheckoutState>(
+            builder: (context, state) {
+              final isLoading = state is CheckoutLoading;
+              return ElevatedButton.icon(
+                onPressed: isLoading ? null : _submit,
+                icon: isLoading
+                    ? SizedBox(
+                        width: ResponsiveUI.iconSize(context, 18),
+                        height: ResponsiveUI.iconSize(context, 18),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.white,
+                        ),
+                      )
+                    : Icon(Icons.check_circle_outline),
+                label: Text(
+                  _remainingDue > 0 ? 'Pay & Due' : 'Complete',
+                  overflow: TextOverflow.ellipsis,
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _remainingDue > 0
+                      ? Colors.redAccent
+                      : AppColors.mediumBlue700,
+                  foregroundColor: AppColors.white,
+                  disabledBackgroundColor:
+                      (_remainingDue > 0
+                              ? Colors.redAccent
+                              : AppColors.mediumBlue700)
+                          .withValues(alpha: 0.6),
+                  padding: EdgeInsets.symmetric(
+                    vertical: ResponsiveUI.padding(context, 14),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ],
@@ -483,7 +585,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
             keyboardType: TextInputType.number,
             hint: 'Enter Card Number',
           ),
-          SizedBox(height: 12),
+          SizedBox(height: ResponsiveUI.value(context, 12)),
           _cardTypeDropdown(),
         ],
       );
@@ -519,14 +621,14 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     hint: 'Select Tax',
     icon: Icons.percent,
     onChanged: (v) {
-      setState(() {
+      if (v != null) {
         _selectedTax = v;
+        _autoSyncAmountField = true;
         _calculateValues();
-      });
+      }
     },
-    itemLabel:
-        (t) =>
-            '${t.name} (${t.type == 'fixed' ? t.amount : '${t.amount * 100}%'})',
+    itemLabel: (t) =>
+        '${t.name} (${t.type == 'fixed' ? t.amount : '${t.amount * 100}%'})',
   );
 
   Widget _discountDropdown() => buildDropdownField<DiscountModel>(
@@ -537,14 +639,25 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     hint: 'Select Discount',
     icon: Icons.discount_outlined,
     onChanged: (v) {
-      setState(() {
+      if (v != null) {
         _selectedDiscount = v;
+        _autoSyncAmountField = true;
         _calculateValues();
-      });
+      }
     },
-    itemLabel:
-        (d) =>
-            '${d.name} (${d.type == 'fixed' ? d.amount : '${d.amount * 100}%'})',
+    itemLabel: (d) =>
+        '${d.name} (${d.type == 'fixed' ? d.amount : '${d.amount * 100}%'})',
+  );
+
+  Widget _accountDropdown() => buildDropdownField<BankAccount>(
+    context,
+    value: _selectedAccount,
+    items: _accounts,
+    label: 'Payment Account',
+    hint: 'Select Account',
+    icon: Icons.account_balance_outlined,
+    onChanged: (v) => setState(() => _selectedAccount = v),
+    itemLabel: (a) => a.name,
   );
 
   // --------------------------------------------------------------
@@ -557,13 +670,18 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     // عند الإيقاف المؤقت، نرسل order_pending = 1 (true)
     // عادة لا يتم دفع مبالغ في الإيقاف، أو يمكن حفظ ما دفعه كعربون
     // هنا سنفترض أن الإيقاف يعني تأجيل العملية بالكامل
-    
+
     final success = await checkOutCubit.createSale(
-      //posCubit: posCubit,
       totalAmount: _grandTotal,
-      paidAmount: 0, // عادة 0 عند التعليق، أو _totalPaying إذا أردت حفظ عربون
+      paidAmount: 0,
       note: _saleNoteCtrl.text.isEmpty ? "Sale on Hold" : _saleNoteCtrl.text,
-      isPending: true, // <--- هذا هو المفتاح للتعليق
+      isPending: true,
+      customerId: widget.customerId,
+      warehouseId: posCubit.selectedWarhouse?.id,
+      taxAmount: currentTaxAmount,
+      discountAmount: currentDiscountAmount,
+      taxId: _normalizeSelectionId(_selectedTax?.id),
+      discountId: _normalizeSelectionId(_selectedDiscount?.id),
     );
 
     if (success && mounted) {
@@ -590,13 +708,19 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     // الباك إند سيقرر:
     // - إذا paidAmount < grandTotal -> ستصبح Due (عليها دين)
     // - إذا paidAmount == grandTotal -> ستصبح Completed
-    
+
     final success = await checkOutCubit.createSale(
-      //posCubit: posCubit,
-      totalAmount: _grandTotal, // الإجمالي النهائي
-      paidAmount: actualPaidToSend, // المبلغ المدفوع (سيتم حساب Due داخلياً)
+      totalAmount: _grandTotal,
+      paidAmount: actualPaidToSend,
       note: _saleNoteCtrl.text.isEmpty ? null : _saleNoteCtrl.text,
-      isPending: false, // <--- دائماً false هنا لأننا ننهي البيعة (سواء بدين أو لا)
+      isPending: false,
+      customerId: widget.customerId,
+      warehouseId: posCubit.selectedWarhouse?.id,
+      taxAmount: currentTaxAmount,
+      discountAmount: currentDiscountAmount,
+      taxId: _normalizeSelectionId(_selectedTax?.id),
+      discountId: _normalizeSelectionId(_selectedDiscount?.id),
+      accountId: _selectedAccount?.id,
     );
 
     if (success && mounted) {
@@ -609,7 +733,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
         builder: (_) {
           return POSReceiptDialog(
             recieptData: RecieptData(
-              cartItems: [],
+              cartItems: widget.cartItems,
               totalAmount: _subTotal,
               taxAmount: currentTaxAmount,
               selectedTax: _selectedTax,

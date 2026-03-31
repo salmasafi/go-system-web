@@ -23,9 +23,24 @@ class PendingLoaded extends HistoryState {
 class DuesLoading extends HistoryState {}
 
 class DuesLoaded extends HistoryState {
-  final List<DueSaleModel> dueSales;
+  final List<CustomerDueModel> customers;
   final double totalDueAmount;
-  DuesLoaded(this.dueSales, this.totalDueAmount);
+  DuesLoaded(this.customers, this.totalDueAmount);
+}
+
+class DuesPayLoading extends HistoryState {
+  final String saleId;
+  DuesPayLoading(this.saleId);
+}
+
+class DuesPaySuccess extends HistoryState {
+  final String saleId;
+  DuesPaySuccess(this.saleId);
+}
+
+class DuesPayError extends HistoryState {
+  final String message;
+  DuesPayError(this.message);
 }
 
 class SaleDetailsLoading extends HistoryState {}

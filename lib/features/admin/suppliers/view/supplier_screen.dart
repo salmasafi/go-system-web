@@ -164,7 +164,7 @@ class _SupplierScreenState extends State<SupplierScreen> {
               );
             }
 
-            return const SizedBox();
+            return SizedBox();
           },
         ),
       ),

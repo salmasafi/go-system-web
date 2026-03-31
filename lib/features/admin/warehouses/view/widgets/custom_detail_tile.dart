@@ -38,7 +38,7 @@ class CustomDetailTile extends StatelessWidget {
                   label,
                   style: TextStyle(
                     fontSize: ResponsiveUI.fontSize(context, 12),
-                    color: AppColors.darkGray.withOpacity(0.6),
+                    color: AppColors.darkGray.withValues(alpha: 0.6),
                   ),
                 ),
                 SizedBox(height: ResponsiveUI.spacing(context, 4)),

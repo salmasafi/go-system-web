@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:ui' as ui;
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class CustomSnackbar {
   static void showError(
@@ -69,15 +71,25 @@ class CustomSnackbar {
         required ContentType contentType,
         required Duration duration,
       }) {
+    final languageCode = context.locale.languageCode;
+    final textDirection = languageCode == 'ar' ? ui.TextDirection.rtl : ui.TextDirection.ltr;
+
+    // Convert string keys to translated values
+    final translatedTitle = title.tr();
+    final translatedMessage = message.tr();
+
     final snackBar = SnackBar(
       elevation: 0,
       behavior: SnackBarBehavior.floating,
       backgroundColor: Colors.transparent,
       duration: duration,
-      content: AwesomeSnackbarContent(
-        title: title,
-        message: message,
-        contentType: contentType,
+      content: Directionality(
+        textDirection: textDirection,
+        child: AwesomeSnackbarContent(
+          title: translatedTitle,
+          message: translatedMessage,
+          contentType: contentType,
+        ),
       ),
     );
 

@@ -301,8 +301,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
             InputChip(
               label: Text('Clear all'),
               onPressed: _clearAllFilters,
-              backgroundColor: AppColors.primaryBlue.withOpacity(0.1),
-              deleteIcon: Icon(Icons.clear_all, size: 16),
+              backgroundColor: AppColors.primaryBlue.withValues(alpha: 0.1),
+              deleteIcon: Icon(Icons.clear_all, size: ResponsiveUI.iconSize(context, 16)),
               onDeleted: _clearAllFilters,
             ),
           
@@ -311,8 +311,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
             return InputChip(
               label: Text('${filter.type.name}: ${filter.name}'),
               onPressed: () => _removeFilter(filter.type),
-              backgroundColor: AppColors.primaryBlue.withOpacity(0.1),
-              deleteIcon: Icon(Icons.close, size: 16),
+              backgroundColor: AppColors.primaryBlue.withValues(alpha: 0.1),
+              deleteIcon: Icon(Icons.close, size: ResponsiveUI.iconSize(context, 16)),
               onDeleted: () => _removeFilter(filter.type),
             );
           }).toList(),

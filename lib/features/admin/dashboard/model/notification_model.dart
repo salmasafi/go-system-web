@@ -19,14 +19,23 @@ class NotificationModel {
   });
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
+    // Handle productId which can be a String or a Map
+    String productIdValue = '';
+    final productIdData = json['productId'];
+    if (productIdData is String) {
+      productIdValue = productIdData;
+    } else if (productIdData is Map<String, dynamic>) {
+      productIdValue = productIdData['_id'] ?? '';
+    }
+
     return NotificationModel(
       id: json['_id'] ?? '',
       type: json['type'] ?? '',
-      productId: json['productId'] ?? '',
+      productId: productIdValue,
       message: json['message'] ?? '',
       isRead: json['isRead'] ?? false,
-      createdAt: DateTime.parse(json['createdAt'] ?? ''),
-      updatedAt: DateTime.parse(json['updatedAt'] ?? ''),
+      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
+      updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
     );
   }
 

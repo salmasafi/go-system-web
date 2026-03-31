@@ -4,6 +4,9 @@ import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_state.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:systego/generated/locale_keys.g.dart';
+
 
 class POSTabBar extends StatelessWidget {
   const POSTabBar({super.key});
@@ -28,24 +31,34 @@ class POSTabBar extends StatelessWidget {
                   onTap: () => cubit.selectTab(tab: 'featured'),
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: ResponsiveUI.value(context, 8)),
               Expanded(
                 child: _TabItem(
-                  label: 'Category',
+                  label: LocaleKeys.category.tr(),
                   value: 'category',
                   isSelected: selectedTab == 'category',
                   onTap: () => cubit.selectTab(tab: 'category'),
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: ResponsiveUI.value(context, 8)),
               Expanded(
                 child: _TabItem(
-                  label: 'Brand',
+                  label: LocaleKeys.brand.tr(),
                   value: 'brand',
                   isSelected: selectedTab == 'brand',
                   onTap: () => cubit.selectTab(tab: 'brand'),
                 ),
               ),
+              SizedBox(width: ResponsiveUI.value(context, 8)),
+              Expanded(
+                child: _TabItem(
+                  label: LocaleKeys.bundles_title.tr(),
+                  value: 'bundles',
+                  isSelected: selectedTab == 'bundles',
+                  onTap: () => cubit.selectTab(tab: 'bundles'),
+                ),
+              ),
+
             ],
           ),
         );
@@ -73,13 +86,13 @@ class _TabItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 12)),
         decoration: BoxDecoration(
           gradient: isSelected
               ? const LinearGradient(colors: [AppColors.primaryBlue, AppColors.mediumBlue700])
               : null,
           color: isSelected ? null : AppColors.lightBlueBackground,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
         ),
         child: Center(
           child: Text(
@@ -95,3 +108,5 @@ class _TabItem extends StatelessWidget {
     );
   }
 }
+
+

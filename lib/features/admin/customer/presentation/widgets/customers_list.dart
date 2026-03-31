@@ -144,9 +144,9 @@ class _CustomersListState extends State<CustomersList> {
                     ),
                     decoration: BoxDecoration(
                       color: customer.isDue
-                          ? Colors.red.withOpacity(0.1)
-                          : Colors.green.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(16),
+                          ? Colors.red.withValues(alpha: 0.1)
+                          : Colors.green.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 16)),
                     ),
                     child: Text(
                       customer.isDue
@@ -267,7 +267,7 @@ class _CustomersListState extends State<CustomersList> {
                 padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
                 decoration: BoxDecoration(
                   color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                   border: Border.all(color: AppColors.lightGray),
                 ),
                 child: Column(
@@ -310,7 +310,7 @@ class _CustomersListState extends State<CustomersList> {
                           style: TextStyle(
                             fontSize: ResponsiveUI.fontSize(context, 16),
                             fontWeight: FontWeight.bold,
-                            color: Colors.blue,
+                            color: Colors.red,
                           ),
                         ),
                       ],
@@ -418,9 +418,9 @@ class _CustomersListState extends State<CustomersList> {
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
+                    backgroundColor: Colors.red,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                     ),
                     padding: EdgeInsets.symmetric(
                       vertical: ResponsiveUI.padding(context, 14),

@@ -43,6 +43,19 @@ class ShiftModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'start_time': startTime.toIso8601String(),
+      'status': status,
+      'cashier_id': cashierId,
+      'cashierman_id': cashierManId,
+      'total_sale_amount': totalSaleAmount,
+      'net_cash_in_drawer': netCashInDrawer,
+      'total_expenses': totalExpenses,
+    };
+  }
+
   // هذه الدالة هي سر ثبات التطبيق
   static String _parseId(dynamic value) {
     if (value == null) return '';

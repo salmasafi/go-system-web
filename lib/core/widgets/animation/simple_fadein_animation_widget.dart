@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 
 class FadeInAnimation extends StatefulWidget {
@@ -18,6 +19,7 @@ class _FadeInAnimationState extends State<FadeInAnimation>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
+  bool _initialized = false;
 
   @override
   void initState() {
@@ -33,9 +35,25 @@ class _FadeInAnimationState extends State<FadeInAnimation>
       parent: _controller,
       curve: Curves.easeInOut,
     ));
-    Future.delayed(widget.delay, () {
-      _controller.forward();
-    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      _initialized = true;
+      final endValue = ResponsiveUI.padding(context, 1.0);
+      _animation = Tween<double>(
+        begin: 0.0,
+        end: endValue,
+      ).animate(CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ));
+      Future.delayed(widget.delay, () {
+        if (mounted) _controller.forward();
+      });
+    }
   }
 
   @override

@@ -25,11 +25,11 @@ class CustomLoadingState extends StatelessWidget {
             ),
           ),
           if (message != null) ...[
-            const SizedBox(height: 20),
+            SizedBox(height: ResponsiveUI.value(context, 20)),
             Text(
               message!,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: ResponsiveUI.fontSize(context, 16),
                 color: AppColors.darkGray,
                 fontWeight: FontWeight.w500,
               ),

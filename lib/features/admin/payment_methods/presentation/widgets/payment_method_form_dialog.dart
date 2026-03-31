@@ -255,7 +255,7 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
       ),
       boxShadow: [
         BoxShadow(
-          color: AppColors.black.withOpacity(0.2),
+          color: AppColors.black.withValues(alpha: 0.2),
           blurRadius: ResponsiveUI.value(context, 30),
           offset: Offset(0, ResponsiveUI.value(context, 10)),
         ),
@@ -306,7 +306,7 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
                 height: height120,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(borderRadius12),
-                  border: Border.all(color: AppColors.primaryBlue, width: 2),
+                  border: Border.all(color: AppColors.primaryBlue, width: ResponsiveUI.value(context, 2)),
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(borderRadius12 - 2),
@@ -317,15 +317,15 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
                 ),
               ),
               Positioned(
-                top: 8,
-                right: 8,
+                top: ResponsiveUI.padding(context, 8),
+                right: ResponsiveUI.padding(context, 8),
                 child: GestureDetector(
                   onTap: _clearImage,
                   child: Container(
                     padding: EdgeInsets.all(padding8),
                     decoration: BoxDecoration(
                       color: Colors.red,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
                     ),
                     child: Icon(
                       Icons.close,
@@ -407,7 +407,7 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(borderRadius12),
 
-                      border: Border.all(color: Colors.grey[300]!, width: 2),
+                      border: Border.all(color: Colors.grey[300]!, width: ResponsiveUI.value(context, 2)),
                     ),
 
                     child: ClipRRect(
@@ -418,15 +418,15 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
                   ),
 
                   Positioned(
-                    top: 8,
-                    right: 8,
+                    top: ResponsiveUI.padding(context, 8),
+                    right: ResponsiveUI.padding(context, 8),
                     child: GestureDetector(
                       onTap: _pickImage,
                       child: Container(
                         padding: EdgeInsets.all(padding8),
                         decoration: BoxDecoration(
                           color: Colors.grey,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
                         ),
                         child: Icon(
                           Icons.edit,
@@ -448,7 +448,7 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
               height: height120,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(borderRadius12),
-                border: Border.all(color: Colors.grey[300]!, width: 2),
+                border: Border.all(color: Colors.grey[300]!, width: ResponsiveUI.value(context, 2)),
                 color: Colors.grey[50],
               ),
               child: Column(
@@ -488,11 +488,11 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.broken_image_outlined, size: 40, color: Colors.grey[400]),
-          SizedBox(height: 8),
+          Icon(Icons.broken_image_outlined, size: ResponsiveUI.iconSize(context, 40), color: Colors.grey[400]),
+          SizedBox(height: ResponsiveUI.value(context, 8)),
           Text(
             LocaleKeys.failed_to_load_image.tr(),
-            style: TextStyle(color: Colors.grey[500], fontSize: 12),
+            style: TextStyle(color: Colors.grey[500], fontSize: ResponsiveUI.fontSize(context, 12)),
           ),
         ],
       ),
@@ -561,7 +561,7 @@ class PaymentMethodDialogHeader extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             AppColors.primaryBlue,
-            AppColors.primaryBlue.withOpacity(0.8),
+            AppColors.darkBlue,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -576,7 +576,7 @@ class PaymentMethodDialogHeader extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(padding10),
             decoration: BoxDecoration(
-              color: AppColors.white.withOpacity(0.2),
+              color: AppColors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(borderRadius12),
             ),
             child: Icon(
@@ -605,7 +605,7 @@ class PaymentMethodDialogHeader extends StatelessWidget {
                       ? LocaleKeys.update_payment_method_details.tr()
                       : LocaleKeys.add_a_new_payment_method.tr(),
                   style: TextStyle(
-                    color: AppColors.white.withOpacity(0.9),
+                    color: AppColors.white.withValues(alpha: 0.9),
                     fontSize: fontSize13,
                   ),
                 ),
@@ -744,3 +744,4 @@ class PaymentMethodDialogButtons extends StatelessWidget {
     );
   }
 }
+

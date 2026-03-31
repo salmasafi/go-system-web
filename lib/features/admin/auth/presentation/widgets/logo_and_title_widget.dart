@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/generated/locale_keys.g.dart';
@@ -17,29 +18,29 @@ class LogoAndTitleWidget extends StatelessWidget {
           AnimatedContainer(
             duration: const Duration(milliseconds: 500),
             curve: Curves.bounceOut,
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
             decoration: BoxDecoration(
               color: AppColors.lightBlueBackground,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primaryBlue.withOpacity(0.2),
+                  color: AppColors.primaryBlue.withValues(alpha: 0.2),
                   blurRadius: 15,
                   offset: const Offset(0, 5),
                 ),
               ],
             ),
-            child: const Icon(
+            child: Icon(
               Icons.shopping_cart_checkout_outlined,
-              size: 80,
+              size: ResponsiveUI.iconSize(context, 80),
               color: AppColors.primaryBlue,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: ResponsiveUI.value(context, 16)),
            Text(
             LocaleKeys.app_name.tr(),
             style: TextStyle(
-              fontSize: 28,
+              fontSize: ResponsiveUI.fontSize(context, 28),
               fontWeight: FontWeight.bold,
               color: AppColors.darkGray,
               letterSpacing: 1.2,
@@ -48,7 +49,7 @@ class LogoAndTitleWidget extends StatelessWidget {
           Text(
             LocaleKeys.manage_your_business.tr(),
             style: TextStyle(
-              fontSize: 14,
+              fontSize: ResponsiveUI.fontSize(context, 14),
               color: Colors.grey,
             ),
           ),

@@ -17,7 +17,7 @@ class SupplierAddressSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (supplier.address == null || supplier.address!.isEmpty) {
-      return const SizedBox();
+      return SizedBox();
     }
 
     return Column(
@@ -41,7 +41,7 @@ class SupplierAddressSection extends StatelessWidget {
             style: TextStyle(
               fontSize: ResponsiveUI.fontSize(context, 14),
               color: AppColors.darkGray,
-              height: 1.5,
+              height: ResponsiveUI.value(context, 1.5),
             ),
           ),
         ),

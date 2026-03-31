@@ -41,7 +41,7 @@ class _AnimatedReasonCardState extends State<AnimatedReasonCard> {
 
     // Validate reason data
     if (reason.id.isEmpty) {
-      return const SizedBox.shrink();
+      return SizedBox.shrink();
     }
 
     return AnimatedElement(
@@ -59,7 +59,7 @@ class _AnimatedReasonCardState extends State<AnimatedReasonCard> {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryBlue.withOpacity(0.1),
+              color: AppColors.primaryBlue.withValues(alpha: 0.1),
               blurRadius: ResponsiveUI.borderRadius(context, 10),
               offset: const Offset(0, 5),
             ),
@@ -97,7 +97,7 @@ class _AnimatedReasonCardState extends State<AnimatedReasonCard> {
       children: [
         CircleAvatar(
           radius: ResponsiveUI.borderRadius(context, 25),
-          backgroundColor: AppColors.primaryBlue.withOpacity(0.8),
+          backgroundColor: AppColors.darkBlue,
           child: Icon(
             Icons.receipt_long_rounded,
             color: AppColors.white,
@@ -151,3 +151,4 @@ Widget _buildFooter(ReasonModel reason) {
   );
 }
 }
+

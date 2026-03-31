@@ -27,7 +27,7 @@ class _POSCartSummaryState extends State<POSCartSummary> {
         color: AppColors.white,
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadowGray.withOpacity(0.2),
+            color: AppColors.shadowGray.withValues(alpha: 0.2),
             blurRadius: 10,
             offset: const Offset(0, -4),
           ),
@@ -106,3 +106,4 @@ class _POSCartSummaryState extends State<POSCartSummary> {
   //   showDialog(context: context, builder: (_) => POSCheckoutDialog());
   // }
 }
+

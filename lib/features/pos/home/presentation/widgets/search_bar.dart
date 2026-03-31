@@ -28,7 +28,7 @@ class _POSSearchBarState extends State<POSSearchBar> {
         borderRadius: BorderRadius.circular(
           ResponsiveUI.borderRadius(context, 12),
         ),
-        border: Border.all(color: AppColors.shadowGray.withOpacity(0.2)),
+        border: Border.all(color: AppColors.shadowGray.withValues(alpha: 0.2)),
       ),
       child: TextField(
         controller: widget.controller,
@@ -72,3 +72,4 @@ class _POSSearchBarState extends State<POSSearchBar> {
     );
   }
 }
+

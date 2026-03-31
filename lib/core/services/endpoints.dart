@@ -11,6 +11,8 @@ class EndPoint {
   static const String updateWarehouse = '/api/admin/warehouse';
   static const String deleteWarehouse = '/api/admin/warehouse';
   static String getWareHouseById(String id) => '/api/admin/warehouse/$id';
+  static String getWareHouseProducts(String id) => '/api/admin/product_warehouse/$id';
+  static String addProductToWarehouse(String id) => '/api/admin/product_warehouse/$id';
 
   /// Supplier
   static const String getSuppliers = '/api/admin/supplier';
@@ -43,9 +45,6 @@ class EndPoint {
   static String productByCode = '/api/admin/product/code';
 
   static String generateProductCode = '/api/admin/product/generate-code';
-
-  static String getWareHouseProducts(String id) =>
-      '/api/admin/product_warehouse/$id';
 
   // Currency
   static const String getCurrencies = '/api/admin/currency';
@@ -94,6 +93,7 @@ class EndPoint {
   static String posFeatured = '/api/admin/pos-home/featured';
   static String posCategories = '/api/admin/pos-home/categories';
   static String posBrands = '/api/admin/pos-home/brands';
+  static const String posBundles = '/api/admin/pos-home/bundles';
 
   static String posCategoryProducts(String categoryId) =>
       '/api/admin/pos-home/categories/$categoryId/products';
@@ -101,14 +101,25 @@ class EndPoint {
   static String posBrandProducts(String brandId) =>
       '/api/admin/pos-home/brands/$brandId/products';
 
+  /// Points
+  static const String redeemPoints = '/api/admin/redeem-points';
+
   static String getAllSales = '/api/admin/pos/sales';
+  static String posSearchSaleByRef(String ref) => '/api/admin/pos/sales?reference=$ref';
+  static const String saleForReturn = '/api/admin/return-sale/sale-for-return';
+  static const String createReturn = '/api/admin/return-sale/create-return';
   static String getPendingSales = '/api/admin/pos/sales/pending';
   static String getPendingSaleDetails(String saleId) =>
       '/api/admin/pos/sales/sales/pending/$saleId';
   static String getDueSales = '/api/admin/pos/sales/dues';
+  static String payDue = '/api/admin/pos/sales/pay-due';
 
   /// POS checkout
   static String posCreateSale = '/api/admin/pos/sales';
+
+  /// POS customers
+  static const String getPosCustomers = '/api/admin/pos_customer/customers';
+  static const String createPosCustomer = '/api/admin/pos_customer/customer';
 
   /// POS shift
   static String posCashiers = '/api/admin/pos-home/cashiers';
@@ -254,4 +265,28 @@ class EndPoint {
 
   /// purchase
   static String getPurchase = '/api/admin/purchase';
+  static String getPurchaseByReference(String ref) => '/api/admin/purchase?reference=$ref';
+
+  /// expense admin
+  static const String getAllExpenseAdmin = '/api/admin/expenseAdmin';
+
+  /// online orders
+  static const String getOnlineOrders = '/cashier/orders/online_orders';
+
+  /// POS expenses
+  static const String addPosExpense = '/api/admin/expense';
+  static const String getPosExpenses = '/api/admin/expense';
+  static String updatePosExpense(String id) => '/api/admin/expense/$id';
+
+  /// Purchase Returns
+  static const String getAllPurchaseReturns = '/api/admin/return-purchase/all-returns';
+  static const String createPurchaseReturn = '/api/admin/return-purchase';
+  static String updatePurchaseReturn(String id) => '/api/admin/return-purchase/$id';
+  static String deletePurchaseReturn(String id) => '/api/admin/return-purchase/$id';
+
+  /// Points
+  static const String getPoints = '/api/admin/point';
+  static const String addPoint = '/api/admin/point';
+  static String updatePoint = '/api/admin/point';
+  static String deletePoint = '/api/admin/point';
 }

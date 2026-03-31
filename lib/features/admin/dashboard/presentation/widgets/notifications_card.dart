@@ -55,7 +55,7 @@ class _AnimatedNotificationCardState extends State<AnimatedNotificationCard> {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryBlue.withOpacity(0.1),
+              color: AppColors.primaryBlue.withValues(alpha: 0.1),
               blurRadius: ResponsiveUI.borderRadius(context, 10),
               offset: const Offset(0, 5),
             ),
@@ -95,7 +95,7 @@ class _AnimatedNotificationCardState extends State<AnimatedNotificationCard> {
           radius: ResponsiveUI.borderRadius(context, 25),
           backgroundColor: notification.isRead
               ? Colors.grey.shade300
-              : AppColors.primaryBlue.withOpacity(0.8),
+              : AppColors.darkBlue,
           child: Icon(
             Icons.notifications_active_outlined,
             color: AppColors.white,
@@ -121,8 +121,8 @@ class _AnimatedNotificationCardState extends State<AnimatedNotificationCard> {
               Text(
                 formattedDate,
                 style: TextStyle(
-                  fontSize: 13,
-                  color: AppColors.darkGray.withOpacity(0.6),
+                  fontSize: ResponsiveUI.fontSize(context, 13),
+                  color: AppColors.darkGray.withValues(alpha: 0.6),
                 ),
               ),
             ],
@@ -181,3 +181,4 @@ class _AnimatedNotificationCardState extends State<AnimatedNotificationCard> {
     );
   }
 }
+

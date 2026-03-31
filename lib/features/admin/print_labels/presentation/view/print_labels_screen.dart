@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -130,10 +131,10 @@ class _PrintLabelsScreenState extends State<PrintLabelsScreen> {
           ? FloatingActionButton.extended(
               onPressed: _navigateToPreview,
               backgroundColor: AppColors.primaryBlue,
-              icon: const Icon(Icons.print, color: Colors.white),
+              icon: Icon(Icons.print, color: Colors.white),
               label: Text(
                 'Next (${_selectedItems.length})',
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
             )
           : null,
@@ -193,7 +194,7 @@ class _PrintLabelsScreenState extends State<PrintLabelsScreen> {
             onAction: _refresh,
           );
         } else {
-          return const SizedBox();
+          return SizedBox();
         }
       },
     );

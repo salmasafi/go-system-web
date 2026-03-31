@@ -27,7 +27,7 @@ class POSActionButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
         ),
-        elevation: 2,
+        elevation: ResponsiveUI.value(context, 2),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

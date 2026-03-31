@@ -311,7 +311,7 @@ class _ZoneFormDialogState extends State<ZoneFormDialog>
       ),
       boxShadow: [
         BoxShadow(
-          color: AppColors.black.withOpacity(0.2),
+          color: AppColors.black.withValues(alpha: 0.2),
           blurRadius: ResponsiveUI.value(context, 30),
           offset: Offset(0, ResponsiveUI.value(context, 10)),
         ),
@@ -398,7 +398,7 @@ class ZoneDialogHeader extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             AppColors.primaryBlue,
-            AppColors.primaryBlue.withOpacity(0.8),
+            AppColors.darkBlue,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -413,7 +413,7 @@ class ZoneDialogHeader extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(padding10),
             decoration: BoxDecoration(
-              color: AppColors.white.withOpacity(0.2),
+              color: AppColors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(borderRadius12),
             ),
             child: Icon(
@@ -440,7 +440,7 @@ class ZoneDialogHeader extends StatelessWidget {
                   isEditMode  ? LocaleKeys.update_zone_details.tr()
                       : LocaleKeys.add_new_zone.tr(),
                   style: TextStyle(
-                    color: AppColors.white.withOpacity(0.9),
+                    color: AppColors.white.withValues(alpha: 0.9),
                     fontSize: fontSize13,
                   ),
                 ),
@@ -578,3 +578,5 @@ class ZoneDialogButtons extends StatelessWidget {
     );
   }
 }
+
+

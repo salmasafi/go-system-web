@@ -32,7 +32,7 @@ class SupplierCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadowGray.withOpacity(0.15),
+            color: AppColors.shadowGray.withValues(alpha: 0.15),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -55,7 +55,7 @@ class SupplierCard extends StatelessWidget {
                 _buildHeader(context),
                 SizedBox(height: ResponsiveUI.spacing(context, 16)),
                 CustomGradientDivider(
-                  height: 1,
+                  height: ResponsiveUI.value(context, 1),
                   colors: [
                     AppColors.lightGray,
                     AppColors.primaryBlue,
@@ -98,7 +98,7 @@ class SupplierCard extends StatelessWidget {
                 supplier.companyName ?? LocaleKeys.no_company.tr(),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 13),
-                  color: AppColors.darkGray.withOpacity(0.6),
+                  color: AppColors.darkGray.withValues(alpha: 0.6),
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -218,3 +218,4 @@ class SupplierCard extends StatelessWidget {
     );
   }
 }
+

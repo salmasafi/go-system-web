@@ -2,10 +2,7 @@ class PandelResponse {
   final bool success;
   final PandelData data;
 
-  PandelResponse({
-    required this.success,
-    required this.data,
-  });
+  PandelResponse({required this.success, required this.data});
 
   factory PandelResponse.fromJson(Map<String, dynamic> json) {
     return PandelResponse(
@@ -13,39 +10,21 @@ class PandelResponse {
       data: PandelData.fromJson(json['data']),
     );
   }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'success': success,
-      'data': data.toJson(),
-    };
-  }
 }
-
 
 class PandelData {
   final String message;
   final List<PandelModel> pandels;
 
-  PandelData({
-    required this.message,
-    required this.pandels,
-  });
+  PandelData({required this.message, required this.pandels});
 
   factory PandelData.fromJson(Map<String, dynamic> json) {
     return PandelData(
-      message: json['message'],
-      pandels: (json['pandels'] as List)
+      message: json['message'] ?? '',
+      pandels: (json['pandels'] as List? ?? [])
           .map((e) => PandelModel.fromJson(e))
           .toList(),
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'message': message,
-      'pandels': pandels.map((e) => e.toJson()).toList(),
-    };
   }
 }
 
@@ -58,6 +37,8 @@ class PandelModel {
   final List<String> images;
   final List<PandelProduct> products;
   final double price;
+  final bool allWarehouses;
+  final List<String>? warehouseIds;
   final DateTime createdAt;
   final DateTime updatedAt;
   final int version;
@@ -71,70 +52,123 @@ class PandelModel {
     required this.images,
     required this.products,
     required this.price,
+    required this.allWarehouses,
+    this.warehouseIds,
     required this.createdAt,
     required this.updatedAt,
     required this.version,
   });
 
   factory PandelModel.fromJson(Map<String, dynamic> json) {
+    // API returns the products array under "products" key
+    final rawProducts = json['products'] as List? ?? [];
     return PandelModel(
-      id: json['_id'],
-      name: json['name'],
+      id: json['_id'] ?? '',
+      name: json['name'] ?? '',
       startDate: DateTime.parse(json['startdate']),
       endDate: DateTime.parse(json['enddate']),
-      status: json['status'],
-      images: List<String>.from(json['images']),
-      products: (json['productsId'] as List)
-          .map((e) => PandelProduct.fromJson(e))
-          .toList(),
+      status: json['status'] ?? false,
+      images: List<String>.from(json['images'] ?? []),
+      products: rawProducts.map((e) => PandelProduct.fromJson(e)).toList(),
       price: (json['price'] as num).toDouble(),
+      allWarehouses: json['all_warehouses'] ?? true,
+      warehouseIds: json['all_warehouses'] == false 
+          ? List<String>.from(json['warehouse_ids'] ?? [])
+          : null,
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
-      version: json['__v'],
+      version: json['__v'] ?? 0,
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
+    final json = {
       '_id': id,
       'name': name,
       'startdate': startDate.toIso8601String(),
       'enddate': endDate.toIso8601String(),
       'status': status,
       'images': images,
-      'productsId': products.map((e) => e.toJson()).toList(),
+      'products': products.map((e) => e.toJson()).toList(),
       'price': price,
+      'all_warehouses': allWarehouses,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
       '__v': version,
     };
+    
+    if (!allWarehouses && warehouseIds != null) {
+      json['warehouse_ids'] = warehouseIds!;
+    }
+    
+    return json;
   }
 }
 
+/// Represents a product entry in a pandel bundle.
+/// Matches the API shape: { productId: { _id, name, ... }, productPriceId: { _id, price, code } | null, quantity }
 class PandelProduct {
-  final String id;
-  final String name;
-  final double price;
+  final String productId;
+  final String? productPriceId; // null when no variation
+  final int quantity;
+
+  // Extra fields from the nested productId object (read-only, not sent to API)
+  final String? productName;
+  final String? productArName;
+  final String? productImage;
+  final double? productPrice;
 
   PandelProduct({
-    required this.id,
-    required this.name,
-    required this.price,
+    required this.productId,
+    this.productPriceId,
+    required this.quantity,
+    this.productName,
+    this.productArName,
+    this.productImage,
+    this.productPrice,
   });
 
   factory PandelProduct.fromJson(Map<String, dynamic> json) {
+    // productId can be a nested object or a plain string ID
+    final rawProductId = json['productId'];
+    final String resolvedProductId;
+    String? productName;
+    String? productArName;
+    String? productImage;
+    double? productPrice;
+
+    if (rawProductId is Map<String, dynamic>) {
+      resolvedProductId = rawProductId['_id'] ?? '';
+      productName = rawProductId['name'];
+      productArName = rawProductId['ar_name'];
+      productImage = rawProductId['image'];
+      productPrice = (rawProductId['price'] as num?)?.toDouble();
+    } else {
+      resolvedProductId = rawProductId?.toString() ?? '';
+    }
+
+    // productPriceId can be a nested object or null
+    final rawPriceId = json['productPriceId'];
+    final String? resolvedPriceId = rawPriceId is Map<String, dynamic>
+        ? rawPriceId['_id']?.toString()
+        : rawPriceId?.toString();
+
     return PandelProduct(
-      id: json['_id'],
-      name: json['name'],
-      price: (json['price'] as num).toDouble(),
+      productId: resolvedProductId,
+      productPriceId: resolvedPriceId,
+      quantity: (json['quantity'] as num?)?.toInt() ?? 1,
+      productName: productName,
+      productArName: productArName,
+      productImage: productImage,
+      productPrice: productPrice,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      '_id': id,
-      'name': name,
-      'price': price,
+      'productId': productId,
+      'productPriceId': productPriceId,
+      'quantity': quantity,
     };
   }
 }

@@ -40,7 +40,7 @@ import 'package:systego/features/admin/product/presentation/widgets/product_info
 //                   SizedBox(width: ResponsiveUI.spacing(context, 16)),
 //                   Expanded(child: items[rightIndex]),
 //                 ] else
-//                   const Expanded(child: SizedBox()),
+//                   Expanded(child: SizedBox()),
 //               ],
 //             ),
 //           );
@@ -87,7 +87,7 @@ class ProductInfoGrid extends StatelessWidget {
                     SizedBox(width: ResponsiveUI.spacing(context, 16)),
                     Expanded(child: items[rightIndex]),
                   ] else
-                    const Expanded(child: SizedBox()),
+                    Expanded(child: SizedBox()),
                 ],
               ),
             );

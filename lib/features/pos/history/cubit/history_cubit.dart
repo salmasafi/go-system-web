@@ -50,7 +50,7 @@ class HistoryCubit extends Cubit<HistoryState> {
     }
   }
 
-  // 3. Get Dues (For Dues Tab)
+  // 3. Get Dues
   Future<void> getAllDues() async {
     emit(DuesLoading());
     try {
@@ -61,12 +61,56 @@ class HistoryCubit extends Cubit<HistoryState> {
         double totalDue = (data['total_due'] as num?)?.toDouble() ?? 0.0;
 
         cachedDues = list.map((e) => DueSaleModel.fromJson(e)).toList();
-        emit(DuesLoaded(cachedDues, totalDue));
+
+        // Group by customer
+        final Map<String, List<DueSaleModel>> grouped = {};
+        for (final sale in cachedDues) {
+          grouped.putIfAbsent(sale.customerId, () => []).add(sale);
+        }
+
+        final customers = grouped.entries.map((e) {
+          final sales = e.value;
+          final first = sales.first;
+          final total = sales.fold(0.0, (s, d) => s + d.remainingAmount);
+          return CustomerDueModel(
+            customerId: first.customerId,
+            customerName: first.customerName,
+            phone: first.phone,
+            totalDue: total,
+            sales: sales,
+          );
+        }).toList();
+
+        emit(DuesLoaded(customers, totalDue));
       } else {
         emit(HistoryError('Failed to load dues'));
       }
     } catch (e) {
       emit(HistoryError(e.toString()));
+    }
+  }
+
+  // 3b. Pay Due - supports multiple payment methods
+  Future<void> payDue(String saleId, String customerId, double totalAmount, List<Map<String, dynamic>> financials) async {
+    emit(DuesPayLoading(saleId));
+    try {
+      final response = await DioHelper.postData(
+        url: EndPoint.payDue,
+        data: {
+          'sale_id': saleId,
+          'customer_id': customerId,
+          'amount': totalAmount,
+          'financials': financials,
+        },
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        emit(DuesPaySuccess(saleId));
+      } else {
+        final msg = response.data['message']?.toString() ?? 'Payment failed';
+        emit(DuesPayError(msg));
+      }
+    } catch (e) {
+      emit(DuesPayError(e.toString()));
     }
   }
 

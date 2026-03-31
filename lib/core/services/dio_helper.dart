@@ -20,10 +20,32 @@ class DioHelper {
 
     dio.interceptors.add(
       InterceptorsWrapper(
+        onRequest: (options, handler) {
+          log('Dio Request -> ${options.method} ${options.uri}');
+          if (options.data != null) {
+            log('Dio Request payload: ${options.data}');
+          }
+          handler.next(options);
+        },
+        onResponse: (response, handler) {
+          log('Dio Response <- ${response.requestOptions.method} ${response.requestOptions.uri} '
+              'status ${response.statusCode}');
+          log('Dio Response data: ${response.data}');
+          handler.next(response);
+        },
+      ),
+    );
+
+    dio.interceptors.add(
+      InterceptorsWrapper(
         onError: (DioException e, handler) async {
+          log('Dio Error ${e.requestOptions.method} ${e.requestOptions.uri} '
+              'status ${e.response?.statusCode} message ${e.message}');
           if (e.response?.statusCode == 401) {
             log('🚨 Unauthorized — broadcasting sessionExpired');
-            await CacheHelper.clearAllData();
+            // Only clear token, not all data, to avoid wiping unrelated cached data
+            await CacheHelper.removeData(key: 'token');
+            await CacheHelper.removeData(key: 'user');
             SessionManager.notifySessionExpired();
           }
           return handler.next(e);

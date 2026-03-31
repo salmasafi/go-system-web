@@ -91,13 +91,13 @@ class _POSAppBarState extends State<POSAppBar> {
               vertical: ResponsiveUI.padding(context, 6),
             ),
             decoration: BoxDecoration(
-              color: AppColors.black.withOpacity(0.08),
+              color: AppColors.black.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(
                 ResponsiveUI.borderRadius(context, 10),
               ),
               border: Border.all(
-                color: AppColors.black.withOpacity(0.3),
-                width: 1.5,
+                color: AppColors.black.withValues(alpha: 0.3),
+                width: ResponsiveUI.value(context, 1.5),
               ),
             ),
             child: Row(
@@ -138,13 +138,13 @@ class _POSAppBarState extends State<POSAppBar> {
     //       //       vertical: ResponsiveUI.padding(context, 6),
     //       //     ),
     //       //     decoration: BoxDecoration(
-    //       //       color: AppColors.white.withOpacity(0.15),
+    //       //       color: AppColors.white.withValues(alpha: 0.15),
     //       //       borderRadius: BorderRadius.circular(
     //       //         ResponsiveUI.borderRadius(context, 12),
     //       //       ),
     //       //       border: Border.all(
-    //       //         color: AppColors.white.withOpacity(0.3),
-    //       //         width: 1.5,
+    //       //         color: AppColors.white.withValues(alpha: 0.3),
+    //       //         width: ResponsiveUI.value(context, 1.5),
     //       //       ),
     //       //     ),
     //       //     child: Row(
@@ -168,7 +168,7 @@ class _POSAppBarState extends State<POSAppBar> {
     //       //                   color: AppColors.primaryBlue,
     //       //                   fontSize: ResponsiveUI.fontSize(context, 16),
     //       //                   fontWeight: FontWeight.bold,
-    //       //                   height: 1,
+    //       //                   height: ResponsiveUI.value(context, 1),
     //       //                 ),
     //       //               ),
     //       //               Text(
@@ -177,7 +177,7 @@ class _POSAppBarState extends State<POSAppBar> {
     //       //                   color: AppColors.primaryBlue,
     //       //                   fontSize: ResponsiveUI.fontSize(context, 10),
     //       //                   fontWeight: FontWeight.w600,
-    //       //                   height: 1.2,
+    //       //                   height: ResponsiveUI.value(context, 1.2),
     //       //                 ),
     //       //               ),
     //       //             ],
@@ -201,7 +201,7 @@ class _POSAppBarState extends State<POSAppBar> {
     //       //             Text(
     //       //               'Tap to change',
     //       //               style: TextStyle(
-    //       //                 color: AppColors.white.withOpacity(0.8),
+    //       //                 color: AppColors.white.withValues(alpha: 0.8),
     //       //                 fontSize: ResponsiveUI.fontSize(context, 11),
     //       //               ),
     //       //             ),
@@ -233,13 +233,13 @@ class _POSAppBarState extends State<POSAppBar> {
     //                 vertical: ResponsiveUI.padding(context, 6),
     //               ),
     //               decoration: BoxDecoration(
-    //                 color: AppColors.white.withOpacity(0.15),
+    //                 color: AppColors.white.withValues(alpha: 0.15),
     //                 borderRadius: BorderRadius.circular(
     //                   ResponsiveUI.borderRadius(context, 10),
     //                 ),
     //                 border: Border.all(
-    //                   color: AppColors.white.withOpacity(0.3),
-    //                   width: 1.5,
+    //                   color: AppColors.white.withValues(alpha: 0.3),
+    //                   width: ResponsiveUI.value(context, 1.5),
     //                 ),
     //               ),
     //               child: Row(
@@ -268,3 +268,4 @@ class _POSAppBarState extends State<POSAppBar> {
     //     );
   }
 }
+

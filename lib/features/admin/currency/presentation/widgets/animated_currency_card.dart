@@ -59,7 +59,7 @@ class _AnimatedCurrencyCardState extends State<AnimatedCurrencyCard> {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryBlue.withOpacity(0.1),
+              color: AppColors.primaryBlue.withValues(alpha: 0.1),
               blurRadius: ResponsiveUI.borderRadius(context, 10),
               offset: const Offset(0, 5),
             ),
@@ -98,7 +98,7 @@ class _AnimatedCurrencyCardState extends State<AnimatedCurrencyCard> {
       children: [
         CircleAvatar(
           radius: ResponsiveUI.borderRadius(context, 25),
-          backgroundColor: AppColors.primaryBlue.withOpacity(0.8),
+          backgroundColor: AppColors.darkBlue,
           child: Icon(
             Icons.monetization_on_rounded,
             color: AppColors.white,
@@ -146,7 +146,7 @@ class _AnimatedCurrencyCardState extends State<AnimatedCurrencyCard> {
                 LocaleKeys.amount.tr(),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 12),
-                  color: AppColors.darkGray.withOpacity(0.6),
+                  color: AppColors.darkGray.withValues(alpha: 0.6),
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -195,17 +195,18 @@ class _AnimatedCurrencyCardState extends State<AnimatedCurrencyCard> {
         //   '${LocaleKeys.created_at.tr()}: $createdAt',
         //   style: TextStyle(
         //     fontSize: ResponsiveUI.fontSize(context, 13),
-        //     color: AppColors.darkGray.withOpacity(0.6),
+        //     color: AppColors.darkGray.withValues(alpha: 0.6),
         //   ),
         // ),
         // Text(
         //   'Updated at: $updatedAt',
         //   style: TextStyle(
-        //     fontSize: 13,
-        //     color: AppColors.darkGray.withOpacity(0.6),
+        //     fontSize: ResponsiveUI.fontSize(context, 13),
+        //     color: AppColors.darkGray.withValues(alpha: 0.6),
         //   ),
         // ),
       ],
     );
   }
 }
+

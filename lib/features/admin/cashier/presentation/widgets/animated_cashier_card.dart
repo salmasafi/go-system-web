@@ -50,17 +50,17 @@ class AnimatedCashierCard extends StatelessWidget {
           boxShadow: [
             BoxShadow(
               color: cashier.cashierActive
-                  ? AppColors.primaryBlue.withOpacity(0.1)
-                  : AppColors.shadowGray.withOpacity(0.1),
+                  ? AppColors.primaryBlue.withValues(alpha: 0.1)
+                  : AppColors.shadowGray.withValues(alpha: 0.1),
               blurRadius: ResponsiveUI.borderRadius(context, 10),
               offset: const Offset(0, 5),
             ),
           ],
           border: Border.all(
             color: cashier.cashierActive
-                ? AppColors.primaryBlue.withOpacity(0.4)
-                : AppColors.shadowGray.withOpacity(0.4),
-            width: 1.8,
+                ? AppColors.primaryBlue.withValues(alpha: 0.4)
+                : AppColors.shadowGray.withValues(alpha: 0.4),
+            width: ResponsiveUI.value(context, 1.8),
           ),
         ),
         child: Material(
@@ -95,8 +95,8 @@ class AnimatedCashierCard extends StatelessWidget {
       children: [
         // Status indicator circle
         Container(
-          width: 12,
-          height: 12,
+          width: ResponsiveUI.value(context, 12),
+          height: ResponsiveUI.value(context, 12),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: cashier.cashierActive
@@ -105,8 +105,8 @@ class AnimatedCashierCard extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: cashier.cashierActive
-                    ? AppColors.successGreen.withOpacity(0.3)
-                    : AppColors.red.withOpacity(0.3),
+                    ? AppColors.successGreen.withValues(alpha: 0.3)
+                    : AppColors.red.withValues(alpha: 0.3),
                 blurRadius: 4,
                 spreadRadius: 1,
               ),
@@ -119,8 +119,8 @@ class AnimatedCashierCard extends StatelessWidget {
         CircleAvatar(
           radius: ResponsiveUI.borderRadius(context, 25),
           backgroundColor: cashier.cashierActive
-              ? AppColors.primaryBlue.withOpacity(0.8)
-              : AppColors.shadowGray.withOpacity(0.8),
+              ? AppColors.darkBlue
+              : AppColors.shadowGray.withValues(alpha: 0.8),
           child: Icon(
             Icons.person_outline,
             color: AppColors.white,
@@ -151,8 +151,8 @@ class AnimatedCashierCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 14),
                   color: cashier.cashierActive
-                      ? AppColors.darkGray.withOpacity(0.7)
-                      : AppColors.shadowGray.withOpacity(0.7),
+                      ? AppColors.darkGray.withValues(alpha: 0.7)
+                      : AppColors.shadowGray.withValues(alpha: 0.7),
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -174,10 +174,10 @@ class AnimatedCashierCard extends StatelessWidget {
       padding: EdgeInsets.only(right: ResponsiveUI.spacing(context, 8)),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
           color: cashier.cashierActive
-              ? AppColors.successGreen.withOpacity(0.1)
-              : AppColors.red.withOpacity(0.1),
+              ? AppColors.successGreen.withValues(alpha: 0.1)
+              : AppColors.red.withValues(alpha: 0.1),
         ),
         child: Switch.adaptive(
           value: cashier.cashierActive,
@@ -285,7 +285,7 @@ class AnimatedCashierCard extends StatelessWidget {
                 child: Icon(
                   icon,
                   size: ResponsiveUI.fontSize(context, 14),
-                  color: iconColor ?? AppColors.darkGray.withOpacity(0.6),
+                  color: iconColor ?? AppColors.darkGray.withValues(alpha: 0.6),
                 ),
               ),
             Expanded(
@@ -293,7 +293,7 @@ class AnimatedCashierCard extends StatelessWidget {
                 label,
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 12),
-                  color: AppColors.darkGray.withOpacity(0.6),
+                  color: AppColors.darkGray.withValues(alpha: 0.6),
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -319,3 +319,4 @@ class AnimatedCashierCard extends StatelessWidget {
     );
   }
 }
+

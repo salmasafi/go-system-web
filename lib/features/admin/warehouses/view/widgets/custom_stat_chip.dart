@@ -26,10 +26,10 @@ class CustomStatChip extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [color.withOpacity(0.15), color.withOpacity(0.05)],
+          colors: [color.withValues(alpha: 0.15), color.withValues(alpha: 0.05)],
         ),
         borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

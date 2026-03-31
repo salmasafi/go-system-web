@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
@@ -19,34 +20,32 @@ class CustomBottomAppBar extends StatelessWidget {
     return ConvexAppBar(
       style: TabStyle.fixedCircle,
       backgroundColor: Colors.white,
-      activeColor: AppColors.linkBlue,
+      activeColor: AppColors.primaryBlue,
       color: Colors.grey[600],
-      height: 60,
+      height: ResponsiveUI.value(context, 65),
       top: -25,
       curveSize: 90,
-      elevation: 8,
+      elevation: ResponsiveUI.value(context, 8),
       shadowColor: Colors.black26,
       items: [
         TabItem(
           icon: Icons.dashboard_rounded,
           title: LocaleKeys.dashboard.tr(),
         ),
-        // TabItem(
-        //   icon: Icons.category_rounded,
-        //   title: 'Product',
-        // ),
         TabItem(
-          // icon: Icons.print_rounded,
-          // title: 'Print',
+          icon: Icons.shopping_bag_outlined,
+          title: 'Online',
+        ),
+        TabItem(
           icon: Icons.point_of_sale_rounded,
           title: LocaleKeys.point_of_sale.tr(),
         ),
-        // TabItem(
-        //   icon: Icons.bar_chart_rounded,
-        //   title: 'Reports',
-        // ),
         TabItem(
-          icon: Icons.exit_to_app_rounded, //Icons.more_horiz_rounded,
+          icon: Icons.settings_rounded,
+          title: LocaleKeys.settings.tr(),
+        ),
+        TabItem(
+          icon: Icons.exit_to_app_rounded,
           title: LocaleKeys.exit.tr(),
         ),
       ],

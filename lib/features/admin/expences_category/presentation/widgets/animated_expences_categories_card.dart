@@ -41,14 +41,14 @@ class AnimatedExpenseCategoryCard extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryBlue.withOpacity(0.1),
+              color: AppColors.primaryBlue.withValues(alpha: 0.1),
               blurRadius: ResponsiveUI.borderRadius(context, 10),
               offset: const Offset(0, 5),
             ),
           ],
           border: Border.all(
-            color: AppColors.primaryBlue.withOpacity(0.4),
-            width: 1.8,
+            color: AppColors.primaryBlue.withValues(alpha: 0.4),
+            width: ResponsiveUI.value(context, 1.8),
           ),
         ),
         child: Material(
@@ -153,7 +153,7 @@ class AnimatedExpenseCategoryCard extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: ResponsiveUI.fontSize(context, 12),
-            color: AppColors.darkGray.withOpacity(0.6),
+            color: AppColors.darkGray.withValues(alpha: 0.6),
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -164,7 +164,7 @@ class AnimatedExpenseCategoryCard extends StatelessWidget {
           style: TextStyle(
             fontSize: ResponsiveUI.fontSize(context, 14),
             fontWeight: FontWeight.w500,
-            color: isActive ? AppColors.successGreen : AppColors.red.withOpacity(0.8),
+            color: isActive ? AppColors.successGreen : AppColors.red.withValues(alpha: 0.8),
           ),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,

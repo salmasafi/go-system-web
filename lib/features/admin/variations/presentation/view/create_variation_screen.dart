@@ -100,7 +100,7 @@ class _CreateVariationScreenState extends State<CreateVariationScreen> {
           hintText: hint,
           hasBoxDecoration: false,
           hasBorder: true,
-          prefixIconColor: AppColors.darkGray.withOpacity(0.7),
+          prefixIconColor: AppColors.darkGray.withValues(alpha: 0.7),
         ),
       ],
     );
@@ -139,7 +139,7 @@ class _CreateVariationScreenState extends State<CreateVariationScreen> {
                     onChanged: (value) => _updateOptionName(index, value),
                   ),
                 ),
-                SizedBox(width: 8),
+                SizedBox(width: ResponsiveUI.value(context, 8)),
                 IconButton(
                   icon: Icon(
                     option["status"] ? Icons.check_box : Icons.check_box_outline_blank,
@@ -155,10 +155,10 @@ class _CreateVariationScreenState extends State<CreateVariationScreen> {
             ),
           );
         }).toList(),
-        SizedBox(height: 8),
+        SizedBox(height: ResponsiveUI.value(context, 8)),
         TextButton.icon(
           onPressed: _addOption,
-          icon: const Icon(Icons.add, color: AppColors.primaryBlue,),
+          icon: Icon(Icons.add, color: AppColors.primaryBlue,),
           label:  Text( LocaleKeys.add_option.tr(), style: TextStyle(
             color: AppColors.primaryBlue
           ),),

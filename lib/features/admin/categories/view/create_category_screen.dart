@@ -195,14 +195,14 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                           color: AppColors.white,
                           border: Border.all(
                             color: AppColors.lightGray,
-                            width: 1.5,
+                            width: ResponsiveUI.value(context, 1.5),
                           ),
                           borderRadius: BorderRadius.circular(
                             ResponsiveUI.borderRadius(context, 12),
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
+                              color: Colors.black.withValues(alpha: 0.05),
                               blurRadius: ResponsiveUI.borderRadius(context, 6),
                               offset: Offset(0, 2),
                             ),
@@ -449,7 +449,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                         ),
                         border: Border.all(
                           color: AppColors.lightGray,
-                          width: 2,
+                          width: ResponsiveUI.value(context, 2),
                         ),
                       ),
                       child: _selectedImage != null
@@ -590,7 +590,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                       //   shape: RoundedRectangleBorder(
                       //     borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                       //   ),
-                      //   elevation: 2,
+                      //   elevation: ResponsiveUI.value(context, 2),
                       // ),
                       text: state is CreateCategoryLoading
                           ? LocaleKeys.saving_category.tr()
@@ -632,3 +632,4 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
     super.dispose();
   }
 }
+

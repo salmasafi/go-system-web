@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/services/dio_helper.dart';
 import 'package:systego/core/services/endpoints.dart';
 import 'package:systego/core/utils/error_handler.dart'; // تأكد من المسار
-import '../../../home/cubit/pos_home_cubit.dart';
 import '../../../home/model/pos_models.dart';
 import '../../model/checkout_models.dart';
 
@@ -21,15 +20,40 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   // Methods for cart manipulation (addToCart, etc.) are good as they are in your previous code.
   // I'll focus on createSale below.
 
-  void addToCart(Product product, {PriceVariation? variation}) {
+  void addBundleToCart(BundleModel bundle) {
     final existingIndex = cartItems.indexWhere(
-      (i) => i.product.id == product.id &&
-             (i.selectedVariation?.id == variation?.id || (i.selectedVariation == null && variation == null)),
+      (i) => i.isBundle && i.bundle!.id == bundle.id,
     );
     if (existingIndex >= 0) {
       cartItems[existingIndex].quantity++;
     } else {
-      cartItems.add(CartItem(product: product, selectedVariation: variation, quantity: 1));
+      final bundleAsProduct = Product(
+        id: bundle.id,
+        name: bundle.name,
+        code: 'BUNDLE-${bundle.id}',
+        description: 'Bundle: ${bundle.name}',
+        price: bundle.price,
+      );
+      cartItems.add(
+        CartItem(product: bundleAsProduct, quantity: 1, bundle: bundle),
+      );
+    }
+    emit(PosCartUpdated(cartItems));
+  }
+
+  void addToCart(Product product, {PriceVariation? variation}) {
+    final existingIndex = cartItems.indexWhere(
+      (i) =>
+          i.product.id == product.id &&
+          (i.selectedVariation?.id == variation?.id ||
+              (i.selectedVariation == null && variation == null)),
+    );
+    if (existingIndex >= 0) {
+      cartItems[existingIndex].quantity++;
+    } else {
+      cartItems.add(
+        CartItem(product: product, selectedVariation: variation, quantity: 1),
+      );
     }
     emit(PosCartUpdated(cartItems));
   }
@@ -61,84 +85,67 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   //  Create Sale Function (Updated for new Payload)
   // ────────────────────────────────────────────────────────────────
   Future<bool> createSale({
-    // required PosCubit posCubit,
-    required double totalAmount, // grand_total
-    double paidAmount = 0.0, // المبلغ المدفوع فعلياً
+    required double totalAmount,
+    double paidAmount = 0.0,
     String? note,
-    bool isPending = false, // order_pending: 1 if true, 0 if false
+    bool isPending = false,
+    required String customerId,
+    String? warehouseId,
+    String? accountId,
+    String? cashierId,
+    double taxAmount = 0.0,
+    double discountAmount = 0.0,
+    String? taxId,
+    String? discountId,
   }) async {
     emit(CheckoutLoading());
 
-    // 1. Prepare Products List
-    final productsList = cartItems.map((item) {
-      // تحديد السعر الفعلي (سواء من المنتج الأساسي أو المتغير)
-      final price = item.selectedVariation?.price ?? item.product.price;
-      
+    // 1. Prepare Products List (exclude bundle items)
+    final productsList = cartItems.where((item) => !item.isBundle).map((item) {
       return {
         "product_id": item.product.id,
-        // إذا كان هناك variation، نرسل product_price_id
-        if (item.selectedVariation != null) 
+        if (item.selectedVariation != null)
           "product_price_id": item.selectedVariation!.id,
-        
-        "quantity": item.quantity,
-        "price": price,
-        "subtotal": item.subtotal, // price * quantity
+        "quantity": item.quantity.toString(),
+        "price": item.effectivePrice.toStringAsFixed(2),
+        "subtotal": item.subtotal.toStringAsFixed(2),
+        if (item.isWholePriceActive)
+          "whole_price": item.wholePrice!.toStringAsFixed(2),
       };
     }).toList();
 
-    // 2. Calculate Due Status (1 if there is remaining debt, 0 if fully paid)
-    // منطق بسيط: لو دفع أقل من الإجمالي، يبقى عليه فلوس (Due = 1)
-    // أو يمكن تمريرها كـ parameter لو عندك منطق معقد
-    final isDue = (paidAmount < totalAmount) ? "1" : "0";
+    // 1b. Prepare Bundles List
+    final bundlesList = cartItems.where((item) => item.isBundle).map((item) {
+      return {
+        "bundle_id": item.bundle!.id,
+        "quantity": item.quantity.toString(),
+        "price": item.bundle!.price.toStringAsFixed(2),
+        "subtotal": (item.bundle!.price * item.quantity).toStringAsFixed(2),
+      };
+    }).toList();
 
-    // 3. Prepare Financials (Only if not pending and Amount > 0)
-    List<Map<String, dynamic>> financials = [];
-    if (!isPending && paidAmount > 0) {
-      // // التأكد من اختيار حساب بنكي (Cash Register / Bank)
-      // if (posCubit.selectedAccount != null) {
-      //   financials.add({
-      //     "account_id": posCubit.selectedAccount!.id,
-      //     "amount": paidAmount,
-      //   });
-      // }
-    }
-
-    // 4. Construct the Body
     final body = {
-      // // الأساسيات
-      // "customer_id": posCubit.selectedCustomer?.id,
-      // "warehouse_id": posCubit.selectedWarhouse?.id, // مهم جداً للمخزون
-      // "cashier_id": posCubit.selectedCashier?.id, // الكاشير الحالي
-      
-      // التواريخ والحالة
-      "date": DateTime.now().toIso8601String(),
       "order_pending": isPending ? 1 : 0,
-      "Due": isDue, 
-
-      // الأرقام المالية
-      "grand_total": totalAmount,
-      "tax_rate": 0, // أو posCubit.selectedTax?.rate إذا موجود
-      "tax_amount": 0, // حساب القيمة بناء على النسبة
-      "discount": 0,   // قيمة الخصم رقمياً
-      "shipping": 0,
-
-      // // العلاقات (Discounts, Taxes, Coupon)
-      // if (posCubit.selectedTax != null && posCubit.selectedTax!.id != 'null')
-      //   "order_tax": posCubit.selectedTax!.id,
-      
-      // if (posCubit.selectedDiscount != null && posCubit.selectedDiscount!.id != 'null')
-      //   "order_discount": posCubit.selectedDiscount!.id,
-      
-      // "coupon_id": "", // أضفه إذا كان لديك CouponCubit
-
-      // القوائم
+      "grand_total": totalAmount.toStringAsFixed(2),
+      "Due": isPending ? 1 : (paidAmount < totalAmount ? 1 : 0),
       "products": productsList,
-      "bundles": [], // حالياً فارغة كما طلبت
-      
-      // المدفوعات (فقط إذا لم يكن معلقاً)
-      if (!isPending) "financials": financials,
-
-      "note": note ?? "Completed via POS App",
+      "bundles": bundlesList,
+      if (customerId.isNotEmpty) "customer_id": customerId,
+      if (warehouseId != null) "warehouse_id": warehouseId,
+      if (cashierId != null) "cashier_id": cashierId,
+      if (note != null && note.isNotEmpty) "notes": note,
+      if (discountAmount > 0) "discount": discountAmount.toStringAsFixed(2),
+      if (discountId != null && discountId.isNotEmpty && discountId != 'null')
+        "discount_id": discountId,
+      if (taxAmount > 0) "tax_amount": taxAmount.toStringAsFixed(2),
+      if (taxId != null && taxId.isNotEmpty && taxId != 'null') "tax_id": taxId,
+      // financials مطلوبة فقط للـ complete sale
+      if (!isPending && accountId != null)
+        "financials": [
+          {"account_id": accountId, "amount": paidAmount.toStringAsFixed(2)},
+        ]
+      else
+        "financials": <Map<String, dynamic>>[],
     };
 
     try {
@@ -153,7 +160,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = response.data['data'];
-        
+
         // قد يختلف الهيكل قليلاً حسب الرد، نتحقق
         if (data != null && data['sale'] != null) {
           sale = data['sale'];
@@ -162,9 +169,9 @@ class CheckoutCubit extends Cubit<CheckoutState> {
         }
 
         emit(CheckoutSuccess());
-        
+
         // تنظيف السلة بعد النجاح
-        updateCartWithEmptyList(); 
+        updateCartWithEmptyList();
         return true;
       } else {
         final msg = response.data['message'] ?? 'Failed to create sale';

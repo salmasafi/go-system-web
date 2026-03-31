@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/generated/locale_keys.g.dart';
@@ -17,7 +18,7 @@ class LoginTitleWidget extends StatelessWidget {
         child: Text(
           LocaleKeys.login.tr(),
           style: TextStyle(
-            fontSize: 22,
+            fontSize: ResponsiveUI.fontSize(context, 22),
             fontWeight: FontWeight.bold,
             color: AppColors.darkBlue,
           ),

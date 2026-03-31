@@ -171,12 +171,12 @@ class _EditRolesBottomSheetState extends State<EditRolesBottomSheet> {
                     child: Row(
                       children: [
                         CircleAvatar(
-                          backgroundColor: AppColors.primaryBlue.withOpacity(0.8),
+                          backgroundColor: AppColors.darkBlue,
                           child: Text(
                             widget.roleName.isNotEmpty
                                 ? widget.roleName[0].toUpperCase()
                                 : '?',
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
@@ -199,7 +199,7 @@ class _EditRolesBottomSheetState extends State<EditRolesBottomSheet> {
                                 "${widget.permissionCount} ${LocaleKeys.permissions.tr()}",
                                 style: TextStyle(
                                   fontSize: ResponsiveUI.fontSize(context, 12),
-                                  color: AppColors.darkGray.withOpacity(0.6),
+                                  color: AppColors.darkGray.withValues(alpha: 0.6),
                                 ),
                               ),
                             ],
@@ -480,3 +480,4 @@ class _EditRolesBottomSheetState extends State<EditRolesBottomSheet> {
     );
   }
 }
+

@@ -171,7 +171,7 @@ class _CustomerGroupFormDialogState extends State<CustomerGroupFormDialog>
       borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 24)),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.2),
+          color: Colors.black.withValues(alpha: 0.2),
           blurRadius: 30,
           offset: Offset(0, 10),
         )
@@ -360,7 +360,7 @@ class CustomerGroupDialogHeader extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             AppColors.primaryBlue,
-            AppColors.primaryBlue.withOpacity(0.8),
+            AppColors.darkBlue,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -375,7 +375,7 @@ class CustomerGroupDialogHeader extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(padding10),
             decoration: BoxDecoration(
-              color: AppColors.white.withOpacity(0.2),
+              color: AppColors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(borderRadius12),
             ),
             child: Icon(
@@ -404,7 +404,7 @@ class CustomerGroupDialogHeader extends StatelessWidget {
                       ? LocaleKeys.update_customer_group.tr()
                       : LocaleKeys.new_customer_group.tr(),
                   style: TextStyle(
-                    color: AppColors.white.withOpacity(0.9),
+                    color: AppColors.white.withValues(alpha: 0.9),
                     fontSize: fontSize13,
                   ),
                 ),
@@ -431,3 +431,4 @@ class CustomerGroupDialogHeader extends StatelessWidget {
     );
   }
 }
+

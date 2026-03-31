@@ -23,4 +23,9 @@ class PosError extends PosState {
   PosError(this.message);
 }
 
+class PosBundlesLoaded extends PosState {
+  final List<BundleModel> bundles;
+  PosBundlesLoaded(this.bundles);
+}
+
 

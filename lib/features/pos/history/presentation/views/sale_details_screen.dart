@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
@@ -35,7 +36,7 @@ class SaleDetailsScreen extends StatelessWidget {
             } else if (state is SaleDetailsLoaded) {
               return _buildContent(context, state.details);
             }
-            return const SizedBox();
+            return SizedBox();
           },
         ),
       ),
@@ -47,7 +48,7 @@ class SaleDetailsScreen extends StatelessWidget {
       children: [
         // Summary Header
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
           color: AppColors.lightBlueBackground, // لون فاتح للخلفية
           child: Column(
             children: [
@@ -66,14 +67,14 @@ class SaleDetailsScreen extends StatelessWidget {
           ),
         ),
 
-        const SizedBox(height: 10),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
+        SizedBox(height: ResponsiveUI.value(context, 10)),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 16)),
           child: Align(
             alignment: Alignment.centerLeft,
             child: Text(
               "Products",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: ResponsiveUI.fontSize(context, 16)),
             ),
           ),
         ),
@@ -81,7 +82,7 @@ class SaleDetailsScreen extends StatelessWidget {
         // Items List
         Expanded(
           child: ListView.separated(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
             itemCount: details.items.length,
             separatorBuilder: (_, __) => const Divider(),
             itemBuilder: (context, index) {
@@ -89,11 +90,11 @@ class SaleDetailsScreen extends StatelessWidget {
               return ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: Container(
-                  width: 50,
-                  height: 50,
+                  width: ResponsiveUI.value(context, 50),
+                  height: ResponsiveUI.value(context, 50),
                   decoration: BoxDecoration(
                     color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
                     image: item.image != null
                         ? DecorationImage(
                             image: NetworkImage(item.image!),
@@ -102,19 +103,19 @@ class SaleDetailsScreen extends StatelessWidget {
                         : null,
                   ),
                   child: item.image == null
-                      ? const Icon(Icons.image, color: AppColors.shadowGray)
+                      ? Icon(Icons.image, color: AppColors.shadowGray)
                       : null,
                 ),
                 title: Text(
                   item.productName,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Text("${item.quantity} x ${item.price} EGP"),
                 trailing: Text(
                   "${item.subtotal.toStringAsFixed(2)} EGP",
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 15,
+                    fontSize: ResponsiveUI.fontSize(context, 15),
                   ),
                 ),
               );
@@ -124,12 +125,12 @@ class SaleDetailsScreen extends StatelessWidget {
 
         // Financial Summary Footer
         Container(
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
           decoration: BoxDecoration(
             color: AppColors.white,
             boxShadow: [
               BoxShadow(
-                color: AppColors.black.withOpacity(0.05),
+                color: AppColors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, -5),
               ),
@@ -148,11 +149,11 @@ class SaleDetailsScreen extends StatelessWidget {
                 "Grand Total",
                 "${details.grandTotal} EGP",
                 isBold: true,
-                size: 18,
+                size: ResponsiveUI.iconSize(context, 18),
                 color: AppColors.primaryBlue,
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: ResponsiveUI.value(context, 20)),
 
               // زر الطباعة فقط (لأن البيعة مكتملة)
               SizedBox(
@@ -205,12 +206,12 @@ class SaleDetailsScreen extends StatelessWidget {
                       ),
                     );
                   },
-                  icon: const Icon(Icons.print),
+                  icon: Icon(Icons.print),
                   label: const Text("Print Receipt"),
 
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.linkBlue,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    foregroundColor: AppColors.primaryBlue,
+                    padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 14)),
                   ),
                 ),
               ),
@@ -230,7 +231,7 @@ class SaleDetailsScreen extends StatelessWidget {
     double size = 14,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -259,3 +260,4 @@ class SaleDetailsScreen extends StatelessWidget {
     return details.customerId;
   }
 }
+

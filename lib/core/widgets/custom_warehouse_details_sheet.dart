@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/widgets/custom_image_card.dart';
@@ -7,6 +8,7 @@ import '../constants/app_colors.dart';
 import 'custom_detail_section.dart';
 import '../../features/admin/warehouses/view/widgets/custom_drag_handle.dart';
 import 'custom_gradient_divider.dart';
+import '../../features/admin/warehouses/view/warehouse_products_screen.dart';
 
 class CustomWarehouseDetailsSheet extends StatelessWidget {
   final Warehouses warehouse;
@@ -25,7 +27,7 @@ class CustomWarehouseDetailsSheet extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.lightBlueBackground,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(ResponsiveUI.borderRadius(context, 30))),
       ),
       child: DraggableScrollableSheet(
         initialChildSize: 0.75,
@@ -34,14 +36,14 @@ class CustomWarehouseDetailsSheet extends StatelessWidget {
         expand: false,
         builder: (context, scrollController) => ListView(
           controller: scrollController,
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(ResponsiveUI.padding(context, 24)),
           children: [
-            const CustomDragHandle(),
-            const SizedBox(height: 20),
+            CustomDragHandle(),
+            SizedBox(height: ResponsiveUI.value(context, 20)),
             _buildDetailHeader(),
-            const SizedBox(height: 24),
-            const CustomGradientDivider(height: 2),
-            const SizedBox(height: 20),
+            SizedBox(height: ResponsiveUI.value(context, 24)),
+            CustomGradientDivider(height: ResponsiveUI.value(context, 2)),
+            SizedBox(height: ResponsiveUI.value(context, 20)),
             CustomDetailSection(
               title: 'Location Information',
               icon: Icons.location_on,
@@ -54,7 +56,7 @@ class CustomWarehouseDetailsSheet extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: ResponsiveUI.value(context, 20)),
             CustomDetailSection(
               title: 'Contact Information',
               icon: Icons.contact_phone,
@@ -72,7 +74,7 @@ class CustomWarehouseDetailsSheet extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: ResponsiveUI.value(context, 20)),
             CustomDetailSection(
               title: 'Inventory Statistics',
               icon: Icons.inventory,
@@ -90,8 +92,10 @@ class CustomWarehouseDetailsSheet extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: ResponsiveUI.value(context, 24)),
             _buildActionButtons(context),
+            SizedBox(height: ResponsiveUI.value(context, 16)),
+            _buildViewProductsButton(context),
           ],
         ),
       ),
@@ -110,7 +114,7 @@ class CustomWarehouseDetailsSheet extends StatelessWidget {
           padding: 16,
           image: null,
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: 16),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,7 +131,7 @@ class CustomWarehouseDetailsSheet extends StatelessWidget {
                 'Warehouse Details',
                 style: TextStyle(
                   fontSize: 14,
-                  color: AppColors.darkGray.withOpacity(0.6),
+                  color: AppColors.darkGray.withValues(alpha: 0.6),
                 ),
               ),
             ],
@@ -148,19 +152,19 @@ class CustomWarehouseDetailsSheet extends StatelessWidget {
                 onEdit!();
                 _showInfoSnackbar(context, 'Edit feature coming soon!');
               },
-              icon: const Icon(Icons.edit),
+              icon: Icon(Icons.edit),
               label: const Text('Edit'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryBlue,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 16)),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 16)),
                 ),
               ),
             ),
           ),
-        if (onEdit != null && onDelete != null) const SizedBox(width: 12),
+        if (onEdit != null && onDelete != null) SizedBox(width: ResponsiveUI.value(context, 12)),
         if (onDelete != null)
           Expanded(
             child: ElevatedButton.icon(
@@ -168,19 +172,46 @@ class CustomWarehouseDetailsSheet extends StatelessWidget {
                 Navigator.pop(context);
                 onDelete!();
               },
-              icon: const Icon(Icons.delete),
+              icon: Icon(Icons.delete),
               label: const Text('Delete'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.red,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 16)),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 16)),
                 ),
               ),
             ),
           ),
       ],
+    );
+  }
+
+  Widget _buildViewProductsButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => WarehouseProductsScreen(warehouse: warehouse),
+            ),
+          );
+        },
+        icon: Icon(Icons.inventory_2),
+        label: const Text('View Products'),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.successGreen,
+          foregroundColor: Colors.white,
+          padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 16)),
+          ),
+        ),
+      ),
     );
   }
 
@@ -201,3 +232,4 @@ class CustomWarehouseDetailsSheet extends StatelessWidget {
       ..showSnackBar(snackBar);
   }
 }
+

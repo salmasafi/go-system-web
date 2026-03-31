@@ -118,11 +118,11 @@ AppBar appBarWithActions(
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: backgroundColor ?? AppColors.white,
-                            width: 2,
+                            width: ResponsiveUI.value(context, 2),
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.red.withOpacity(0.3),
+                              color: AppColors.red.withValues(alpha: 0.3),
                               blurRadius: 4,
                               offset: const Offset(0, 2),
                             ),
@@ -156,7 +156,7 @@ AppBar appBarWithActions(
       preferredSize: Size.fromHeight(ResponsiveUI.value(context, 1)),
       child: Container(
         height: ResponsiveUI.value(context, 1),
-        color: AppColors.lightGray.withOpacity(0.3),
+        color: AppColors.lightGray.withValues(alpha: 0.3),
       ),
     ),
   );
@@ -215,8 +215,9 @@ AppBar appBarWithActionsWidget(
       preferredSize: Size.fromHeight(ResponsiveUI.value(context, 1)),
       child: Container(
         height: ResponsiveUI.value(context, 1),
-        color: AppColors.lightGray.withOpacity(0.3),
+        color: AppColors.lightGray.withValues(alpha: 0.3),
       ),
     ),
   );
 }
+

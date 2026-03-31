@@ -187,7 +187,7 @@ class SupplierDialogForm extends StatelessWidget {
                   borderRadius: BorderRadius.circular(borderRadius12),
                   border: Border.all(
                     color: AppColors.primaryBlue,
-                    width: 2,
+                    width: ResponsiveUI.value(context, 2),
                   ),
                 ),
                 child: ClipRRect(
@@ -199,15 +199,15 @@ class SupplierDialogForm extends StatelessWidget {
                 ),
               ),
               Positioned(
-                top: 8,
-                right: 8,
+                top: ResponsiveUI.padding(context, 8),
+                right: ResponsiveUI.padding(context, 8),
                 child: GestureDetector(
                   onTap: onClearImage,
                   child: Container(
                     padding: EdgeInsets.all(padding8),
                     decoration: BoxDecoration(
                       color: Colors.red,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
                     ),
                     child: Icon(
                       Icons.close,
@@ -227,7 +227,7 @@ class SupplierDialogForm extends StatelessWidget {
               borderRadius: BorderRadius.circular(borderRadius12),
               border: Border.all(
                 color: Colors.grey[300]!,
-                width: 2,
+                width: ResponsiveUI.value(context, 2),
               ),
             ),
             child: ClipRRect(
@@ -248,7 +248,7 @@ class SupplierDialogForm extends StatelessWidget {
                 borderRadius: BorderRadius.circular(borderRadius12),
                 border: Border.all(
                   color: Colors.grey[300]!,
-                  width: 2,
+                  width: ResponsiveUI.value(context, 2),
                 ),
                 color: Colors.grey[50],
               ),
@@ -440,7 +440,7 @@ class SupplierDialogForm extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.95),
+        color: Colors.white.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(borderRadius24),
       ),
       child: Center(
@@ -451,7 +451,7 @@ class SupplierDialogForm extends StatelessWidget {
             borderRadius: BorderRadius.circular(borderRadius20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(value10),
+                color: Colors.black.withValues(alpha: value10),
                 blurRadius: value20Blur,
               ),
             ],

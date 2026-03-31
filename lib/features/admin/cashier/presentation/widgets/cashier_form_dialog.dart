@@ -189,7 +189,7 @@ class _CashierFormDialogState extends State<CashierFormDialog>
                                         },
                                       );
                                     }
-                                    return const SizedBox.shrink();
+                                    return SizedBox.shrink();
                                   },
                                 ),
                                 SizedBox(
@@ -262,7 +262,7 @@ class _CashierFormDialogState extends State<CashierFormDialog>
   //       SizedBox(height: ResponsiveUI.spacing(context, 12)),
   //       Card(
   //         color: AppColors.lightBlueBackground,
-  //         elevation: 2,
+  //         elevation: ResponsiveUI.value(context, 2),
   //         shape: RoundedRectangleBorder(
   //           borderRadius: BorderRadius.circular(
   //             ResponsiveUI.borderRadius(context, 12),
@@ -291,7 +291,7 @@ class _CashierFormDialogState extends State<CashierFormDialog>
   //                   ),
   //                 ],
   //               ),
-  //               Divider(height: 20),
+  //               Divider(height: ResponsiveUI.value(context, 20)),
   //               Row(
   //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
   //                 children: [
@@ -322,7 +322,7 @@ class _CashierFormDialogState extends State<CashierFormDialog>
   Widget _buildInfoSection(BuildContext context) {
     return Card(
       color: AppColors.lightBlueBackground,
-      elevation: 2,
+      elevation: ResponsiveUI.value(context, 2),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(
           ResponsiveUI.borderRadius(context, 12),
@@ -397,7 +397,7 @@ class _CashierFormDialogState extends State<CashierFormDialog>
       ),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.2),
+          color: Colors.black.withValues(alpha: 0.2),
           blurRadius: 30,
           offset: const Offset(0, 10),
         ),
@@ -407,12 +407,12 @@ class _CashierFormDialogState extends State<CashierFormDialog>
 
   Widget _buildHeader(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
             AppColors.primaryBlue,
-            AppColors.primaryBlue.withOpacity(0.8),
+            AppColors.darkBlue,
           ],
         ),
         borderRadius: BorderRadius.vertical(
@@ -421,14 +421,14 @@ class _CashierFormDialogState extends State<CashierFormDialog>
       ),
       child: Row(
         children: [
-          Icon(Icons.person_outline, color: Colors.white, size: 28),
+          Icon(Icons.person_outline, color: Colors.white, size: ResponsiveUI.iconSize(context, 28)),
           SizedBox(width: ResponsiveUI.spacing(context, 15)),
           Text(
             isEditMode
                 ? LocaleKeys.edit_cashier.tr()
                 : LocaleKeys.new_cashier.tr(),
-            style: const TextStyle(
-              fontSize: 22,
+            style: TextStyle(
+              fontSize: ResponsiveUI.fontSize(context, 22),
               color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
@@ -436,7 +436,7 @@ class _CashierFormDialogState extends State<CashierFormDialog>
           const Spacer(),
           InkWell(
             onTap: () => Navigator.pop(context),
-            child: const Icon(Icons.close, color: Colors.white, size: 26),
+            child: Icon(Icons.close, color: Colors.white, size: ResponsiveUI.iconSize(context, 26)),
           ),
         ],
       ),
@@ -588,3 +588,4 @@ class CashierDialogButtons extends StatelessWidget {
     );
   }
 }
+

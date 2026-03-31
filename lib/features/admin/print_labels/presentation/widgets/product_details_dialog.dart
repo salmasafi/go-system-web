@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 
 import 'package:flutter/material.dart';
 import 'package:systego/features/admin/product/models/product_model.dart';
@@ -42,7 +43,7 @@ class _ProductDetailsDialogState extends State<ProductDetailsDialog> {
     final isInStock = availableQty > 0 || widget.product.prices.isEmpty; 
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20))),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 450, maxHeight: 650),
         child: Column(
@@ -68,26 +69,26 @@ class _ProductDetailsDialogState extends State<ProductDetailsDialog> {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: const BoxDecoration(
+      padding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 20), vertical: ResponsiveUI.padding(context, 16)),
+      decoration: BoxDecoration(
         color: AppColors.primaryBlue,
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+          topLeft: Radius.circular(ResponsiveUI.borderRadius(context, 20)),
+          topRight: Radius.circular(ResponsiveUI.borderRadius(context, 20)),
         ),
       ),
       child: Row(
         children: [
-          const Icon(Icons.print, color: Colors.white, size: 24),
-          const SizedBox(width: 12),
-          const Expanded(
+          Icon(Icons.print, color: Colors.white, size: ResponsiveUI.iconSize(context, 24)),
+          SizedBox(width: ResponsiveUI.value(context, 12)),
+          Expanded(
             child: Text(
               'Select Quantity',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+              style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 20), fontWeight: FontWeight.bold, color: Colors.white),
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.close, color: Colors.white),
+            icon: Icon(Icons.close, color: Colors.white),
             onPressed: () => Navigator.pop(context),
           ),
         ],
@@ -99,26 +100,26 @@ class _ProductDetailsDialogState extends State<ProductDetailsDialog> {
   Widget _buildProductImage() {
     // (Keep your existing image code here)
     return Container(
-       height: 200,
+       height: ResponsiveUI.value(context, 200),
        color: Colors.grey[100],
-       child: Center(child: Icon(Icons.image, size: 50, color: Colors.grey)),
+       child: Center(child: Icon(Icons.image, size: ResponsiveUI.iconSize(context, 50), color: Colors.grey)),
     );
   }
 
   Widget _buildProductInfo(String name, int availableQty, bool isInStock) {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             name,
-            style: const TextStyle(fontSize: 21, fontWeight: FontWeight.bold, color: AppColors.darkBlue),
+            style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 21), fontWeight: FontWeight.bold, color: AppColors.darkBlue),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: ResponsiveUI.value(context, 12)),
           Text(
             widget.product.description,
-            style: TextStyle(fontSize: 14, color: AppColors.darkGray.withOpacity(0.8)),
+            style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14), color: AppColors.darkGray.withValues(alpha: 0.8)),
           ),
         ],
       ),
@@ -127,37 +128,37 @@ class _ProductDetailsDialogState extends State<ProductDetailsDialog> {
 
   Widget _buildBottomActions(bool isInStock) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(ResponsiveUI.borderRadius(context, 20)),
+          bottomRight: Radius.circular(ResponsiveUI.borderRadius(context, 20)),
         ),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -2)),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: Offset(0, -2)),
         ],
       ),
       child: Column(
         children: [
           Row(
             children: [
-              const Text('Labels to Print', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text('Labels to Print', style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 16), fontWeight: FontWeight.bold)),
               const Spacer(),
               Container(
                 decoration: BoxDecoration(
                   border: Border.all(color: AppColors.lightGray),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                 ),
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.remove),
+                      icon: Icon(Icons.remove),
                       onPressed: _quantity > 1 ? _decrementQuantity : null,
                     ),
-                    Text('$_quantity', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    Text('$_quantity', style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 18), fontWeight: FontWeight.bold)),
                     IconButton(
-                      icon: const Icon(Icons.add),
+                      icon: Icon(Icons.add),
                       onPressed: _incrementQuantity,
                     ),
                   ],
@@ -165,17 +166,17 @@ class _ProductDetailsDialogState extends State<ProductDetailsDialog> {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: ResponsiveUI.value(context, 20)),
           Row(
             children: [
               Expanded(
                 child: OutlinedButton(
                   onPressed: () => Navigator.pop(context),
-                  style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+                  style: OutlinedButton.styleFrom(padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 16))),
                   child: const Text('Cancel'),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: ResponsiveUI.value(context, 12)),
               Expanded(
                 flex: 2,
                 child: ElevatedButton(
@@ -185,7 +186,7 @@ class _ProductDetailsDialogState extends State<ProductDetailsDialog> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryBlue,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 16)),
                   ),
                   child: const Text('Add to List', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 ),

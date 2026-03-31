@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:systego/features/POS/checkout/model/reciept_data.dart';
@@ -7,7 +8,8 @@ class PrintableReceipt extends StatelessWidget {
 
   const PrintableReceipt({super.key, required this.recieptData});
 
-  String _dt() => DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now());
+  String _dt() =>
+      DateFormat('yyyy-MM-dd HH:mm', 'en_US').format(DateTime.now());
 
   // حساب الإجمالي النهائي (يجب أن يتطابق مع ما تم حسابه في Checkout Dialog)
   // المعادلة: (Subtotal - Discount) + Tax
@@ -17,63 +19,66 @@ class PrintableReceipt extends StatelessWidget {
       recieptData.taxAmount;
 
   // --- BIGGER FONTS CONFIGURATION ---
-  TextStyle get _headerTitleStyle => const TextStyle(
-    fontSize: 32,
-    fontWeight: FontWeight.w900,
+  TextStyle get _headerTitleStyle => TextStyle(
+    fontSize: 28,
+    fontWeight: FontWeight.w500,
     letterSpacing: 1.5,
     height: 0.8,
   );
   TextStyle get _headerSubStyle =>
-      const TextStyle(fontSize: 11, color: Colors.black87);
+      TextStyle(fontSize: 10, color: Colors.black87);
   TextStyle get _columnHeaderStyle =>
-      const TextStyle(fontSize: 12, fontWeight: FontWeight.bold);
+      TextStyle(fontSize: 11, fontWeight: FontWeight.w300);
   TextStyle get _itemStyle =>
-      const TextStyle(fontSize: 12, fontWeight: FontWeight.w500);
+      TextStyle(fontSize: 11, fontWeight: FontWeight.w200);
   TextStyle get _totalLabelStyle =>
-      const TextStyle(fontSize: 9, fontWeight: FontWeight.bold);
+      TextStyle(fontSize: 8, fontWeight: FontWeight.w300);
   TextStyle get _grandTotalNumStyle =>
-      const TextStyle(fontSize: 12, fontWeight: FontWeight.w900);
+      TextStyle(fontSize: 11, fontWeight: FontWeight.w400);
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 30),
-          _header(),
-          const SizedBox(height: 10),
-          _divider(),
-          const SizedBox(height: 15),
-          _info(),
-          const SizedBox(height: 15),
-          _divider(),
-          const SizedBox(height: 15),
-          _itemsHeader(),
-          const SizedBox(height: 10),
-          _thickDivider(),
-          const SizedBox(height: 5),
-          _itemsList(),
-          const SizedBox(height: 5),
-          _thickDivider(),
-          const SizedBox(height: 15),
-          _totals(), // تم تحديث هذا الجزء
-          const SizedBox(height: 15),
-          _grandTotal(),
-          if (recieptData.paidAmount > 0) ...[
-            const SizedBox(height: 15),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: ResponsiveUI.value(context, 30)),
+            _header(),
+            SizedBox(height: ResponsiveUI.value(context, 16)),
             _divider(),
-            const SizedBox(height: 15),
-            _cashSection(),
+            SizedBox(height: ResponsiveUI.value(context, 20)),
+            _info(),
+            SizedBox(height: ResponsiveUI.value(context, 20)),
+            _divider(),
+            SizedBox(height: ResponsiveUI.value(context, 20)),
+            _itemsHeader(),
+            SizedBox(height: ResponsiveUI.value(context, 18)),
+            _thickDivider(),
+            SizedBox(height: ResponsiveUI.value(context, 14)),
+            _itemsList(),
+            SizedBox(height: ResponsiveUI.value(context, 4)),
+            _thickDivider(),
+            SizedBox(height: ResponsiveUI.value(context, 22)),
+            _totals(), // تم تحديث هذا الجزء
+            SizedBox(height: ResponsiveUI.value(context, 20)),
+            _grandTotal(),
+            if (recieptData.paidAmount > 0) ...[
+              SizedBox(height: ResponsiveUI.value(context, 20)),
+              _divider(),
+              SizedBox(height: ResponsiveUI.value(context, 20)),
+              _cashSection(),
+            ],
+            // if (recieptData.pointsEarned > 0) ...[
+            //   SizedBox(height: ResponsiveUI.value(context, 12)),
+            //   _loyalty(),
+            // ],
+            SizedBox(height: ResponsiveUI.value(context, 20)),
+            _footer(),
           ],
-          // if (recieptData.pointsEarned > 0) ...[
-          //   const SizedBox(height: 12),
-          //   _loyalty(),
-          // ],
-          const SizedBox(height: 15),
-          _footer(),
-        ],
+        ),
       ),
     );
   }
@@ -82,7 +87,7 @@ class PrintableReceipt extends StatelessWidget {
     return Column(
       children: [
         Text("SYSTEGO", style: _headerTitleStyle),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         Text("Point of Sale System", style: _headerSubStyle),
       ],
     );
@@ -93,9 +98,9 @@ class PrintableReceipt extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _row("Date:", _dt()),
-        const SizedBox(height: 4),
+        SizedBox(height: 4),
         _row("Ref:", recieptData.reference),
-        // const SizedBox(height: 4),
+        // SizedBox(height: ResponsiveUI.value(context, 4)),
         // _row("Payment:", recieptData.paymentMethod.name),
       ],
     );
@@ -136,12 +141,11 @@ class PrintableReceipt extends StatelessWidget {
   Widget _itemsList() {
     return Column(
       children: recieptData.cartItems.map((item) {
-        // حساب السعر الفعلي (مع الأخذ في الاعتبار الاختلافات)
         final unitPrice = item.selectedVariation?.price ?? item.product.price;
         final total = unitPrice * item.quantity;
 
         return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 6),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -155,7 +159,7 @@ class PrintableReceipt extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                width: 45,
+                width: 40,
                 child: Text(
                   "${item.quantity}",
                   style: _itemStyle,
@@ -163,7 +167,7 @@ class PrintableReceipt extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                width: 80,
+                width: 64,
                 child: Text(
                   unitPrice.toStringAsFixed(2),
                   style: _itemStyle,
@@ -171,7 +175,7 @@ class PrintableReceipt extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                width: 85,
+                width: 70,
                 child: Text(
                   total.toStringAsFixed(2),
                   style: _itemStyle,
@@ -196,13 +200,13 @@ class PrintableReceipt extends StatelessWidget {
 
         // --- قسم الضريبة (Tax) ---
         if (recieptData.taxAmount > 0) ...[
-          const SizedBox(height: 6),
+          SizedBox(height: 6),
           _row(_getTaxLabel(), '+${recieptData.taxAmount.toStringAsFixed(2)}'),
         ],
 
         // --- قسم الخصم (Discount) ---
         if (recieptData.discountAmount > 0) ...[
-          const SizedBox(height: 6),
+          SizedBox(height: 6),
           _row(
             _getDiscountLabel(),
             "-${recieptData.discountAmount.toStringAsFixed(2)}",
@@ -248,7 +252,7 @@ class PrintableReceipt extends StatelessWidget {
   Widget _grandTotal() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
       decoration: BoxDecoration(
         border: Border.all(width: 2.5, color: Colors.black), // Thicker border
       ),
@@ -256,7 +260,7 @@ class PrintableReceipt extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text("GRAND TOTAL:  ", style: _totalLabelStyle),
-          const SizedBox(height: 6),
+          SizedBox(height: 6),
           Text(
             "${grandTotal.toStringAsFixed(2)} EGP",
             style: _grandTotalNumStyle,
@@ -274,7 +278,7 @@ class PrintableReceipt extends StatelessWidget {
           recieptData.paidAmount.toStringAsFixed(2),
           bold: true,
         ),
-        const SizedBox(height: 6),
+        SizedBox(height: 6),
         if (recieptData.change > 0)
           _row("Change Due", recieptData.change.toStringAsFixed(2), bold: true),
       ],
@@ -283,27 +287,27 @@ class PrintableReceipt extends StatelessWidget {
 
   // Widget _loyalty() {
   //   return Container(
-  //     padding: const EdgeInsets.all(10),
+  //     padding: EdgeInsets.all(ResponsiveUI.padding(context, 10)),
   //     decoration: BoxDecoration(border: Border.all(color: Colors.black)),
   //     child: Center(
   //       child: Text(
   //         "Points Earned: ${recieptData.pointsEarned}",
-  //         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 9),
+  //         style: TextStyle(fontWeight: FontWeight.bold, fontSize: ResponsiveUI.fontSize(context, 9)),
   //       ),
   //     ),
   //   );
   // }
 
   Widget _footer() {
-    return const Column(
+    return Column(
       children: [
         Text(
           "Thank You!",
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
         ),
         SizedBox(height: 2),
-        Text("Powered by SYSTEGO POS", style: TextStyle(fontSize: 10)),
-        Text("www.systego.com", style: TextStyle(fontSize: 9)),
+        Text("Powered by SYSTEGO POS", style: TextStyle(fontSize: 9)),
+        Text("www.systego.com", style: TextStyle(fontSize: 8)),
       ],
     );
   }
@@ -318,15 +322,15 @@ class PrintableReceipt extends StatelessWidget {
         Text(
           left,
           style: TextStyle(
-            fontWeight: bold ? FontWeight.bold : FontWeight.w500,
+            fontWeight: bold ? FontWeight.w500 : FontWeight.w300,
             fontSize: 11,
           ),
         ),
         Text(
           right,
           style: TextStyle(
-            fontWeight: bold ? FontWeight.bold : FontWeight.w500,
-            fontSize: 12,
+            fontWeight: bold ? FontWeight.w500 : FontWeight.w300,
+            fontSize: 11,
           ),
         ),
       ],

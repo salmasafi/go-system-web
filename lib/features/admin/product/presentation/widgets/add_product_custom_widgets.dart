@@ -35,7 +35,7 @@ class ProductSectionCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryBlue.withOpacity(0.08),
+            color: AppColors.primaryBlue.withValues(alpha: 0.08),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -51,8 +51,8 @@ class ProductSectionCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      (iconColor ?? AppColors.primaryBlue).withOpacity(0.15),
-                      (iconColor ?? AppColors.primaryBlue).withOpacity(0.05),
+                      (iconColor ?? AppColors.primaryBlue).withValues(alpha: 0.15),
+                      (iconColor ?? AppColors.primaryBlue).withValues(alpha: 0.05),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(
@@ -118,17 +118,17 @@ class AnimatedCheckboxTile extends StatelessWidget {
         gradient: value
             ? LinearGradient(
                 colors: [
-                  activeColor.withOpacity(0.08),
-                  activeColor.withOpacity(0.03),
+                  activeColor.withValues(alpha: 0.08),
+                  activeColor.withValues(alpha: 0.03),
                 ],
               )
             : null,
-        color: value ? null : AppColors.lightBlueBackground.withOpacity(0.3),
+        color: value ? null : AppColors.lightBlueBackground.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(
           ResponsiveUI.borderRadius(context, 14),
         ),
         border: Border.all(
-          color: value ? activeColor.withOpacity(0.4) : AppColors.lightGray,
+          color: value ? activeColor.withValues(alpha: 0.4) : AppColors.lightGray,
           width: value ? 2 : 1,
         ),
       ),
@@ -150,18 +150,18 @@ class AnimatedCheckboxTile extends StatelessWidget {
                   children: [
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
-                      width: 24,
-                      height: 24,
+                      width: ResponsiveUI.value(context, 24),
+                      height: ResponsiveUI.value(context, 24),
                       decoration: BoxDecoration(
                         color: value ? activeColor : Colors.transparent,
-                        borderRadius: BorderRadius.circular(6),
+                        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 6)),
                         border: Border.all(
                           color: value ? activeColor : AppColors.shadowGray,
-                          width: 2,
+                          width: ResponsiveUI.value(context, 2),
                         ),
                       ),
                       child: value
-                          ? Icon(Icons.check, size: 16, color: AppColors.white)
+                          ? Icon(Icons.check, size: ResponsiveUI.iconSize(context, 16), color: AppColors.white)
                           : null,
                     ),
                     // SizedBox(width: ResponsiveUI.spacing(context, 12)),
@@ -258,16 +258,16 @@ class DatePickerCard extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppColors.primaryBlue.withOpacity(0.08),
-                  AppColors.linkBlue.withOpacity(0.03),
+                  AppColors.primaryBlue.withValues(alpha: 0.08),
+                  AppColors.shadowGray.withValues(alpha: 0.03),
                 ],
               ),
               borderRadius: BorderRadius.circular(
                 ResponsiveUI.borderRadius(context, 14),
               ),
               border: Border.all(
-                color: AppColors.primaryBlue.withOpacity(0.3),
-                width: 1.5,
+                color: AppColors.primaryBlue.withValues(alpha: 0.3),
+                width: ResponsiveUI.value(context, 1.5),
               ),
             ),
             child: Row(
@@ -275,7 +275,7 @@ class DatePickerCard extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.all(ResponsiveUI.padding(context, 10)),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryBlue.withOpacity(0.15),
+                    color: AppColors.primaryBlue.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(
                       ResponsiveUI.borderRadius(context, 10),
                     ),
@@ -299,7 +299,7 @@ class DatePickerCard extends StatelessWidget {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      SizedBox(height: ResponsiveUI.value(context, 4)),
                       Text(
                         selectedDate != null
                             ? '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}'
@@ -317,7 +317,7 @@ class DatePickerCard extends StatelessWidget {
                 ),
                 Icon(
                   Icons.arrow_forward_ios,
-                  size: 16,
+                  size: ResponsiveUI.iconSize(context, 16),
                   color: AppColors.primaryBlue,
                 ),
               ],
@@ -354,8 +354,8 @@ class MainImagePicker extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.image, size: 20, color: AppColors.primaryBlue),
-                SizedBox(width: 8),
+                Icon(Icons.image, size: ResponsiveUI.iconSize(context, 20), color: AppColors.primaryBlue),
+                SizedBox(width: ResponsiveUI.value(context, 8)),
                 Text(
                   'Main Image *',
                   style: TextStyle(
@@ -372,27 +372,27 @@ class MainImagePicker extends StatelessWidget {
                 icon: Icon(
                   Icons.delete_outline,
                   color: AppColors.red,
-                  size: 18,
+                  size: ResponsiveUI.iconSize(context, 18),
                 ),
                 label: Text(
                   'Remove',
-                  style: TextStyle(color: AppColors.red, fontSize: 12),
+                  style: TextStyle(color: AppColors.red, fontSize: ResponsiveUI.fontSize(context, 12)),
                 ),
               ),
           ],
         ),
-        SizedBox(height: 12),
+        SizedBox(height: ResponsiveUI.value(context, 12)),
         GestureDetector(
           onTap: onPick,
           child: Container(
             width: double.infinity,
-            height: 400,
+            height: ResponsiveUI.value(context, 400),
             decoration: BoxDecoration(
               gradient: image == null
                   ? LinearGradient(
                       colors: [
-                        AppColors.primaryBlue.withOpacity(0.05),
-                        AppColors.linkBlue.withOpacity(0.02),
+                        AppColors.primaryBlue.withValues(alpha: 0.05),
+                        AppColors.shadowGray.withValues(alpha: 0.02),
                       ],
                     )
                   : null,
@@ -400,8 +400,8 @@ class MainImagePicker extends StatelessWidget {
                 ResponsiveUI.borderRadius(context, 16),
               ),
               border: Border.all(
-                color: AppColors.primaryBlue.withOpacity(0.4),
-                width: 2,
+                color: AppColors.primaryBlue.withValues(alpha: 0.4),
+                width: ResponsiveUI.value(context, 2),
               ),
             ),
             child: image != null
@@ -418,17 +418,17 @@ class MainImagePicker extends StatelessWidget {
                         ),
                       ),
                       Positioned(
-                        top: 8,
-                        right: 8,
+                        top: ResponsiveUI.padding(context, 8),
+                        right: ResponsiveUI.padding(context, 8),
                         child: Container(
-                          padding: EdgeInsets.all(8),
+                          padding: EdgeInsets.all(ResponsiveUI.padding(context, 8)),
                           decoration: BoxDecoration(
-                            color: AppColors.white.withOpacity(0.9),
+                            color: AppColors.white.withValues(alpha: 0.9),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             Icons.edit,
-                            size: 18,
+                            size: ResponsiveUI.iconSize(context, 18),
                             color: AppColors.primaryBlue,
                           ),
                         ),
@@ -439,32 +439,32 @@ class MainImagePicker extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        padding: EdgeInsets.all(20),
+                        padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
                         decoration: BoxDecoration(
-                          color: AppColors.primaryBlue.withOpacity(0.1),
+                          color: AppColors.primaryBlue.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           Icons.add_photo_alternate,
-                          size: 40,
+                          size: ResponsiveUI.iconSize(context, 40),
                           color: AppColors.primaryBlue,
                         ),
                       ),
-                      SizedBox(height: 12),
+                      SizedBox(height: ResponsiveUI.value(context, 12)),
                       Text(
                         'Tap to upload main image',
                         style: TextStyle(
                           color: AppColors.shadowGray,
-                          fontSize: 14,
+                          fontSize: ResponsiveUI.fontSize(context, 14),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      // SizedBox(height: 4),
+                      // SizedBox(height: ResponsiveUI.value(context, 4)),
                       // Text(
                       //   'Recommended: 1000x1000px',
                       //   style: TextStyle(
-                      //     color: AppColors.shadowGray.withOpacity(0.7),
-                      //     fontSize: 11,
+                      //     color: AppColors.shadowGray.withValues(alpha: 0.7),
+                      //     fontSize: ResponsiveUI.fontSize(context, 11),
                       //   ),
                       // ),
                     ],
@@ -501,8 +501,8 @@ class GalleryImagesPicker extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.collections, size: 20, color: AppColors.linkBlue),
-                SizedBox(width: 8),
+                Icon(Icons.collections, size: ResponsiveUI.iconSize(context, 20), color: AppColors.primaryBlue),
+                SizedBox(width: ResponsiveUI.value(context, 8)),
                 Text(
                   'Gallery Images',
                   style: TextStyle(
@@ -515,24 +515,24 @@ class GalleryImagesPicker extends StatelessWidget {
             ),
             TextButton.icon(
               onPressed: onAdd,
-              icon: Icon(Icons.add_circle, color: AppColors.linkBlue, size: 20),
+              icon: Icon(Icons.add_circle, color: AppColors.primaryBlue, size: ResponsiveUI.iconSize(context, 20)),
               label: Text(
                 'Add Images',
-                style: TextStyle(color: AppColors.linkBlue, fontSize: 13),
+                style: TextStyle(color: AppColors.primaryBlue, fontSize: ResponsiveUI.fontSize(context, 13)),
               ),
             ),
           ],
         ),
-        SizedBox(height: 12),
+        SizedBox(height: ResponsiveUI.value(context, 12)),
         if (images.isEmpty)
           Container(
             width: double.infinity,
-            padding: EdgeInsets.all(32),
+            padding: EdgeInsets.all(ResponsiveUI.padding(context, 32)),
             decoration: BoxDecoration(
               color: AppColors.lightBlueBackground,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 16)),
               border: Border.all(
-                color: AppColors.linkBlue.withOpacity(0.3),
+                color: AppColors.shadowGray.withValues(alpha: 0.3),
                 style: BorderStyle.solid,
               ),
             ),
@@ -540,13 +540,13 @@ class GalleryImagesPicker extends StatelessWidget {
               children: [
                 Icon(
                   Icons.collections_outlined,
-                  size: 40,
-                  color: AppColors.linkBlue.withOpacity(0.5),
+                  size: ResponsiveUI.iconSize(context, 40),
+                  color: AppColors.shadowGray.withValues(alpha: 0.5),
                 ),
-                SizedBox(height: 8),
+                SizedBox(height: ResponsiveUI.value(context, 8)),
                 Text(
                   'No gallery images added',
-                  style: TextStyle(color: AppColors.shadowGray, fontSize: 13),
+                  style: TextStyle(color: AppColors.shadowGray, fontSize: ResponsiveUI.fontSize(context, 13)),
                 ),
               ],
             ),
@@ -592,18 +592,18 @@ class ImageThumbnail extends StatelessWidget {
           width: thumbnailSize,
           height: thumbnailSize,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.lightGray, width: 2),
+            borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+            border: Border.all(color: AppColors.lightGray, width: ResponsiveUI.value(context, 2)),
             boxShadow: [
               BoxShadow(
-                color: AppColors.shadowGray.withOpacity(0.1),
+                color: AppColors.shadowGray.withValues(alpha: 0.1),
                 blurRadius: 8,
                 offset: Offset(0, 2),
               ),
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 10)),
             child: Image.file(image, fit: BoxFit.contain),
           ),
         ),
@@ -613,18 +613,18 @@ class ImageThumbnail extends StatelessWidget {
           child: GestureDetector(
             onTap: onRemove,
             child: Container(
-              padding: EdgeInsets.all(6),
+              padding: EdgeInsets.all(ResponsiveUI.padding(context, 6)),
               decoration: BoxDecoration(
                 color: AppColors.red,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.red.withOpacity(0.4),
+                    color: AppColors.red.withValues(alpha: 0.4),
                     blurRadius: 8,
                   ),
                 ],
               ),
-              child: Icon(Icons.close, size: 16, color: Colors.white),
+              child: Icon(Icons.close, size: ResponsiveUI.iconSize(context, 16), color: Colors.white),
             ),
           ),
         ),
@@ -654,7 +654,7 @@ class SingleVariationOptionChip extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 220),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 16), vertical: ResponsiveUI.padding(context, 10)),
         decoration: BoxDecoration(
           gradient: isSelected
               ? const LinearGradient(
@@ -662,7 +662,7 @@ class SingleVariationOptionChip extends StatelessWidget {
                 )
               : null,
           color: isSelected ? null : AppColors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
           border: Border.all(
             color: isSelected ? AppColors.primaryBlue : AppColors.lightGray,
             width: isSelected ? 2.5 : 1,
@@ -670,14 +670,14 @@ class SingleVariationOptionChip extends StatelessWidget {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: AppColors.primaryBlue.withOpacity(0.4),
+                    color: AppColors.primaryBlue.withValues(alpha: 0.4),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
                 ]
               : [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.06),
+                    color: Colors.black.withValues(alpha: 0.06),
                     blurRadius: 6,
                     offset: const Offset(0, 2),
                   ),
@@ -687,15 +687,15 @@ class SingleVariationOptionChip extends StatelessWidget {
             //   mainAxisSize: MainAxisSize.min,
             //  children: [
             // if (isSelected)
-            //   const Padding(
-            //     padding: EdgeInsets.only(right: 6),
-            //     child: Icon(Icons.check, size: 16, color: Colors.white),
+            //   Padding(
+            //     padding: EdgeInsets.only(right: ResponsiveUI.padding(context, 6)),
+            //     child: Icon(Icons.check, size: ResponsiveUI.iconSize(context, 16), color: Colors.white),
             //   ),
             Text(
               label,
               style: TextStyle(
                 color: isSelected ? AppColors.white : AppColors.darkGray,
-                fontSize: 13.5,
+                fontSize: ResponsiveUI.fontSize(context, 13.5),
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
               ),
             ),
@@ -728,22 +728,22 @@ class EmptyStateWidget extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
       decoration: BoxDecoration(
-        color: stateColor.withOpacity(0.08),
+        color: stateColor.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(
           ResponsiveUI.borderRadius(context, 14),
         ),
-        border: Border.all(color: stateColor.withOpacity(0.3)),
+        border: Border.all(color: stateColor.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
-          Icon(icon, color: stateColor, size: 24),
+          Icon(icon, color: stateColor, size: ResponsiveUI.iconSize(context, 24)),
           SizedBox(width: ResponsiveUI.spacing(context, 12)),
           Expanded(
             child: Text(
               message,
               style: TextStyle(
                 fontSize: ResponsiveUI.fontSize(context, 13),
-                color: stateColor.withOpacity(0.9),
+                color: stateColor.withValues(alpha: 0.9),
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -753,3 +753,6 @@ class EmptyStateWidget extends StatelessWidget {
     );
   }
 }
+
+
+

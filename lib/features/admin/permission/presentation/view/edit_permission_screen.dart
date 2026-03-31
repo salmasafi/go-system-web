@@ -91,7 +91,7 @@ class _EditPermissionBottomSheetState extends State<EditPermissionBottomSheet> {
           hintText: hint,
           hasBorder: true,
           hasBoxDecoration: false,
-          prefixIconColor: AppColors.darkGray.withOpacity(0.7),
+          prefixIconColor: AppColors.darkGray.withValues(alpha: 0.7),
         ),
       ],
     );
@@ -128,7 +128,7 @@ class _EditPermissionBottomSheetState extends State<EditPermissionBottomSheet> {
                   }
                 });
               },
-              selectedColor: AppColors.primaryBlue.withOpacity(0.15),
+              selectedColor: AppColors.primaryBlue.withValues(alpha: 0.15),
               checkmarkColor: AppColors.primaryBlue,
             );
           }).toList(),
@@ -230,3 +230,4 @@ class _EditPermissionBottomSheetState extends State<EditPermissionBottomSheet> {
     );
   }
 }
+

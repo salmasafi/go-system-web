@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
@@ -43,7 +44,7 @@ class PendingSaleDetailsScreen extends StatelessWidget {
             } else if (state is PendingDetailsSuccess) {
               return _buildContent(context, state.details);
             }
-            return const SizedBox();
+            return SizedBox();
           },
         ),
       ),
@@ -55,8 +56,8 @@ class PendingSaleDetailsScreen extends StatelessWidget {
       children: [
         // Top Info Card
         Container(
-          padding: const EdgeInsets.all(16),
-          color: Colors.orange.withOpacity(0.05),
+          padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+          color: Colors.orange.withValues(alpha: 0.05),
           child: Column(
             children: [
               _row("Reference", details.reference, isBold: true),
@@ -69,16 +70,16 @@ class PendingSaleDetailsScreen extends StatelessWidget {
           ),
         ),
 
-        const SizedBox(height: 10),
+        SizedBox(height: ResponsiveUI.value(context, 10)),
         
         // Products Header
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 16), vertical: ResponsiveUI.padding(context, 8)),
           child: Row(
             children: [
-              Icon(Icons.shopping_cart_outlined, size: 20, color: Colors.grey),
-              SizedBox(width: 8),
-              Text("Products", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              Icon(Icons.shopping_cart_outlined, size: ResponsiveUI.iconSize(context, 20), color: Colors.grey),
+              SizedBox(width: ResponsiveUI.value(context, 8)),
+              Text("Products", style: TextStyle(fontWeight: FontWeight.bold, fontSize: ResponsiveUI.fontSize(context, 16))),
             ],
           ),
         ),
@@ -86,19 +87,19 @@ class PendingSaleDetailsScreen extends StatelessWidget {
         // Items List
         Expanded(
           child: ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 16)),
             itemCount: details.products.length,
-            separatorBuilder: (_, __) => const Divider(height: 1),
+            separatorBuilder: (_, __) => Divider(height: ResponsiveUI.value(context, 1)),
             itemBuilder: (context, index) {
               final item = details.products[index];
               return ListTile(
-                contentPadding: const EdgeInsets.symmetric(vertical: 4),
+                contentPadding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 4)),
                 leading: Container(
-                  width: 50,
-                  height: 50,
+                  width: ResponsiveUI.value(context, 50),
+                  height: ResponsiveUI.value(context, 50),
                   decoration: BoxDecoration(
                     color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
                     image: item.productImage.isNotEmpty
                         ? DecorationImage(
                             image: NetworkImage(item.productImage),
@@ -107,12 +108,12 @@ class PendingSaleDetailsScreen extends StatelessWidget {
                         : null,
                   ),
                   child: item.productImage.isEmpty
-                      ? const Icon(Icons.image, color: Colors.grey)
+                      ? Icon(Icons.image, color: Colors.grey)
                       : null,
                 ),
-                title: Text(item.productName, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                subtitle: Text("${item.quantity} x ${item.price} EGP", style: TextStyle(color: Colors.grey[600], fontSize: 12)),
-                trailing: Text("${item.subtotal} EGP", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                title: Text(item.productName, style: TextStyle(fontWeight: FontWeight.w600, fontSize: ResponsiveUI.fontSize(context, 14))),
+                subtitle: Text("${item.quantity} x ${item.price} EGP", style: TextStyle(color: Colors.grey[600], fontSize: ResponsiveUI.fontSize(context, 12))),
+                trailing: Text("${item.subtotal} EGP", style: TextStyle(fontWeight: FontWeight.bold, fontSize: ResponsiveUI.fontSize(context, 14))),
               );
             },
           ),
@@ -120,14 +121,14 @@ class PendingSaleDetailsScreen extends StatelessWidget {
 
         // Bottom Action Area
         Container(
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
           decoration: BoxDecoration(
             color: Colors.white,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
-                offset: const Offset(0, -5),
+                offset: Offset(0, -5),
               )
             ],
           ),
@@ -137,10 +138,10 @@ class PendingSaleDetailsScreen extends StatelessWidget {
               _row("Subtotal", "${details.subTotal}"), // Using subtotal from response or calc
               if(details.taxAmount > 0) _row("Tax", "+${details.taxAmount}"),
               if(details.discount > 0) _row("Discount", "-${details.discount}", color: Colors.red),
-              const Divider(height: 24),
-              _row("Total to Pay", "${details.grandTotal} EGP", isBold: true, size: 18, color: AppColors.primaryBlue),
+              Divider(height: ResponsiveUI.value(context, 24)),
+              _row("Total to Pay", "${details.grandTotal} EGP", isBold: true, size: ResponsiveUI.iconSize(context, 18), color: AppColors.primaryBlue),
 
-              const SizedBox(height: 20),
+              SizedBox(height: ResponsiveUI.value(context, 20)),
 
               // Action Button
               SizedBox(
@@ -149,13 +150,13 @@ class PendingSaleDetailsScreen extends StatelessWidget {
                   onPressed: () {
                     _restoreSaleAndCheckout(context, details);
                   },
-                  icon: const Icon(Icons.restore),
+                  icon: Icon(Icons.restore),
                   label: const Text("Resume Sale"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryBlue,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 16)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12))),
                   ),
                 ),
               )
@@ -230,13 +231,14 @@ class PendingSaleDetailsScreen extends StatelessWidget {
         selectedPaymentMethod: posCubit.paymentMethods.isNotEmpty 
             ? posCubit.paymentMethods.first 
             : PaymentMethod(id: '0', name: 'Cash'), // Default fallback
+        customerId: details.customer.id,
       ),
     );
   }
 
   Widget _row(String label, String value, {Color? color, bool isBold = false, double size = 14}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

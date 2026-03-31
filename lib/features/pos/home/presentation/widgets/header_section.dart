@@ -1,6 +1,7 @@
 // ── Header (search + chips) ───────────────────────────────────────────────
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:systego/features/POS/customer/presentation/widgets/customer_selector_widget.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_state.dart';
 import '../../../../../core/constants/app_colors.dart';
@@ -33,12 +34,13 @@ class _POSHeaderSectionState extends State<POSHeaderSection> {
             right: ResponsiveUI.padding(context, 16),
             left: ResponsiveUI.padding(context, 16),
             top: ResponsiveUI.padding(context, 16),
+            bottom: ResponsiveUI.padding(context, 12),
           ),
           decoration: BoxDecoration(
             color: AppColors.white,
             boxShadow: [
               BoxShadow(
-                color: AppColors.shadowGray.withOpacity(0.1),
+                color: AppColors.shadowGray.withValues(alpha: 0.1),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
@@ -46,6 +48,8 @@ class _POSHeaderSectionState extends State<POSHeaderSection> {
           ),
           child: Column(
             children: [
+              const CustomerSelectorWidget(),
+              SizedBox(height: ResponsiveUI.spacing(context, 8)),
               POSSearchBar(
                 controller: widget.searchController,
                 onChanged: widget.onChanged,

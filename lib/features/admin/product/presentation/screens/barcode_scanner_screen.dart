@@ -84,8 +84,8 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                           : 'Point your camera at the product barcode\nto search for it instantly',
                       style: TextStyle(
                         fontSize: ResponsiveUI.fontSize(context, 15),
-                        color: AppColors.darkGray.withOpacity(0.6),
-                        height: 1.5,
+                        color: AppColors.darkGray.withValues(alpha: 0.6),
+                        height: ResponsiveUI.value(context, 1.5),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -99,11 +99,11 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: _startScanning,
-                        icon: const Icon(Icons.camera_alt),
+                        icon: Icon(Icons.camera_alt),
                         label: const Text('Scan with Camera'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
-                              AppColors.primaryBlue, // استخدم لونك المفضل
+                              AppColors.primaryBlue,
                           foregroundColor: AppColors.white,
                           padding: EdgeInsets.symmetric(
                             vertical: ResponsiveUI.padding(context, 16),
@@ -123,7 +123,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                         onPressed: _isListeningForExternal
                             ? null
                             : _startExternalScanning, // تعطيل إذا مفعل
-                        icon: const Icon(Icons.usb),
+                        icon: Icon(Icons.usb),
                         label: Text(
                           _isListeningForExternal
                               ? 'Listening...'

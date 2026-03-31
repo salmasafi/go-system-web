@@ -37,11 +37,11 @@ class CustomImageContainer extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: gradient,
         color: backgroundColor,
-        borderRadius: borderRadius ?? BorderRadius.circular(16),
+        borderRadius: borderRadius ?? BorderRadius.circular(ResponsiveUI.borderRadius(context, 16)),
         boxShadow: gradient != null
             ? [
                 BoxShadow(
-                  color: AppColors.primaryBlue.withOpacity(0.3),
+                  color: AppColors.primaryBlue.withValues(alpha: 0.3),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -77,3 +77,4 @@ class CustomImageContainer extends StatelessWidget {
     );
   }
 }
+

@@ -58,7 +58,7 @@ class SupplierLocationSection extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.lightBlueBackground,
         borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 16)),
-        border: Border.all(color: AppColors.primaryBlue.withOpacity(0.3)),
+        border: Border.all(color: AppColors.primaryBlue.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -72,7 +72,7 @@ class SupplierLocationSection extends StatelessWidget {
             LocaleKeys.shipping_cost.tr(),
             style: TextStyle(
               fontSize: ResponsiveUI.fontSize(context, 14),
-              color: AppColors.darkGray.withOpacity(0.7),
+              color: AppColors.darkGray.withValues(alpha: 0.7),
             ),
           ),
           Text(
@@ -88,3 +88,4 @@ class SupplierLocationSection extends StatelessWidget {
     );
   }
 }
+

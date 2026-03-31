@@ -130,7 +130,7 @@ class _CouponFormDialogState extends State<CouponFormDialog>
                                       LoginValidator.validateRequired(
                                           v, LocaleKeys.coupon_code.tr()),
                                 ),
-                                SizedBox(height: 12),
+                                SizedBox(height: ResponsiveUI.value(context, 12)),
                                 buildDropdownField<String>(
                                   context,
                                   value: selectedType,
@@ -145,7 +145,7 @@ class _CouponFormDialogState extends State<CouponFormDialog>
                                   validator: (v) =>
                                       v == null ? LocaleKeys.please_select_type.tr() : null,
                                 ),
-                                SizedBox(height: 12),
+                                SizedBox(height: ResponsiveUI.value(context, 12)),
                                 buildTextField(
                                   context,
                                   controller: _amountController,
@@ -162,7 +162,7 @@ class _CouponFormDialogState extends State<CouponFormDialog>
                                     return null;
                                   },
                                 ),
-                                SizedBox(height: 12),
+                                SizedBox(height: ResponsiveUI.value(context, 12)),
                                 buildTextField(
                                   context,
                                   controller: _minAmountController,
@@ -176,7 +176,7 @@ class _CouponFormDialogState extends State<CouponFormDialog>
                                     return null;
                                   },
                                 ),
-                                SizedBox(height: 12),
+                                SizedBox(height: ResponsiveUI.value(context, 12)),
                                 buildTextField(
                                   context,
                                   controller: _quantityController,
@@ -193,7 +193,7 @@ class _CouponFormDialogState extends State<CouponFormDialog>
                                     return null;
                                   },
                                 ),
-                                SizedBox(height: 12),
+                                SizedBox(height: ResponsiveUI.value(context, 12)),
                                 buildTextField(
                                   context,
                                   controller: _availableController,
@@ -210,7 +210,7 @@ class _CouponFormDialogState extends State<CouponFormDialog>
                                     return null;
                                   },
                                 ),
-                                SizedBox(height: 12),
+                                SizedBox(height: ResponsiveUI.value(context, 12)),
                                 buildTextField(
                                   context,
                                   controller: _expiredDateController,
@@ -256,7 +256,7 @@ class _CouponFormDialogState extends State<CouponFormDialog>
       borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 24)),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.2),
+          color: Colors.black.withValues(alpha: 0.2),
           blurRadius: 30,
           offset: Offset(0, 10),
         )
@@ -267,10 +267,10 @@ class _CouponFormDialogState extends State<CouponFormDialog>
 
   Widget _buildHeader(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.primaryBlue, AppColors.primaryBlue.withOpacity(0.8)],
+          colors: [AppColors.primaryBlue, AppColors.darkBlue],
         ),
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(ResponsiveUI.borderRadius(context, 24)),
@@ -278,12 +278,12 @@ class _CouponFormDialogState extends State<CouponFormDialog>
       ),
       child: Row(
         children: [
-          Icon(Icons.local_offer, color: Colors.white, size: 28),
-          SizedBox(width: 15),
+          Icon(Icons.local_offer, color: Colors.white, size: ResponsiveUI.iconSize(context, 28)),
+          SizedBox(width: ResponsiveUI.value(context, 15)),
           Text(
             isEditMode ? LocaleKeys.edit_coupon.tr() : LocaleKeys.new_coupon.tr(),
             style: TextStyle(
-              fontSize: 22,
+              fontSize: ResponsiveUI.fontSize(context, 22),
               color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
@@ -291,7 +291,7 @@ class _CouponFormDialogState extends State<CouponFormDialog>
           Spacer(),
           InkWell(
             onTap: () => Navigator.pop(context),
-            child: Icon(Icons.close, color: Colors.white, size: 26),
+            child: Icon(Icons.close, color: Colors.white, size: ResponsiveUI.iconSize(context, 26)),
           )
         ],
       ),
@@ -463,3 +463,5 @@ class CouponDialogButtons extends StatelessWidget {
     );
   }
 }
+
+

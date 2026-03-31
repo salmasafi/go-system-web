@@ -196,7 +196,7 @@ class _ExpenseCategoryFormDialogState extends State<ExpenseCategoryFormDialog>
       ),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.2),
+          color: Colors.black.withValues(alpha: 0.2),
           blurRadius: 30,
           offset: const Offset(0, 10),
         ),
@@ -271,7 +271,7 @@ class ExpencesCategoriesDialogHeader extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             AppColors.primaryBlue,
-            AppColors.primaryBlue.withOpacity(0.8),
+            AppColors.darkBlue,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -286,7 +286,7 @@ class ExpencesCategoriesDialogHeader extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(padding10),
             decoration: BoxDecoration(
-              color: AppColors.white.withOpacity(0.2),
+              color: AppColors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(borderRadius12),
             ),
             child: Icon(
@@ -446,3 +446,4 @@ class ExpenseCategoryDialogButtons extends StatelessWidget {
     );
   }
 }
+

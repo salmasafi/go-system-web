@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:systego/core/widgets/app_bar_widgets.dart';
@@ -21,6 +22,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
       'Searching for your printer....\nMake sure your Bluetouth is on';
   bool printing = false;
   BluetoothDevice? device;
+  final GlobalKey _receiptBoundaryKey = GlobalKey();
 
   @override
   void initState() {
@@ -50,6 +52,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
     final success = await printerCubit.printReceipt(
       context,
       receipt: widget.recieptData,
+      //  receiptRepaintKey: _receiptBoundaryKey,
     );
 
     setState(() {
@@ -64,27 +67,38 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
       appBar: appBarWithActions(context, title: 'Reciept Preview'),
       body: Center(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(20),
+          padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                padding: EdgeInsets.all(20),
-                color: Colors.white,
-                child: PrintableReceipt(recieptData: widget.recieptData),
+              RepaintBoundary(
+                key: _receiptBoundaryKey,
+                child: Container(
+                  padding: EdgeInsets.only(
+                    left: ResponsiveUI.padding(context, 20),
+                    right: ResponsiveUI.padding(context, 40),
+                    top: ResponsiveUI.padding(context, 20),
+                    bottom: ResponsiveUI.padding(context, 20),
+                  ),
+                  color: Colors.white,
+                  child: PrintableReceipt(recieptData: widget.recieptData),
+                ),
               ),
-              SizedBox(height: 10),
-              Text(status, style: TextStyle(fontSize: 20)),
-              SizedBox(height: 10),
+              SizedBox(height: ResponsiveUI.value(context, 10)),
+              Text(
+                status,
+                style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 20)),
+              ),
+              SizedBox(height: ResponsiveUI.value(context, 10)),
               // CustomElevatedButton(
               //   onPressed: _findPrinter,
-              //   // icon: Icon(Icons.print, size: 30),
+              //   // icon: Icon(Icons.print, size: ResponsiveUI.iconSize(context, 30)),
               //   text: status.contains('Searching....') ? ' Searching' : "Retry",
               // ),
-              // SizedBox(height: 10),
+              // SizedBox(height: ResponsiveUI.value(context, 10)),
               CustomElevatedButton(
                 onPressed: (printing || device == null) ? null : _print,
-                // icon: Icon(Icons.print, size: 30),
+                // icon: Icon(Icons.print, size: ResponsiveUI.iconSize(context, 30)),
                 text: "Print Reciept",
               ),
             ],

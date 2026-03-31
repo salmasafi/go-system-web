@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../model/checkout_models.dart';
@@ -30,22 +31,28 @@ class CartItemTile extends StatelessWidget {
 
     return InkWell(
       onTap: () => _showItemDetails(context),
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(
+        ResponsiveUI.borderRadius(context, 16),
+      ),
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 6),
-        padding: const EdgeInsets.all(12),
+        margin: EdgeInsets.symmetric(
+          vertical: ResponsiveUI.padding(context, 6),
+        ),
+        padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
         decoration: BoxDecoration(
           color: AppColors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(
+            ResponsiveUI.borderRadius(context, 16),
+          ),
           border: Border.all(
             color: hasVariation
-                ? AppColors.primaryBlue.withOpacity(0.3)
-                : AppColors.lightGray.withOpacity(0.5),
+                ? AppColors.primaryBlue.withValues(alpha: 0.3)
+                : AppColors.lightGray.withValues(alpha: 0.5),
             width: hasVariation ? 1.5 : 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.shadowGray.withOpacity(0.08),
+              color: AppColors.shadowGray.withValues(alpha: 0.08),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -56,7 +63,7 @@ class CartItemTile extends StatelessWidget {
           children: [
             // Product Image
             _buildProductImage(),
-            const SizedBox(width: 12),
+            SizedBox(width: ResponsiveUI.value(context, 12)),
 
             // Product Info
             Expanded(
@@ -71,17 +78,17 @@ class CartItemTile extends StatelessWidget {
                           item.product.name,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 15,
+                          style: TextStyle(
+                            fontSize: ResponsiveUI.fontSize(context, 15),
                             fontWeight: FontWeight.w600,
                             color: AppColors.darkGray,
                           ),
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.info_outline,
-                          size: 20,
+                          size: ResponsiveUI.iconSize(context, 20),
                           color: AppColors.primaryBlue,
                         ),
                         padding: EdgeInsets.zero,
@@ -92,34 +99,36 @@ class CartItemTile extends StatelessWidget {
                   ),
 
                   // Variation Code (if exists)
-                  const SizedBox(height: 4),
+                  SizedBox(height: ResponsiveUI.value(context, 4)),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 3,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ResponsiveUI.padding(context, 8),
+                      vertical: ResponsiveUI.padding(context, 3),
                     ),
                     decoration: BoxDecoration(
                       color: AppColors.lightBlueBackground,
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(
+                        ResponsiveUI.borderRadius(context, 6),
+                      ),
                       border: Border.all(
-                        color: AppColors.primaryBlue.withOpacity(0.3),
+                        color: AppColors.primaryBlue.withValues(alpha: 0.3),
                       ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.qr_code,
-                          size: 12,
+                          size: ResponsiveUI.iconSize(context, 12),
                           color: AppColors.primaryBlue,
                         ),
-                        const SizedBox(width: 4),
+                        SizedBox(width: ResponsiveUI.value(context, 4)),
                         Text(
                           hasVariation
                               ? item.selectedVariation!.code
                               : item.product.code,
-                          style: const TextStyle(
-                            fontSize: 11,
+                          style: TextStyle(
+                            fontSize: ResponsiveUI.fontSize(context, 11),
                             color: AppColors.darkGray,
                             fontWeight: FontWeight.w500,
                           ),
@@ -131,7 +140,7 @@ class CartItemTile extends StatelessWidget {
                   // Variation Options (if exists)
                   if (hasVariation &&
                       item.selectedVariation!.variations.isNotEmpty) ...[
-                    const SizedBox(height: 6),
+                    SizedBox(height: ResponsiveUI.value(context, 6)),
                     Wrap(
                       spacing: 4,
                       runSpacing: 4,
@@ -140,20 +149,25 @@ class CartItemTile extends StatelessWidget {
                           .expand((v) {
                             return v.options.map((opt) {
                               return Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: ResponsiveUI.padding(context, 6),
+                                  vertical: ResponsiveUI.padding(context, 2),
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppColors.primaryBlue.withOpacity(
-                                    0.08,
+                                  color: AppColors.primaryBlue.withValues(
+                                    alpha: 0.08,
                                   ),
-                                  borderRadius: BorderRadius.circular(4),
+                                  borderRadius: BorderRadius.circular(
+                                    ResponsiveUI.borderRadius(context, 4),
+                                  ),
                                 ),
                                 child: Text(
                                   '${v.name}: ${opt.name}',
-                                  style: const TextStyle(
-                                    fontSize: 10,
+                                  style: TextStyle(
+                                    fontSize: ResponsiveUI.fontSize(
+                                      context,
+                                      10,
+                                    ),
                                     color: AppColors.darkGray,
                                   ),
                                 ),
@@ -164,56 +178,57 @@ class CartItemTile extends StatelessWidget {
                     ),
                     if (item.selectedVariation!.variations.length > 2)
                       Padding(
-                        padding: const EdgeInsets.only(top: 6),
+                        padding: EdgeInsets.only(
+                          top: ResponsiveUI.padding(context, 6),
+                        ),
                         child: Text(
                           '+${item.selectedVariation!.variations.length - 2} more',
                           style: TextStyle(
-                            fontSize: 10,
-                            color: AppColors.primaryBlue.withOpacity(0.7),
+                            fontSize: ResponsiveUI.fontSize(context, 10),
+                            color: AppColors.primaryBlue.withValues(alpha: 0.7),
                             fontStyle: FontStyle.italic,
                           ),
                         ),
                       ),
                   ],
 
-                  const SizedBox(height: 8),
+                  SizedBox(height: ResponsiveUI.value(context, 8)),
 
                   // Price & Quantity Controls
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       // Price
-                      Text(
-                        '\$${item.product.price.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primaryBlue,
-                        ),
-                      ),
+                      _buildPriceDisplay(context),
 
                       // Quantity Controls
                       Container(
                         decoration: BoxDecoration(
                           border: Border.all(
                             color: AppColors.lightGray,
-                            width: 1.5,
+                            width: ResponsiveUI.value(context, 1.5),
                           ),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(
+                            ResponsiveUI.borderRadius(context, 8),
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             InkWell(
                               onTap: onDecrement,
-                              borderRadius: const BorderRadius.horizontal(
-                                left: Radius.circular(8),
+                              borderRadius: BorderRadius.horizontal(
+                                left: Radius.circular(
+                                  ResponsiveUI.borderRadius(context, 8),
+                                ),
                               ),
                               child: Container(
-                                padding: const EdgeInsets.all(6),
-                                child: const Icon(
+                                padding: EdgeInsets.all(
+                                  ResponsiveUI.padding(context, 6),
+                                ),
+                                child: Icon(
                                   Icons.remove,
-                                  size: 18,
+                                  size: ResponsiveUI.iconSize(context, 18),
                                   color: AppColors.red,
                                 ),
                               ),
@@ -222,14 +237,17 @@ class CartItemTile extends StatelessWidget {
                               onLongPress: onLongPress,
                               child: Container(
                                 constraints: const BoxConstraints(minWidth: 32),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: ResponsiveUI.padding(context, 8),
                                 ),
                                 child: Text(
                                   '${item.quantity}',
                                   textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontSize: 16,
+                                  style: TextStyle(
+                                    fontSize: ResponsiveUI.fontSize(
+                                      context,
+                                      16,
+                                    ),
                                     fontWeight: FontWeight.bold,
                                     color: AppColors.darkBlue,
                                   ),
@@ -238,14 +256,18 @@ class CartItemTile extends StatelessWidget {
                             ),
                             InkWell(
                               onTap: onIncrement,
-                              borderRadius: const BorderRadius.horizontal(
-                                right: Radius.circular(8),
+                              borderRadius: BorderRadius.horizontal(
+                                right: Radius.circular(
+                                  ResponsiveUI.borderRadius(context, 8),
+                                ),
                               ),
                               child: Container(
-                                padding: const EdgeInsets.all(6),
-                                child: const Icon(
+                                padding: EdgeInsets.all(
+                                  ResponsiveUI.padding(context, 6),
+                                ),
+                                child: Icon(
                                   Icons.add,
-                                  size: 18,
+                                  size: ResponsiveUI.iconSize(context, 18),
                                   color: AppColors.successGreen,
                                 ),
                               ),
@@ -264,14 +286,56 @@ class CartItemTile extends StatelessWidget {
     );
   }
 
+  Widget _buildPriceDisplay(BuildContext context) {
+    if (item.isWholePriceActive) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '\$${item.wholePrice!.toStringAsFixed(2)}',
+            style: TextStyle(
+              fontSize: ResponsiveUI.fontSize(context, 16),
+              fontWeight: FontWeight.bold,
+              color: AppColors.successGreen,
+            ),
+          ),
+          Text(
+            '\$${item.basePrice.toStringAsFixed(2)}',
+            style: TextStyle(
+              fontSize: ResponsiveUI.fontSize(context, 12),
+              color: AppColors.linkBlue,
+              decoration: TextDecoration.lineThrough,
+            ),
+          ),
+          SizedBox(height: ResponsiveUI.value(context, 2)),
+          Text(
+            'Wholesale price active (≥ ${item.startQuantity})',
+            style: TextStyle(
+              fontSize: ResponsiveUI.fontSize(context, 10),
+              color: AppColors.primaryBlue.withValues(alpha: 0.7),
+            ),
+          ),
+        ],
+      );
+    }
+    return Text(
+      '\$${item.basePrice.toStringAsFixed(2)}',
+      style: TextStyle(
+        fontSize: ResponsiveUI.fontSize(context, 16),
+        fontWeight: FontWeight.bold,
+        color: AppColors.primaryBlue,
+      ),
+    );
+  }
+
   Widget _buildProductImage() {
     return Container(
       width: 70,
       height: 70,
       decoration: BoxDecoration(
-        color: AppColors.lightBlueBackground.withOpacity(0.3),
+        color: AppColors.lightBlueBackground.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.lightGray.withOpacity(0.5)),
+        border: Border.all(color: AppColors.lightGray.withValues(alpha: 0.5)),
       ),
       child: item.product.image != null
           ? ClipRRect(
@@ -288,7 +352,7 @@ class CartItemTile extends StatelessWidget {
   }
 
   Widget _buildPlaceholder() {
-    return const Center(
+    return Center(
       child: Icon(
         Icons.inventory_2_outlined,
         size: 32,

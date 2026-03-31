@@ -52,15 +52,15 @@ class _AnimatedCountryCardState extends State<AnimatedCountryCard> {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryBlue.withOpacity(0.1),
+              color: AppColors.primaryBlue.withValues(alpha: 0.1),
               blurRadius: ResponsiveUI.borderRadius(context, 10),
               offset: const Offset(0, 5),
             ),
           ],
           border: country.isDefault
               ? Border.all(
-                  color: AppColors.primaryBlue.withOpacity(0.8),
-                  width: 2.5,
+                  color: AppColors.darkBlue,
+                  width: ResponsiveUI.value(context, 2.5),
                 )
               : null,
         ),
@@ -96,7 +96,7 @@ class _AnimatedCountryCardState extends State<AnimatedCountryCard> {
       children: [
         CircleAvatar(
           radius: ResponsiveUI.borderRadius(context, 25),
-          backgroundColor: AppColors.primaryBlue.withOpacity(0.8),
+          backgroundColor: AppColors.darkBlue,
           child: Icon(
             Icons.location_on_rounded,
             color: AppColors.white,
@@ -142,3 +142,5 @@ class _AnimatedCountryCardState extends State<AnimatedCountryCard> {
     );
   }
 }
+
+

@@ -20,14 +20,14 @@ class SupplierProfileSection extends StatelessWidget {
       padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.primaryBlue, AppColors.primaryBlue.withOpacity(0.8)],
+          colors: [AppColors.primaryBlue, AppColors.darkBlue],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryBlue.withOpacity(0.3),
+            color: AppColors.primaryBlue.withValues(alpha: 0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -58,7 +58,7 @@ class SupplierProfileSection extends StatelessWidget {
                 fit: BoxFit.cover,
               )
             : null,
-        border: Border.all(color: AppColors.white, width: 4),
+        border: Border.all(color: AppColors.white, width: ResponsiveUI.value(context, 4)),
       ),
       child: supplier.image == null
           ? Icon(
@@ -89,7 +89,7 @@ class SupplierProfileSection extends StatelessWidget {
         vertical: ResponsiveUI.padding(context, 8),
       ),
       decoration: BoxDecoration(
-        color: AppColors.white.withOpacity(0.2),
+        color: AppColors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
       ),
       child: Text(
@@ -103,3 +103,5 @@ class SupplierProfileSection extends StatelessWidget {
     );
   }
 }
+
+

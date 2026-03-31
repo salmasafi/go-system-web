@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 // lib/features/pos/shift/ui/start_shift_screen.dart
 
 import 'package:flutter/material.dart';
@@ -18,29 +19,29 @@ class StartShiftScreen extends StatelessWidget {
       backgroundColor: AppColors.lightBlueBackground,
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.all(ResponsiveUI.padding(context, 24.0)),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
+              Icon(
                 Icons.storefront_rounded,
-                size: 100,
+                size: ResponsiveUI.iconSize(context, 100),
                 color: AppColors.primaryBlue,
               ),
-              const SizedBox(height: 30),
+              SizedBox(height: ResponsiveUI.value(context, 30)),
               Text(
                 "Welcome, ${cashier?.name ?? 'User'}",
-                style: const TextStyle(
-                  fontSize: 24,
+                style: TextStyle(
+                  fontSize: ResponsiveUI.fontSize(context, 24),
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 10),
-              const Text(
+              SizedBox(height: ResponsiveUI.value(context, 10)),
+              Text(
                 "You are ready to start your shift.",
-                style: TextStyle(color: AppColors.shadowGray, fontSize: 16),
+                style: TextStyle(color: AppColors.shadowGray, fontSize: ResponsiveUI.fontSize(context, 16)),
               ),
-              const SizedBox(height: 25),
+              SizedBox(height: ResponsiveUI.value(context, 25)),
 
               // Start Button
               BlocBuilder<PosShiftCubit, PosShiftState>(
@@ -51,19 +52,19 @@ class StartShiftScreen extends StatelessWidget {
 
                   return SizedBox(
                     width: double.infinity,
-                    height: 55,
+                    height: ResponsiveUI.value(context, 55),
                     child: ElevatedButton.icon(
                       onPressed: () => cubit.startShift(),
-                      icon: const Icon(Icons.play_circle_fill),
-                      label: const Text(
+                      icon: Icon(Icons.play_circle_fill),
+                      label: Text(
                         "START SHIFT",
-                        style: TextStyle(fontSize: 18),
+                        style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 18)),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primaryBlue,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                         ),
                       ),
                     ),
@@ -71,7 +72,7 @@ class StartShiftScreen extends StatelessWidget {
                 },
               ),
 
-              const SizedBox(height: 10),
+              SizedBox(height: ResponsiveUI.value(context, 10)),
 
               // Change Cashier Button
               TextButton(

@@ -1,7 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_textfield/custom_text_field_widget.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 //import 'package:systego/core/constants/app_colors.dart';
 //import 'package:systego/core/utils/responsive_ui.dart';
 
@@ -34,11 +36,11 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
         vertical: ResponsiveUI.padding(context, 12),
       ),
       child: CustomTextField(
-        hintText: 'Search ${widget.text}...',
+        hintText: LocaleKeys.search_in.tr(args: [widget.text]),
         prefixIcon: Icons.search,
         hasBoxDecoration: true,
         hasBorder: true,
-        prefixIconColor: AppColors.darkGray.withOpacity(0.7),
+        prefixIconColor: AppColors.darkGray.withValues(alpha: 0.7),
         controller: widget.controller,
         onChanged: widget.onChanged,
         //labelText: 'Search',
@@ -82,3 +84,4 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
     // );
   }
 }
+

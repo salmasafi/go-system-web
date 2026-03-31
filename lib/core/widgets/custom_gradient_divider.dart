@@ -20,12 +20,13 @@ class CustomGradientDivider extends StatelessWidget {
         gradient: LinearGradient(
           colors: colors ??
               [
-                AppColors.lightGray.withOpacity(0.3),
-                AppColors.primaryBlue.withOpacity(0.3),
-                AppColors.lightGray.withOpacity(0.3),
+                AppColors.lightGray.withValues(alpha: 0.3),
+                AppColors.primaryBlue.withValues(alpha: 0.3),
+                AppColors.lightGray.withValues(alpha: 0.3),
               ],
         ),
       ),
     );
   }
 }
+

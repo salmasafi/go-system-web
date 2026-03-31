@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:systego/features/POS/checkout/cubit/checkout_cubit/checkout_cubit.dart';
+import 'package:systego/features/POS/customer/cubit/pos_customer_cubit.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
+import 'package:systego/features/POS/customer/presentation/widgets/customer_picker_sheet.dart';
 import '../../model/checkout_models.dart';
 import 'action_botton.dart';
 import 'cart_item_tile.dart';
@@ -42,10 +45,7 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
   }
 
   void _calculateTotal() {
-    total = cartItems.fold(
-      0.0,
-      (sum, item) => sum + item.product.price * item.quantity,
-    );
+    total = cartItems.fold(0.0, (sum, item) => sum + item.subtotal);
   }
 
   void _refresh() {
@@ -62,16 +62,18 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) Navigator.pop(context);
       });
-      return const SizedBox.shrink();
+      return SizedBox.shrink();
     }
 
     return Container(
       height:
           ResponsiveUI.screenHeight(context) *
           0.78, // 78% من الشاشة (مثالي للموبايل)
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(ResponsiveUI.borderRadius(context, 24)),
+        ),
       ),
       child: Column(
         children: [
@@ -84,11 +86,13 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
               children: [
                 // Handle
                 Container(
-                  width: 45,
-                  height: 5,
+                  width: ResponsiveUI.value(context, 45),
+                  height: ResponsiveUI.value(context, 5),
                   decoration: BoxDecoration(
-                    color: AppColors.shadowGray.withOpacity(0.4),
-                    borderRadius: BorderRadius.circular(3),
+                    color: AppColors.shadowGray.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(
+                      ResponsiveUI.borderRadius(context, 3),
+                    ),
                   ),
                 ),
                 SizedBox(height: ResponsiveUI.spacing(context, 16)),
@@ -150,30 +154,36 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
                   ),
                   direction: DismissDirection.endToStart,
                   background: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    margin: EdgeInsets.symmetric(
+                      vertical: ResponsiveUI.padding(context, 6),
+                    ),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         colors: [Colors.red, Colors.redAccent],
                       ),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(
+                        ResponsiveUI.borderRadius(context, 16),
+                      ),
                     ),
                     alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.only(right: 24),
-                    child: const Column(
+                    padding: EdgeInsets.only(
+                      right: ResponsiveUI.padding(context, 24),
+                    ),
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
                           Icons.delete_forever,
                           color: Colors.white,
-                          size: 32,
+                          size: ResponsiveUI.iconSize(context, 32),
                         ),
-                        SizedBox(height: 4),
+                        SizedBox(height: ResponsiveUI.value(context, 4)),
                         Text(
                           'Remove',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: 12,
+                            fontSize: ResponsiveUI.fontSize(context, 12),
                           ),
                         ),
                       ],
@@ -185,6 +195,9 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
                     if (cartItems.length <= 1) Navigator.pop(context);
                   },
                   child: CartItemTile(
+                    key: ValueKey(
+                      '${item.product.id}_${item.selectedVariation?.id ?? ''}_${item.quantity}',
+                    ),
                     item: item,
                     onIncrement: () {
                       widget.onQuantityChanged(index, 1);
@@ -220,11 +233,13 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
             decoration: BoxDecoration(
               color: AppColors.white,
               border: Border(
-                top: BorderSide(color: AppColors.shadowGray.withOpacity(0.2)),
+                top: BorderSide(
+                  color: AppColors.shadowGray.withValues(alpha: 0.2),
+                ),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 20,
                   offset: const Offset(0, -4),
                 ),
@@ -271,6 +286,17 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
                       ),
                       SizedBox(width: ResponsiveUI.spacing(context, 12)),
 
+                      // Hold Button
+                      Expanded(
+                        child: POSActionButton(
+                          label: 'Hold',
+                          icon: Icons.pause_circle_outline,
+                          color: Colors.orange,
+                          onTap: () => _holdSale(),
+                        ),
+                      ),
+                      SizedBox(width: ResponsiveUI.spacing(context, 12)),
+
                       // Checkout Button
                       Expanded(
                         flex: 2,
@@ -298,7 +324,11 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
     return showDialog<int>(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(
+            ResponsiveUI.borderRadius(context, 16),
+          ),
+        ),
         title: const Text('Edit Quantity'),
         content: TextField(
           controller: controller,
@@ -306,11 +336,20 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
           autofocus: true,
           decoration: InputDecoration(
             hintText: 'Enter new quantity',
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(
+                ResponsiveUI.borderRadius(context, 12),
+              ),
+            ),
             // focusColor: AppColors.primaryBlue,
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.primaryBlue, width: 1.7),
+              borderRadius: BorderRadius.circular(
+                ResponsiveUI.borderRadius(context, 12),
+              ),
+              borderSide: BorderSide(
+                color: AppColors.primaryBlue,
+                width: ResponsiveUI.value(context, 1.7),
+              ),
             ),
             // enabledBorder: OutlineInputBorder(
             //   borderSide: BorderSide(color: AppColors.primaryBlue),
@@ -340,25 +379,33 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
     );
   }
 
+  void _holdSale() async {
+    final success = await cubit.createSale(
+      totalAmount: total,
+      paidAmount: 0,
+      note: "Sale on Hold",
+      isPending: true,
+      customerId: context.read<PosCustomerCubit>().selectedCustomer?.id ?? '',
+      warehouseId: posCubit.selectedWarhouse?.id,
+    );
+
+    if (success && mounted) {
+      Navigator.pop(context);
+      CustomSnackbar.showSuccess(context, "Sale put on hold successfully");
+    }
+  }
+
   void _showCheckoutDialog() {
+    final selectedCustomer = context.read<PosCustomerCubit>().selectedCustomer;
+
     showDialog(
       context: context,
-      builder: (_) =>
-          //POSPaymentMethodsDialog(
-          //onMethodSelected: (method) {
-          //Navigator.pop(context); // إغلاق اختيار الدفع
-          // showDialog(
-          //context: context,
-          // barrierDismissible: false,
-          // builder: (_) =>
-          POSCheckoutDialog(
-            totalAmount: total,
-            cartItems: cartItems,
-            selectedPaymentMethod: posCubit.selectedPaymentMethod!,
-          ),
-      // );
-      //},
-      //),
+      builder: (_) => POSCheckoutDialog(
+        totalAmount: total,
+        cartItems: cartItems,
+        selectedPaymentMethod: posCubit.selectedPaymentMethod!,
+        customerId: selectedCustomer?.id ?? '',
+      ),
     );
   }
 }

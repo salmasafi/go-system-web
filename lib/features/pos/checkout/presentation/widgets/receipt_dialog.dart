@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 // lib/features/pos/home/presentation/widgets/receipt_dialog.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,7 +41,7 @@ class POSReceiptDialog extends StatefulWidget {
 
 class _POSReceiptDialogState extends State<POSReceiptDialog> {
   String _formatDateTime() {
-    return DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
+    return DateFormat('yyyy-MM-dd HH:mm:ss', 'en_US').format(DateTime.now());
   }
 
   // String _formatAmount(double amount, String type) {
@@ -127,14 +128,19 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
 
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: ResponsiveUI.padding(context, 16),
+        vertical: ResponsiveUI.padding(context, 24),
+      ),
       child: Container(
         constraints: BoxConstraints(
           maxHeight: MediaQuery.of(context).size.height * 0.9,
         ),
         decoration: BoxDecoration(
           color: AppColors.white,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(
+            ResponsiveUI.borderRadius(context, 20),
+          ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -142,29 +148,29 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
             _buildHeader(),
             Flexible(
               child: SingleChildScrollView(
-                padding: EdgeInsets.all(24),
+                padding: EdgeInsets.all(ResponsiveUI.padding(context, 24)),
                 child: Column(
                   children: [
                     _buildReceiptHeader(),
-                    SizedBox(height: 20),
+                    SizedBox(height: ResponsiveUI.value(context, 20)),
                     _buildDivider(),
-                    SizedBox(height: 16),
+                    SizedBox(height: ResponsiveUI.value(context, 16)),
                     _buildItemsTable(),
-                    SizedBox(height: 16),
+                    SizedBox(height: ResponsiveUI.value(context, 16)),
                     _buildDivider(),
-                    SizedBox(height: 16),
+                    SizedBox(height: ResponsiveUI.value(context, 16)),
                     _buildTotalSection(),
                     if (isCash && widget.recieptData.paidAmount > 0) ...[
-                      SizedBox(height: 16),
+                      SizedBox(height: ResponsiveUI.value(context, 16)),
                       _buildCashDetails(),
                     ],
                     // if (widget.recieptData.pointsEarned > 0) ...[
-                    //   SizedBox(height: 20),
+                    //   SizedBox(height: ResponsiveUI.value(context, 20)),
                     //   _buildPointsEarned(),
                     // ],
-                    SizedBox(height: 20),
+                    SizedBox(height: ResponsiveUI.value(context, 20)),
                     _buildDivider(),
-                    SizedBox(height: 16),
+                    SizedBox(height: ResponsiveUI.value(context, 16)),
                     _buildFooter(),
                   ],
                 ),
@@ -179,27 +185,35 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
 
   Widget _buildHeader() {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
             AppColors.successGreen,
-            AppColors.successGreen.withOpacity(0.8),
+            AppColors.successGreen.withValues(alpha: 0.8),
           ],
         ),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(ResponsiveUI.borderRadius(context, 20)),
+        ),
       ),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(10),
+            padding: EdgeInsets.all(ResponsiveUI.padding(context, 10)),
             decoration: BoxDecoration(
-              color: AppColors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
+              color: AppColors.white.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(
+                ResponsiveUI.borderRadius(context, 12),
+              ),
             ),
-            child: Icon(Icons.receipt_long, color: AppColors.white, size: 28),
+            child: Icon(
+              Icons.receipt_long,
+              color: AppColors.white,
+              size: ResponsiveUI.iconSize(context, 28),
+            ),
           ),
-          SizedBox(width: 16),
+          SizedBox(width: ResponsiveUI.value(context, 16)),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -208,15 +222,15 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
                   'Sale Completed',
                   style: TextStyle(
                     color: AppColors.white,
-                    fontSize: 22,
+                    fontSize: ResponsiveUI.fontSize(context, 22),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
                   'Reference: ${widget.recieptData.reference}',
                   style: TextStyle(
-                    color: AppColors.white.withOpacity(0.9),
-                    fontSize: 13,
+                    color: AppColors.white.withValues(alpha: 0.9),
+                    fontSize: ResponsiveUI.fontSize(context, 13),
                   ),
                 ),
               ],
@@ -237,7 +251,7 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
         Text(
           'SYSTEGO',
           style: TextStyle(
-            fontSize: 28,
+            fontSize: ResponsiveUI.fontSize(context, 28),
             fontWeight: FontWeight.bold,
             color: AppColors.primaryBlue,
           ),
@@ -245,21 +259,25 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
         // Text(
         //   'The Solution',
         //   style: TextStyle(
-        //     fontSize: 16,
+        //     fontSize: ResponsiveUI.fontSize(context, 16),
         //     color: AppColors.shadowGray,
         //     fontStyle: FontStyle.italic,
         //   ),
         // ),
-        //SizedBox(height: 12),
+        //SizedBox(height: ResponsiveUI.value(context, 12)),
         //_buildInfoRow(Icons.location_on_outlined, 'Address:', 'London'),
         //_buildInfoRow(Icons.phone_outlined, 'Phone:', '+970 599 123456'),
-        SizedBox(height: 12),
+        SizedBox(height: ResponsiveUI.value(context, 12)),
         Container(
-          padding: EdgeInsets.all(12),
+          padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
           decoration: BoxDecoration(
             color: AppColors.lightBlueBackground,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.primaryBlue.withOpacity(0.3)),
+            borderRadius: BorderRadius.circular(
+              ResponsiveUI.borderRadius(context, 12),
+            ),
+            border: Border.all(
+              color: AppColors.primaryBlue.withValues(alpha: 0.3),
+            ),
           ),
           child: Column(
             children: [
@@ -280,12 +298,12 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
   //   return Row(
   //     mainAxisAlignment: MainAxisAlignment.center,
   //     children: [
-  //       Icon(icon, size: 16, color: AppColors.primaryBlue),
-  //       SizedBox(width: 6),
+  //       Icon(icon, size: ResponsiveUI.iconSize(context, 16), color: AppColors.primaryBlue),
+  //       SizedBox(width: ResponsiveUI.value(context, 6)),
   //       Text(
   //         '$label ',
   //         style: TextStyle(
-  //           fontSize: 13,
+  //           fontSize: ResponsiveUI.fontSize(context, 13),
   //           color: AppColors.shadowGray,
   //           fontWeight: FontWeight.w600,
   //         ),
@@ -293,7 +311,7 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
   //       Text(
   //         value,
   //         style: TextStyle(
-  //           fontSize: 13,
+  //           fontSize: ResponsiveUI.fontSize(context, 13),
   //           color: AppColors.darkGray,
   //           fontWeight: FontWeight.w600,
   //         ),
@@ -304,14 +322,14 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
 
   Widget _buildRow(String label, String value) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 4)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             label,
             style: TextStyle(
-              fontSize: 13,
+              fontSize: ResponsiveUI.fontSize(context, 13),
               color: AppColors.shadowGray,
               fontWeight: FontWeight.w600,
             ),
@@ -319,7 +337,7 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
           Text(
             value,
             style: TextStyle(
-              fontSize: 13,
+              fontSize: ResponsiveUI.fontSize(context, 13),
               color: AppColors.darkGray,
               fontWeight: FontWeight.bold,
             ),
@@ -329,17 +347,24 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
     );
   }
 
-  Widget _buildDivider() =>
-      Container(height: 1, color: AppColors.primaryBlue.withOpacity(0.3));
+  Widget _buildDivider() => Container(
+    height: ResponsiveUI.value(context, 1),
+    color: AppColors.primaryBlue.withValues(alpha: 0.3),
+  );
 
   Widget _buildItemsTable() {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+          padding: EdgeInsets.symmetric(
+            vertical: ResponsiveUI.padding(context, 10),
+            horizontal: ResponsiveUI.padding(context, 12),
+          ),
           decoration: BoxDecoration(
-            color: AppColors.primaryBlue.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
+            color: AppColors.primaryBlue.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(
+              ResponsiveUI.borderRadius(context, 8),
+            ),
           ),
           child: Row(
             children: [
@@ -390,9 +415,12 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
           final item = e.value;
           final isEven = e.key % 2 == 0;
           return Container(
-            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+            padding: EdgeInsets.symmetric(
+              vertical: ResponsiveUI.padding(context, 12),
+              horizontal: ResponsiveUI.padding(context, 12),
+            ),
             color: isEven
-                ? AppColors.lightBlueBackground.withOpacity(0.3)
+                ? AppColors.lightBlueBackground.withValues(alpha: 0.3)
                 : null,
             child: Row(
               children: [
@@ -402,7 +430,9 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
                     item.product.name,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 12),
+                    style: TextStyle(
+                      fontSize: ResponsiveUI.fontSize(context, 12),
+                    ),
                   ),
                 ),
                 Expanded(
@@ -414,13 +444,13 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
                 ),
                 Expanded(
                   child: Text(
-                    '\$${item.product.price.toStringAsFixed(2)}',
+                    '\$${item.effectivePrice.toStringAsFixed(2)}',
                     textAlign: TextAlign.right,
                   ),
                 ),
                 Expanded(
                   child: Text(
-                    '\$${(item.product.price * item.quantity).toStringAsFixed(2)}',
+                    '\$${(item.effectivePrice * item.quantity).toStringAsFixed(2)}',
                     textAlign: TextAlign.right,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
@@ -462,25 +492,27 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
     }
 
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.primaryBlue.withOpacity(0.05),
-            AppColors.linkBlue.withOpacity(0.02),
+            AppColors.primaryBlue.withValues(alpha: 0.05),
+            AppColors.shadowGray.withValues(alpha: 0.02),
           ],
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(
+          ResponsiveUI.borderRadius(context, 12),
+        ),
         border: Border.all(
-          color: AppColors.primaryBlue.withOpacity(0.3),
-          width: 1.5,
+          color: AppColors.primaryBlue.withValues(alpha: 0.3),
+          width: ResponsiveUI.value(context, 1.5),
         ),
       ),
       child: Column(
         children: [
           _totalRow('Subtotal:', widget.recieptData.totalAmount, false),
           if (widget.recieptData.discountAmount > 0) ...[
-            SizedBox(height: 8),
+            SizedBox(height: ResponsiveUI.value(context, 8)),
             _totalRow(
               '${widget.recieptData.selectedDiscount?.name ?? 'Discount'} ($discountDisplay):',
               -widget.recieptData.discountAmount,
@@ -488,25 +520,28 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
             ),
           ],
           if (widget.recieptData.taxAmount > 0) ...[
-            SizedBox(height: 8),
+            SizedBox(height: ResponsiveUI.value(context, 8)),
             _totalRow(
               '${widget.recieptData.selectedTax?.name ?? 'Tax'} ($taxDisplay):',
               widget.recieptData.taxAmount,
               false,
             ),
           ],
-          SizedBox(height: 12),
-          Container(height: 1, color: AppColors.primaryBlue.withOpacity(0.2)),
-          SizedBox(height: 12),
+          SizedBox(height: ResponsiveUI.value(context, 12)),
+          Container(
+            height: ResponsiveUI.value(context, 1),
+            color: AppColors.primaryBlue.withValues(alpha: 0.2),
+          ),
+          SizedBox(height: ResponsiveUI.value(context, 12)),
           _totalRow('Grand Total:', grandTotal, true),
 
-          // SizedBox(height: 16),
+          // SizedBox(height: ResponsiveUI.value(context, 16)),
           // Container(
-          //   padding: EdgeInsets.all(12),
+          //   padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
           //   decoration: BoxDecoration(
           //     color: AppColors.white,
-          //     borderRadius: BorderRadius.circular(8),
-          //     border: Border.all(color: AppColors.primaryBlue.withOpacity(0.2)),
+          //     borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
+          //     border: Border.all(color: AppColors.primaryBlue.withValues(alpha: 0.2)),
           //   ),
           //   child: Row(
           //     children: [
@@ -565,11 +600,15 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
 
   Widget _buildCashDetails() {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
       decoration: BoxDecoration(
-        color: AppColors.successGreen.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.successGreen.withOpacity(0.3)),
+        color: AppColors.successGreen.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(
+          ResponsiveUI.borderRadius(context, 12),
+        ),
+        border: Border.all(
+          color: AppColors.successGreen.withValues(alpha: 0.3),
+        ),
       ),
       child: Column(
         children: [
@@ -590,7 +629,7 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
             ],
           ),
           if (widget.recieptData.change > 0) ...[
-            SizedBox(height: 8),
+            SizedBox(height: ResponsiveUI.value(context, 8)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -612,43 +651,43 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
 
   // Widget _buildPointsEarned() {
   //   return Container(
-  //     padding: EdgeInsets.all(16),
+  //     padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
   //     decoration: BoxDecoration(
-  //       color: AppColors.holdBeige.withOpacity(0.1),
-  //       borderRadius: BorderRadius.circular(12),
-  //       border: Border.all(color: AppColors.holdBeige.withOpacity(0.3)),
+  //       color: AppColors.holdBeige.withValues(alpha: 0.1),
+  //       borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+  //       border: Border.all(color: AppColors.holdBeige.withValues(alpha: 0.3)),
   //     ),
   //     child: Row(
   //       children: [
   //         Icon(Icons.star, color: AppColors.holdBeige),
-  //         SizedBox(width: 12),
+  //         SizedBox(width: ResponsiveUI.value(context, 12)),
   //         Expanded(
   //           child: Text.rich(
   //             TextSpan(
   //               children: [
   //                 TextSpan(
   //                   text: 'Congratulations! You earned ',
-  //                   style: TextStyle(fontSize: 14),
+  //                   style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14)),
   //                 ),
   //                 TextSpan(
   //                   text: '${widget.recieptData.pointsEarned} points',
   //                   style: TextStyle(
   //                     fontWeight: FontWeight.bold,
   //                     color: AppColors.holdBeige,
-  //                     fontSize: 16,
+  //                     fontSize: ResponsiveUI.fontSize(context, 16),
   //                   ),
   //                 ),
   //               ],
   //             ),
   //           ),
   //         ),
-  //         //Text('Congratulations! You earned ', style: TextStyle(fontSize: 14)),
+  //         //Text('Congratulations! You earned ', style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14))),
   //         // Text(
   //         //   '${widget.pointsEarned} points',
   //         //   style: TextStyle(
   //         //     fontWeight: FontWeight.bold,
   //         //     color: AppColors.holdBeige,
-  //         //     fontSize: 16,
+  //         //     fontSize: ResponsiveUI.fontSize(context, 16),
   //         //   ),
   //         // ),
   //       ],
@@ -659,13 +698,17 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
   Widget _buildFooter() {
     return Column(
       children: [
-        Icon(Icons.check_circle, color: AppColors.successGreen, size: 48),
-        SizedBox(height: 12),
+        Icon(
+          Icons.check_circle,
+          color: AppColors.successGreen,
+          size: ResponsiveUI.iconSize(context, 48),
+        ),
+        SizedBox(height: ResponsiveUI.value(context, 12)),
         Text(
           'Thank You For Shopping With Us!',
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 16,
+            fontSize: ResponsiveUI.fontSize(context, 16),
             fontWeight: FontWeight.bold,
             color: AppColors.primaryBlue,
           ),
@@ -683,10 +726,12 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
 
   Widget _buildActionButtons() {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
       decoration: BoxDecoration(
         color: AppColors.shadowGray[50],
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(ResponsiveUI.borderRadius(context, 20)),
+        ),
       ),
       child: Row(
         children: [
@@ -710,11 +755,14 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
               label: Text('Print'),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.primaryBlue,
-                side: BorderSide(color: AppColors.primaryBlue, width: 1.5),
+                side: BorderSide(
+                  color: AppColors.primaryBlue,
+                  width: ResponsiveUI.value(context, 1.5),
+                ),
               ),
             ),
           ),
-          SizedBox(width: 12),
+          SizedBox(width: ResponsiveUI.value(context, 12)),
           Expanded(
             child: ElevatedButton.icon(
               onPressed: () {

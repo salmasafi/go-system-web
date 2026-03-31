@@ -50,12 +50,12 @@ class _AnimatedCategoryCardState extends State<AnimatedCategoryCard>
 
     _scaleAnimation = Tween<double>(
       begin: 0.8,
-      end: 1.0,
+      end: ResponsiveUI.padding(context, 1.0),
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
     _fadeAnimation = Tween<double>(
       begin: 0.0,
-      end: 1.0,
+      end: ResponsiveUI.padding(context, 1.0),
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     _slideAnimation = Tween<Offset>(
@@ -99,7 +99,7 @@ class _AnimatedCategoryCardState extends State<AnimatedCategoryCard>
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primaryBlue.withOpacity(0.15),
+                  color: AppColors.primaryBlue.withValues(alpha: 0.15),
                   blurRadius: 15,
                   offset: const Offset(0, 5),
                 ),
@@ -154,7 +154,7 @@ class _AnimatedCategoryCardState extends State<AnimatedCategoryCard>
               Text(
                 widget.category.name,
                 style: TextStyle(
-                  fontSize: 19,
+                  fontSize: ResponsiveUI.fontSize(context, 19),
                   fontWeight: FontWeight.bold,
                   color: AppColors.darkGray,
                 ),
@@ -162,14 +162,14 @@ class _AnimatedCategoryCardState extends State<AnimatedCategoryCard>
             //   SizedBox(height: ResponsiveUI.spacing(context, 6)),
             //   Row(
             //     children: [
-            //       Icon(Icons.image, size: 15, color: AppColors.successGreen),
+            //       Icon(Icons.image, size: ResponsiveUI.iconSize(context, 15), color: AppColors.successGreen),
             //       SizedBox(width: ResponsiveUI.spacing(context, 4)),
             //       Expanded(
             //         child: Text(
             //           widget.category.image,
             //           style: TextStyle(
-            //             fontSize: 14,
-            //             color: AppColors.darkGray.withOpacity(0.6),
+            //             fontSize: ResponsiveUI.fontSize(context, 14),
+            //             color: AppColors.darkGray.withValues(alpha: 0.6),
             //           ),
             //           maxLines: 1,
             //           overflow: TextOverflow.ellipsis,
@@ -211,17 +211,17 @@ class _AnimatedCategoryCardState extends State<AnimatedCategoryCard>
   }
 
   // Widget _buildParentRow() {
-  //   if (widget.category.parentId == null) return const SizedBox.shrink();
+  //   if (widget.category.parentId == null) return SizedBox.shrink();
   //   return Row(
   //     children: [
-  //       Icon(Icons.folder, size: 16, color: AppColors.categoryPurple),
+  //       Icon(Icons.folder, size: ResponsiveUI.iconSize(context, 16), color: AppColors.categoryPurple),
   //       SizedBox(width: ResponsiveUI.spacing(context, 6)),
   //       Expanded(
   //         child: Text(
   //           'Parent: ${widget.category.parentId?.name ?? 'No parent'}',
   //           style: TextStyle(
-  //             fontSize: 13,
-  //             color: AppColors.darkGray.withOpacity(0.7),
+  //             fontSize: ResponsiveUI.fontSize(context, 13),
+  //             color: AppColors.darkGray.withValues(alpha: 0.7),
   //           ),
   //           maxLines: 1,
   //           overflow: TextOverflow.ellipsis,
@@ -340,3 +340,4 @@ class _AnimatedCategoryCardState extends State<AnimatedCategoryCard>
 //     );
 //   }
 // }
+

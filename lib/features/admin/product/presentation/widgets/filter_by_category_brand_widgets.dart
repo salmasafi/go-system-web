@@ -208,7 +208,7 @@ class _FilterButtonsState extends State<FilterButtons> {
             ),
           );
         } else {
-          return const SizedBox.shrink();
+          return SizedBox.shrink();
         }
       },
     );
@@ -244,7 +244,7 @@ class FilterButton extends StatelessWidget {
             color: isActive
                 ? AppColors.primaryBlue
                 : AppColors.shadowGray[300]!,
-            width: 1,
+            width: ResponsiveUI.value(context, 1),
           ),
         ),
         child: Row(
@@ -379,7 +379,7 @@ class GenericFilterPanel extends StatelessWidget {
       builder: (context, state) {
         if (state is ProductFiltersLoading) {
           return Container(
-            padding: EdgeInsets.all(16),
+            padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
             child: Center(
               child: CustomLoadingState(),
             ),
@@ -388,7 +388,7 @@ class GenericFilterPanel extends StatelessWidget {
 
         if (state is ProductFiltersError) {
           return Container(
-            padding: EdgeInsets.all(16),
+            padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
             child: Column(
               children: [
                 Text('Error: ${state.message}'),
@@ -435,7 +435,7 @@ class GenericFilterPanel extends StatelessWidget {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -462,7 +462,7 @@ class GenericFilterPanel extends StatelessWidget {
           );
         }
 
-        return const SizedBox.shrink();
+        return SizedBox.shrink();
       },
     );
   }
@@ -484,7 +484,7 @@ class VariationsFilterPanel extends StatelessWidget {
       builder: (context, state) {
         if (state is ProductFiltersLoading) {
           return Container(
-            padding: EdgeInsets.all(16),
+            padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
             child: Center(
               child: CustomLoadingState(),
             ),
@@ -493,7 +493,7 @@ class VariationsFilterPanel extends StatelessWidget {
 
         if (state is ProductFiltersError) {
           return Container(
-            padding: EdgeInsets.all(16),
+            padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
             child: Column(
               children: [
                 Text('Error: ${state.message}'),
@@ -522,7 +522,7 @@ class VariationsFilterPanel extends StatelessWidget {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -540,7 +540,7 @@ class VariationsFilterPanel extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final variation = variations[index];
                       return ExpansionTile(
-                        leading: const Icon(Icons.tune),
+                        leading: Icon(Icons.tune),
                         title: Text(variation.name),
                         subtitle: Text('${variation.options.where((opt) => opt.status).length} options'),
                         children: variation.options
@@ -562,7 +562,7 @@ class VariationsFilterPanel extends StatelessWidget {
           );
         }
 
-        return const SizedBox.shrink();
+        return SizedBox.shrink();
       },
     );
   }

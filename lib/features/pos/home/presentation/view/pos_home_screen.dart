@@ -3,36 +3,42 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/error_handler.dart';
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:systego/features/POS/history/cubit/history_cubit.dart';
+import 'package:systego/features/POS/history/cubit/history_state.dart';
+import 'package:systego/features/POS/history/presentation/views/pending_orders_screen.dart';
+import 'package:systego/features/admin/dashboard/cubit/notifications_cubit.dart';
+import 'package:systego/features/admin/dashboard/presentation/view/notifications_screen.dart';
 
 // Cubits
 import 'package:systego/features/POS/checkout/cubit/checkout_cubit/checkout_cubit.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_state.dart';
 import 'package:systego/features/POS/shift/cubit/pos_shift_cubit.dart';
+import 'package:systego/features/POS/customer/cubit/pos_customer_cubit.dart';
 
 // Models
 import 'package:systego/features/POS/home/model/pos_models.dart';
 
 // Services & Screens
-import '../../../../../core/services/cache_helper.dart';
-import '../../../../admin/auth/presentation/view/login_screen.dart';
 import '../../../../admin/product/presentation/screens/barcode_scanner_screen.dart';
 import '../../../checkout/presentation/widgets/cart_bottom_sheet.dart';
 import '../../../checkout/presentation/widgets/cart_fab.dart';
 import '../../../checkout/presentation/widgets/cart_summary.dart';
-import '../../../history/presentation/views/history_screen.dart';
 import '../../../shift/presentation/views/cashier_selection_screen.dart';
 import '../../../shift/presentation/views/start_shift_screen.dart';
 
 // Widgets
 import '../widgets/filter_by_category_brand_widgets.dart';
 import '../widgets/header_section.dart';
+import '../widgets/pos_drawer.dart';
 import '../widgets/product_details_dialog.dart';
-import '../widgets/product_grid.dart'; // هذا الملف سنكتبه في الجزء الثاني
+import '../widgets/product_grid.dart';
 import '../widgets/tab_bar.dart';
 import '../widgets/variation_selector_dialog.dart';
+import '../widgets/bundles_grid.dart';
 
 class POSHomeScreen extends StatefulWidget {
   const POSHomeScreen({super.key});
@@ -47,18 +53,19 @@ class _POSHomeScreenState extends State<POSHomeScreen>
   String _searchQuery = '';
   Timer? _shiftTimer;
   String _shiftDuration = "00:00:00";
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    // التحقق المبدئي: إذا كان الشيفت مفتوحاً، ابدأ المؤقت وحمل البيانات
     final shiftCubit = context.read<PosShiftCubit>();
     final homeCubit = context.read<PosCubit>();
 
     if (shiftCubit.isShiftOpen) {
       homeCubit.loadPosData();
+      context.read<PosCustomerCubit>().fetchCustomers();
       _startLocalTimer();
     }
   }
@@ -78,39 +85,28 @@ class _POSHomeScreenState extends State<POSHomeScreen>
     }
   }
 
-  // ─── Shift Timer Logic ───
   void _startLocalTimer() {
     _shiftTimer?.cancel();
 
     void updateTime() {
       final cubit = context.read<PosShiftCubit>();
       if (cubit.isShiftOpen && cubit.currentShift != null) {
-        final duration = DateTime.now().difference(
-          cubit.currentShift!.startTime,
-        );
-
+        final duration = DateTime.now().difference(cubit.currentShift!.startTime);
         if (mounted) {
-          setState(() {
-            _shiftDuration = _formatDuration(duration);
-          });
+          setState(() => _shiftDuration = _formatDuration(duration));
         }
       }
     }
 
     updateTime();
-    _shiftTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      updateTime();
-    });
+    _shiftTimer = Timer.periodic(const Duration(seconds: 1), (_) => updateTime());
   }
 
   String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, "0");
-    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
-    return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+    String two(int n) => n.toString().padLeft(2, "0");
+    return "${two(duration.inHours)}:${two(duration.inMinutes.remainder(60))}:${two(duration.inSeconds.remainder(60))}";
   }
 
-  // ─── Cart Logic ───
   void _addToCart(Product product) {
     final checkoutCubit = context.read<CheckoutCubit>();
     final posCubit = context.read<PosCubit>();
@@ -122,10 +118,7 @@ class _POSHomeScreenState extends State<POSHomeScreen>
           product: product,
           onVariationSelected: (variation) {
             checkoutCubit.addToCart(product, variation: variation);
-            posCubit.selectTab(
-              tab: posCubit.selectedTab,
-              noFliterRefresh: true,
-            );
+            posCubit.selectTab(tab: posCubit.selectedTab, noFliterRefresh: true);
           },
         ),
       );
@@ -136,10 +129,7 @@ class _POSHomeScreenState extends State<POSHomeScreen>
           product: product,
           onAddToCart: () {
             checkoutCubit.addToCart(product);
-            posCubit.selectTab(
-              tab: posCubit.selectedTab,
-              noFliterRefresh: true,
-            );
+            posCubit.selectTab(tab: posCubit.selectedTab, noFliterRefresh: true);
           },
         ),
       );
@@ -167,11 +157,10 @@ class _POSHomeScreenState extends State<POSHomeScreen>
   }
 
   double get _total => context.read<CheckoutCubit>().cartItems.fold(
-    0,
-    (s, i) => s + i.product.price * i.quantity,
-  );
+        0,
+        (s, i) => s + i.effectivePrice * i.quantity,
+      );
 
-  // ─── Barcode Logic ───
   void _handleBarcodeScan(String code) async {
     final posCubit = context.read<PosCubit>();
     setState(() {
@@ -184,17 +173,14 @@ class _POSHomeScreenState extends State<POSHomeScreen>
     }
   }
 
-  // ─── Filter Logic ───
   List<Product> _filterProducts(List<Product> products) {
     return products.where((product) {
-      bool matchesSearch =
-          _searchQuery.isEmpty ||
+      return _searchQuery.isEmpty ||
           product.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           product.price.toString().contains(_searchQuery.toLowerCase()) ||
           product.prices.any(
             (v) => v.code.toLowerCase().contains(_searchQuery.toLowerCase()),
           );
-      return matchesSearch;
     }).toList();
   }
 
@@ -202,7 +188,6 @@ class _POSHomeScreenState extends State<POSHomeScreen>
   Widget build(BuildContext context) {
     return MultiBlocListener(
       listeners: [
-        // استماع لأحداث الشيفت والكاشير
         BlocListener<PosShiftCubit, PosShiftState>(
           listener: (context, state) {
             if (state is PosShiftActionError) {
@@ -211,20 +196,17 @@ class _POSHomeScreenState extends State<POSHomeScreen>
             if (state is PosSelectCashierError) {
               CustomSnackbar.showError(context, state.message);
             }
-
-            // عند بدء الشيفت بنجاح
             if (state is PosShiftStarted) {
               context.read<PosCubit>().loadPosData();
+              context.read<PosCustomerCubit>().fetchCustomers();
               _startLocalTimer();
             }
-
-            // عند إنهاء الشيفت
             if (state is PosShiftEnded) {
               _shiftTimer?.cancel();
+              context.read<PosCustomerCubit>().clearAll();
             }
           },
         ),
-        // استماع لأخطاء المنتجات (PosCubit)
         BlocListener<PosCubit, PosState>(
           listener: (context, state) {
             if (state is PosError) {
@@ -235,32 +217,33 @@ class _POSHomeScreenState extends State<POSHomeScreen>
             }
           },
         ),
+        BlocListener<CheckoutCubit, CheckoutState>(
+          listener: (context, state) {
+            if (state is CheckoutSuccess) {
+              context.read<PosCustomerCubit>().clearSelectedCustomer();
+            }
+          },
+        ),
       ],
-      // بناء الواجهة بناءً على حالة الشيفت
       child: BlocBuilder<PosShiftCubit, PosShiftState>(
         builder: (context, state) {
           final shiftCubit = context.read<PosShiftCubit>();
-          final homeCubit = context.read<PosCubit>();
 
-          // السيناريو 1: لم يتم اختيار كاشير بعد
           if (shiftCubit.selectedCashier == null) {
             return const CashierSelectionScreen();
           }
 
-          // السيناريو 2: تم اختيار كاشير، لكن الشيفت مغلق
           if (!shiftCubit.isShiftOpen) {
             return const StartShiftScreen();
           }
 
-          // السيناريو 3: الشيفت مفتوح -> عرض شاشة البيع (POS Layout)
-          return _buildPosLayout(homeCubit, shiftCubit);
+          return _buildPosLayout(shiftCubit);
         },
       ),
     );
   }
 
-  // ─── POS Layout (Scaffold & Body) ───
-  Widget _buildPosLayout(PosCubit homeCubit, PosShiftCubit shiftCubit) {
+  Widget _buildPosLayout(PosShiftCubit shiftCubit) {
     return BlocBuilder<CheckoutCubit, CheckoutState>(
       builder: (context, checkoutState) {
         final checkoutCubit = context.read<CheckoutCubit>();
@@ -268,109 +251,221 @@ class _POSHomeScreenState extends State<POSHomeScreen>
         final bool hasItems = cartItems.isNotEmpty;
 
         return Scaffold(
+          key: _scaffoldKey,
           backgroundColor: AppColors.lightBlueBackground,
-
-          // AppBar
+          drawer: POSDrawer(shiftDuration: _shiftDuration),
           appBar: PreferredSize(
             preferredSize: const Size.fromHeight(kToolbarHeight),
-            child: AppBar(
-              scrolledUnderElevation: 1,
-              backgroundColor: AppColors.white,
-              elevation: 0,
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    shiftCubit.selectedCashier?.name ?? "Unknown Cashier",
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+            child: BlocBuilder<NotificationsCubit, NotificationsState>(
+              builder: (context, notifState) {
+                final unreadCount =
+                    notifState is NotificationsSuccess ? notifState.unreadCount : 0;
+
+                return AppBar(
+                  scrolledUnderElevation: 1,
+                  backgroundColor: AppColors.white,
+                  elevation: 0,
+                  leading: Container(
+                    margin: EdgeInsetsDirectional.only(
+                        start: ResponsiveUI.padding(context, 8), top: ResponsiveUI.padding(context, 8), bottom: ResponsiveUI.padding(context, 8)),
+                    decoration: BoxDecoration(
+                      color: AppColors.lightBlueBackground,
+                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+                    ),
+                    child: IconButton(
+                      icon: Icon(Icons.menu_rounded,
+                          color: AppColors.primaryBlue),
+                      onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                      padding: EdgeInsets.zero,
                     ),
                   ),
-                  Text(
-                    "Shift Time: $_shiftDuration",
-                    style: const TextStyle(color: Colors.green, fontSize: 12),
-                  ),
-                ],
-              ),
-              actions: [
-                // زر إنهاء الشيفت
-                IconButton(
-                  icon: const Icon(
-                    Icons.stop_circle_outlined,
-                    color: AppColors.red,
-                  ),
-                  tooltip: "End Shift",
-                  onPressed: () async {
-                    final confirm = await showDialog<bool>(
-                      context: context,
-                      builder: (ctx) => AlertDialog(
-                        title: const Text("End Shift?"),
-                        content: const Text(
-                          "Are you sure you want to end this shift and generate report?",
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        shiftCubit.selectedCashier?.name ?? "Cashier",
+                        style: TextStyle(
+                          color: AppColors.darkGray,
+                          fontWeight: FontWeight.bold,
+                          fontSize: ResponsiveUI.fontSize(context, 15),
                         ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(ctx, false),
-                            child: const Text("Cancel"),
+                      ),
+                    ],
+                  ),
+                  centerTitle: false,
+                  titleSpacing: 0,
+                  // Timer in center
+                  flexibleSpace: SafeArea(
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 120)),
+                        child: Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: ResponsiveUI.padding(context, 12), vertical: ResponsiveUI.padding(context, 5)),
+                        decoration: BoxDecoration(
+                          color: AppColors.lightBlueBackground,
+                          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.timer_outlined,
+                                size: ResponsiveUI.iconSize(context, 18), color: AppColors.primaryBlue),
+                            SizedBox(width: ResponsiveUI.value(context, 6)),
+                            Text(
+                              _shiftDuration,
+                              style: TextStyle(
+                                fontSize: ResponsiveUI.fontSize(context, 17),
+                                color: AppColors.primaryBlue,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      ),
+                    ),
+                  ),
+                  actions: [
+                    // Pending Orders button
+                    Container(
+                      margin: EdgeInsetsDirectional.only(
+                          end: ResponsiveUI.padding(context, 4), top: ResponsiveUI.padding(context, 8), bottom: ResponsiveUI.padding(context, 8)),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+                      ),
+                      child: BlocBuilder<HistoryCubit, HistoryState>(
+                        buildWhen: (p, c) => c is PendingLoaded,
+                        builder: (context, state) {
+                          final count = state is PendingLoaded
+                              ? state.pendingSales.length
+                              : 0;
+                          return Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              IconButton(
+                                onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) =>
+                                          const PendingOrdersScreen()),
+                                ),
+                                icon: Icon(
+                                  Icons.pending_actions_rounded,
+                                  color: Colors.orange.shade700,
+                                  size: ResponsiveUI.iconSize(context, 24),
+                                ),
+                                padding: EdgeInsets.zero,
+                                tooltip: 'Pending Orders',
+                              ),
+                              if (count > 0)
+                                Positioned(
+                                  right: -2,
+                                  top: -2,
+                                  child: Container(
+                                    padding: EdgeInsets.all(ResponsiveUI.padding(context, 4)),
+                                    decoration: BoxDecoration(
+                                      color: Colors.orange.shade700,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                          color: AppColors.white, width: ResponsiveUI.value(context, 1.5)),
+                                    ),
+                                    constraints: const BoxConstraints(
+                                        minWidth: 18, minHeight: 18),
+                                    child: Center(
+                                      child: Text(
+                                        '$count',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: ResponsiveUI.fontSize(context, 9),
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                    // Notification Bell
+                    Container(
+                      margin: EdgeInsetsDirectional.only(
+                          end: ResponsiveUI.padding(context, 8), top: ResponsiveUI.padding(context, 8), bottom: ResponsiveUI.padding(context, 8)),
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: AppColors.lightBlueBackground,
+                              borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+                            ),
+                            child: IconButton(
+                              onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const NotificationsScreen()),
+                              ),
+                              icon: Icon(
+                                Icons.notifications_outlined,
+                                color: AppColors.mediumBlue700[700],
+                                size: ResponsiveUI.iconSize(context, 25),
+                              ),
+                              padding: EdgeInsets.zero,
+                            ),
                           ),
-                          TextButton(
-                            onPressed: () => Navigator.pop(ctx, true),
-                            child: const Text("End Shift"),
-                          ),
+                          if (unreadCount > 0)
+                            Positioned(
+                              right: -2,
+                              top: -2,
+                              child: Container(
+                                padding: EdgeInsets.all(ResponsiveUI.padding(context, 4)),
+                                decoration: BoxDecoration(
+                                  color: AppColors.red,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                      color: AppColors.white, width: ResponsiveUI.value(context, 2)),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.red.withValues(alpha: 0.3),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                constraints: const BoxConstraints(
+                                    minWidth: 20, minHeight: 20),
+                                child: Center(
+                                  child: Text(
+                                    unreadCount > 99 ? '99+' : '$unreadCount',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: ResponsiveUI.fontSize(context, 10),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            ),
                         ],
                       ),
-                    );
-
-                    if (confirm == true) {
-                      await shiftCubit.endShift();
-                    }
-                  },
-                ),
-                // زر تسجيل الخروج
-                IconButton(
-                  icon: const Icon(Icons.logout, color: Colors.grey),
-                  tooltip: "Logout (Keep Shift Open)",
-                  onPressed: () async {
-                    await shiftCubit.logoutShift();
-                    await CacheHelper.clearAllData();
-                    if (context.mounted) {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginScreen(),
-                        ),
-                        (route) => false,
-                      );
-                    }
-                  },
-                ),
-                // زر التاريخ
-                IconButton(
-                  icon: const Icon(Icons.history, color: AppColors.primaryBlue),
-                  tooltip: "Sales History",
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const HistoryScreen()),
-                    );
-                  },
-                ),
-              ],
+                    ),
+                  ],
+                );
+              },
             ),
           ),
-
-          // Body
-          body: _buildPosBody(homeCubit),
-
-          // Bottom Sheet (Cart Summary)
+          body: _buildPosBody(context.read<PosCubit>()),
           bottomSheet: hasItems ? POSCartSummary(total: _total) : null,
-
-          // FAB (Cart Button)
           floatingActionButton: hasItems
               ? AnimatedOpacity(
-                  opacity: hasItems ? 1.0 : 0.0,
+                  opacity: 1.0,
                   duration: const Duration(milliseconds: 200),
                   child: POSCartFAB(
                     itemCount: cartItems.fold(0, (s, i) => s + i.quantity),
@@ -384,7 +479,6 @@ class _POSHomeScreenState extends State<POSHomeScreen>
     );
   }
 
-  // ─── POS Body Content ───
   Widget _buildPosBody(PosCubit homeCubit) {
     return BlocBuilder<PosCubit, PosState>(
       builder: (context, state) {
@@ -394,43 +488,31 @@ class _POSHomeScreenState extends State<POSHomeScreen>
 
         return Column(
           children: [
-            // Search + Header
             POSHeaderSection(
               searchController: _searchController,
               onChanged: (query) => setState(() => _searchQuery = query),
               onTap: () async {
                 final result = await Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => const BarcodeScannerScreen(),
-                  ),
+                  MaterialPageRoute(builder: (_) => const BarcodeScannerScreen()),
                 );
                 if (result != null && result is String && result != '-1') {
                   _handleBarcodeScan(result);
                 }
               },
             ),
-
-            // Tabs
             const POSTabBar(),
-
-            // Filter Panel
             const POSFilterBar(),
-
-            // Product Grid (الآن سنمرر لها المنتجات المفلترة بالبحث)
             Expanded(
               child: Builder(
                 builder: (context) {
-                  // ملاحظة: الـ Grid سيتعامل مع حالة التحميل الخاصة بالفلتر داخلياً
+                  if (state is PosBundlesLoaded) {
+                    return POSBundlesGrid(bundles: state.bundles);
+                  }
                   if (state is PosDataLoaded) {
                     final filtered = _filterProducts(state.displayedProducts);
-                    return POSProductGrid(
-                      filteredProducts:
-                          filtered, // نمرر المنتجات بعد فلتر البحث
-                    );
+                    return POSProductGrid(filteredProducts: filtered);
                   }
-
-                  // fallback
                   return const POSProductGrid(filteredProducts: []);
                 },
               ),

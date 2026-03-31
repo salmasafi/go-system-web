@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 
 import '../constants/app_colors.dart';
@@ -26,31 +27,31 @@ class CustomDetailSection extends StatelessWidget {
         Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsets.all(ResponsiveUI.padding(context, 8)),
               decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(10),
+                color: iconColor.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 10)),
               ),
-              child: Icon(icon, color: iconColor, size: 20),
+              child: Icon(icon, color: iconColor, size: ResponsiveUI.iconSize(context, 20)),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: ResponsiveUI.value(context, 12)),
             Text(
               title,
               style: TextStyle(
-                fontSize: 17,
+                fontSize: ResponsiveUI.fontSize(context, 17),
                 fontWeight: FontWeight.bold,
                 color: AppColors.darkGray,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: ResponsiveUI.value(context, 12)),
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
           decoration: BoxDecoration(
             color: backgroundColor ?? AppColors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.lightGray.withOpacity(0.5)),
+            borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 16)),
+            border: Border.all(color: AppColors.lightGray.withValues(alpha: 0.5)),
           ),
           child: Column(children: children),
         ),

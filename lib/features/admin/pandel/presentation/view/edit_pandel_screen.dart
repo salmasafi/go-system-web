@@ -33,7 +33,13 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
   late DateTime _endDate;
   final List<File> _newImages = [];
   List<String> _existingImages = [];
-  List<String> _selectedProductIds = [];
+
+  // Map of productId -> quantity
+  final Map<String, int> _selectedProducts = {};
+  // Map of productId -> productPriceId (for variations)
+  final Map<String, String> _selectedProductPriceIds = {};
+  bool _allWarehouses = true;
+  var _selectedWarehouseIds = <String>[];
 
   final _picker = ImagePicker();
 
@@ -50,9 +56,15 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
     _startDate = widget.pandel.startDate;
     _endDate = widget.pandel.endDate;
     _existingImages = List.from(widget.pandel.images);
-    _selectedProductIds = widget.pandel.products
-        .map((product) => product.id)
-        .toList();
+    _allWarehouses = widget.pandel.allWarehouses;
+    _selectedWarehouseIds = widget.pandel.warehouseIds ?? [];
+    // Populate selected products map from existing pandel products
+    for (final p in widget.pandel.products) {
+      _selectedProducts[p.productId] = p.quantity;
+      if (p.productPriceId != null) {
+        _selectedProductPriceIds[p.productId] = p.productPriceId!;
+      }
+    }
   }
 
   // @override
@@ -165,7 +177,7 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
           hintText: hint,
           hasBoxDecoration: false,
           hasBorder: true,
-          prefixIconColor: AppColors.darkGray.withOpacity(0.7),
+          prefixIconColor: AppColors.darkGray.withValues(alpha: 0.7),
           keyboardType: keyboardType,
           maxLines: maxLines,
         ),
@@ -204,7 +216,7 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
               borderRadius: BorderRadius.circular(
                 ResponsiveUI.borderRadius(context, 8),
               ),
-              border: Border.all(color: AppColors.lightGray, width: 1),
+              border: Border.all(color: AppColors.lightGray, width: ResponsiveUI.value(context, 1)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -217,7 +229,7 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
                     fontSize: ResponsiveUI.fontSize(context, 14),
                     color: selectedDate != null
                         ? AppColors.darkGray
-                        : AppColors.darkGray.withOpacity(0.5),
+                        : AppColors.darkGray.withValues(alpha: 0.5),
                   ),
                 ),
                 Icon(
@@ -299,7 +311,7 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
                       borderRadius: BorderRadius.circular(
                         ResponsiveUI.borderRadius(context, 8),
                       ),
-                      border: Border.all(color: AppColors.lightGray, width: 1),
+                      border: Border.all(color: AppColors.lightGray, width: ResponsiveUI.value(context, 1)),
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(
@@ -323,8 +335,8 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
                     ),
                   ),
                   Positioned(
-                    top: 4,
-                    right: 4,
+                    top: ResponsiveUI.padding(context, 4),
+                    right: ResponsiveUI.padding(context, 4),
                     child: GestureDetector(
                       onTap: () => isExistingImage
                           ? _removeExistingImage(index)
@@ -334,7 +346,7 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
                           ResponsiveUI.padding(context, 4),
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.red.withOpacity(0.9),
+                          color: AppColors.red.withValues(alpha: 0.9),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -347,16 +359,16 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
                   ),
                   if (!isExistingImage)
                     Positioned(
-                      bottom: 4,
-                      left: 4,
+                      bottom: ResponsiveUI.padding(context, 4),
+                      left: ResponsiveUI.padding(context, 4),
                       child: Container(
                         padding: EdgeInsets.symmetric(
                           horizontal: ResponsiveUI.padding(context, 6),
                           vertical: ResponsiveUI.padding(context, 2),
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.primaryBlue.withOpacity(0.9),
-                          borderRadius: BorderRadius.circular(4),
+                          color: AppColors.primaryBlue.withValues(alpha: 0.9),
+                          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 4)),
                         ),
                         child: Text(
                           LocaleKeys.new_label.tr(),
@@ -386,10 +398,10 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
               borderRadius: BorderRadius.circular(
                 ResponsiveUI.borderRadius(context, 12),
               ),
-              border: Border.all(color: AppColors.lightGray, width: 1),
+              border: Border.all(color: AppColors.lightGray, width: ResponsiveUI.value(context, 1)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -409,7 +421,7 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
                       ? LocaleKeys.tap_to_upload_images.tr()
                       : LocaleKeys.tap_to_add_more_images.tr(),
                   style: TextStyle(
-                    color: AppColors.darkGray.withOpacity(0.7),
+                    color: AppColors.darkGray.withValues(alpha: 0.7),
                     fontSize: ResponsiveUI.fontSize(context, 13),
                   ),
                 ),
@@ -417,7 +429,7 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
                   Text(
                     '(${LocaleKeys.selected_images_count.tr(namedArgs: {'count': allImages.length.toString()})})',
                     style: TextStyle(
-                      color: AppColors.darkGray.withOpacity(0.5),
+                      color: AppColors.darkGray.withValues(alpha: 0.5),
                       fontSize: ResponsiveUI.fontSize(context, 12),
                     ),
                   ),
@@ -429,168 +441,147 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
     );
   }
 
-  Widget _buildMultiSelectDropdown<T>({
-    required String label,
-    required String hint,
-    required List<T> items,
-    required List<T> selectedItems,
-    required String Function(T) itemLabel,
-    required void Function(List<T>) onChanged,
-    IconData? icon,
-    String? Function(List<T>)? validator,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: ResponsiveUI.spacing(context, 16)),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: ResponsiveUI.fontSize(context, 14),
-            color: AppColors.darkGray,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        SizedBox(height: ResponsiveUI.spacing(context, 8)),
+  Future<void> _openProductSelector(List productsState) async {
+    await showModalBottomSheet<Map<String, int>>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(ResponsiveUI.borderRadius(context, 16))),
+      ),
+      builder: (context) {
+        final tempSelected = Map<String, int>.from(_selectedProducts);
+        final tempPriceIds = Map<String, String>.from(_selectedProductPriceIds);
 
-        GestureDetector(
-          onTap: () async {
-            final result = await showModalBottomSheet<List<T>>(
-              context: context,
-              isScrollControlled: true,
-              backgroundColor: Colors.white,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-              ),
-              builder: (context) {
-                final tempSelected = List<T>.from(selectedItems);
-
-                return StatefulBuilder(
-                  builder: (context, setModalState) {
-                    return Padding(
-                      padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).viewInsets.bottom,
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return DraggableScrollableSheet(
+              expand: false,
+              initialChildSize: 0.7,
+              maxChildSize: 0.95,
+              builder: (_, scrollController) {
+                return Column(
+                  children: [
+                    SizedBox(height: ResponsiveUI.value(context, 12)),
+                    Container(
+                      width: ResponsiveUI.value(context, 40),
+                      height: ResponsiveUI.value(context, 4),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[400],
+                        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 2)),
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const SizedBox(height: 12),
-                          Container(
-                            width: 40,
-                            height: 4,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[400],
-                              borderRadius: BorderRadius.circular(2),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
+                    ),
+                    SizedBox(height: ResponsiveUI.value(context, 16)),
+                    Text(
+                      LocaleKeys.select_products.tr(),
+                      style: TextStyle(
+                        fontSize: ResponsiveUI.fontSize(context, 16),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(height: ResponsiveUI.value(context, 8)),
+                    Expanded(
+                      child: ListView.builder(
+                        controller: scrollController,
+                        itemCount: productsState.length,
+                        itemBuilder: (context, index) {
+                          final product = productsState[index];
+                          final isSelected = tempSelected.containsKey(product.id);
+                          final qty = tempSelected[product.id] ?? 1;
+                          final selectedPriceId = tempPriceIds[product.id];
 
-                          Text(
-                            hint,
-                            style: TextStyle(
-                              fontSize: ResponsiveUI.fontSize(context, 16),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-
-                          const SizedBox(height: 16),
-
-                          Expanded(
-                            child: ListView.builder(
-                              itemCount: items.length,
-                              itemBuilder: (context, index) {
-                                final item = items[index];
-                                return CheckboxListTile(
-                                  title: Text(itemLabel(item)),
-                                  value: tempSelected.contains(item),
-                                  onChanged: (checked) {
-                                    setModalState(() {
-                                      if (checked == true) {
-                                        tempSelected.add(item);
-                                      } else {
-                                        tempSelected.remove(item);
-                                      }
-                                    });
-                                  },
-                                );
+                          return ListTile(
+                            leading: Checkbox(
+                              value: isSelected,
+                              activeColor: AppColors.primaryBlue,
+                              onChanged: (checked) {
+                                setModalState(() {
+                                  if (checked == true) {
+                                    tempSelected[product.id] = 1;
+                                  } else {
+                                    tempSelected.remove(product.id);
+                                    tempPriceIds.remove(product.id);
+                                  }
+                                });
                               },
                             ),
-                          ),
-
-                          Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pop(context, tempSelected);
-                                },
-                                child: Text(LocaleKeys.done.tr()),
-                              ),
-                            ),
-                          ),
-                        ],
+                            title: Text(product.name),
+                            subtitle: product.variations.isNotEmpty && isSelected
+                                ? DropdownButton<String>(
+                                    hint: Text('Select variation'),
+                                    value: selectedPriceId,
+                                    isExpanded: true,
+                                    onChanged: (value) => setModalState(() {
+                                      if (value != null) {
+                                        tempPriceIds[product.id] = value;
+                                      }
+                                    }),
+                                    items: product.variations.map((variation) {
+                                      return DropdownMenuItem<String>(
+                                        value: variation.id,
+                                        child: Text('${variation.name} - \$${variation.price}'),
+                                      );
+                                    }).toList(),
+                                  )
+                                : null,
+                            trailing: isSelected
+                                ? Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(Icons.remove_circle_outline),
+                                        color: AppColors.primaryBlue,
+                                        onPressed: qty > 1
+                                            ? () => setModalState(() {
+                                                  tempSelected[product.id] = qty - 1;
+                                                })
+                                            : null,
+                                      ),
+                                      Text('$qty',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: ResponsiveUI.fontSize(context, 16))),
+                                      IconButton(
+                                        icon: Icon(Icons.add_circle_outline),
+                                        color: AppColors.primaryBlue,
+                                        onPressed: () => setModalState(() {
+                                          tempSelected[product.id] = qty + 1;
+                                        }),
+                                      ),
+                                    ],
+                                  )
+                                : null,
+                          );
+                        },
                       ),
-                    );
-                  },
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              _selectedProducts
+                                ..clear()
+                                ..addAll(tempSelected);
+                              _selectedProductPriceIds
+                                ..clear()
+                                ..addAll(tempPriceIds);
+                            });
+                            Navigator.pop(context);
+                          },
+                          child: Text(LocaleKeys.done.tr()),
+                        ),
+                      ),
+                    ),
+                  ],
                 );
               },
             );
-
-            if (result != null) {
-              onChanged(result);
-            }
           },
-
-          child: Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: ResponsiveUI.padding(context, 12),
-              vertical: ResponsiveUI.padding(context, 14),
-            ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppColors.lightGray),
-            ),
-            child: Row(
-              children: [
-                if (icon != null) ...[
-                  Icon(icon, color: AppColors.primaryBlue),
-                  SizedBox(width: ResponsiveUI.spacing(context, 8)),
-                ],
-                Expanded(
-                  child: Text(
-                    selectedItems.isEmpty
-                        ? hint
-                        : "${selectedItems.length} ${LocaleKeys.selected.tr()}",
-                    style: TextStyle(
-                      color: selectedItems.isEmpty
-                          ? AppColors.darkGray.withOpacity(0.5)
-                          : AppColors.darkGray,
-                    ),
-                  ),
-                ),
-                Icon(
-                  Icons.keyboard_arrow_down_rounded,
-                  color: AppColors.primaryBlue,
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        if (validator != null && validator(selectedItems) != null)
-          Padding(
-            padding: EdgeInsets.only(top: ResponsiveUI.spacing(context, 4)),
-            child: Text(
-              validator(selectedItems)!,
-              style: TextStyle(
-                color: AppColors.red,
-                fontSize: ResponsiveUI.fontSize(context, 12),
-              ),
-            ),
-          ),
-      ],
+        );
+      },
     );
   }
 
@@ -604,7 +595,7 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
     }
 
     // Validate products count
-    if (_selectedProductIds.length < 2) {
+    if (_selectedProducts.length < 2) {
       CustomSnackbar.showWarning(
         context,
         LocaleKeys.warning_select_at_least_two_products.tr(),
@@ -642,15 +633,25 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
       return;
     }
 
+    final products = _selectedProducts.entries
+        .map((e) => PandelProduct(
+              productId: e.key,
+              productPriceId: _selectedProductPriceIds[e.key],
+              quantity: e.value,
+            ))
+        .toList();
+
     context.read<PandelCubit>().updatePandel(
       pandelId: widget.pandel.id,
       name: _nameController.text.trim(),
-      productsId: _selectedProductIds,
+      products: products,
       newImages: _newImages,
       existingImages: _existingImages,
       startDate: _startDate,
       endDate: _endDate,
       price: price,
+      allWarehouses: _allWarehouses,
+      warehouseIds: _allWarehouses ? null : _selectedWarehouseIds,
     );
   }
 
@@ -709,36 +710,70 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(
-                                height: ResponsiveUI.spacing(context, 8),
+                              SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                              Text(
+                                LocaleKeys.products.tr(),
+                                style: TextStyle(
+                                  fontSize: ResponsiveUI.fontSize(context, 14),
+                                  color: AppColors.darkGray,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
+                              SizedBox(height: ResponsiveUI.spacing(context, 8)),
                               if (productsState is ProductsSuccess)
-                                _buildMultiSelectDropdown<String>(
-                                  label: LocaleKeys.products.tr(),
-                                  hint: LocaleKeys.select_products.tr(),
-                                  items: productsState.products
-                                      .map((w) => w.id)
-                                      .toList(),
-                                  selectedItems: _selectedProductIds,
-                                  itemLabel: (id) => productsState.products
-                                      .firstWhere((w) => w.id == id)
-                                      .name,
-                                  onChanged: (List<String> v) {
-                                    setState(() {
-                                      _selectedProductIds = v;
-                                    });
-                                  },
-                                  icon: Icons.inventory_2_rounded,
-                                  validator: (v) => v.length < 2
-                                      ? LocaleKeys
-                                            .warning_select_at_least_two_products
-                                            .tr()
-                                      : null,
+                                GestureDetector(
+                                  onTap: () => _openProductSelector(productsState.products),
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: ResponsiveUI.padding(context, 12),
+                                      vertical: ResponsiveUI.padding(context, 14),
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
+                                      border: Border.all(color: AppColors.lightGray),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.inventory_2_rounded, color: AppColors.primaryBlue),
+                                        SizedBox(width: ResponsiveUI.spacing(context, 8)),
+                                        Expanded(
+                                          child: Text(
+                                            _selectedProducts.isEmpty
+                                                ? LocaleKeys.select_products.tr()
+                                                : "${_selectedProducts.length} ${LocaleKeys.selected.tr()}",
+                                            style: TextStyle(
+                                              color: _selectedProducts.isEmpty
+                                                  ? AppColors.darkGray.withValues(alpha: 0.5)
+                                                  : AppColors.darkGray,
+                                            ),
+                                          ),
+                                        ),
+                                        Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.primaryBlue),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               if (productsState is ProductsError)
-                                Text(
-                                  productsState.message,
-                                  style: TextStyle(color: AppColors.red),
+                                Text(productsState.message, style: TextStyle(color: AppColors.red)),
+                              if (_selectedProducts.isNotEmpty && productsState is ProductsSuccess)
+                                Padding(
+                                  padding: EdgeInsets.only(top: ResponsiveUI.spacing(context, 8)),
+                                  child: Wrap(
+                                    spacing: 8,
+                                    runSpacing: 4,
+                                    children: _selectedProducts.entries.map((e) {
+                                      final product = productsState.products
+                                          .firstWhere((p) => p.id == e.key, orElse: () => productsState.products.first);
+                                      return Chip(
+                                        label: Text('${product.name} x${e.value}'),
+                                        deleteIcon: Icon(Icons.close, size: ResponsiveUI.iconSize(context, 16)),
+                                        onDeleted: () {
+                                          setState(() { _selectedProducts.remove(e.key); });
+                                        },
+                                      );
+                                    }).toList(),
+                                  ),
                                 ),
                             ],
                           ),
@@ -765,6 +800,79 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
                             hint: LocaleKeys.enter_price.tr(),
                             keyboardType: TextInputType.number,
                           ),
+                          SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                          // All Warehouses Toggle
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'Apply to all warehouses',
+                                  style: TextStyle(
+                                    fontSize: ResponsiveUI.fontSize(context, 14),
+                                    color: AppColors.darkGray,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              Switch(
+                                value: _allWarehouses,
+                                onChanged: (value) => setState(() => _allWarehouses = value),
+                                activeThumbColor: AppColors.primaryBlue,
+                              ),
+                            ],
+                          ),
+                          if (!_allWarehouses)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                                Text(
+                                  'Select Warehouses',
+                                  style: TextStyle(
+                                    fontSize: ResponsiveUI.fontSize(context, 14),
+                                    color: AppColors.darkGray,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                SizedBox(height: ResponsiveUI.spacing(context, 8)),
+                                GestureDetector(
+                                  onTap: () {
+                                    // TODO: Implement warehouse selector for edit screen
+                                    CustomSnackbar.showInfo(context, 'Warehouse selector to be implemented');
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: ResponsiveUI.padding(context, 12),
+                                      vertical: ResponsiveUI.padding(context, 14),
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
+                                      border: Border.all(color: AppColors.lightGray),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.store_rounded, color: AppColors.primaryBlue),
+                                        SizedBox(width: ResponsiveUI.spacing(context, 8)),
+                                        Expanded(
+                                          child: Text(
+                                            _selectedWarehouseIds.isEmpty
+                                                ? 'Select warehouses'
+                                                : "${_selectedWarehouseIds.length} selected",
+                                            style: TextStyle(
+                                              color: _selectedWarehouseIds.isEmpty
+                                                  ? AppColors.darkGray.withValues(alpha: 0.5)
+                                                  : AppColors.darkGray,
+                                            ),
+                                          ),
+                                        ),
+                                        Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.primaryBlue),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
 
                           _buildImagesSection(),
 
@@ -817,3 +925,4 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
     super.dispose();
   }
 }
+

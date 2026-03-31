@@ -91,7 +91,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
           hintText: hint,
           hasBoxDecoration: false,
           hasBorder: true,
-          prefixIconColor: AppColors.darkGray.withOpacity(0.7),
+          prefixIconColor: AppColors.darkGray.withValues(alpha: 0.7),
           keyboardType: keyboardType,
           maxLines: maxLines,
         ),
@@ -127,7 +127,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
             borderRadius: BorderRadius.circular(
               ResponsiveUI.borderRadius(context, 8),
             ),
-            border: Border.all(color: AppColors.lightGray, width: 1),
+            border: Border.all(color: AppColors.lightGray, width: ResponsiveUI.value(context, 1)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -184,7 +184,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
             borderRadius: BorderRadius.circular(
               ResponsiveUI.borderRadius(context, 8),
             ),
-            border: Border.all(color: AppColors.lightGray, width: 1),
+            border: Border.all(color: AppColors.lightGray, width: ResponsiveUI.value(context, 1)),
           ),
           child: Row(
             children: [
@@ -203,7 +203,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                   decoration: InputDecoration.collapsed(
                     hintText: hint,
                     hintStyle: TextStyle(
-                      color: AppColors.darkGray.withOpacity(0.5),
+                      color: AppColors.darkGray.withValues(alpha: 0.5),
                     ),
                   ),
                   style: TextStyle(
@@ -503,7 +503,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
 
               if (isLoading)
                 Container(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withValues(alpha: 0.3),
                   child: Center(
                     child: CircularProgressIndicator(
                       color: AppColors.primaryBlue,
@@ -541,7 +541,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
             value,
             style: TextStyle(
               fontSize: ResponsiveUI.fontSize(context, 14),
-              color: AppColors.darkGray.withOpacity(0.8),
+              color: AppColors.darkGray.withValues(alpha: 0.8),
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,

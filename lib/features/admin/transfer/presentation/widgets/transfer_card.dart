@@ -38,7 +38,7 @@ class TransferCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
         boxShadow: [
           BoxShadow(
             color: Colors.black12,
@@ -46,7 +46,7 @@ class TransferCard extends StatelessWidget {
             offset: const Offset(0, 2),
           ),
         ],
-        border: Border(left: BorderSide(color: statusColor, width: 4)),
+        border: Border(left: BorderSide(color: statusColor, width: ResponsiveUI.value(context, 4))),
       ),
       padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
       child: Column(
@@ -58,19 +58,19 @@ class TransferCard extends StatelessWidget {
             children: [
               Text(
                 transfer.reference,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 8), vertical: ResponsiveUI.padding(context, 4)),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  color: statusColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
                 ),
                 child: Text(
                   transfer.status.toUpperCase(),
                   style: TextStyle(
                     color: statusColor,
-                    fontSize: 12,
+                    fontSize: ResponsiveUI.fontSize(context, 12),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -88,7 +88,7 @@ class TransferCard extends StatelessWidget {
                 name: transfer.fromWarehouse?.name ?? "Unknown",
                 icon: Icons.warehouse,
               ),
-              const Expanded(
+              Expanded(
                 child: Icon(Icons.arrow_forward, color: Colors.grey),
               ),
               _buildWarehouseInfo(
@@ -106,7 +106,7 @@ class TransferCard extends StatelessWidget {
             "${transfer.products.length} ${LocaleKeys.products.tr()}: ${transfer.products.map((e) => e.productName).join(', ')}",
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: Colors.grey[600], fontSize: 13),
+            style: TextStyle(color: Colors.grey[600], fontSize: ResponsiveUI.fontSize(context, 13)),
           ),
 
           if (type == TransferType.incoming && !isDone) ...[
@@ -115,9 +115,9 @@ class TransferCard extends StatelessWidget {
             // Footer: Date & Action
             Row(
               children: [
-                // Icon(Icons.access_time, size: 16, color: Colors.grey[400]),
-                // const SizedBox(width: 4),
-                // Text(formattedDate, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                // Icon(Icons.access_time, size: ResponsiveUI.iconSize(context, 16), color: Colors.grey[400]),
+                // SizedBox(width: ResponsiveUI.value(context, 4)),
+                // Text(formattedDate, style: TextStyle(color: Colors.grey[600], fontSize: ResponsiveUI.fontSize(context, 12))),
                 // const Spacer(),
 
                 // Only show Receive button if:
@@ -131,14 +131,14 @@ class TransferCard extends StatelessWidget {
                       warehouseId: currentWarehouseId,
                     );
                   },
-                  icon: const Icon(Icons.check, size: 16),
+                  icon: Icon(Icons.check, size: ResponsiveUI.iconSize(context, 16)),
                   label: Text(LocaleKeys.receive.tr()),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryBlue,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ResponsiveUI.padding(context, 16),
+                      vertical: ResponsiveUI.padding(context, 8),
                     ),
                   ),
                 ),
@@ -161,11 +161,11 @@ class TransferCard extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(icon, size: 14, color: Colors.grey),
-            const SizedBox(width: 4),
+            Icon(icon, size: ResponsiveUI.iconSize(context, 14), color: Colors.grey),
+            SizedBox(width: ResponsiveUI.value(context, 4)),
             Text(
               label,
-              style: const TextStyle(fontSize: 10, color: Colors.grey),
+              style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 10), color: Colors.grey),
             ),
           ],
         ),
@@ -173,7 +173,7 @@ class TransferCard extends StatelessWidget {
           width: ResponsiveUI.screenWidth(context) * 0.35,
           child: Text(
             name,
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: ResponsiveUI.fontSize(context, 13)),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
@@ -182,3 +182,4 @@ class TransferCard extends StatelessWidget {
     );
   }
 }
+

@@ -102,7 +102,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               Text(
                                 'Gallery Images',
                                 style: TextStyle(
-                                  fontSize: 18,
+                                  fontSize: ResponsiveUI.fontSize(context, 18),
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.black,
                                 ),
@@ -114,7 +114,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 ),
                               ),
                               SizedBox(
-                                height: 100,
+                                height: ResponsiveUI.value(context, 100),
                                 child: ListView.builder(
                                   scrollDirection: Axis.horizontal,
                                   itemCount: product.galleryProduct.length,
@@ -124,17 +124,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                         right: ResponsiveUI.padding(context, 1),
                                       ),
                                       child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
+                                        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
                                         child: Image.network(
                                           product.galleryProduct[index],
-                                          width: 100,
-                                          height: 100,
+                                          width: ResponsiveUI.value(context, 100),
+                                          height: ResponsiveUI.value(context, 100),
                                           fit: BoxFit.contain,
                                           errorBuilder:
                                               (context, error, stackTrace) {
                                                 return Container(
-                                                  width: 100,
-                                                  height: 100,
+                                                  width: ResponsiveUI.value(context, 100),
+                                                  height: ResponsiveUI.value(context, 100),
                                                   color: AppColors.shadowGray,
                                                   child: Icon(
                                                     Icons.broken_image,
@@ -192,7 +192,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         // Text(
                         //   'Stock & Inventory',
                         //   style: TextStyle(
-                        //     fontSize: 18,
+                        //     fontSize: ResponsiveUI.fontSize(context, 18),
                         //     fontWeight: FontWeight.bold,
                         //     color: AppColors.black,
                         //   ),
@@ -232,17 +232,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           ),
                           decoration: BoxDecoration(
                             color: AppColors.white,
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.shadowGray.withOpacity(0.08),
+                                color: AppColors.shadowGray.withValues(alpha: 0.08),
                                 blurRadius: 12,
                                 offset: Offset(0, 4),
                               ),
                             ],
                             border: Border.all(
-                              color: AppColors.lightGray.withOpacity(0.2),
-                              width: 1,
+                              color: AppColors.lightGray.withValues(alpha: 0.2),
+                              width: ResponsiveUI.value(context, 1),
                             ),
                           ),
                           child: Column(
@@ -252,18 +252,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               Row(
                                 children: [
                                   Container(
-                                    width: 40,
-                                    height: 40,
+                                    width: ResponsiveUI.value(context, 40),
+                                    height: ResponsiveUI.value(context, 40),
                                     decoration: BoxDecoration(
-                                      color: AppColors.primaryBlue.withOpacity(
+                                      color: AppColors.primaryBlue.withValues(alpha: 
                                         0.1,
                                       ),
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 10)),
                                     ),
                                     child: Icon(
                                       Icons.inventory_2_outlined,
                                       color: AppColors.primaryBlue,
-                                      size: 20,
+                                      size: ResponsiveUI.iconSize(context, 20),
                                     ),
                                   ),
                                   SizedBox(
@@ -277,17 +277,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                         Text(
                                           'Stock & Inventory',
                                           style: TextStyle(
-                                            fontSize: 18,
+                                            fontSize: ResponsiveUI.fontSize(context, 18),
                                             fontWeight: FontWeight.w700,
                                             color: AppColors.darkBlue,
                                             letterSpacing: -0.3,
                                           ),
                                         ),
-                                        SizedBox(height: 4),
+                                        SizedBox(height: ResponsiveUI.value(context, 4)),
                                         Text(
                                           'Product stock management details',
                                           style: TextStyle(
-                                            fontSize: 12,
+                                            fontSize: ResponsiveUI.fontSize(context, 12),
                                             color: AppColors.darkGray,
                                             fontWeight: FontWeight.w400,
                                           ),
@@ -309,11 +309,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               Container(
                                 decoration: BoxDecoration(
                                   color: AppColors.lightBlueBackground
-                                      .withOpacity(0.5),
-                                  borderRadius: BorderRadius.circular(10),
+                                      .withValues(alpha: 0.5),
+                                  borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 10)),
                                   border: Border.all(
-                                    color: AppColors.lightGray.withOpacity(0.3),
-                                    width: 1,
+                                    color: AppColors.lightGray.withValues(alpha: 0.3),
+                                    width: ResponsiveUI.value(context, 1),
                                   ),
                                 ),
                                 child: Column(
@@ -329,8 +329,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     ),
 
                                     Divider(
-                                      height: 1,
-                                      color: AppColors.lightGray.withOpacity(
+                                      height: ResponsiveUI.value(context, 1),
+                                      color: AppColors.lightGray.withValues(alpha: 
                                         0.3,
                                       ),
                                       indent: 60,
@@ -347,8 +347,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     ),
 
                                     Divider(
-                                      height: 1,
-                                      color: AppColors.lightGray.withOpacity(
+                                      height: ResponsiveUI.value(context, 1),
+                                      color: AppColors.lightGray.withValues(alpha: 
                                         0.3,
                                       ),
                                       indent: 60,
@@ -384,17 +384,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           ),
                           decoration: BoxDecoration(
                             color: AppColors.white,
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.shadowGray.withOpacity(0.08),
+                                color: AppColors.shadowGray.withValues(alpha: 0.08),
                                 blurRadius: 12,
                                 offset: Offset(0, 4),
                               ),
                             ],
                             border: Border.all(
-                              color: AppColors.lightGray.withOpacity(0.2),
-                              width: 1,
+                              color: AppColors.lightGray.withValues(alpha: 0.2),
+                              width: ResponsiveUI.value(context, 1),
                             ),
                           ),
                           child: Column(
@@ -404,17 +404,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               Row(
                                 children: [
                                   Container(
-                                    width: 40,
-                                    height: 40,
+                                    width: ResponsiveUI.value(context, 40),
+                                    height: ResponsiveUI.value(context, 40),
                                     decoration: BoxDecoration(
                                       color: AppColors.categoryPurple
-                                          .withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(10),
+                                          .withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 10)),
                                     ),
                                     child: Icon(
                                       Icons.featured_play_list_outlined,
                                       color: AppColors.categoryPurple,
-                                      size: 20,
+                                      size: ResponsiveUI.iconSize(context, 20),
                                     ),
                                   ),
                                   SizedBox(
@@ -428,17 +428,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                         Text(
                                           'Product Features',
                                           style: TextStyle(
-                                            fontSize: 18,
+                                            fontSize: ResponsiveUI.fontSize(context, 18),
                                             fontWeight: FontWeight.w700,
                                             color: AppColors.darkBlue,
                                             letterSpacing: -0.3,
                                           ),
                                         ),
-                                        SizedBox(height: 4),
+                                        SizedBox(height: ResponsiveUI.value(context, 4)),
                                         Text(
                                           'Toggle features and capabilities',
                                           style: TextStyle(
-                                            fontSize: 12,
+                                            fontSize: ResponsiveUI.fontSize(context, 12),
                                             color: AppColors.darkGray,
                                             fontWeight: FontWeight.w400,
                                           ),
@@ -510,7 +510,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         // Text(
                         //   'Product Features',
                         //   style: TextStyle(
-                        //     fontSize: 18,
+                        //     fontSize: ResponsiveUI.fontSize(context, 18),
                         //     fontWeight: FontWeight.bold,
                         //     color: AppColors.black,
                         //   ),
@@ -566,7 +566,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               Text(
                                 'Available Variations',
                                 style: TextStyle(
-                                  fontSize: 18,
+                                  fontSize: ResponsiveUI.fontSize(context, 18),
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.black,
                                 ),
@@ -620,7 +620,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                             // Text(
                                             //   'Price Variant Images',
                                             //   style: TextStyle(
-                                            //     fontSize: 14,
+                                            //     fontSize: ResponsiveUI.fontSize(context, 14),
                                             //     fontWeight: FontWeight.w600,
                                             //     color: AppColors.darkGray,
                                             //   ),
@@ -633,8 +633,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                   ),
                                             ),
                                             SizedBox(
-                                              height:
-                                                  80, // Smaller height for variant gallery
+                                              height: ResponsiveUI.value(context, 80), // Smaller height for variant gallery
                                               child: ListView.builder(
                                                 scrollDirection:
                                                     Axis.horizontal,
@@ -655,8 +654,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                           ),
                                                       child: Image.network(
                                                         price.gallery[index],
-                                                        width: 80,
-                                                        height: 80,
+                                                        width: ResponsiveUI.value(context, 80),
+                                                        height: ResponsiveUI.value(context, 80),
                                                         fit: BoxFit.contain,
                                                         errorBuilder:
                                                             (
@@ -665,8 +664,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                               stackTrace,
                                                             ) {
                                                               return Container(
-                                                                width: 80,
-                                                                height: 80,
+                                                                width: ResponsiveUI.value(context, 80),
+                                                                height: ResponsiveUI.value(context, 80),
                                                                 color: AppColors
                                                                     .shadowGray,
                                                                 child: Icon(
@@ -675,7 +674,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                                   color:
                                                                       AppColors
                                                                           .white,
-                                                                  size: 30,
+                                                                  size: ResponsiveUI.iconSize(context, 30),
                                                                 ),
                                                               );
                                                             },
@@ -706,7 +705,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     //         // Text(
                                     //         //   'Price Variant Images',
                                     //         //   style: TextStyle(
-                                    //         //     fontSize: 14,
+                                    //         //     fontSize: ResponsiveUI.fontSize(context, 14),
                                     //         //     fontWeight: FontWeight.w600,
                                     //         //     color: AppColors.darkGray,
                                     //         //   ),
@@ -741,8 +740,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     //                       ),
                                     //                   child: Image.network(
                                     //                     price.gallery[index],
-                                    //                     width: 80,
-                                    //                     height: 80,
+                                    //                     width: ResponsiveUI.value(context, 80),
+                                    //                     height: ResponsiveUI.value(context, 80),
                                     //                     fit: BoxFit.cover,
                                     //                     errorBuilder:
                                     //                         (
@@ -751,8 +750,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     //                           stackTrace,
                                     //                         ) {
                                     //                           return Container(
-                                    //                             width: 80,
-                                    //                             height: 80,
+                                    //                             width: ResponsiveUI.value(context, 80),
+                                    //                             height: ResponsiveUI.value(context, 80),
                                     //                             color: AppColors
                                     //                                 .shadowGray,
                                     //                             child: Icon(
@@ -761,7 +760,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     //                               color:
                                     //                                   AppColors
                                     //                                       .white,
-                                    //                               size: 30,
+                                    //                               size: ResponsiveUI.iconSize(context, 30),
                                     //                             ),
                                     //                           );
                                     //                         },
@@ -811,25 +810,25 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   Widget _buildFeatureChip(String label, bool isActive, IconData icon) {
     return Chip(
       backgroundColor: isActive
-          ? AppColors.primaryBlue.withOpacity(0.1)
-          : AppColors.lightGray.withOpacity(0.1),
+          ? AppColors.primaryBlue.withValues(alpha: 0.1)
+          : AppColors.lightGray.withValues(alpha: 0.1),
       label: Text(
         label,
         style: TextStyle(
           color: isActive ? AppColors.primaryBlue : AppColors.darkGray,
-          fontSize: 12,
+          fontSize: ResponsiveUI.fontSize(context, 12),
         ),
       ),
       avatar: Icon(
         icon,
-        size: 16,
+        size: ResponsiveUI.iconSize(context, 16),
         color: isActive ? AppColors.primaryBlue : AppColors.darkGray,
       ),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
         side: BorderSide(
           color: isActive ? AppColors.primaryBlue : AppColors.darkGray,
-          width: 1,
+          width: ResponsiveUI.value(context, 1),
         ),
       ),
     );
@@ -848,10 +847,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.only(
-          topLeft: isFirst ? Radius.circular(10) : Radius.zero,
-          topRight: isFirst ? Radius.circular(10) : Radius.zero,
-          bottomLeft: isLast ? Radius.circular(10) : Radius.zero,
-          bottomRight: isLast ? Radius.circular(10) : Radius.zero,
+          topLeft: isFirst ? Radius.circular(ResponsiveUI.borderRadius(context, 10)) : Radius.zero,
+          topRight: isFirst ? Radius.circular(ResponsiveUI.borderRadius(context, 10)) : Radius.zero,
+          bottomLeft: isLast ? Radius.circular(ResponsiveUI.borderRadius(context, 10)) : Radius.zero,
+          bottomRight: isLast ? Radius.circular(ResponsiveUI.borderRadius(context, 10)) : Radius.zero,
         ),
       ),
       padding: EdgeInsets.symmetric(
@@ -861,13 +860,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       child: Row(
         children: [
           Container(
-            width: 36,
-            height: 36,
+            width: ResponsiveUI.value(context, 36),
+            height: ResponsiveUI.value(context, 36),
             decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
+              color: iconColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
             ),
-            child: Icon(icon, color: iconColor, size: 18),
+            child: Icon(icon, color: iconColor, size: ResponsiveUI.iconSize(context, 18)),
           ),
           SizedBox(width: ResponsiveUI.padding(context, 14)),
           Expanded(
@@ -877,16 +876,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 Text(
                   label,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: ResponsiveUI.fontSize(context, 14),
                     fontWeight: FontWeight.w500,
                     color: AppColors.darkGray,
                   ),
                 ),
-                SizedBox(height: 2),
+                SizedBox(height: ResponsiveUI.value(context, 2)),
                 Text(
                   value,
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: ResponsiveUI.fontSize(context, 15),
                     fontWeight: FontWeight.w600,
                     color: AppColors.darkBlue,
                   ),
@@ -908,20 +907,20 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   ) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 10)),
         color: isActive
-            ? activeColor.withOpacity(0.1)
-            : AppColors.lightGray.withOpacity(0.3),
+            ? activeColor.withValues(alpha: 0.1)
+            : AppColors.lightGray.withValues(alpha: 0.3),
         border: Border.all(
           color: isActive
-              ? activeColor.withOpacity(0.3)
-              : AppColors.lightGray.withOpacity(0.5),
-          width: 1.5,
+              ? activeColor.withValues(alpha: 0.3)
+              : AppColors.lightGray.withValues(alpha: 0.5),
+          width: ResponsiveUI.value(context, 1.5),
         ),
         boxShadow: isActive
             ? [
                 BoxShadow(
-                  color: activeColor.withOpacity(0.15),
+                  color: activeColor.withValues(alpha: 0.15),
                   blurRadius: 8,
                   offset: Offset(0, 3),
                 ),
@@ -938,14 +937,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           children: [
             Icon(
               icon,
-              size: 16,
+              size: ResponsiveUI.iconSize(context, 16),
               color: isActive ? activeColor : AppColors.darkGray,
             ),
             SizedBox(width: ResponsiveUI.padding(context, 6)),
             Text(
               label,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: ResponsiveUI.fontSize(context, 13),
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
                 color: isActive ? activeColor : AppColors.darkGray,
                 letterSpacing: -0.2,
@@ -953,10 +952,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             ),
             SizedBox(width: ResponsiveUI.padding(context, 4)),
             if (isActive)
-              Icon(Icons.check_circle, size: 14, color: activeColor),
+              Icon(Icons.check_circle, size: ResponsiveUI.iconSize(context, 14), color: activeColor),
           ],
         ),
       ),
     );
   }
 }
+

@@ -28,13 +28,13 @@ class POSSelectionOption extends StatelessWidget {
           child: Container(
             padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
+              gradient: LinearGradient(
                 colors: [AppColors.white, AppColors.lightBlueBackground],
               ),
               borderRadius: BorderRadius.circular(
                 ResponsiveUI.borderRadius(context, 12),
               ),
-              border: Border.all(color: AppColors.primaryBlue.withOpacity(0.3)),
+              border: Border.all(color: AppColors.primaryBlue.withValues(alpha: 0.3)),
             ),
             child: Row(
               children: [
@@ -59,3 +59,4 @@ class POSSelectionOption extends StatelessWidget {
     );
   }
 }
+

@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 
 import '../constants/app_colors.dart';
@@ -30,10 +31,10 @@ class CustomGradientFAB extends StatelessWidget {
             endColor ?? AppColors.darkBlue,
           ],
         ),
-        borderRadius: borderRadius ?? BorderRadius.circular(16),
+        borderRadius: borderRadius ?? BorderRadius.circular(ResponsiveUI.borderRadius(context, 16)),
         boxShadow: [
           BoxShadow(
-            color: (startColor ?? AppColors.primaryBlue).withOpacity(0.4),
+            color: (startColor ?? AppColors.primaryBlue).withValues(alpha: 0.4),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -43,20 +44,20 @@ class CustomGradientFAB extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onPressed,
-          borderRadius: borderRadius ?? BorderRadius.circular(16),
+          borderRadius: borderRadius ?? BorderRadius.circular(ResponsiveUI.borderRadius(context, 16)),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            padding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 20), vertical: ResponsiveUI.padding(context, 14)),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(icon, color: Colors.white),
                 if (label != null) ...[
-                  const SizedBox(width: 8),
+                  SizedBox(width: ResponsiveUI.value(context, 8)),
                   Text(
                     label!,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
-                      fontSize: 16,
+                      fontSize: ResponsiveUI.fontSize(context, 16),
                       fontWeight: FontWeight.bold,
                     ),
                   ),

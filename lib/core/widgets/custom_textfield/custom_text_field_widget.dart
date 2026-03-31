@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
 
@@ -80,7 +81,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
               boxShadow: widget.elevation > 0
                   ? [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
+                        color: Colors.black.withValues(alpha: 0.08),
                         blurRadius: widget.elevation,
                         offset: const Offset(0, 2),
                       ),
@@ -102,11 +103,11 @@ class _CustomTextFieldState extends State<CustomTextField> {
         decoration: InputDecoration(
           labelText: widget.labelText,
           hintText: widget.hintText,
-          hintStyle: const TextStyle(
+          hintStyle: TextStyle(
             fontWeight: FontWeight.w600,
             color: AppColors.darkGray,
           ),
-          labelStyle: const TextStyle(
+          labelStyle: TextStyle(
             fontWeight: FontWeight.w600,
             color: AppColors.darkGray,
           ),
@@ -134,8 +135,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
                   borderRadius: BorderRadius.circular(widget.borderRadius),
                   borderSide: BorderSide(
                     color: (widget.borderColor ?? AppColors.lightGray)
-                        .withOpacity(0.8),
-                    width: 1.5,
+                        .withValues(alpha: 0.8),
+                    width: ResponsiveUI.value(context, 1.5),
                   ),
                 )
               : InputBorder.none,
@@ -143,7 +144,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           prefixIcon: widget.prefixIcon != null
               ? Icon(
                   widget.prefixIcon,
-                  color: widget.prefixIconColor ?? AppColors.linkBlue,
+                  color: widget.prefixIconColor ?? AppColors.primaryBlue,
                 )
               : null,
 
@@ -153,7 +154,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                     _obscure
                         ? Icons.visibility_off_outlined
                         : Icons.visibility_outlined,
-                    color: AppColors.linkBlue,
+                    color: AppColors.primaryBlue,
                   ),
                   onPressed: () {
                     setState(() {
@@ -163,7 +164,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                   },
                 )
               : IconButton(
-                  icon: Icon(widget.suffixIcon, color: AppColors.linkBlue),
+                  icon: Icon(widget.suffixIcon, color: AppColors.primaryBlue),
                   onPressed: widget.suffixOnPressed,
                 ),
 
@@ -176,3 +177,4 @@ class _CustomTextFieldState extends State<CustomTextField> {
     );
   }
 }
+

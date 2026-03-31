@@ -74,7 +74,7 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
           hintText: hint,
           hasBoxDecoration: false,
           hasBorder: true,
-          prefixIconColor: AppColors.darkGray.withOpacity(0.7),
+          prefixIconColor: AppColors.darkGray.withValues(alpha: 0.7),
           keyboardType: keyboardType,
           maxLines: maxLines,
         ),
@@ -111,7 +111,7 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
             borderRadius: BorderRadius.circular(
               ResponsiveUI.borderRadius(context, 8),
             ),
-            border: Border.all(color: AppColors.lightGray, width: 1),
+            border: Border.all(color: AppColors.lightGray, width: ResponsiveUI.value(context, 1)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -121,7 +121,7 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
                   description,
                   style: TextStyle(
                     fontSize: ResponsiveUI.fontSize(context, 13),
-                    color: AppColors.darkGray.withOpacity(0.8),
+                    color: AppColors.darkGray.withValues(alpha: 0.8),
                   ),
                 ),
               ),
@@ -129,7 +129,7 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
                 value: value,
                 onChanged: onChanged,
                 activeColor: AppColors.primaryBlue,
-                activeTrackColor: AppColors.primaryBlue.withOpacity(0.3),
+                activeTrackColor: AppColors.primaryBlue.withValues(alpha: 0.3),
               ),
             ],
           ),

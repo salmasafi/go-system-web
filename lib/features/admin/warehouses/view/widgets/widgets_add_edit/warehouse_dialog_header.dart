@@ -38,7 +38,7 @@ class WarehouseDialogHeader extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             AppColors.primaryBlue,
-            AppColors.primaryBlue.withOpacity(0.8),
+            AppColors.darkBlue,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -53,7 +53,7 @@ class WarehouseDialogHeader extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(padding10),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(borderRadius12),
             ),
             child: Icon(
@@ -82,7 +82,7 @@ class WarehouseDialogHeader extends StatelessWidget {
                       ? LocaleKeys.update_warehouse_details.tr()
                       : LocaleKeys.add_new_warehouse.tr(),
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     fontSize: fontSize13,
                   ),
                 ),
@@ -109,3 +109,5 @@ class WarehouseDialogHeader extends StatelessWidget {
     );
   }
 }
+
+

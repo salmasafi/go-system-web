@@ -12,7 +12,7 @@ Widget buildLoadingOverlay(BuildContext context, double size) {
 
   return Container(
     decoration: BoxDecoration(
-      color: AppColors.white.withOpacity(0.95),
+      color: AppColors.white.withValues(alpha: 0.95),
       borderRadius: BorderRadius.circular(borderRadius24),
     ),
     child: Center(
@@ -23,7 +23,7 @@ Widget buildLoadingOverlay(BuildContext context, double size) {
           borderRadius: BorderRadius.circular(borderRadius20),
           boxShadow: [
             BoxShadow(
-              color: AppColors.black.withOpacity(value10),
+              color: AppColors.black.withValues(alpha: value10),
               blurRadius: value20Blur,
             ),
           ],
@@ -37,3 +37,4 @@ Widget buildLoadingOverlay(BuildContext context, double size) {
     ),
   );
 }
+

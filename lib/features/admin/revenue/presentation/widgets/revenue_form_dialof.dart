@@ -280,7 +280,7 @@ class _RevenueFormDialogState extends State<RevenueFormDialog>
       ),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.2),
+          color: Colors.black.withValues(alpha: 0.2),
           blurRadius: 30,
           offset: const Offset(0, 10),
         ),
@@ -290,12 +290,12 @@ class _RevenueFormDialogState extends State<RevenueFormDialog>
 
   Widget _buildHeader(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
             AppColors.primaryBlue,
-            AppColors.primaryBlue.withOpacity(0.8),
+            AppColors.darkBlue,
           ],
         ),
         borderRadius: BorderRadius.vertical(
@@ -304,14 +304,14 @@ class _RevenueFormDialogState extends State<RevenueFormDialog>
       ),
       child: Row(
         children: [
-          Icon(Icons.monetization_on, color: Colors.white, size: 28),
+          Icon(Icons.monetization_on, color: Colors.white, size: ResponsiveUI.iconSize(context, 28)),
           SizedBox(width: ResponsiveUI.spacing(context, 15)),
           Text(
             isEditMode
                 ? LocaleKeys.edit_revenue.tr()
                 : LocaleKeys.new_revenue.tr(),
             style: TextStyle(
-              fontSize: 22,
+              fontSize: ResponsiveUI.fontSize(context, 22),
               color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
@@ -319,7 +319,7 @@ class _RevenueFormDialogState extends State<RevenueFormDialog>
           Spacer(),
           InkWell(
             onTap: () => Navigator.pop(context),
-            child: Icon(Icons.close, color: Colors.white, size: 26),
+            child: Icon(Icons.close, color: Colors.white, size: ResponsiveUI.iconSize(context, 26)),
           ),
         ],
       ),
@@ -473,3 +473,5 @@ class RevenueDialogButtons extends StatelessWidget {
     );
   }
 }
+
+

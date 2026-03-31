@@ -56,15 +56,15 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryBlue.withOpacity(0.1),
+              color: AppColors.primaryBlue.withValues(alpha: 0.1),
               blurRadius: ResponsiveUI.borderRadius(context, 10),
               offset: const Offset(0, 5),
             ),
           ],
           border: account.status
               ? Border.all(
-                  color: AppColors.primaryBlue.withOpacity(0.8),
-                  width: 2.5,
+                  color: AppColors.darkBlue,
+                  width: ResponsiveUI.value(context, 2.5),
                 )
               : null,
         ),
@@ -157,7 +157,7 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
       children: [
         CircleAvatar(
           radius: ResponsiveUI.borderRadius(context, 25),
-          backgroundColor: AppColors.primaryBlue.withOpacity(0.8),
+          backgroundColor: AppColors.darkBlue,
           child: _buildImageWidget(account),
         ),
         SizedBox(width: ResponsiveUI.spacing(context, 14)),
@@ -191,7 +191,7 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
                 LocaleKeys.description.tr(),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 12),
-                  color: AppColors.darkGray.withOpacity(0.6),
+                  color: AppColors.darkGray.withValues(alpha: 0.6),
                 ),
               ),
               SizedBox(height: ResponsiveUI.spacing(context, 4)),
@@ -201,7 +201,7 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 13),
-                  color: AppColors.darkGray.withOpacity(0.8),
+                  color: AppColors.darkGray.withValues(alpha: 0.8),
                 ),
               ),
             ],
@@ -220,7 +220,7 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
                     LocaleKeys.warehouse.tr(),
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 12),
-                      color: AppColors.darkGray.withOpacity(0.6),
+                      color: AppColors.darkGray.withValues(alpha: 0.6),
                     ),
                   ),
                   SizedBox(height: ResponsiveUI.spacing(context, 2)),
@@ -249,7 +249,7 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
                    LocaleKeys.balance.tr(),
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 12),
-                      color: AppColors.darkGray.withOpacity(0.6),
+                      color: AppColors.darkGray.withValues(alpha: 0.6),
                     ),
                   ),
                   SizedBox(height: ResponsiveUI.spacing(context, 2)),
@@ -285,7 +285,7 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
                       fontSize: ResponsiveUI.fontSize(context, 12),
                       color: account.status
                           ? AppColors.successGreen
-                          : AppColors.darkGray.withOpacity(0.6),
+                          : AppColors.darkGray.withValues(alpha: 0.6),
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -306,7 +306,7 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
                       fontSize: ResponsiveUI.fontSize(context, 12),
                       color: account.inPos
                           ? AppColors.successGreen
-                          : AppColors.darkGray.withOpacity(0.6),
+                          : AppColors.darkGray.withValues(alpha: 0.6),
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -336,3 +336,4 @@ class _AnimatedBankAccountCardState extends State<AnimatedBankAccountCard> {
     );
   }
 }
+

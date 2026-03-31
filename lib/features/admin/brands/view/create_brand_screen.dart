@@ -48,7 +48,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
               backgroundColor: Colors.green,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
               ),
               margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
             ),
@@ -61,7 +61,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
               backgroundColor: Colors.red,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
               ),
               margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
             ),
@@ -120,7 +120,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                     hasBoxDecoration: false,
                     hasBorder: true,
                     prefixIcon: Icons.branding_watermark,
-                    prefixIconColor: AppColors.darkGray.withOpacity(0.7),
+                    prefixIconColor: AppColors.darkGray.withValues(alpha: 0.7),
                   ),
                   SizedBox(height: ResponsiveUI.spacing(context, 16)),
                   CustomTextField(
@@ -130,7 +130,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                     hasBoxDecoration: false,
                     hasBorder: true,
                     prefixIcon: Icons.branding_watermark,
-                    prefixIconColor: AppColors.darkGray.withOpacity(0.7),
+                    prefixIconColor: AppColors.darkGray.withValues(alpha: 0.7),
                   ),
                   SizedBox(height: ResponsiveUI.spacing(context, 16)),
                   Row(
@@ -176,11 +176,11 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                         ),
                         border: Border.all(
                           color: AppColors.lightGray,
-                          width: 1,
+                          width: ResponsiveUI.value(context, 1),
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),
@@ -211,7 +211,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                                 Text(
                                   LocaleKeys.tap_to_upload.tr(),
                                   style: TextStyle(
-                                    color: AppColors.darkGray.withOpacity(0.7),
+                                    color: AppColors.darkGray.withValues(alpha: 0.7),
                                     fontSize: ResponsiveUI.fontSize(
                                       context,
                                       13,
@@ -239,7 +239,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                                     backgroundColor: Colors.red,
                                     behavior: SnackBarBehavior.floating,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
                                     ),
                                     margin: EdgeInsets.all(
                                       ResponsiveUI.padding(context, 12),
@@ -259,7 +259,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                                     backgroundColor: Colors.red,
                                     behavior: SnackBarBehavior.floating,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
                                     ),
                                     margin: EdgeInsets.all(
                                       ResponsiveUI.padding(context, 12),
@@ -277,7 +277,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                                     backgroundColor: Colors.red,
                                     behavior: SnackBarBehavior.floating,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
                                     ),
                                     margin: EdgeInsets.all(
                                       ResponsiveUI.padding(context, 12),
@@ -297,7 +297,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                       //   shape: RoundedRectangleBorder(
                       //     borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                       //   ),
-                      //   elevation: 2,
+                      //   elevation: ResponsiveUI.value(context, 2),
                       // ),
                       text: state is CreateBrandLoading
                           ? LocaleKeys.saving_brand.tr()
@@ -338,3 +338,4 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
     super.dispose();
   }
 }
+

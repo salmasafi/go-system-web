@@ -149,7 +149,7 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
           hintText: hint,
           hasBoxDecoration: false,
           hasBorder: true,
-          prefixIconColor: AppColors.darkGray.withOpacity(0.7),
+          prefixIconColor: AppColors.darkGray.withValues(alpha: 0.7),
         ),
       ],
     );
@@ -279,7 +279,7 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
                                   ),
                                 ),
 
-                                const SizedBox(width: 8),
+                                SizedBox(width: ResponsiveUI.value(context, 8)),
                                 Checkbox(
                                   activeColor: AppColors.primaryBlue,
                                   value: option.status,
@@ -287,7 +287,7 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
                                       _toggleOptionStatus(index, v ?? true),
                                 ),
                                 IconButton(
-                                  icon: const Icon(
+                                  icon: Icon(
                                     Icons.delete,
                                     color: Colors.red,
                                   ),

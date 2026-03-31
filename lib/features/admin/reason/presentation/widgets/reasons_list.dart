@@ -41,7 +41,7 @@ class ReasonsList extends StatelessWidget {
         
         // Skip if reason is null
         if (reason.id.isEmpty) {
-          return const SizedBox.shrink();
+          return SizedBox.shrink();
         }
         
         return AnimatedReasonCard(

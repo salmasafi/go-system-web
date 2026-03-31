@@ -62,15 +62,15 @@ class _AnimatedCountryCardState extends State<AnimatedTaxCard> {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryBlue.withOpacity(0.1),
+              color: AppColors.primaryBlue.withValues(alpha: 0.1),
               blurRadius: ResponsiveUI.borderRadius(context, 10),
               offset: const Offset(0, 5),
             ),
           ],
           border: tax.status
               ? Border.all(
-                  color: AppColors.primaryBlue.withOpacity(0.8),
-                  width: 2.5,
+                  color: AppColors.darkBlue,
+                  width: ResponsiveUI.value(context, 2.5),
                 )
               : null,
         ),
@@ -106,7 +106,7 @@ class _AnimatedCountryCardState extends State<AnimatedTaxCard> {
       children: [
         CircleAvatar(
           radius: ResponsiveUI.borderRadius(context, 25),
-          backgroundColor: AppColors.primaryBlue.withOpacity(0.8),
+          backgroundColor: AppColors.darkBlue,
           child: Icon(
             Icons.receipt_long,
             color: AppColors.white,
@@ -140,7 +140,7 @@ class _AnimatedCountryCardState extends State<AnimatedTaxCard> {
           activeTrackColor: AppColors.primaryBlue,
 
           inactiveThumbColor: AppColors.white,
-          inactiveTrackColor: AppColors.darkGray.withOpacity(
+          inactiveTrackColor: AppColors.darkGray.withValues(alpha: 
             0.4,
           ), // soft grey track
 
@@ -155,7 +155,7 @@ class _AnimatedCountryCardState extends State<AnimatedTaxCard> {
             if (states.contains(WidgetState.selected)) {
               return AppColors.primaryBlue;
             }
-            return AppColors.darkGray.withOpacity(0.4);
+            return AppColors.darkGray.withValues(alpha: 0.4);
           }),
         ),
 
@@ -176,7 +176,7 @@ class _AnimatedCountryCardState extends State<AnimatedTaxCard> {
                 LocaleKeys.tax_type_label.tr(),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 12),
-                  color: AppColors.darkGray.withOpacity(0.6),
+                  color: AppColors.darkGray.withValues(alpha: 0.6),
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -207,7 +207,7 @@ class _AnimatedCountryCardState extends State<AnimatedTaxCard> {
                 LocaleKeys.tax_amount_label.tr(),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 12),
-                  color: AppColors.darkGray.withOpacity(0.6),
+                  color: AppColors.darkGray.withValues(alpha: 0.6),
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -234,3 +234,4 @@ class _AnimatedCountryCardState extends State<AnimatedTaxCard> {
     );
   }
 }
+

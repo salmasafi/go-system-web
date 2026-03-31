@@ -67,16 +67,10 @@ class _DiscountsScreenState extends State<DiscountsScreen> {
           final discounts = state.discounts;
 
           if (discounts.isEmpty) {
-            String title = discounts.isEmpty
-                ? LocaleKeys.no_discounts.tr()
-                : LocaleKeys.no_matching_discounts.tr();
-            String message = discounts.isEmpty
-                ? LocaleKeys.cities_all_caught_up.tr()
-                : LocaleKeys.cities_try_adjusting_filters.tr();
             return CustomEmptyState(
               icon: Icons.monetization_on_rounded,
-              title: title,
-              message: message,
+              title: LocaleKeys.no_discounts.tr(),
+              message: LocaleKeys.discounts_empty_message.tr(),
               onRefresh: _refresh,
               actionLabel: LocaleKeys.retry.tr(),
               onAction: _refresh,

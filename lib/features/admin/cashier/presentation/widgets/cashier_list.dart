@@ -150,9 +150,9 @@ class CashierList extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: cashier.status
-                          ? Colors.green.withOpacity(0.1)
-                          : Colors.red.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(16),
+                          ? Colors.green.withValues(alpha: 0.1)
+                          : Colors.red.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 16)),
                     ),
                     child: Text(
                       cashier.status
@@ -200,12 +200,12 @@ class CashierList extends StatelessWidget {
                     padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
                     decoration: BoxDecoration(
                       color: Colors.grey[50],
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
                       border: Border.all(color: AppColors.lightGray),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.store, size: 20, color: Colors.blue),
+                        Icon(Icons.store, size: ResponsiveUI.iconSize(context, 20), color: Colors.red),
                         SizedBox(width: ResponsiveUI.spacing(context, 8)),
                         Expanded(
                           child: Text(
@@ -299,7 +299,7 @@ class CashierList extends StatelessWidget {
                     padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
                     decoration: BoxDecoration(
                       color: Colors.grey[50],
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
                       border: Border.all(color: AppColors.lightGray),
                     ),
                     child: Column(
@@ -329,8 +329,8 @@ class CashierList extends StatelessWidget {
                                 vertical: ResponsiveUI.padding(context, 4),
                               ),
                               decoration: BoxDecoration(
-                                color: _getRoleColor(user.role).withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(4),
+                                color: _getRoleColor(user.role).withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 4)),
                               ),
                               child: Text(
                                 user.role,
@@ -349,9 +349,9 @@ class CashierList extends StatelessWidget {
                               ),
                               decoration: BoxDecoration(
                                 color: user.status == 'active' 
-                                    ? Colors.green.withOpacity(0.1)
-                                    : Colors.red.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(4),
+                                    ? Colors.green.withValues(alpha: 0.1)
+                                    : Colors.red.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 4)),
                               ),
                               child: Text(
                                 user.status,
@@ -388,7 +388,7 @@ class CashierList extends StatelessWidget {
                     padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
                     decoration: BoxDecoration(
                       color: Colors.grey[50],
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
                       border: Border.all(color: AppColors.lightGray),
                     ),
                     child: Column(
@@ -414,9 +414,9 @@ class CashierList extends StatelessWidget {
                               ),
                               decoration: BoxDecoration(
                                 color: account.status 
-                                    ? Colors.green.withOpacity(0.1)
-                                    : Colors.red.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(4),
+                                    ? Colors.green.withValues(alpha: 0.1)
+                                    : Colors.red.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 4)),
                               ),
                               child: Text(
                                 account.status 
@@ -468,7 +468,7 @@ class CashierList extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: ResponsiveUI.fontSize(context, 16),
                                 fontWeight: FontWeight.bold,
-                                color: account.inPOS ? Colors.blue : Colors.grey,
+                                color: account.inPOS ? Colors.red : Colors.grey,
                               ),
                             ),
                           ],
@@ -489,9 +489,9 @@ class CashierList extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
+                    backgroundColor: Colors.red,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                     ),
                     padding: EdgeInsets.symmetric(
                       vertical: ResponsiveUI.padding(context, 14),
@@ -522,7 +522,7 @@ class CashierList extends StatelessWidget {
       case 'manager':
         return Colors.orange;
       case 'cashier':
-        return Colors.blue;
+        return Colors.red;
       default:
         return Colors.grey;
     }

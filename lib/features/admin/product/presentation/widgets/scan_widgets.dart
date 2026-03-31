@@ -13,8 +13,8 @@ class ScannerIconContainer extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.primaryBlue.withOpacity(0.1),
-            AppColors.linkBlue.withOpacity(0.1),
+            AppColors.primaryBlue.withValues(alpha: 0.1),
+            AppColors.darkBlue.withValues(alpha: 0.1),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -22,7 +22,7 @@ class ScannerIconContainer extends StatelessWidget {
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryBlue.withOpacity(0.2),
+            color: AppColors.primaryBlue.withValues(alpha: 0.2),
             blurRadius: 30,
             offset: const Offset(0, 10),
           ),
@@ -34,7 +34,7 @@ class ScannerIconContainer extends StatelessWidget {
           height: ResponsiveUI.value(context, 120),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [AppColors.primaryBlue, AppColors.linkBlue],
+              colors: [AppColors.primaryBlue, AppColors.darkBlue],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -66,7 +66,7 @@ class ScanButton extends StatelessWidget {
       height: ResponsiveUI.value(context, 56),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.primaryBlue, AppColors.linkBlue],
+          colors: [AppColors.primaryBlue, AppColors.darkBlue],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
@@ -75,7 +75,7 @@ class ScanButton extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryBlue.withOpacity(0.4),
+            color: AppColors.primaryBlue.withValues(alpha: 0.4),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),

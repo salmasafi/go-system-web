@@ -57,7 +57,7 @@ class _AnimatedCustomerCardState extends State<AnimatedCustomerCard> {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryBlue.withOpacity(0.1),
+              color: AppColors.primaryBlue.withValues(alpha: 0.1),
               blurRadius: ResponsiveUI.borderRadius(context, 10),
               offset: const Offset(0, 5),
             ),
@@ -121,7 +121,7 @@ class _AnimatedCustomerCardState extends State<AnimatedCustomerCard> {
               //   customer.email.isNotEmpty ? customer.email : customer.phoneNumber,
               //   style: TextStyle(
               //     fontSize: ResponsiveUI.fontSize(context, 12),
-              //     color: AppColors.darkGray.withOpacity(0.6),
+              //     color: AppColors.darkGray.withValues(alpha: 0.6),
               //   ),
               // ),
             ],
@@ -137,8 +137,8 @@ class _AnimatedCustomerCardState extends State<AnimatedCustomerCard> {
           ),
           decoration: BoxDecoration(
             color: customer.isDue 
-              ? AppColors.red.withOpacity(0.1)
-              : AppColors.successGreen.withOpacity(0.1),
+              ? AppColors.red.withValues(alpha: 0.1)
+              : AppColors.successGreen.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(
               ResponsiveUI.borderRadius(context, 16),
             ),
@@ -247,8 +247,8 @@ class _AnimatedCustomerCardState extends State<AnimatedCustomerCard> {
         //       ),
         //       decoration: BoxDecoration(
         //         color: customer.isDue 
-        //           ? AppColors.red.withOpacity(0.1)
-        //           : AppColors.successGreen.withOpacity(0.1),
+        //           ? AppColors.red.withValues(alpha: 0.1)
+        //           : AppColors.successGreen.withValues(alpha: 0.1),
         //         borderRadius: BorderRadius.circular(
         //           ResponsiveUI.borderRadius(context, 16),
         //         ),
@@ -295,14 +295,14 @@ class _AnimatedCustomerCardState extends State<AnimatedCustomerCard> {
               Icon(
                 icon,
                 size: ResponsiveUI.iconSize(context, 14),
-                color: AppColors.darkGray.withOpacity(0.6),
+                color: AppColors.darkGray.withValues(alpha: 0.6),
               ),
               SizedBox(width: ResponsiveUI.spacing(context, 4)),
               Text(
                 label,
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 12),
-                  color: AppColors.darkGray.withOpacity(0.6),
+                  color: AppColors.darkGray.withValues(alpha: 0.6),
                 ),
               ),
             ],

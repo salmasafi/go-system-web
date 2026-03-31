@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
@@ -7,8 +8,14 @@ import '../../../../../core/constants/app_colors.dart';
 class POSProductCard extends StatelessWidget {
   final Product product;
   final VoidCallback onTap;
+  final int cartQuantity;
 
-  const POSProductCard({required this.product, required this.onTap, super.key});
+  POSProductCard({
+    required this.product,
+    required this.onTap,
+    required this.cartQuantity,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,13 +23,13 @@ class POSProductCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Colors.white, AppColors.lightBlueBackground],
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(
+            ResponsiveUI.borderRadius(context, 16),
           ),
-          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.blue.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.06),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -34,10 +41,14 @@ class POSProductCard extends StatelessWidget {
           children: [
             Expanded(
               child: Container(
-                //height: 100,
-                decoration: const BoxDecoration(
+                //height: ResponsiveUI.value(context, 100),
+                decoration: BoxDecoration(
                   color: AppColors.lightBlueBackground,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(
+                      ResponsiveUI.borderRadius(context, 16),
+                    ),
+                  ),
                 ),
                 child: Center(
                   child: product.image != null
@@ -45,15 +56,20 @@ class POSProductCard extends StatelessWidget {
                           imageUrl: product.image!,
                           fit: BoxFit.contain,
                           placeholder: (_, __) => const CustomLoadingState(),
-                          errorWidget: (_, __, ___) =>
-                              const Icon(Icons.image, size: 40),
+                          errorWidget: (_, __, ___) => Icon(
+                            Icons.image,
+                            size: ResponsiveUI.iconSize(context, 40),
+                          ),
                         )
-                      : const Icon(Icons.image, size: 40),
+                      : Icon(
+                          Icons.image,
+                          size: ResponsiveUI.iconSize(context, 40),
+                        ),
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -62,43 +78,32 @@ class POSProductCard extends StatelessWidget {
                     product.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 13,
+                    style: TextStyle(
+                      fontSize: ResponsiveUI.fontSize(context, 13),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 5),
+                  SizedBox(height: ResponsiveUI.value(context, 5)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        product.differentPrice
-                            ? 'From \$${product.price.toStringAsFixed(2)}'
-                            : '\$${product.price.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primaryBlue,
-                        ),
-                      ),
-                      // Text(
-                      //   '\$${product.price.toStringAsFixed(2)}',
-                      //   style: const TextStyle(
-                      //     fontSize: 16,
-                      //     fontWeight: FontWeight.bold,
-                      //     color: AppColors.primaryBlue,
-                      //   ),
-                      // ),
+                      _buildPrice(context),
                       Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: const BoxDecoration(
-                          color: AppColors.primaryBlue,
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                        padding: EdgeInsets.all(
+                          ResponsiveUI.padding(context, 6),
                         ),
-                        child: const Icon(
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryBlue,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(
+                              ResponsiveUI.borderRadius(context, 8),
+                            ),
+                          ),
+                        ),
+                        child: Icon(
                           Icons.add,
                           color: Colors.white,
-                          size: 18,
+                          size: ResponsiveUI.iconSize(context, 18),
                         ),
                       ),
                     ],
@@ -108,6 +113,55 @@ class POSProductCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildPrice(BuildContext context) {
+    final hasWholesale =
+        product.wholePrice != null &&
+        product.startQuantity != null &&
+        product.startQuantity! > 0;
+    final wholesaleActive =
+        hasWholesale && cartQuantity >= product.startQuantity!;
+    final baseLabel = product.differentPrice
+        ? 'From \$${product.price.toStringAsFixed(2)}'
+        : '\$${product.price.toStringAsFixed(2)}';
+
+    if (wholesaleActive) {
+      final wholesaleLabel = product.differentPrice
+          ? 'From \$${product.wholePrice!.toStringAsFixed(2)}'
+          : '\$${product.wholePrice!.toStringAsFixed(2)}';
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            wholesaleLabel,
+            style: TextStyle(
+              fontSize: ResponsiveUI.fontSize(context, 12),
+              fontWeight: FontWeight.bold,
+              color: AppColors.successGreen,
+            ),
+          ),
+          SizedBox(height: ResponsiveUI.value(context, 2)),
+          Text(
+            baseLabel,
+            style: TextStyle(
+              fontSize: ResponsiveUI.fontSize(context, 10),
+              color: AppColors.linkBlue,
+              decoration: TextDecoration.lineThrough,
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Text(
+      baseLabel,
+      style: TextStyle(
+        fontSize: ResponsiveUI.fontSize(context, 12),
+        fontWeight: FontWeight.bold,
+        color: AppColors.primaryBlue,
       ),
     );
   }

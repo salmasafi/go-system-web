@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 // lib/features/History/ui/tabs/pending_tab.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,23 +30,23 @@ class _PendingTabState extends State<PendingTab> {
           curr is HistoryError,
       builder: (context, state) {
         if (state is PendingLoading) {
-          return const Center(child: CustomLoadingState());
+          return Center(child: CustomLoadingState());
         }
         if (state is HistoryError) return Center(child: Text(state.message));
         if (state is PendingLoaded) {
           if (state.pendingSales.isEmpty) {
-            return const Center(child: Text("No pending sales"));
+            return Center(child: Text("No pending sales"));
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
             itemCount: state.pendingSales.length,
             itemBuilder: (context, index) {
               final sale = state.pendingSales[index];
               return Card(
-                elevation: 2,
+                elevation: ResponsiveUI.value(context, 2),
                 color: AppColors.white,
-                margin: const EdgeInsets.only(bottom: 10),
+                margin: EdgeInsets.only(bottom: ResponsiveUI.padding(context, 10)),
                 child: ListTile(
                   onTap: () {
                     Navigator.push(
@@ -62,7 +63,7 @@ class _PendingTabState extends State<PendingTab> {
                   ),
                   title: Text(
                     sale.reference,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(sale.customerName),
                   trailing: Column(
@@ -71,15 +72,15 @@ class _PendingTabState extends State<PendingTab> {
                     children: [
                       Text(
                         "${sale.grandTotal} EGP",
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                          fontSize: ResponsiveUI.fontSize(context, 16),
                         ),
                       ),
-                      const Text(
+                      Text(
                         "Tap to resume",
                         style: TextStyle(
-                          fontSize: 10,
+                          fontSize: ResponsiveUI.fontSize(context, 10),
                           color: AppColors.shadowGray,
                         ),
                       ),
@@ -90,7 +91,7 @@ class _PendingTabState extends State<PendingTab> {
             },
           );
         }
-        return const SizedBox();
+        return SizedBox();
       },
     );
   }

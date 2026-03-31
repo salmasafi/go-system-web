@@ -81,7 +81,7 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryBlue.withOpacity(0.1),
+            color: AppColors.primaryBlue.withValues(alpha: 0.1),
             blurRadius: ResponsiveUI.borderRadius(context, 10),
             offset: const Offset(0, 5),
           ),
@@ -93,7 +93,7 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
             radius: ResponsiveUI.borderRadius(context, 30),
             backgroundColor: widget.notification.isRead
                 ? Colors.grey.shade300
-                : AppColors.primaryBlue.withOpacity(0.8),
+                : AppColors.darkBlue,
             child: Icon(
               Icons.notifications_active_outlined,
               color: AppColors.white,
@@ -128,7 +128,7 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
                   formattedDate,
                   style: TextStyle(
                     fontSize: ResponsiveUI.fontSize(context, 13),
-                    color: AppColors.darkGray.withOpacity(0.6),
+                    color: AppColors.darkGray.withValues(alpha: 0.6),
                   ),
                 ),
               ],
@@ -170,7 +170,7 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryBlue.withOpacity(0.1),
+            color: AppColors.primaryBlue.withValues(alpha: 0.1),
             blurRadius: ResponsiveUI.borderRadius(context, 10),
             offset: const Offset(0, 5),
           ),
@@ -196,7 +196,7 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
               fontSize: ResponsiveUI.fontSize(context, 15),
               fontWeight: FontWeight.w400,
               color: AppColors.darkGray,
-              height: 1.5,
+              height: ResponsiveUI.value(context, 1.5),
             ),
           ),
         ],
@@ -214,7 +214,7 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryBlue.withOpacity(0.1),
+            color: AppColors.primaryBlue.withValues(alpha: 0.1),
             blurRadius: ResponsiveUI.borderRadius(context, 10),
             offset: const Offset(0, 5),
           ),
@@ -311,7 +311,7 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 13),
                   fontWeight: FontWeight.w500,
-                  color: AppColors.darkGray.withOpacity(0.6),
+                  color: AppColors.darkGray.withValues(alpha: 0.6),
                 ),
               ),
               SizedBox(height: ResponsiveUI.spacing(context, 4)),
@@ -330,3 +330,5 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
     );
   }
 }
+
+

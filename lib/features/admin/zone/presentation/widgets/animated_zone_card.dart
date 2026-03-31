@@ -53,7 +53,7 @@ class _AnimatedZoneCardState extends State<AnimatedZoneCard> {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryBlue.withOpacity(0.1),
+              color: AppColors.primaryBlue.withValues(alpha: 0.1),
               blurRadius: ResponsiveUI.borderRadius(context, 10),
               offset: const Offset(0, 5),
             ),
@@ -62,7 +62,7 @@ class _AnimatedZoneCardState extends State<AnimatedZoneCard> {
               // Zone.isDefault
               //     ? Border.all(
               //         color: AppColors.primaryBlue.withOpaZone(0.8),
-              //         width: 2.5,
+              //         width: ResponsiveUI.value(context, 2.5),
               //       ) :
               null,
         ),
@@ -98,7 +98,7 @@ class _AnimatedZoneCardState extends State<AnimatedZoneCard> {
       children: [
         CircleAvatar(
           radius: ResponsiveUI.borderRadius(context, 25),
-          backgroundColor: AppColors.primaryBlue.withOpacity(0.8),
+          backgroundColor: AppColors.darkBlue,
           child: Icon(
             Icons.gps_fixed,
             color: AppColors.white,
@@ -160,3 +160,5 @@ class _AnimatedZoneCardState extends State<AnimatedZoneCard> {
     );
   }
 }
+
+

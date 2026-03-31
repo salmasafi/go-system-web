@@ -60,7 +60,7 @@ class _AnimatedPandelCardState extends State<AnimatedPandelCard> {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryBlue.withOpacity(0.1),
+              color: AppColors.primaryBlue.withValues(alpha: 0.1),
               blurRadius: ResponsiveUI.borderRadius(context, 10),
               offset: const Offset(0, 5),
             ),
@@ -164,7 +164,7 @@ class _AnimatedPandelCardState extends State<AnimatedPandelCard> {
                 '${pandel.products.length} ${LocaleKeys.products.tr()}',
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 12),
-                  color: AppColors.darkGray.withOpacity(0.6),
+                  color: AppColors.darkGray.withValues(alpha: 0.6),
                 ),
               ),
             ],
@@ -179,7 +179,7 @@ class _AnimatedPandelCardState extends State<AnimatedPandelCard> {
             vertical: ResponsiveUI.padding(context, 4),
           ),
           decoration: BoxDecoration(
-            color: AppColors.primaryBlue.withOpacity(0.1),
+            color: AppColors.primaryBlue.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(
               ResponsiveUI.borderRadius(context, 16),
             ),
@@ -216,7 +216,7 @@ class _AnimatedPandelCardState extends State<AnimatedPandelCard> {
                 '${LocaleKeys.images.tr()} (${pandel.images.length})',
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 12),
-                  color: AppColors.darkGray.withOpacity(0.6),
+                  color: AppColors.darkGray.withValues(alpha: 0.6),
                 ),
               ),
               SizedBox(height: ResponsiveUI.spacing(context, 8)),
@@ -237,7 +237,7 @@ class _AnimatedPandelCardState extends State<AnimatedPandelCard> {
                         ),
                         border: Border.all(
                           color: AppColors.lightGray,
-                          width: 1,
+                          width: ResponsiveUI.value(context, 1),
                         ),
                       ),
                       child: ClipRRect(
@@ -308,10 +308,10 @@ class _AnimatedPandelCardState extends State<AnimatedPandelCard> {
               ),
               decoration: BoxDecoration(
                 color: pandel.status 
-                  ? AppColors.successGreen.withOpacity(0.1)
+                  ? AppColors.successGreen.withValues(alpha: 0.1)
                   // : isUpcoming
-                    // ? AppColors.holdBeige.withOpacity(0.1)
-                    : AppColors.red.withOpacity(0.1),
+                    // ? AppColors.holdBeige.withValues(alpha: 0.1)
+                    : AppColors.red.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(
                   ResponsiveUI.borderRadius(context, 16),
                 ),
@@ -362,7 +362,7 @@ class _AnimatedPandelCardState extends State<AnimatedPandelCard> {
                   : '${_calculateDaysBetween(pandel.endDate, DateTime.now())} ${LocaleKeys.days_ago.tr()}',
               style: TextStyle(
                 fontSize: ResponsiveUI.fontSize(context, 12),
-                color: AppColors.darkGray.withOpacity(0.6),
+                color: AppColors.darkGray.withValues(alpha: 0.6),
               ),
             ),
           ],
@@ -385,14 +385,14 @@ class _AnimatedPandelCardState extends State<AnimatedPandelCard> {
               Icon(
                 icon,
                 size: ResponsiveUI.iconSize(context, 14),
-                color: AppColors.darkGray.withOpacity(0.6),
+                color: AppColors.darkGray.withValues(alpha: 0.6),
               ),
               SizedBox(width: ResponsiveUI.spacing(context, 4)),
               Text(
                 label,
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 12),
-                  color: AppColors.darkGray.withOpacity(0.6),
+                  color: AppColors.darkGray.withValues(alpha: 0.6),
                 ),
               ),
             ],

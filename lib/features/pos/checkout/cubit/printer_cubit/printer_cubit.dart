@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ui' as ui;
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:esc_pos_utils_plus/esc_pos_utils_plus.dart';
@@ -57,7 +58,7 @@ class PrinterCubit extends Cubit<PrinterState> {
 
       if (bytes.isEmpty) return false;
 
-      await _sendInChunks(bytes, _char!);
+      await _sendInChunks(bytes, _char!, device: device);
       return true;
     } catch (e) {
       developer.log('Print error: $e');
@@ -69,8 +70,7 @@ class PrinterCubit extends Cubit<PrinterState> {
     BuildContext context, {
     required RecieptData receipt,
   }) async {
-    // FIX 1: Set Target Width to 384 (Standard for 58mm printers)
-    // 576 is too big and causes the "Cut off" bug on small printers.
+    // FIX 1: Set Target Width to 576 (Standard for 58mm printers)
     const int targetWidth = 576;
 
     final GlobalKey repaintKey = GlobalKey();
@@ -87,10 +87,8 @@ class PrinterCubit extends Cubit<PrinterState> {
               child: Center(
                 child: Container(
                   color: Colors.white,
-                  padding: const EdgeInsets.only(left: 100, right: 20),
-                  // Ensure container matches target width exactly
-                  width: 560, // targetWidth.toDouble(),
-                  child: Center(child: PrintableReceipt(recieptData: receipt)),
+                  width: targetWidth.toDouble(),
+                  child: PrintableReceipt(recieptData: receipt),
                 ),
               ),
             ),
@@ -139,6 +137,36 @@ class PrinterCubit extends Cubit<PrinterState> {
 
     // Smart Crop (Bottom Only)
     int lastRow = processed.height - 1;
+    const int cleanRows = 30;
+    const double maxFillRatio = 0.12;
+    const double maxWidthRatio = 0.35;
+    final white = img.ColorRgb8(255, 255, 255);
+    for (int offset = 0; offset < cleanRows; offset++) {
+      final int y = processed.height - 1 - offset;
+      if (y < 0) break;
+      int blackCount = 0;
+      int minX = processed.width;
+      int maxX = -1;
+      for (int x = 0; x < processed.width; x++) {
+        if (processed.getPixel(x, y).r == 0) {
+          blackCount++;
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+        }
+      }
+      if (blackCount == 0) continue;
+      final double fillRatio = blackCount / processed.width;
+      final double widthRatio = maxX > minX
+          ? (maxX - minX) / processed.width
+          : 0;
+      if (fillRatio <= maxFillRatio && widthRatio <= maxWidthRatio) {
+        for (int x = 0; x < processed.width; x++) {
+          processed.setPixel(x, y, white);
+        }
+        continue;
+      }
+      break;
+    }
     for (int y = processed.height - 1; y >= 0; y--) {
       bool hasBlack = false;
       for (int x = 0; x < processed.width; x++) {
@@ -153,7 +181,7 @@ class PrinterCubit extends Cubit<PrinterState> {
       }
     }
 
-    int cropHeight = lastRow + 10; // Minimal bottom padding
+    int cropHeight = lastRow; // Minimal bottom padding
     if (cropHeight > processed.height) cropHeight = processed.height;
 
     img.Image cropped = img.copyCrop(
@@ -180,18 +208,39 @@ class PrinterCubit extends Cubit<PrinterState> {
 
   Future<void> _sendInChunks(
     List<int> data,
-    BluetoothCharacteristic char,
-  ) async {
-    await char.write([27, 64], withoutResponse: true);
-    await Future.delayed(const Duration(milliseconds: 200));
+    BluetoothCharacteristic char, {
+    BluetoothDevice? device,
+  }) async {
+    developer.log('Starting optimized print with ${data.length} bytes');
 
-    const int chunkSize = 140;
+    await char.write([0x1B, 0x40], withoutResponse: false);
+    await Future.delayed(const Duration(milliseconds: 40));
+
+    await char.write([0x1B, 0x3D, 0x01], withoutResponse: false);
+    await Future.delayed(const Duration(milliseconds: 10));
+
+    final bool useWithoutResponse = char.properties.writeWithoutResponse;
+    final int mtuNow = math.max(23, device?.mtuNow ?? _printer?.mtuNow ?? 23);
+    final int mtuLimited = math.max(1, mtuNow - 3);
+    final int chunkSize = useWithoutResponse ? math.min(256, mtuLimited) : 512;
+    int totalSent = 0;
 
     for (int i = 0; i < data.length; i += chunkSize) {
       final end = i + chunkSize > data.length ? data.length : i + chunkSize;
-      await char.write(data.sublist(i, end), withoutResponse: true);
+      final chunk = data.sublist(i, end);
+
+      await char.write(chunk, withoutResponse: useWithoutResponse);
+      totalSent += chunk.length;
       await Future.delayed(const Duration(milliseconds: 5));
     }
+
+    developer.log('Total bytes sent: $totalSent');
+
+    await Future.delayed(const Duration(milliseconds: 80));
+    await char.write([0x1B, 0x64, 0x03], withoutResponse: false);
+    await Future.delayed(const Duration(milliseconds: 30));
+    await char.write([0x0C], withoutResponse: false);
+    await Future.delayed(const Duration(milliseconds: 10));
   }
 
   Future<BluetoothCharacteristic?> _getWriteCharacteristic(

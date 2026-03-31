@@ -138,7 +138,7 @@ class _EditPopupBottomSheetState extends State<EditPopupBottomSheet> {
           hintText: hint,
           hasBoxDecoration: false,
           hasBorder: true,
-          prefixIconColor: AppColors.darkGray.withOpacity(0.7),
+          prefixIconColor: AppColors.darkGray.withValues(alpha: 0.7),
         ),
       ],
     );
@@ -209,10 +209,10 @@ class _EditPopupBottomSheetState extends State<EditPopupBottomSheet> {
               borderRadius: BorderRadius.circular(
                 ResponsiveUI.borderRadius(context, 12),
               ),
-              border: Border.all(color: AppColors.lightGray, width: 1),
+              border: Border.all(color: AppColors.lightGray, width: ResponsiveUI.value(context, 1)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -230,7 +230,7 @@ class _EditPopupBottomSheetState extends State<EditPopupBottomSheet> {
                           child: Container(
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(
+                              color: Colors.black.withValues(alpha: 
                                 selectedLocalImage != null ? 0.3 : 0.0,
                               ),
                             ),
@@ -259,7 +259,7 @@ class _EditPopupBottomSheetState extends State<EditPopupBottomSheet> {
                         Text(
                           LocaleKeys.tap_to_upload.tr(),
                           style: TextStyle(
-                            color: AppColors.darkGray.withOpacity(0.7),
+                            color: AppColors.darkGray.withValues(alpha: 0.7),
                             fontSize: ResponsiveUI.fontSize(context, 13),
                           ),
                         ),

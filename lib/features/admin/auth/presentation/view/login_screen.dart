@@ -50,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
               MaterialPageRoute(builder: (context) => const HomeScreen()),
             );
           } else if (state is LoginError) {
-            CustomSnackbar.showSuccess(context, state.error);
+            CustomSnackbar.showError(context, state.error);
           }
         },
         builder: (context, state) {

@@ -23,7 +23,7 @@ class POSCartItemCard extends StatelessWidget {
       margin: EdgeInsets.only(bottom: ResponsiveUI.spacing(context, 12)),
       padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           colors: [AppColors.white, AppColors.lightBlueBackground],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -31,7 +31,7 @@ class POSCartItemCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 16)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryBlue.withOpacity(0.08),
+            color: AppColors.primaryBlue.withValues(alpha: 0.08),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -40,8 +40,8 @@ class POSCartItemCard extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 60,
-            height: 60,
+            width: ResponsiveUI.value(context, 60),
+            height: ResponsiveUI.value(context, 60),
             decoration: BoxDecoration(
               color: AppColors.lightBlueBackground,
               borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
@@ -85,7 +85,7 @@ class POSCartItemCard extends StatelessWidget {
               Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.remove_circle_outline),
+                    icon: Icon(Icons.remove_circle_outline),
                     color: AppColors.red,
                     onPressed: () => onQuantityChanged(-1),
                   ),
@@ -97,14 +97,14 @@ class POSCartItemCard extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.add_circle_outline),
+                    icon: Icon(Icons.add_circle_outline),
                     color: AppColors.successGreen,
                     onPressed: () => onQuantityChanged(1),
                   ),
                 ],
               ),
               IconButton(
-                icon: const Icon(Icons.delete_outline),
+                icon: Icon(Icons.delete_outline),
                 color: AppColors.red,
                 onPressed: onRemove,
               ),
@@ -115,3 +115,4 @@ class POSCartItemCard extends StatelessWidget {
     );
   }
 }
+

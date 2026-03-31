@@ -54,7 +54,7 @@ class _AnimatedPaymentMethodCardState extends State<AnimatedPaymentMethodCard> {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryBlue.withOpacity(0.1),
+              color: AppColors.primaryBlue.withValues(alpha: 0.1),
               blurRadius: ResponsiveUI.borderRadius(context, 10),
               offset: const Offset(0, 5),
             ),
@@ -63,7 +63,7 @@ class _AnimatedPaymentMethodCardState extends State<AnimatedPaymentMethodCard> {
               // PaymentMethod.isDefault
               //     ? Border.all(
               //         color: AppColors.primaryBlue.withOpaPaymentMethod(0.8),
-              //         width: 2.5,
+              //         width: ResponsiveUI.value(context, 2.5),
               //       ) :
               null,
         ),
@@ -98,7 +98,7 @@ class _AnimatedPaymentMethodCardState extends State<AnimatedPaymentMethodCard> {
       children: [
         // CircleAvatar(
         //   radius: ResponsiveUI.borderRadius(context, 25),
-        //   backgroundColor: AppColors.primaryBlue.withOpacity(0.8),
+        //   backgroundColor: AppColors.darkBlue,
         //   child: Icon(
         //     Icons.attach_money_rounded,
         //     color: AppColors.white,
@@ -190,11 +190,11 @@ class _AnimatedPaymentMethodCardState extends State<AnimatedPaymentMethodCard> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.broken_image_outlined, size: 40, color: Colors.grey[400]),
-          SizedBox(height: 8),
+          Icon(Icons.broken_image_outlined, size: ResponsiveUI.iconSize(context, 40), color: Colors.grey[400]),
+          SizedBox(height: ResponsiveUI.value(context, 8)),
           Text(
             LocaleKeys.failed_to_load_image.tr(),
-            style: TextStyle(color: Colors.grey[500], fontSize: 12),
+            style: TextStyle(color: Colors.grey[500], fontSize: ResponsiveUI.fontSize(context, 12)),
           ),
         ],
       ),
@@ -240,3 +240,4 @@ class _AnimatedPaymentMethodCardState extends State<AnimatedPaymentMethodCard> {
     );
   }
 }
+

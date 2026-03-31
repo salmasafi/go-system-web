@@ -708,7 +708,7 @@ class _EditProductScreenState extends State<EditProductScreen>
             Text(
               'Variation Images',
               style: TextStyle(
-                fontSize: 13,
+                fontSize: ResponsiveUI.fontSize(context, 13),
                 fontWeight: FontWeight.w600,
                 color: AppColors.darkGray,
               ),
@@ -724,8 +724,8 @@ class _EditProductScreenState extends State<EditProductScreen>
                   });
                 }
               },
-              icon: Icon(Icons.add_photo_alternate, size: 16),
-              label: Text('Add', style: TextStyle(fontSize: 12)),
+              icon: Icon(Icons.add_photo_alternate, size: ResponsiveUI.iconSize(context, 16)),
+              label: Text('Add', style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 12))),
             ),
           ],
         ),
@@ -738,14 +738,14 @@ class _EditProductScreenState extends State<EditProductScreen>
               return Stack(
                 children: [
                   Container(
-                    width: 60,
-                    height: 60,
+                    width: ResponsiveUI.value(context, 60),
+                    height: ResponsiveUI.value(context, 60),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
                       border: Border.all(color: AppColors.lightGray),
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
                       child: img is String
                           ? Image.network(img, fit: BoxFit.contain)
                           : Image.file(img, fit: BoxFit.contain),
@@ -756,12 +756,12 @@ class _EditProductScreenState extends State<EditProductScreen>
                     right: -8,
                     child: IconButton(
                       icon: Container(
-                        padding: EdgeInsets.all(4),
+                        padding: EdgeInsets.all(ResponsiveUI.padding(context, 4)),
                         decoration: BoxDecoration(
                           color: AppColors.red,
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(Icons.close, size: 12, color: Colors.white),
+                        child: Icon(Icons.close, size: ResponsiveUI.iconSize(context, 12), color: Colors.white),
                       ),
                       onPressed: () {
                         setState(() {

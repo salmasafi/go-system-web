@@ -218,7 +218,7 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                         prefixIcon: Icons.category,
                         hasBoxDecoration: false,
                         hasBorder: true,
-                        prefixIconColor: AppColors.darkGray.withOpacity(0.7),
+                        prefixIconColor: AppColors.darkGray.withValues(alpha: 0.7),
                       ),
                       SizedBox(height: ResponsiveUI.spacing(context, 25)),
                       CustomTextField(
@@ -228,7 +228,7 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                         prefixIcon: Icons.category,
                         hasBoxDecoration: false,
                         hasBorder: true,
-                        prefixIconColor: AppColors.darkGray.withOpacity(0.7),
+                        prefixIconColor: AppColors.darkGray.withValues(alpha: 0.7),
                       ),
                       SizedBox(height: ResponsiveUI.spacing(context, 25)),
 
@@ -249,16 +249,16 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                               ),
                               borderSide: BorderSide(
                                 color: AppColors.shadowGray[300]!,
-                                width: 1,
+                                width: ResponsiveUI.value(context, 1),
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
                                 ResponsiveUI.borderRadius(context, 8),
                               ),
-                              borderSide: const BorderSide(
+                              borderSide: BorderSide(
                                 color: AppColors.primaryBlue,
-                                width: 2,
+                                width: ResponsiveUI.value(context, 2),
                               ),
                             ),
                             contentPadding: EdgeInsets.symmetric(
@@ -380,7 +380,7 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                           decoration: BoxDecoration(
                             border: Border.all(
                               color: AppColors.shadowGray[300]!,
-                              width: 1,
+                              width: ResponsiveUI.value(context, 1),
                             ),
                             borderRadius: BorderRadius.circular(
                               ResponsiveUI.borderRadius(context, 12),
@@ -457,7 +457,7 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                                 ),
                               ],
                             )
-                          : const SizedBox.shrink(),
+                          : SizedBox.shrink(),
                       SizedBox(height: ResponsiveUI.spacing(context, 16)),
                       ElevatedButton(
                         onPressed: _isLoading ? null : _submitUpdate,
@@ -500,3 +500,4 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
     );
   }
 }
+

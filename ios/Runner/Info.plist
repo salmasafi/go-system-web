@@ -47,5 +47,13 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs camera access to take photos for product scanning.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs photo library access to attach documents to return sales.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>This app needs access to documents to attach files to return sales.</string>
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
 </dict>
 </plist>

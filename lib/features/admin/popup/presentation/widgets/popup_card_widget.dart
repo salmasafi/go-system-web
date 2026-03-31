@@ -58,7 +58,7 @@ class _AnimatedPopupCardState extends State<AnimatedPopupCard> {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryBlue.withOpacity(0.1),
+              color: AppColors.primaryBlue.withValues(alpha: 0.1),
               blurRadius: ResponsiveUI.borderRadius(context, 10),
               offset: const Offset(0, 5),
             ),
@@ -167,7 +167,7 @@ class _AnimatedPopupCardState extends State<AnimatedPopupCard> {
                    LocaleKeys.popup_description_en.tr(),
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 12),
-                      color: AppColors.darkGray.withOpacity(0.6),
+                      color: AppColors.darkGray.withValues(alpha: 0.6),
                     ),
                   ),
                   SizedBox(height: ResponsiveUI.spacing(context, 2)),
@@ -194,7 +194,7 @@ class _AnimatedPopupCardState extends State<AnimatedPopupCard> {
             //         'Initial Balance',
             //         style: TextStyle(
             //           fontSize: ResponsiveUI.fontSize(context, 12),
-            //           color: AppColors.darkGray.withOpacity(0.6),
+            //           color: AppColors.darkGray.withValues(alpha: 0.6),
             //         ),
             //       ),
             //       SizedBox(height: ResponsiveUI.spacing(context, 2)),
@@ -222,7 +222,7 @@ class _AnimatedPopupCardState extends State<AnimatedPopupCard> {
         //         'Note:',
         //         style: TextStyle(
         //           fontSize: ResponsiveUI.fontSize(context, 12),
-        //           color: AppColors.darkGray.withOpacity(0.6),
+        //           color: AppColors.darkGray.withValues(alpha: 0.6),
         //         ),
         //       ),
         //       SizedBox(height: ResponsiveUI.spacing(context, 4)),
@@ -230,7 +230,7 @@ class _AnimatedPopupCardState extends State<AnimatedPopupCard> {
         //         popup.note,
         //         style: TextStyle(
         //           fontSize: ResponsiveUI.fontSize(context, 13),
-        //           color: AppColors.darkGray.withOpacity(0.8),
+        //           color: AppColors.darkGray.withValues(alpha: 0.8),
         //         ),
         //         maxLines: 2,
         //         overflow: TextOverflow.ellipsis,
@@ -250,7 +250,7 @@ class _AnimatedPopupCardState extends State<AnimatedPopupCard> {
         //         fontSize: ResponsiveUI.fontSize(context, 12),
         //         color: popup.status
         //             ? AppColors.successGreen
-        //             : AppColors.darkGray.withOpacity(0.6),
+        //             : AppColors.darkGray.withValues(alpha: 0.6),
         //         fontWeight: FontWeight.w500,
         //       ),
         //     ),
@@ -274,11 +274,11 @@ class _AnimatedPopupCardState extends State<AnimatedPopupCard> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.broken_image_outlined, size: 40, color: Colors.grey[400]),
-          SizedBox(height: 8),
+          Icon(Icons.broken_image_outlined, size: ResponsiveUI.iconSize(context, 40), color: Colors.grey[400]),
+          SizedBox(height: ResponsiveUI.value(context, 8)),
           Text(
             LocaleKeys.failed_to_load_image.tr(),
-            style: TextStyle(color: Colors.grey[500], fontSize: 12),
+            style: TextStyle(color: Colors.grey[500], fontSize: ResponsiveUI.fontSize(context, 12)),
           ),
         ],
       ),

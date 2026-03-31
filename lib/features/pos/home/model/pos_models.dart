@@ -1,5 +1,32 @@
 // lib/features/pos/home/model/pos_models.dart
 
+int? _toInt(dynamic value) {
+  if (value == null) return null;
+  if (value is num) return value.toInt();
+  if (value is String) return int.tryParse(value);
+  return null;
+}
+
+double? _toDouble(dynamic value) {
+  if (value == null) return null;
+  if (value is num) return value.toDouble();
+  if (value is String) return double.tryParse(value);
+  return null;
+}
+
+int? _readStartQuantity(Map<String, dynamic> json) {
+  return _toInt(
+    json['start_quantity'] ??
+        json['start_quantaty'] ??
+        json['startQuantity'] ??
+        json['startQuantaty'],
+  );
+}
+
+double? _readWholePrice(Map<String, dynamic> json) {
+  return _toDouble(json['whole_price'] ?? json['wholePrice']);
+}
+
 class Category {
   final String id;
   final String name;
@@ -54,7 +81,8 @@ class Variation {
   factory Variation.fromJson(Map<String, dynamic> json) {
     return Variation(
       name: json['name']?.toString() ?? '',
-      options: (json['options'] as List?)
+      options:
+          (json['options'] as List?)
               ?.map((o) => VariationOption.fromJson(o))
               .toList() ??
           [],
@@ -90,8 +118,9 @@ class PriceVariation {
   final String code;
   final List<String> gallery;
   final int quantity;
-  // أحياناً الـ variations الداخلية تكون موجودة وأحياناً لا، جعلناها اختيارية
-  final List<Variation> variations; 
+  final List<Variation> variations;
+  final double? wholePrice;
+  final int? startQuantity;
 
   PriceVariation({
     required this.id,
@@ -101,6 +130,8 @@ class PriceVariation {
     required this.gallery,
     required this.quantity,
     required this.variations,
+    this.wholePrice,
+    this.startQuantity,
   });
 
   factory PriceVariation.fromJson(Map<String, dynamic> json) {
@@ -109,13 +140,16 @@ class PriceVariation {
       productId: json['productId']?.toString() ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       code: json['code']?.toString() ?? '',
-      // تأكد من أن الـ gallery قائمة نصوص
-      gallery: (json['gallery'] as List?)?.map((e) => e.toString()).toList() ?? [],
+      gallery:
+          (json['gallery'] as List?)?.map((e) => e.toString()).toList() ?? [],
       quantity: (json['quantity'] as num?)?.toInt() ?? 0,
-      variations: (json['variations'] as List?)
+      variations:
+          (json['variations'] as List?)
               ?.map((v) => Variation.fromJson(v))
               .toList() ??
           [],
+      wholePrice: _readWholePrice(json),
+      startQuantity: _readStartQuantity(json),
     );
   }
 }
@@ -129,6 +163,9 @@ class Product {
   final double price;
   final bool differentPrice;
   final List<PriceVariation> prices;
+  final int quantity;
+  final double? wholePrice;
+  final int? startQuantity;
 
   Product({
     required this.id,
@@ -139,16 +176,19 @@ class Product {
     required this.description,
     this.differentPrice = false,
     this.prices = const [],
+    this.quantity = 0,
+    this.wholePrice,
+    this.startQuantity,
   });
 
   factory Product.fromList(Map<String, dynamic> json) {
     bool hasDifferentPrice = json['different_price'] as bool? ?? false;
-    
+
     // ✅ الإصلاح الرئيسي هنا: البحث عن variations أو prices
     var rawVariations = json['variations'] ?? json['prices'];
 
     List<PriceVariation> variationsList = [];
-    
+
     if (hasDifferentPrice && rawVariations != null && rawVariations is List) {
       variationsList = rawVariations
           .map((p) => PriceVariation.fromJson(p))
@@ -180,12 +220,15 @@ class Product {
       price: defaultPrice,
       differentPrice: hasDifferentPrice,
       prices: variationsList,
+      quantity: (json['quantity'] as num?)?.toInt() ?? 0,
+      wholePrice: _readWholePrice(json),
+      startQuantity: _readStartQuantity(json),
     );
   }
 
   factory Product.fromScan(Map<String, dynamic> json) {
     bool hasDifferentPrice = json['different_price'] as bool? ?? false;
-    
+
     // ✅ نفس الإصلاح للـ Scan
     var rawVariations = json['variations'] ?? json['prices'];
     List<PriceVariation> variationsList = [];
@@ -211,9 +254,9 @@ class Product {
           .map((v) => v.price)
           .reduce((a, b) => a < b ? a : b);
     } else if (json['price'] is num) {
-       defaultPrice = (json['price'] as num).toDouble();
+      defaultPrice = (json['price'] as num).toDouble();
     } else if (json['price'] is Map && json['price']['price'] != null) {
-       defaultPrice = (json['price']['price'] as num).toDouble();
+      defaultPrice = (json['price']['price'] as num).toDouble();
     }
 
     return Product(
@@ -225,6 +268,9 @@ class Product {
       price: defaultPrice,
       differentPrice: hasDifferentPrice,
       prices: variationsList,
+      quantity: (json['quantity'] as num?)?.toInt() ?? 0,
+      wholePrice: _readWholePrice(json),
+      startQuantity: _readStartQuantity(json),
     );
   }
 }
@@ -324,5 +370,78 @@ class Currency {
   Currency({required this.id, required this.name});
   factory Currency.fromJson(Map<String, dynamic> json) {
     return Currency(id: json['_id'] ?? json['id'], name: json['name'] ?? 'USD');
+  }
+}
+
+class BundleProduct {
+  final String productId;
+  final String name;
+  final String? image;
+  final double price;
+  final int quantity;
+
+  BundleProduct({
+    required this.productId,
+    required this.name,
+    this.image,
+    required this.price,
+    required this.quantity,
+  });
+
+  factory BundleProduct.fromJson(Map<String, dynamic> json) {
+    final product = json['product'] as Map<String, dynamic>? ?? {};
+    return BundleProduct(
+      productId: json['productId']?.toString() ?? '',
+      name: product['name']?.toString() ?? '',
+      image: product['image']?.toString(),
+      price: (product['price'] as num?)?.toDouble() ?? 0.0,
+      quantity: (json['quantity'] as num?)?.toInt() ?? 0,
+    );
+  }
+}
+
+class BundleModel {
+  final String id;
+  final String name;
+  final List<String> images;
+  final double price;
+  final double originalPrice;
+  final double savings;
+  final int savingsPercentage;
+  final String startDate;
+  final String endDate;
+  final List<BundleProduct> products;
+
+  BundleModel({
+    required this.id,
+    required this.name,
+    required this.images,
+    required this.price,
+    required this.originalPrice,
+    required this.savings,
+    required this.savingsPercentage,
+    required this.startDate,
+    required this.endDate,
+    required this.products,
+  });
+
+  factory BundleModel.fromJson(Map<String, dynamic> json) {
+    return BundleModel(
+      id: json['_id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      images:
+          (json['images'] as List?)?.map((e) => e.toString()).toList() ?? [],
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      originalPrice: (json['originalPrice'] as num?)?.toDouble() ?? 0.0,
+      savings: (json['savings'] as num?)?.toDouble() ?? 0.0,
+      savingsPercentage: (json['savingsPercentage'] as num?)?.toInt() ?? 0,
+      startDate: json['startdate']?.toString() ?? '',
+      endDate: json['enddate']?.toString() ?? '',
+      products:
+          (json['products'] as List?)
+              ?.map((p) => BundleProduct.fromJson(p))
+              .toList() ??
+          [],
+    );
   }
 }

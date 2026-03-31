@@ -51,7 +51,7 @@ class _AnimatedAdjustmentCardState extends State<AnimatedAdjustmentCard> {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryBlue.withOpacity(0.1),
+              color: AppColors.primaryBlue.withValues(alpha: 0.1),
               blurRadius: ResponsiveUI.borderRadius(context, 10),
               offset: const Offset(0, 5),
             ),
@@ -89,7 +89,7 @@ class _AnimatedAdjustmentCardState extends State<AnimatedAdjustmentCard> {
       children: [
         CircleAvatar(
           radius: ResponsiveUI.borderRadius(context, 25),
-          backgroundColor: AppColors.primaryBlue.withOpacity(0.8),
+          backgroundColor: AppColors.darkBlue,
           child: Icon(
             Icons.inventory_2_rounded,
             color: AppColors.white,
@@ -129,3 +129,4 @@ class _AnimatedAdjustmentCardState extends State<AnimatedAdjustmentCard> {
     );
   }
 }
+

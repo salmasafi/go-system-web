@@ -37,30 +37,37 @@ class PendingSaleModel {
   final String id;
   final String reference;
   final String customerName;
+  final String warehouseName;
   final double grandTotal;
-  final int totalItems; // عدد العناصر للعرض في الكارت
+  final int totalItems;
   final String date;
+  final String status;
 
   PendingSaleModel({
     required this.id,
     required this.reference,
     required this.customerName,
+    required this.warehouseName,
     required this.grandTotal,
     required this.totalItems,
     required this.date,
+    required this.status,
   });
 
   factory PendingSaleModel.fromJson(Map<String, dynamic> json) {
     var list = json['items'] as List? ?? [];
+    final warehouse = json['warehouse_id'] is Map ? json['warehouse_id'] : {};
     return PendingSaleModel(
       id: json['_id'] ?? '',
       reference: json['reference'] ?? 'PENDING',
-      customerName: (json['customer_id'] is Map) 
-          ? json['customer_id']['name'] ?? 'Unknown' 
-          : 'Walk-in Customer',
+      customerName: (json['customer_id'] is Map)
+          ? json['customer_id']['name'] ?? 'N/A'
+          : 'N/A',
+      warehouseName: warehouse['name'] ?? '',
       grandTotal: (json['grand_total'] as num?)?.toDouble() ?? 0.0,
       totalItems: list.length,
       date: json['date'] ?? json['createdAt'] ?? '',
+      status: json['sale_status'] ?? 'pending',
     );
   }
 }
@@ -69,16 +76,18 @@ class PendingSaleModel {
 class DueSaleModel {
   final String id;
   final String reference;
+  final String customerId;
   final String customerName;
   final String phone;
   final double grandTotal;
   final double paidAmount;
-  final double remainingAmount; // المبلغ المستحق (Due)
+  final double remainingAmount;
   final String date;
 
   DueSaleModel({
     required this.id,
     required this.reference,
+    required this.customerId,
     required this.customerName,
     required this.phone,
     required this.grandTotal,
@@ -92,6 +101,7 @@ class DueSaleModel {
     return DueSaleModel(
       id: json['_id'] ?? '',
       reference: json['reference'] ?? 'N/A',
+      customerId: customer['_id'] ?? '',
       customerName: customer['name'] ?? 'Unknown',
       phone: customer['phone_number'] ?? '',
       grandTotal: (json['grand_total'] as num?)?.toDouble() ?? 0.0,
@@ -100,6 +110,26 @@ class DueSaleModel {
       date: json['date'] ?? json['createdAt'] ?? '',
     );
   }
+}
+
+// 3b. موديل العميل المجمّع (Grouped by customer)
+class CustomerDueModel {
+  final String customerId;
+  final String customerName;
+  final String phone;
+  final double totalDue;
+  final List<DueSaleModel> sales;
+
+  CustomerDueModel({
+    required this.customerId,
+    required this.customerName,
+    required this.phone,
+    required this.totalDue,
+    required this.sales,
+  });
+
+  /// أول sale id - يُستخدم كـ representative للدفع
+  String get firstSaleId => sales.isNotEmpty ? sales.first.id : '';
 }
 
 // 4. موديل التفاصيل الكاملة (Full Details for Checkout)

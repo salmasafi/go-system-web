@@ -48,14 +48,14 @@ class AnimatedRevenueCard extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryBlue.withOpacity(0.1),
+              color: AppColors.primaryBlue.withValues(alpha: 0.1),
               blurRadius: ResponsiveUI.borderRadius(context, 10),
               offset: const Offset(0, 5),
             ),
           ],
           // border: Border.all(
-          //   color: AppColors.successGreen.withOpacity(0.3),
-          //   width: 1.8,
+          //   color: AppColors.successGreen.withValues(alpha: 0.3),
+          //   width: ResponsiveUI.value(context, 1.8),
           // ),
         ),
         child: Material(
@@ -122,7 +122,7 @@ class AnimatedRevenueCard extends StatelessWidget {
                 // revenue.note.isNotEmpty ? revenue.note : LocaleKeys.no_note.tr(),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 12),
-                  color: AppColors.darkGray.withOpacity(0.6),
+                  color: AppColors.darkGray.withValues(alpha: 0.6),
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -197,7 +197,7 @@ class AnimatedRevenueCard extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: ResponsiveUI.fontSize(context, 11),
-            color: AppColors.darkGray.withOpacity(0.6),
+            color: AppColors.darkGray.withValues(alpha: 0.6),
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,

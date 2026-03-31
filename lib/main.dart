@@ -28,9 +28,11 @@ import 'package:systego/features/admin/variations/cubit/variation_cubit.dart';
 import 'package:systego/translations/codegen_loader.g.dart';
 import 'core/services/cache_helper.dart';
 import 'core/services/dio_helper.dart';
+import 'package:systego/features/POS/return/cubit/return_cubit.dart';
 import 'features/POS/shift/cubit/pos_shift_cubit.dart';
 import 'features/POS/checkout/cubit/checkout_cubit/checkout_cubit.dart';
 import 'features/POS/home/cubit/pos_home_cubit.dart';
+import 'features/POS/customer/cubit/pos_customer_cubit.dart';
 import 'features/admin/auth/presentation/view/login_screen.dart';
 import 'features/admin/brands/cubit/brand_cubit.dart';
 import 'features/admin/categories/cubit/categories_cubit.dart';
@@ -121,6 +123,8 @@ class _MainAppState extends State<MainApp> {
         ),
         BlocProvider<PosShiftCubit>(create: (context) => PosShiftCubit()),
         BlocProvider<CheckoutCubit>(create: (context) => CheckoutCubit()),
+        BlocProvider<PosCustomerCubit>(create: (context) => PosCustomerCubit()),
+        BlocProvider<ReturnCubit>(create: (context) => ReturnCubit()),
         BlocProvider<HistoryCubit>(create: (context) => HistoryCubit()),
         BlocProvider<WareHouseCubit>(create: (context) => WareHouseCubit()),
         BlocProvider<ProductsCubit>(create: (context) => ProductsCubit()),
@@ -163,7 +167,7 @@ class _MainAppState extends State<MainApp> {
           create: (context) => ProductFiltersCubit(),
         ),
         BlocProvider<NotificationsCubit>(
-          create: (_) => NotificationsCubit()..getNotifications(),
+          create: (_) => NotificationsCubit(),
         ),
       ],
       child: MaterialApp(

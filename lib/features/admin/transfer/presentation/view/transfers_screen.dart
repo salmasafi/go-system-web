@@ -115,9 +115,9 @@
 //         unselectedLabelColor: AppColors.darkGray,
 //         indicatorColor: AppColors.primaryBlue,
 //         tabs: [
-//           Tab(text: LocaleKeys.all_transfers.tr(), icon: const Icon(Icons.transfer_within_a_station)),
-//           Tab(text: LocaleKeys.incoming.tr(), icon: const Icon(Icons.move_to_inbox)),
-//           Tab(text: LocaleKeys.outgoing.tr(), icon: const Icon(Icons.outbox)),
+//           Tab(text: LocaleKeys.all_transfers.tr(), icon: Icon(Icons.transfer_within_a_station)),
+//           Tab(text: LocaleKeys.incoming.tr(), icon: Icon(Icons.move_to_inbox)),
+//           Tab(text: LocaleKeys.outgoing.tr(), icon: Icon(Icons.outbox)),
           
 //         ],
 //       ),
@@ -180,10 +180,10 @@
 //           }
           
 //           if (state is WarehousesError) {
-//              return Text(state.message, style: const TextStyle(color: Colors.red));
+//              return Text(state.message, style: TextStyle(color: Colors.red));
 //           }
 
-//           return const SizedBox(); // Initial state
+//           return SizedBox(); // Initial state
 //         },
 //       ),
 //     );
@@ -242,7 +242,7 @@
 //            context.read<TransfersCubit>().getIncomingTransfers(widget.warehouseId!);
 //            return const CustomLoadingShimmer();
 //         }
-//         return const SizedBox(); 
+//         return SizedBox(); 
 //       },
 //     );
 //   }
@@ -296,7 +296,7 @@
 //            context.read<TransfersCubit>().getOutgoingTransfers(widget.warehouseId!);
 //            return const CustomLoadingShimmer();
 //         }
-//         return const SizedBox();
+//         return SizedBox();
 //       },
 //     );
 //   }
@@ -342,7 +342,7 @@
 //              ),
 //            );
 //         }
-//         return const SizedBox();
+//         return SizedBox();
 //       },
 //     );
 //   }
@@ -354,8 +354,8 @@
 //     child: Column(
 //       mainAxisAlignment: MainAxisAlignment.center,
 //       children: [
-//         Icon(Icons.touch_app, size: 64, color: Colors.grey[400]),
-//         const SizedBox(height: 16),
+//         Icon(Icons.touch_app, size: ResponsiveUI.iconSize(context, 64), color: Colors.grey[400]),
+//         SizedBox(height: ResponsiveUI.value(context, 16)),
 //         Text(LocaleKeys.select_warehouse.tr(), style: TextStyle(color: Colors.grey[600])),
 //       ],
 //     ),
@@ -500,9 +500,9 @@ class _TransfersViewState extends State<TransfersView> with SingleTickerProvider
         unselectedLabelColor: AppColors.darkGray,
         indicatorColor: AppColors.primaryBlue,
         tabs: [
-          Tab(text: LocaleKeys.all_transfers.tr(), icon: const Icon(Icons.transfer_within_a_station)),
-          Tab(text: LocaleKeys.incoming.tr(), icon: const Icon(Icons.move_to_inbox)),
-          Tab(text: LocaleKeys.outgoing.tr(), icon: const Icon(Icons.outbox)),
+          Tab(text: LocaleKeys.all_transfers.tr(), icon: Icon(Icons.transfer_within_a_station)),
+          Tab(text: LocaleKeys.incoming.tr(), icon: Icon(Icons.move_to_inbox)),
+          Tab(text: LocaleKeys.outgoing.tr(), icon: Icon(Icons.outbox)),
         ],
       ),
     );
@@ -595,10 +595,10 @@ class _TransfersViewState extends State<TransfersView> with SingleTickerProvider
           }
           
           if (state is WarehousesError) {
-            return Text(state.message, style: const TextStyle(color: Colors.red));
+            return Text(state.message, style: TextStyle(color: Colors.red));
           }
 
-          return const SizedBox();
+          return SizedBox();
         },
       ),
     );
@@ -690,7 +690,7 @@ class _IncomingTransfersListState extends State<_IncomingTransfersList> with Aut
           return widget.warehouseId != null ? const CustomLoadingShimmer() : _buildSelectPrompt();
         }
         
-        return const SizedBox(); 
+        return SizedBox(); 
       },
     );
   }
@@ -778,7 +778,7 @@ class _OutgoingTransfersListState extends State<_OutgoingTransfersList> with Aut
           return widget.warehouseId != null ? const CustomLoadingShimmer() : _buildSelectPrompt();
         }
         
-        return const SizedBox();
+        return SizedBox();
       },
     );
   }
@@ -827,7 +827,7 @@ class _AllTransfersListState extends State<_AllTransfersList> with AutomaticKeep
             ),
           );
         }
-        return const SizedBox();
+        return SizedBox();
       },
     );
   }
@@ -840,7 +840,7 @@ Widget _buildSelectPrompt() {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(Icons.touch_app, size: 64, color: Colors.grey[400]),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         Text(LocaleKeys.select_warehouse.tr(), style: TextStyle(color: Colors.grey[600])),
       ],
     ),

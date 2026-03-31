@@ -110,7 +110,7 @@ void _validateAndSubmit() {
           hintText: hint,
           hasBorder: true,
           hasBoxDecoration: false,
-          prefixIconColor: AppColors.darkGray.withOpacity(0.7),
+          prefixIconColor: AppColors.darkGray.withValues(alpha: 0.7),
         ),
       ],
     );
@@ -147,7 +147,7 @@ void _validateAndSubmit() {
                   }
                 });
               },
-              selectedColor: AppColors.primaryBlue.withOpacity(0.15),
+              selectedColor: AppColors.primaryBlue.withValues(alpha: 0.15),
               checkmarkColor: AppColors.primaryBlue,
             );
           }).toList(),
@@ -221,3 +221,4 @@ void _validateAndSubmit() {
     );
   }
 }
+

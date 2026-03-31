@@ -137,8 +137,8 @@
 
 //                       // Loading state
 //                       if (state is WarehousesLoading) {
-//                         return const Padding(
-//                           padding: EdgeInsets.symmetric(vertical: 20),
+//                         return Padding(
+//                           padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 20)),
 //                           child: Center(child: CircularProgressIndicator()),
 //                         );
 //                       }
@@ -156,7 +156,7 @@
 //                       // If we have no warehouses at all (even after loading)
 //                       if (warehouseIds.isEmpty) {
 //                         return Padding(
-//                           padding: const EdgeInsets.symmetric(vertical: 20),
+//                           padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 20)),
 //                           child: Text(
 //                             LocaleKeys.no_warehouses_found.tr(),
 //                             style: TextStyle(color: Colors.grey[600]),
@@ -203,8 +203,8 @@
 
 //                       // Loading state
 //                       if (state is SupplierLoading) {
-//                         return const Padding(
-//                           padding: EdgeInsets.symmetric(vertical: 20),
+//                         return Padding(
+//                           padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 20)),
 //                           child: Center(child: CircularProgressIndicator()),
 //                         );
 //                       }
@@ -232,7 +232,7 @@
 //                       // If we have no warehouses at all (even after loading)
 //                       if (supplierIds.isEmpty) {
 //                         return Padding(
-//                           padding: const EdgeInsets.symmetric(vertical: 20),
+//                           padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 20)),
 //                           child: Text(
 //                             LocaleKeys.no_suppliers_title.tr(),
 //                             style: TextStyle(color: Colors.grey[600]),
@@ -277,8 +277,8 @@
 
 //                       // Loading state
 //                       if (state is GetTaxesLoading) {
-//                         return const Padding(
-//                           padding: EdgeInsets.symmetric(vertical: 20),
+//                         return Padding(
+//                           padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 20)),
 //                           child: Center(child: CircularProgressIndicator()),
 //                         );
 //                       }
@@ -292,7 +292,7 @@
 //                       // If we have no warehouses at all (even after loading)
 //                       if (taxesIds.isEmpty) {
 //                         return Padding(
-//                           padding: const EdgeInsets.symmetric(vertical: 20),
+//                           padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 20)),
 //                           child: Text(
 //                             LocaleKeys.no_taxes.tr(),
 //                             style: TextStyle(color: Colors.grey[600]),
@@ -337,8 +337,8 @@
 
 //                       // Loading state
 //                       if (state is GetBankAccountsLoading) {
-//                         return const Padding(
-//                           padding: EdgeInsets.symmetric(vertical: 20),
+//                         return Padding(
+//                           padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 20)),
 //                           child: Center(child: CircularProgressIndicator()),
 //                         );
 //                       }
@@ -356,7 +356,7 @@
 //                       // If we have no warehouses at all (even after loading)
 //                       if (financialAccountsIds.isEmpty) {
 //                         return Padding(
-//                           padding: const EdgeInsets.symmetric(vertical: 20),
+//                           padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 20)),
 //                           child: Text(
 //                             "No Financial Accounts",
 //                             style: TextStyle(color: Colors.grey[600]),
@@ -532,7 +532,7 @@
 //             ),
 //             if (selectedImage != null)
 //               TextButton.icon(
-//                 icon: Icon(Icons.delete, color: AppColors.red, size: 18),
+//                 icon: Icon(Icons.delete, color: AppColors.red, size: ResponsiveUI.iconSize(context, 18)),
 //                 label: Text(
 //                   LocaleKeys.remove.tr(),
 //                   style: TextStyle(color: AppColors.red),
@@ -549,17 +549,17 @@
 //             height: width * 0.35,
 //             decoration: BoxDecoration(
 //               color: AppColors.white,
-//               borderRadius: BorderRadius.circular(12),
+//               borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
 //               border: Border.all(color: AppColors.lightGray),
 //             ),
 //             child: selectedImage != null
 //                 ? ClipRRect(
-//                     borderRadius: BorderRadius.circular(12),
+//                     borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
 //                     child: Image.file(selectedImage, fit: BoxFit.cover),
 //                   )
 //                 : Icon(
 //                     Icons.camera_alt,
-//                     size: 40,
+//                     size: ResponsiveUI.iconSize(context, 40),
 //                     color: AppColors.primaryBlue,
 //                   ),
 //           ),
@@ -685,16 +685,16 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
     showDialog(
       context: context,
       builder: (context) => Dialog(
-        insetPadding: const EdgeInsets.all(20),
+        insetPadding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
         child: BlocBuilder<ProductsCubit, ProductsState>(
           builder: (context, state) {
             if (state is ProductsLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(child: CircularProgressIndicator());
             }
 
             if (state is ProductsError) {
               return Padding(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
                 child: Text(state.message),
               );
             }
@@ -707,7 +707,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                     title: const Text('Select Products'),
                     actions: [
                       IconButton(
-                        icon: const Icon(Icons.close),
+                        icon: Icon(Icons.close),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ],
@@ -730,7 +730,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                             'Stock: ${product.quantity} | Price: \$${product.price}',
                           ),
                           trailing: IconButton(
-                            icon: const Icon(Icons.add),
+                            icon: Icon(Icons.add),
                             onPressed: () => _showProductDetailsDialog(product),
                           ),
                         );
@@ -771,19 +771,19 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
         builder: (context, setState) {
           return Dialog(
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     product.name,
-                    style: const TextStyle(
-                      fontSize: 18,
+                    style: TextStyle(
+                      fontSize: ResponsiveUI.fontSize(context, 18),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: ResponsiveUI.value(context, 20)),
 
                   // Quantity
                   TextField(
@@ -794,7 +794,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: ResponsiveUI.value(context, 16)),
 
                   // Unit Cost
                   TextField(
@@ -805,7 +805,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: ResponsiveUI.value(context, 16)),
 
                   // Discount
                   TextField(
@@ -816,7 +816,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: ResponsiveUI.value(context, 16)),
 
                   // Expiration Date (if product has expiration ability)
                   if (product.expAbility)
@@ -824,7 +824,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text('Expiration Date'),
-                        const SizedBox(height: 8),
+                        SizedBox(height: ResponsiveUI.value(context, 8)),
                         GestureDetector(
                           onTap: () async {
                             final date = await showDatePicker(
@@ -842,15 +842,15 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                             }
                           },
                           child: Container(
-                            padding: const EdgeInsets.all(12),
+                            padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
                             decoration: BoxDecoration(
                               border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(4),
+                              borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 4)),
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.calendar_today, size: 20),
-                                const SizedBox(width: 10),
+                                Icon(Icons.calendar_today, size: ResponsiveUI.iconSize(context, 20)),
+                                SizedBox(width: ResponsiveUI.value(context, 10)),
                                 Text(
                                   selectedExpirationDate != null
                                       ? selectedExpirationDate!
@@ -862,7 +862,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: ResponsiveUI.value(context, 16)),
                       ],
                     ),
 
@@ -878,7 +878,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                           child: const Text('Cancel'),
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      SizedBox(width: ResponsiveUI.value(context, 10)),
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
@@ -936,19 +936,19 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
         builder: (context, setState) {
           return Dialog(
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Select Variations for ${product.name}',
-                    style: const TextStyle(
-                      fontSize: 18,
+                    style: TextStyle(
+                      fontSize: ResponsiveUI.fontSize(context, 18),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: ResponsiveUI.value(context, 20)),
 
                   // List of prices/variations
                  ...(product.prices ?? []).map((price) {
@@ -956,15 +956,15 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                     DateTime? selectedExpirationDate;
 
                     return Card(
-                      margin: const EdgeInsets.only(bottom: 10),
+                      margin: EdgeInsets.only(bottom: ResponsiveUI.padding(context, 10)),
                       child: Padding(
-                        padding: const EdgeInsets.all(12),
+                        padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'Price: \$${price.price}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -976,11 +976,11 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const SizedBox(height: 8),
+                                  SizedBox(height: ResponsiveUI.value(context, 8)),
                                   const Text('Variations:'),
                                   ...price.variations.map((variation) {
                                     return Padding(
-                                      padding: const EdgeInsets.only(left: 8),
+                                      padding: EdgeInsets.only(left: ResponsiveUI.padding(context, 8)),
                                       child: Text(
                                         '${variation.name}: ${variation.options.map((o) => o.name).join(', ')}',
                                       ),
@@ -989,7 +989,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                                 ],
                               ),
 
-                            const SizedBox(height: 12),
+                            SizedBox(height: ResponsiveUI.value(context, 12)),
 
                             // Quantity input
                             TextField(
@@ -1029,7 +1029,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const SizedBox(height: 12),
+                                  SizedBox(height: ResponsiveUI.value(context, 12)),
                                   const Text('Expiration Date'),
                                   GestureDetector(
                                     onTap: () async {
@@ -1060,18 +1060,18 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                                       }
                                     },
                                     child: Container(
-                                      padding: const EdgeInsets.all(12),
+                                      padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
                                       decoration: BoxDecoration(
                                         border: Border.all(color: Colors.grey),
-                                        borderRadius: BorderRadius.circular(4),
+                                        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 4)),
                                       ),
                                       child: Row(
                                         children: [
-                                          const Icon(
+                                          Icon(
                                             Icons.calendar_today,
-                                            size: 20,
+                                            size: ResponsiveUI.iconSize(context, 20),
                                           ),
-                                          const SizedBox(width: 10),
+                                          SizedBox(width: ResponsiveUI.value(context, 10)),
                                           Text(
                                             selectedExpirationDate != null
                                                 ? selectedExpirationDate!
@@ -1091,7 +1091,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                     );
                   }).toList(),
 
-                  const SizedBox(height: 20),
+                  SizedBox(height: ResponsiveUI.value(context, 20)),
 
                   // Buttons
                   Row(
@@ -1105,7 +1105,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                           child: const Text('Cancel'),
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      SizedBox(width: ResponsiveUI.value(context, 10)),
                       Expanded(
                         child: ElevatedButton(
                           onPressed: selectedVariations.isEmpty
@@ -1177,16 +1177,16 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
         builder: (context, setState) {
           return Dialog(
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Payment Details',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 18), fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: ResponsiveUI.value(context, 20)),
 
                   // Payment Type
                   DropdownButtonFormField<String>(
@@ -1221,7 +1221,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: ResponsiveUI.value(context, 16)),
 
                   // Financial Accounts Dropdown
                   BlocBuilder<BankAccountCubit, BankAccountState>(
@@ -1260,7 +1260,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                       _selectedPaymentType == 'partial')
                     Column(
                       children: [
-                        const SizedBox(height: 16),
+                        SizedBox(height: ResponsiveUI.value(context, 16)),
                         TextField(
                           controller: _partialAmountController,
                           keyboardType: TextInputType.number,
@@ -1279,7 +1279,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                       _selectedPaymentType == 'later')
                     Column(
                       children: [
-                        const SizedBox(height: 16),
+                        SizedBox(height: ResponsiveUI.value(context, 16)),
                         TextField(
                           controller: _duePaymentAmountController,
                           keyboardType: TextInputType.number,
@@ -1288,7 +1288,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                             border: OutlineInputBorder(),
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: ResponsiveUI.value(context, 16)),
                         GestureDetector(
                           onTap: () async {
                             final date = await showDatePicker(
@@ -1311,15 +1311,15 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                             }
                           },
                           child: Container(
-                            padding: const EdgeInsets.all(12),
+                            padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
                             decoration: BoxDecoration(
                               border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(4),
+                              borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 4)),
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.calendar_today, size: 20),
-                                const SizedBox(width: 10),
+                                Icon(Icons.calendar_today, size: ResponsiveUI.iconSize(context, 20)),
+                                SizedBox(width: ResponsiveUI.value(context, 10)),
                                 Text(
                                   duePaymentDate != null
                                       ? duePaymentDate!.toIso8601String().split(
@@ -1331,7 +1331,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: ResponsiveUI.value(context, 16)),
                         ElevatedButton(
                           onPressed: () {
                             final amount =
@@ -1361,7 +1361,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 16),
+                        SizedBox(height: ResponsiveUI.value(context, 16)),
                         const Text('Due Payments:'),
                         ...duePayments
                             .map(
@@ -1371,7 +1371,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                                   due.date.toIso8601String().split('T')[0],
                                 ),
                                 trailing: IconButton(
-                                  icon: const Icon(Icons.delete),
+                                  icon: Icon(Icons.delete),
                                   onPressed: () {
                                     setState(() {
                                       duePayments.remove(due);
@@ -1384,7 +1384,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                       ],
                     ),
 
-                  const SizedBox(height: 20),
+                  SizedBox(height: ResponsiveUI.value(context, 20)),
 
                   // Buttons
                   Row(
@@ -1398,7 +1398,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                           child: const Text('Cancel'),
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      SizedBox(width: ResponsiveUI.value(context, 10)),
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
@@ -1550,9 +1550,9 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
 
                   // Products Section
                   Card(
-                    margin: const EdgeInsets.only(bottom: 16),
+                    margin: EdgeInsets.only(bottom: ResponsiveUI.padding(context, 16)),
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -1567,17 +1567,17 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                                 ),
                               ),
                               ElevatedButton.icon(
-                                icon: const Icon(Icons.add),
+                                icon: Icon(Icons.add),
                                 label: const Text('Add Product'),
                                 onPressed: _showProductSelectionDialog,
                               ),
                             ],
                           ),
-                          const SizedBox(height: 16),
+                          SizedBox(height: ResponsiveUI.value(context, 16)),
 
                           // Display selected products
                           if (purchaseItems.isEmpty)
-                            const Center(
+                            Center(
                               child: Text(
                                 'No products added',
                                 style: TextStyle(color: Colors.grey),
@@ -1588,10 +1588,10 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                               final index = entry.key;
                               final item = entry.value;
                               return Card(
-                                margin: const EdgeInsets.only(bottom: 8),
+                                margin: EdgeInsets.only(bottom: ResponsiveUI.padding(context, 8)),
                                 child: ListTile(
                                   leading: CircleAvatar(
-                                    backgroundColor: Colors.blue[50],
+                                    backgroundColor: Colors.red[50],
                                     child: Text('${index + 1}'),
                                   ),
                                   title: Text(item.product.name),
@@ -1616,8 +1616,8 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                                           ) {
                                             return Text(
                                               '  - Variation: ${variation.quantity} units',
-                                              style: const TextStyle(
-                                                fontSize: 12,
+                                              style: TextStyle(
+                                                fontSize: ResponsiveUI.fontSize(context, 12),
                                               ),
                                             );
                                           }).toList(),
@@ -1625,7 +1625,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                                     ],
                                   ),
                                   trailing: IconButton(
-                                    icon: const Icon(
+                                    icon: Icon(
                                       Icons.delete,
                                       color: Colors.red,
                                     ),
@@ -1674,23 +1674,23 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                                     Text('\$${taxAmount.toStringAsFixed(2)}'),
                                   ],
                                 ),
-                                const Divider(),
+                                Divider(),
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    const Text(
+                                    Text(
                                       'Grand Total:',
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 16,
+                                        fontSize: ResponsiveUI.fontSize(context, 16),
                                       ),
                                     ),
                                     Text(
                                       '\$${grandTotal.toStringAsFixed(2)}',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 16,
+                                        fontSize: ResponsiveUI.fontSize(context, 16),
                                         color: Colors.green,
                                       ),
                                     ),
@@ -1705,9 +1705,9 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
 
                   // Payment Section
                   Card(
-                    margin: const EdgeInsets.only(bottom: 16),
+                    margin: EdgeInsets.only(bottom: ResponsiveUI.padding(context, 16)),
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -1722,13 +1722,13 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                                 ),
                               ),
                               ElevatedButton.icon(
-                                icon: const Icon(Icons.payment),
+                                icon: Icon(Icons.payment),
                                 label: const Text('Configure Payment'),
                                 onPressed: _showPaymentDialog,
                               ),
                             ],
                           ),
-                          const SizedBox(height: 16),
+                          SizedBox(height: ResponsiveUI.value(context, 16)),
 
                           // Display payment summary
                           Column(
@@ -1765,10 +1765,10 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                                         .toList(),
                                   ],
                                 ),
-                              const SizedBox(height: 8),
+                              SizedBox(height: ResponsiveUI.value(context, 8)),
                               Text(
                                 'Total Paid: \$${totalPaid.toStringAsFixed(2)}',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -1903,7 +1903,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
             ),
             if (selectedImage != null)
               TextButton.icon(
-                icon: Icon(Icons.delete, color: AppColors.red, size: 18),
+                icon: Icon(Icons.delete, color: AppColors.red, size: ResponsiveUI.iconSize(context, 18)),
                 label: Text(
                   LocaleKeys.remove.tr(),
                   style: TextStyle(color: AppColors.red),
@@ -1920,17 +1920,17 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
             height: width * 0.35,
             decoration: BoxDecoration(
               color: AppColors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
               border: Border.all(color: AppColors.lightGray),
             ),
             child: selectedImage != null
                 ? ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                     child: Image.file(selectedImage, fit: BoxFit.cover),
                   )
                 : Icon(
                     Icons.camera_alt,
-                    size: 40,
+                    size: ResponsiveUI.iconSize(context, 40),
                     color: AppColors.primaryBlue,
                   ),
           ),

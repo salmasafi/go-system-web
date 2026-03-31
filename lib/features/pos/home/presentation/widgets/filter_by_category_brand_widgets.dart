@@ -7,6 +7,8 @@ import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:systego/core/widgets/custom_error/custom_error_state.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
 import 'package:systego/features/POS/home/cubit/pos_home_state.dart';
 import 'package:systego/features/POS/home/model/pos_models.dart';
@@ -99,7 +101,7 @@ class GenericFilterPanel extends StatelessWidget {
   });
 
   String _title() =>
-      filterType == FilterType.categories ? 'Categories' : 'Brands';
+      filterType == FilterType.categories ? LocaleKeys.categories_title.tr() : LocaleKeys.brands_title.tr();
   IconData _icon() =>
       filterType == FilterType.categories ? Icons.category : Icons.business;
 
@@ -125,15 +127,15 @@ class GenericFilterPanel extends StatelessWidget {
     return BlocBuilder<PosCubit, PosState>(
       builder: (context, state) {
         if (state is PosLoading) {
-          return const Padding(
-            padding: EdgeInsets.all(16),
+          return Padding(
+            padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
             child: CustomLoadingState(),
           );
         }
 
         if (state is PosError) {
           return Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
             child: CustomErrorState(
               message: state.message,
               onRetry: () => context.read<PosCubit>().loadPosData(),
@@ -146,7 +148,7 @@ class GenericFilterPanel extends StatelessWidget {
           final source = filterType == FilterType.categories
               ? cubit.categories
               : cubit.brands;
-          if (source.isEmpty) return const SizedBox.shrink();
+          if (source.isEmpty) return SizedBox.shrink();
 
           final items = _items(source);
 
@@ -165,7 +167,7 @@ class GenericFilterPanel extends StatelessWidget {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.black.withOpacity(0.05),
+                  color: AppColors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -203,16 +205,16 @@ class GenericFilterPanel extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             border: Border.all(
-                              width: 1,
+                              width: ResponsiveUI.value(context, 1),
                               color: selected
-                                  ? AppColors.linkBlue
+                                  ? AppColors.primaryBlue
                                   : Colors.transparent,
                             ),
                             borderRadius: BorderRadius.circular(
                               ResponsiveUI.borderRadius(context, 16),
                             ),
                             color: selected
-                                ? AppColors.lightBlueBackground.withOpacity(0.7)
+                                ? AppColors.lightBlueBackground.withValues(alpha: 0.7)
                                 : AppColors.white,
                           ),
                           child: Center(
@@ -246,7 +248,7 @@ class GenericFilterPanel extends StatelessWidget {
           );
         }
 
-        return const SizedBox.shrink();
+        return SizedBox.shrink();
       },
     );
   }
@@ -297,3 +299,4 @@ class FilterPanelHeader extends StatelessWidget {
     );
   }
 }
+

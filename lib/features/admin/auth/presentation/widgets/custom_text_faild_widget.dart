@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 // import 'package:flutter/material.dart';
 //
 // import '../../../../core/constants/app_colors.dart';
@@ -53,10 +54,10 @@
 //       decoration: widget.hasBoxDecoration
 //           ? BoxDecoration(
 //         color: AppColors.lightBlueBackground,
-//         borderRadius: BorderRadius.circular(12),
+//         borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
 //         boxShadow: [
 //           BoxShadow(
-//             color: Colors.black.withOpacity(0.05),
+//             color: Colors.black.withValues(alpha: 0.05),
 //             blurRadius: 10,
 //             offset: const Offset(0, 2),
 //           ),
@@ -71,26 +72,26 @@
 //         decoration: InputDecoration(
 //           labelText: widget.labelText,
 //           hintText: widget.hintText,
-//           labelStyle: const TextStyle(
+//           labelStyle: TextStyle(
 //             fontWeight: FontWeight.w600,
 //             color: AppColors.darkGray,
 //           ),
 //           border: widget.hasBorder
 //               ? OutlineInputBorder(
-//             borderRadius: BorderRadius.circular(12),
-//             borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+//             borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+//             borderSide: BorderSide(color: Colors.grey.shade300, width: ResponsiveUI.value(context, 1)),
 //           )
 //               : InputBorder.none,
 //           enabledBorder: widget.hasBorder
 //               ? OutlineInputBorder(
-//             borderRadius: BorderRadius.circular(12),
-//             borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+//             borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+//             borderSide: BorderSide(color: Colors.grey.shade300, width: ResponsiveUI.value(context, 1)),
 //           )
 //               : InputBorder.none,
 //           focusedBorder: widget.hasBorder
 //               ? OutlineInputBorder(
-//             borderRadius: BorderRadius.circular(12),
-//             borderSide: BorderSide(color: Colors.grey.shade400, width: 1.5),
+//             borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+//             borderSide: BorderSide(color: Colors.grey.shade400, width: ResponsiveUI.value(context, 1.5)),
 //           )
 //               : InputBorder.none,
 //           prefixIcon: Icon(
@@ -111,7 +112,7 @@
 //             },
 //           )
 //               : null,
-//           contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+//           contentPadding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 18), horizontal: ResponsiveUI.padding(context, 16)),
 //         ),
 //       ),
 //     );

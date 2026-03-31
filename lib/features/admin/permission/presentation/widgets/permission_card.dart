@@ -45,7 +45,7 @@ class _AnimatedPermissionCardState extends State<AnimatedPermissionCard> {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryBlue.withOpacity(0.1),
+              color: AppColors.primaryBlue.withValues(alpha: 0.1),
               blurRadius: ResponsiveUI.borderRadius(context, 10),
               offset: const Offset(0, 5),
             ),
@@ -143,11 +143,11 @@ class _AnimatedPermissionCardState extends State<AnimatedPermissionCard> {
                 children: role.actions.map((action) {
                   return Container(
                     padding: EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
+                      horizontal: ResponsiveUI.padding(context, 10),
+                      vertical: ResponsiveUI.padding(context, 6),
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryBlue.withOpacity(0.1),
+                      color: AppColors.primaryBlue.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(
                         ResponsiveUI.borderRadius(context, 12),
                       ),
@@ -169,3 +169,4 @@ class _AnimatedPermissionCardState extends State<AnimatedPermissionCard> {
     );
   }
 }
+

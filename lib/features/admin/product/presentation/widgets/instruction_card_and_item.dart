@@ -17,7 +17,7 @@ class InstructionsCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryBlue.withOpacity(0.1),
+            color: AppColors.primaryBlue.withValues(alpha: 0.1),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -31,7 +31,7 @@ class InstructionsCard extends StatelessWidget {
               Container(
                 padding: EdgeInsets.all(ResponsiveUI.padding(context, 8)),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryBlue.withOpacity(0.1),
+                  color: AppColors.primaryBlue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(
                     ResponsiveUI.borderRadius(context, 8),
                   ),
@@ -82,7 +82,7 @@ class InstructionItem extends StatelessWidget {
           height: ResponsiveUI.value(context, 28),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [AppColors.primaryBlue, AppColors.linkBlue],
+              colors: [AppColors.primaryBlue, AppColors.darkBlue],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -105,7 +105,7 @@ class InstructionItem extends StatelessWidget {
             text,
             style: TextStyle(
               fontSize: ResponsiveUI.fontSize(context, 14),
-              color: AppColors.darkGray.withOpacity(0.7),
+              color: AppColors.darkGray.withValues(alpha: 0.7),
             ),
           ),
         ),

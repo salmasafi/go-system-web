@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -66,7 +67,7 @@ class _LabelPreviewContent extends StatelessWidget {
           final cubit = context.read<LabelCubit>();
           
           if (cubit.selectedProducts.isEmpty) {
-            return const Center(child: Text("No items selected"));
+            return Center(child: Text("No items selected"));
           }
 
           return Column(
@@ -77,7 +78,7 @@ class _LabelPreviewContent extends StatelessWidget {
               // 2. List of Products with Quantity
               Expanded(
                 child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
                   itemCount: cubit.selectedProducts.length,
                   itemBuilder: (context, index) {
                     final item = cubit.selectedProducts[index];
@@ -131,32 +132,32 @@ class _LabelPreviewContent extends StatelessWidget {
 
   Widget _buildProductLabelCard(BuildContext context, LabelProductItem item, LabelCubit cubit) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: EdgeInsets.only(bottom: ResponsiveUI.padding(context, 12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12))),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
         child: Row(
           children: [
             // Image
             Container(
-              width: 60,
-              height: 60,
+              width: ResponsiveUI.value(context, 60),
+              height: ResponsiveUI.value(context, 60),
               decoration: BoxDecoration(
                 color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
               ),
               child: item.image != null
                   ? ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
                       child: Image.network(
                         item.image!,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const Icon(Icons.image, color: Colors.grey),
+                        errorBuilder: (_, __, ___) => Icon(Icons.image, color: Colors.grey),
                       ),
                     )
-                  : const Icon(Icons.qr_code_2, color: Colors.grey),
+                  : Icon(Icons.qr_code_2, color: Colors.grey),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: ResponsiveUI.value(context, 16)),
             
             // Details
             Expanded(
@@ -165,18 +166,18 @@ class _LabelPreviewContent extends StatelessWidget {
                 children: [
                   Text(
                     item.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: ResponsiveUI.fontSize(context, 16)),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   if (item.variationName != null)
                     Text(
                       'Var: ${item.variationName}',
-                      style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                      style: TextStyle(color: Colors.grey[600], fontSize: ResponsiveUI.fontSize(context, 13)),
                     ),
                   Text(
                     '\$${item.price.toStringAsFixed(2)}',
-                    style: const TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -186,13 +187,13 @@ class _LabelPreviewContent extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 color: AppColors.lightBlueBackground,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.primaryBlue.withOpacity(0.2)),
+                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
+                border: Border.all(color: AppColors.primaryBlue.withValues(alpha: 0.2)),
               ),
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.remove, size: 18, color: AppColors.primaryBlue),
+                    icon: Icon(Icons.remove, size: ResponsiveUI.iconSize(context, 18), color: AppColors.primaryBlue),
                     onPressed: () {
                       if (item.quantity > 1) {
                         cubit.updateQuantity(item.productId, item.quantity - 1);
@@ -203,10 +204,10 @@ class _LabelPreviewContent extends StatelessWidget {
                   ),
                   Text(
                     '${item.quantity}',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: ResponsiveUI.fontSize(context, 16)),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.add, size: 18, color: AppColors.primaryBlue),
+                    icon: Icon(Icons.add, size: ResponsiveUI.iconSize(context, 18), color: AppColors.primaryBlue),
                     onPressed: () {
                       cubit.updateQuantity(item.productId, item.quantity + 1);
                     },
@@ -227,12 +228,12 @@ class _LabelPreviewContent extends StatelessWidget {
     final totalLabels = cubit.selectedProducts.fold(0, (sum, item) => sum + item.quantity);
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),
@@ -242,8 +243,8 @@ class _LabelPreviewContent extends StatelessWidget {
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primaryBlue,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 16)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12))),
           ),
           onPressed: isLoading
               ? null
@@ -254,19 +255,19 @@ class _LabelPreviewContent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (isLoading) ...[
-                const SizedBox(
-                  width: 20,
-                  height: 20,
+                SizedBox(
+                  width: ResponsiveUI.value(context, 20),
+                  height: ResponsiveUI.value(context, 20),
                   child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                 ),
-                const SizedBox(width: 12),
-                const Text("Generating...", style: TextStyle(fontSize: 18, color: Colors.white)),
+                SizedBox(width: ResponsiveUI.value(context, 12)),
+                Text("Generating...", style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 18), color: Colors.white)),
               ] else ...[
-                const Icon(Icons.print, color: Colors.white),
-                const SizedBox(width: 8),
+                Icon(Icons.print, color: Colors.white),
+                SizedBox(width: ResponsiveUI.value(context, 8)),
                 Text(
                   'Generate $totalLabels Labels',
-                  style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 18), color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ],
             ],

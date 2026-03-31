@@ -18,7 +18,7 @@ class POSCartFAB extends StatelessWidget {
     return FloatingActionButton.extended(
       onPressed: onPressed,
       backgroundColor: AppColors.primaryBlue,
-      icon: const Icon(Icons.shopping_cart, color: AppColors.white),
+      icon: Icon(Icons.shopping_cart, color: AppColors.white),
       label: Container(
         padding: EdgeInsets.symmetric(
           horizontal: ResponsiveUI.padding(context, 8),
@@ -30,7 +30,7 @@ class POSCartFAB extends StatelessWidget {
         ),
         child: Text(
           '$itemCount',
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.primaryBlue,
             fontWeight: FontWeight.bold,
           ),

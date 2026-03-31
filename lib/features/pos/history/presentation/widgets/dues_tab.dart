@@ -1,8 +1,8 @@
-// lib/features/History/ui/tabs/dues_tab.dart
+import 'package:systego/core/constants/app_colors.dart';
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
-import '../../../../../core/constants/app_colors.dart';
 import '../../cubit/history_cubit.dart';
 import '../../cubit/history_state.dart';
 
@@ -26,72 +26,55 @@ class _DuesTabState extends State<DuesTab> {
           curr is DuesLoading || curr is DuesLoaded || curr is HistoryError,
       builder: (context, state) {
         if (state is DuesLoading) {
-          return const Center(child: CustomLoadingState());
+          return Center(child: CustomLoadingState());
         }
         if (state is HistoryError) return Center(child: Text(state.message));
         if (state is DuesLoaded) {
-          if (state.dueSales.isEmpty) {
-            return const Center(child: Text("No dues found"));
+          if (state.customers.isEmpty) {
+            return Center(child: Text("No dues found"));
           }
-
           return Column(
             children: [
               Container(
-                padding: const EdgeInsets.all(15),
+                padding: EdgeInsets.all(ResponsiveUI.padding(context, 15)),
                 color: Colors.red[50],
                 width: double.infinity,
                 child: Text(
                   "Total Dues: ${state.totalDueAmount.toStringAsFixed(2)} EGP",
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.red,
                     fontWeight: FontWeight.bold,
-                    fontSize: 18,
+                    fontSize: ResponsiveUI.fontSize(context, 18),
                   ),
                   textAlign: TextAlign.center,
                 ),
               ),
               Expanded(
                 child: ListView.builder(
-                  padding: const EdgeInsets.all(12),
-                  itemCount: state.dueSales.length,
+                  padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
+                  itemCount: state.customers.length,
                   itemBuilder: (context, index) {
-                    final due = state.dueSales[index];
+                    final customer = state.customers[index];
                     return Card(
-                      color: AppColors.white,
-                      elevation: 2,
-                      margin: const EdgeInsets.only(bottom: 10),
+                      elevation: ResponsiveUI.value(context, 2),
+                      margin: EdgeInsets.only(bottom: ResponsiveUI.padding(context, 10)),
                       child: ListTile(
-                        leading: const CircleAvatar(
-                          backgroundColor: Colors.red,
-                          child: Icon(Icons.money_off, color: Colors.white),
+                        leading: CircleAvatar(
+                          backgroundColor: AppColors.primaryBlue,
+                          child: const Icon(Icons.person, color: Colors.white),
                         ),
                         title: Text(
-                          due.customerName,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          customer.customerName,
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        subtitle: Text(
-                          "Ref: ${due.reference}\nPhone: ${due.phone}",
-                        ),
-                        trailing: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              "${due.remainingAmount} EGP",
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: Colors.red,
-                              ),
-                            ),
-                            Text(
-                              "of ${due.grandTotal}",
-                              style: const TextStyle(
-                                fontSize: 10,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
+                        subtitle: Text(customer.phone),
+                        trailing: Text(
+                          "${customer.totalDue.toStringAsFixed(2)} EGP",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: ResponsiveUI.fontSize(context, 14),
+                            color: AppColors.primaryBlue,
+                          ),
                         ),
                       ),
                     );
@@ -101,8 +84,10 @@ class _DuesTabState extends State<DuesTab> {
             ],
           );
         }
-        return const SizedBox();
+        return SizedBox();
       },
     );
   }
 }
+
+

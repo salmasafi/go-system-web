@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 
 import '../constants/app_colors.dart';
@@ -19,10 +20,10 @@ class CustomPopupMenu extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: backgroundColor ?? AppColors.lightBlueBackground,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -32,12 +33,12 @@ class CustomPopupMenu extends StatelessWidget {
         icon: Icon(
           Icons.more_vert,
           color: AppColors.darkGray,
-          size: 24,
+          size: ResponsiveUI.iconSize(context, 24),
         ),
         offset: const Offset(0, 45),
-        elevation: 8,
+        elevation: ResponsiveUI.value(context, 8),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 16)),
         ),
         color: Colors.white,
         itemBuilder: (context) {
@@ -47,29 +48,29 @@ class CustomPopupMenu extends StatelessWidget {
             items.add(
               PopupMenuItem(
                 onTap: onEdit,
-                height: 50,
+                height: ResponsiveUI.value(context, 50),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 8), vertical: ResponsiveUI.padding(context, 4)),
                   child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(ResponsiveUI.padding(context, 8)),
                         decoration: BoxDecoration(
-                          color: AppColors.primaryBlue.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
+                          color: AppColors.primaryBlue.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
                         ),
                         child: Icon(
                           Icons.edit_outlined,
                           color: AppColors.primaryBlue,
-                          size: 20,
+                          size: ResponsiveUI.iconSize(context, 20),
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      const Text(
+                      SizedBox(width: ResponsiveUI.value(context, 12)),
+                      Text(
                         'Edit',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          fontSize: 15,
+                          fontSize: ResponsiveUI.fontSize(context, 15),
                         ),
                       ),
                     ],
@@ -80,36 +81,36 @@ class CustomPopupMenu extends StatelessWidget {
           }
 
           if (onEdit != null && onDelete != null) {
-            items.add(const PopupMenuDivider(height: 1));
+            items.add(PopupMenuDivider(height: ResponsiveUI.value(context, 1)));
           }
 
           if (onDelete != null) {
             items.add(
               PopupMenuItem(
                 onTap: onDelete,
-                height: 50,
+                height: ResponsiveUI.value(context, 50),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 8), vertical: ResponsiveUI.padding(context, 4)),
                   child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(ResponsiveUI.padding(context, 8)),
                         decoration: BoxDecoration(
-                          color: AppColors.red.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
+                          color: AppColors.red.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
                         ),
                         child: Icon(
                           Icons.delete_outline,
                           color: AppColors.red,
-                          size: 20,
+                          size: ResponsiveUI.iconSize(context, 20),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: ResponsiveUI.value(context, 12)),
                       Text(
                         'Delete',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          fontSize: 15,
+                          fontSize: ResponsiveUI.fontSize(context, 15),
                           color: AppColors.red,
                         ),
                       ),

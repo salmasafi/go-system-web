@@ -48,12 +48,12 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
 
     _scaleAnimation = Tween<double>(
       begin: 0.8,
-      end: 1.0,
+      end: ResponsiveUI.padding(context, 1.0),
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
     _fadeAnimation = Tween<double>(
       begin: 0.0,
-      end: 1.0,
+      end: ResponsiveUI.padding(context, 1.0),
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     _slideAnimation = Tween<Offset>(
@@ -97,7 +97,7 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primaryBlue.withOpacity(0.15),
+                  color: AppColors.primaryBlue.withValues(alpha: 0.15),
                   blurRadius: 15,
                   offset: const Offset(0, 5),
                 ),
@@ -151,7 +151,7 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
               Text(
                 widget.product.name,
                 style: TextStyle(
-                  fontSize: 19,
+                  fontSize: ResponsiveUI.fontSize(context, 19),
                   fontWeight: FontWeight.bold,
                   color: AppColors.darkGray,
                 ),
@@ -159,7 +159,7 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
               SizedBox(height: ResponsiveUI.spacing(context, 6)),
               Row(
                 children: [
-                  Icon(Icons.category, size: 15, color: AppColors.successGreen),
+                  Icon(Icons.category, size: ResponsiveUI.iconSize(context, 15), color: AppColors.successGreen),
                   SizedBox(width: ResponsiveUI.spacing(context, 4)),
                   Expanded(
                     child: Text(
@@ -167,8 +167,8 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
                           ? widget.product.categoryId.first.name
                           : 'No category',
                       style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.darkGray.withOpacity(0.6),
+                        fontSize: ResponsiveUI.fontSize(context, 14),
+                        color: AppColors.darkGray.withValues(alpha: 0.6),
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -180,7 +180,7 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
                 children: [
                   Icon(
                     Icons.branding_watermark,
-                    size: 15,
+                    size: ResponsiveUI.iconSize(context, 15),
                     color: AppColors.successGreen,
                   ),
                   SizedBox(width: ResponsiveUI.spacing(context, 4)),
@@ -188,8 +188,8 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
                     child: Text(
                       widget.product.brandId.name,
                       style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.darkGray.withOpacity(0.6),
+                        fontSize: ResponsiveUI.fontSize(context, 14),
+                        color: AppColors.darkGray.withValues(alpha: 0.6),
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -231,14 +231,14 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
   // Widget _buildDescriptionRow() {
   //   return Row(
   //     children: [
-  //       Icon(Icons.description, size: 16, color: AppColors.categoryPurple),
+  //       Icon(Icons.description, size: ResponsiveUI.iconSize(context, 16), color: AppColors.categoryPurple),
   //       SizedBox(width: ResponsiveUI.spacing(context, 6)),
   //       Expanded(
   //         child: Text(
   //           widget.product.description,
   //           style: TextStyle(
-  //             fontSize: 13,
-  //             color: AppColors.darkGray.withOpacity(0.7),
+  //             fontSize: ResponsiveUI.fontSize(context, 13),
+  //             color: AppColors.darkGray.withValues(alpha: 0.7),
   //           ),
   //           maxLines: 2,
   //           overflow: TextOverflow.ellipsis,

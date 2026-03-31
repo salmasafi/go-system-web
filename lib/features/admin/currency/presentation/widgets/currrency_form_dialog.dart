@@ -213,7 +213,7 @@ class _CurrencyFormDialogState extends State<CurrencyFormDialog>
       ),
       boxShadow: [
         BoxShadow(
-          color: AppColors.black.withOpacity(0.2),
+          color: AppColors.black.withValues(alpha: 0.2),
           blurRadius: ResponsiveUI.value(context, 30),
           offset: Offset(0, ResponsiveUI.value(context, 10)),
         ),
@@ -293,7 +293,7 @@ class CurrencyDialogHeader extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             AppColors.primaryBlue,
-            AppColors.primaryBlue.withOpacity(0.8),
+            AppColors.darkBlue,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -308,7 +308,7 @@ class CurrencyDialogHeader extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(padding10),
             decoration: BoxDecoration(
-              color: AppColors.white.withOpacity(0.2),
+              color: AppColors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(borderRadius12),
             ),
             child: Icon(
@@ -333,7 +333,7 @@ class CurrencyDialogHeader extends StatelessWidget {
                 Text(
                   isEditMode ? LocaleKeys.update_currency_details.tr() : LocaleKeys.add_new_currency.tr(),
                   style: TextStyle(
-                    color: AppColors.white.withOpacity(0.9),
+                    color: AppColors.white.withValues(alpha: 0.9),
                     fontSize: fontSize13,
                   ),
                 ),
@@ -471,3 +471,4 @@ class CurrencyDialogButtons extends StatelessWidget {
     );
   }
 }
+

@@ -24,6 +24,7 @@ class PosCubit extends Cubit<PosState> {
   List<Product> categoryProducts = [];
   List<Product> brandProducts = [];
   List<Product> featuredProducts = [];
+  List<BundleModel> bundles = [];
 
   // Selections
   List<Warehouse> warehouses = [];
@@ -112,9 +113,31 @@ class PosCubit extends Cubit<PosState> {
   Future<void> getCategories() async {
     try {
       final response = await DioHelper.getData(url: EndPoint.posCategories);
+      log('Categories response: ${response.data}');
       if (response.statusCode == 200) {
-        final data = response.data['data']['category'] as List;
+        // Try different possible response structures
+        List<dynamic> data = [];
+        
+        if (response.data['data'] != null) {
+          if (response.data['data']['category'] != null) {
+            data = response.data['data']['category'] as List;
+          } else if (response.data['data']['categories'] != null) {
+            data = response.data['data']['categories'] as List;
+          } else if (response.data['data'] is List) {
+            data = response.data['data'] as List;
+          }
+        } else if (response.data['category'] != null) {
+          data = response.data['category'] as List;
+        } else if (response.data['categories'] != null) {
+          data = response.data['categories'] as List;
+        } else if (response.data is List) {
+          data = response.data as List;
+        }
+        
         categories = data.map((e) => Category.fromJson(e)).toList();
+        log("Loaded ${categories.length} categories");
+      } else {
+        log('Categories failed with status: ${response.statusCode}');
       }
     } catch (e) {
       log('Categories error: $e');
@@ -124,9 +147,31 @@ class PosCubit extends Cubit<PosState> {
   Future<void> getBrands() async {
     try {
       final response = await DioHelper.getData(url: EndPoint.posBrands);
+      log('Brands response: ${response.data}');
       if (response.statusCode == 200) {
-        final data = response.data['data']['brand'] as List;
+        // Try different possible response structures
+        List<dynamic> data = [];
+        
+        if (response.data['data'] != null) {
+          if (response.data['data']['brand'] != null) {
+            data = response.data['data']['brand'] as List;
+          } else if (response.data['data']['brands'] != null) {
+            data = response.data['data']['brands'] as List;
+          } else if (response.data['data'] is List) {
+            data = response.data['data'] as List;
+          }
+        } else if (response.data['brand'] != null) {
+          data = response.data['brand'] as List;
+        } else if (response.data['brands'] != null) {
+          data = response.data['brands'] as List;
+        } else if (response.data is List) {
+          data = response.data as List;
+        }
+        
         brands = data.map((e) => Brand.fromJson(e)).toList();
+        log("Loaded ${brands.length} brands");
+      } else {
+        log('Brands failed with status: ${response.statusCode}');
       }
     } catch (e) {
       log('Brands error: $e');
@@ -146,6 +191,19 @@ class PosCubit extends Cubit<PosState> {
     } catch (e) {
       log('Featured error: $e');
       emit(PosError("Failed to load products: ${e.toString()}"));
+    }
+  }
+
+  Future<void> getBundles() async {
+    try {
+      var response = await DioHelper.getData(url: EndPoint.posBundles);
+      if (response.statusCode == 200) {
+        final data = response.data['data']['bundles'] as List;
+        bundles = data.map((b) => BundleModel.fromJson(b)).toList();
+      }
+    } catch (e) {
+      log('Bundles error: $e');
+      bundles = [];
     }
   }
 
@@ -343,7 +401,7 @@ class PosCubit extends Cubit<PosState> {
   }
 
   Future<void> selectTab({
-    String tab = 'featured',
+    String tab = 'category',
     bool noFliterRefresh = false,
   }) async {
     selectedTab = tab;
@@ -356,6 +414,10 @@ class PosCubit extends Cubit<PosState> {
     } else if (tab == 'brand') {
       if (!noFliterRefresh) showFilterPanel(isCategory: false);
       emit(PosDataLoaded(brandProducts));
+    } else if (tab == 'bundles') {
+      hideFilterPanels();
+      if (bundles.isEmpty) await getBundles();
+      emit(PosBundlesLoaded(bundles));
     } else {
       emit(PosDataLoaded([]));
     }

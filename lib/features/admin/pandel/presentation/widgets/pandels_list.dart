@@ -160,11 +160,11 @@ class _PandelsListState extends State<PandelsList> {
                     ),
                     decoration: BoxDecoration(
                       color: pandel.status
-                          ? Colors.green.withOpacity(0.1)
+                          ? Colors.green.withValues(alpha: 0.1)
                           // : isUpcoming
-                          //   ? Colors.orange.withOpacity(0.1)
-                          : Colors.red.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(16),
+                          //   ? Colors.orange.withValues(alpha: 0.1)
+                          : Colors.red.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 16)),
                     ),
                     child: Text(
                       pandel.status
@@ -202,7 +202,7 @@ class _PandelsListState extends State<PandelsList> {
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 18),
                       fontWeight: FontWeight.bold,
-                      color: Colors.blue,
+                      color: Colors.red,
                     ),
                   ),
                 ],
@@ -210,12 +210,11 @@ class _PandelsListState extends State<PandelsList> {
 
               SizedBox(height: ResponsiveUI.spacing(context, 16)),
 
-              // Product IDs
+              // Products
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    // "sssc",
                     '${LocaleKeys.products.tr()} (${pandel.products.length}):',
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 14),
@@ -223,61 +222,95 @@ class _PandelsListState extends State<PandelsList> {
                       color: Colors.grey[700],
                     ),
                   ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 8)),
-                  Wrap(
-                    spacing: ResponsiveUI.spacing(context, 8),
-                    runSpacing: ResponsiveUI.spacing(context, 4),
-                    // children: pandel.products.take(10).map((productName) {
-                    //   return Container(
-                    //     padding: EdgeInsets.symmetric(
-                    //       horizontal: ResponsiveUI.padding(context, 10),
-                    //       vertical: ResponsiveUI.padding(context, 4),
-                    //     ),
-                    //     decoration: BoxDecoration(
-                    //       color: Colors.grey[100],
-                    //       borderRadius: BorderRadius.circular(8),
-                    //       border: Border.all(color: AppColors.lightGray),
-                    //     ),
-                    //     child: Text(
-                    //       // "ssczcs",
-                    //       pandel.products.length > 8
-                    //         ? '${productName.substring(0, 8)}...'
-                    //         : productName,
-                    //       style: TextStyle(
-                    //         fontSize: ResponsiveUI.fontSize(context, 12),
-                    //         color: Colors.grey[700],
-                    //       ),
-                    //     ),
-                    //   );
-                    // }).toList(),
-                    children: pandel.products.take(10).map((product) {
-                      final name = product.name;
+                  SizedBox(height: ResponsiveUI.spacing(context, 10)),
+                  ...pandel.products.take(10).map((product) {
+                    final name = product.productName ?? product.productId;
+                    final image = product.productImage;
+                    final price = product.productPrice;
 
-                      return Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: ResponsiveUI.padding(context, 10),
-                          vertical: ResponsiveUI.padding(context, 4),
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: AppColors.lightGray),
-                        ),
-                        child: Text(
-                          name.length > 8 ? '${name.substring(0, 8)}...' : name,
-                          style: TextStyle(
-                            fontSize: ResponsiveUI.fontSize(context, 12),
-                            color: Colors.grey[700],
+                    return Container(
+                      margin: EdgeInsets.only(
+                          bottom: ResponsiveUI.spacing(context, 8)),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: ResponsiveUI.padding(context, 10),
+                        vertical: ResponsiveUI.padding(context, 8),
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 10)),
+                        border: Border.all(color: AppColors.lightGray),
+                      ),
+                      child: Row(
+                        children: [
+                          // Image
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
+                            child: image != null && image.isNotEmpty
+                                ? Image.network(
+                                    image,
+                                    width: ResponsiveUI.value(context, 44),
+                                    height: ResponsiveUI.value(context, 44),
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) =>
+                                        _productPlaceholder(context),
+                                  )
+                                : _productPlaceholder(context),
                           ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
+                          SizedBox(width: ResponsiveUI.spacing(context, 10)),
+                          // Name + price
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  name,
+                                  style: TextStyle(
+                                    fontSize: ResponsiveUI.fontSize(context, 13),
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.darkGray,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                if (price != null)
+                                  Text(
+                                    '${price.toStringAsFixed(2)} EGP',
+                                    style: TextStyle(
+                                      fontSize: ResponsiveUI.fontSize(context, 12),
+                                      color: AppColors.primaryBlue,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                          // Quantity badge
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: ResponsiveUI.padding(context, 8),
+                              vertical: ResponsiveUI.padding(context, 4),
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.lightBlueBackground,
+                              borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
+                            ),
+                            child: Text(
+                              'x${product.quantity}',
+                              style: TextStyle(
+                                fontSize: ResponsiveUI.fontSize(context, 12),
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.primaryBlue,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
                   if (pandel.products.length > 10)
                     Padding(
-                      padding: EdgeInsets.only(
-                        top: ResponsiveUI.spacing(context, 8),
-                      ),
+                      padding:
+                          EdgeInsets.only(top: ResponsiveUI.spacing(context, 4)),
                       child: Text(
                         '${LocaleKeys.and_more.tr()} ${pandel.products.length - 10} ${LocaleKeys.more.tr()}',
                         style: TextStyle(
@@ -396,11 +429,11 @@ class _PandelsListState extends State<PandelsList> {
                       itemBuilder: (context, index) {
                         return Container(
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                             border: Border.all(color: AppColors.lightGray),
                           ),
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                             child: Image.network(
                               pandel.images[index],
                               fit: BoxFit.cover,
@@ -447,9 +480,9 @@ class _PandelsListState extends State<PandelsList> {
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
+                    backgroundColor: Colors.red,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                     ),
                     padding: EdgeInsets.symmetric(
                       vertical: ResponsiveUI.padding(context, 14),
@@ -495,4 +528,18 @@ class _PandelsListState extends State<PandelsList> {
   String _formatDate(DateTime date) {
     return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
   }
+
+  Widget _productPlaceholder(BuildContext context) {
+    return Container(
+      width: ResponsiveUI.value(context, 44),
+      height: ResponsiveUI.value(context, 44),
+      decoration: BoxDecoration(
+        color: AppColors.lightBlueBackground,
+        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
+      ),
+      child: Icon(Icons.inventory_2_outlined,
+          size: ResponsiveUI.iconSize(context, 22), color: AppColors.primaryBlue),
+    );
+  }
 }
+

@@ -55,7 +55,7 @@ class _AnimatedRoleCardState extends State<AnimatedRoleCard> {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryBlue.withOpacity(0.1),
+              color: AppColors.primaryBlue.withValues(alpha: 0.1),
               blurRadius: ResponsiveUI.borderRadius(context, 10),
               offset: const Offset(0, 5),
             ),
@@ -141,7 +141,7 @@ class _AnimatedRoleCardState extends State<AnimatedRoleCard> {
                 '${role.permissionsCount} ${LocaleKeys.permissions.tr()}',
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 12),
-                  color: AppColors.darkGray.withOpacity(0.6),
+                  color: AppColors.darkGray.withValues(alpha: 0.6),
                 ),
               ),
             ],
@@ -172,8 +172,8 @@ class _AnimatedRoleCardState extends State<AnimatedRoleCard> {
               ),
               decoration: BoxDecoration(
                 color: role.status == 'active'
-                  ? AppColors.successGreen.withOpacity(0.1)
-                  : AppColors.red.withOpacity(0.1),
+                  ? AppColors.successGreen.withValues(alpha: 0.1)
+                  : AppColors.red.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(
                   ResponsiveUI.borderRadius(context, 16),
                 ),
@@ -213,14 +213,14 @@ class _AnimatedRoleCardState extends State<AnimatedRoleCard> {
                 Icon(
                   Icons.calendar_today,
                   size: ResponsiveUI.iconSize(context, 14),
-                  color: AppColors.darkGray.withOpacity(0.6),
+                  color: AppColors.darkGray.withValues(alpha: 0.6),
                 ),
                 SizedBox(width: ResponsiveUI.spacing(context, 4)),
                 Text(
                   _formatDate(role.createdAt),
                   style: TextStyle(
                     fontSize: ResponsiveUI.fontSize(context, 12),
-                    color: AppColors.darkGray.withOpacity(0.6),
+                    color: AppColors.darkGray.withValues(alpha: 0.6),
                   ),
                 ),
               ],
@@ -237,13 +237,13 @@ class _AnimatedRoleCardState extends State<AnimatedRoleCard> {
             vertical: ResponsiveUI.padding(context, 8),
           ),
           decoration: BoxDecoration(
-            color: AppColors.primaryBlue.withOpacity(0.05),
+            color: AppColors.primaryBlue.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(
               ResponsiveUI.borderRadius(context, 12),
             ),
             border: Border.all(
-              color: AppColors.primaryBlue.withOpacity(0.1),
-              width: 1,
+              color: AppColors.primaryBlue.withValues(alpha: 0.1),
+              width: ResponsiveUI.value(context, 1),
             ),
           ),
           child: Row(
@@ -284,7 +284,7 @@ class _AnimatedRoleCardState extends State<AnimatedRoleCard> {
   }
 
   Widget _buildPermissionsSection(RoleModel role) {
-    if (!_isExpanded) return const SizedBox();
+    if (!_isExpanded) return SizedBox();
 
     return AnimatedSize(
       duration: const Duration(milliseconds: 300),
@@ -314,7 +314,7 @@ class _AnimatedRoleCardState extends State<AnimatedRoleCard> {
                 ),
                 border: Border.all(
                   color: AppColors.lightGray,
-                  width: 1,
+                  width: ResponsiveUI.value(context, 1),
                 ),
               ),
               child: Column(
@@ -345,7 +345,7 @@ class _AnimatedRoleCardState extends State<AnimatedRoleCard> {
                         '${permission.actions.length} ${LocaleKeys.actions.tr()}',
                         style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 12),
-                          color: AppColors.darkGray.withOpacity(0.6),
+                          color: AppColors.darkGray.withValues(alpha: 0.6),
                         ),
                       ),
                     ],
@@ -358,7 +358,7 @@ class _AnimatedRoleCardState extends State<AnimatedRoleCard> {
                         actionNames,
                         style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 12),
-                          color: AppColors.darkGray.withOpacity(0.7),
+                          color: AppColors.darkGray.withValues(alpha: 0.7),
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,

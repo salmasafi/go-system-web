@@ -131,16 +131,16 @@ Widget buildMultiSelectDropdownField<T>(
       menuProps: MenuProps(
         
         backgroundColor: AppColors.white,
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 15)),
       ),
       
       // showSearchBox: true,
       // searchFieldProps: TextFieldProps(
       //   decoration: InputDecoration(
       //     hintText: hint,
-      //     contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      //     contentPadding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 12), vertical: ResponsiveUI.padding(context, 8)),
       //     border: OutlineInputBorder(
-      //       borderRadius: BorderRadius.circular(15),
+      //       borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 15)),
       //       borderSide: BorderSide(color: AppColors.white),
       //     ),
       //   ),
@@ -149,26 +149,26 @@ Widget buildMultiSelectDropdownField<T>(
     dropdownDecoratorProps: DropDownDecoratorProps(
 
       dropdownSearchDecoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        contentPadding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 12), vertical: ResponsiveUI.padding(context, 10)),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: AppColors.shadowGray[300]!, width: 2),
+          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 15)),
+          borderSide: BorderSide(color: AppColors.shadowGray[300]!, width: ResponsiveUI.value(context, 2)),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: AppColors.shadowGray[300]!, width: 2),
+          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 15)),
+          borderSide: BorderSide(color: AppColors.shadowGray[300]!, width: ResponsiveUI.value(context, 2)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: AppColors.primaryBlue, width: 2),
+          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 15)),
+          borderSide: BorderSide(color: AppColors.primaryBlue, width: ResponsiveUI.value(context, 2)),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: AppColors.red, width: 2),
+          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 15)),
+          borderSide: BorderSide(color: AppColors.red, width: ResponsiveUI.value(context, 2)),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: AppColors.red, width: 2),
+          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 15)),
+          borderSide: BorderSide(color: AppColors.red, width: ResponsiveUI.value(context, 2)),
         ),
         filled: true,
         fillColor: AppColors.white,

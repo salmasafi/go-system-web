@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 
 class AnimatedElement extends StatefulWidget {
@@ -48,8 +49,16 @@ class _AnimatedElementState extends State<AnimatedElement>
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
-    Future.delayed(widget.delay, () {
-      if (mounted) _controller.forward();
+    // Use addPostFrameCallback to avoid calling MediaQuery before initState completes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (widget.delay == Duration.zero) {
+        _controller.forward();
+      } else {
+        Future.delayed(widget.delay, () {
+          if (mounted) _controller.forward();
+        });
+      }
     });
   }
 
@@ -67,7 +76,7 @@ class _AnimatedElementState extends State<AnimatedElement>
         color: Colors.transparent,
         child: InkWell(
           onTap: widget.onTap,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
           child: widget.child,
         ),
       );

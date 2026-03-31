@@ -45,14 +45,14 @@ class AnimatedCustomerGroupCard extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryBlue.withOpacity(0.1),
+              color: AppColors.primaryBlue.withValues(alpha: 0.1),
               blurRadius: ResponsiveUI.borderRadius(context, 10),
               offset: const Offset(0, 5),
             ),
           ],
           border: Border.all(
-            color: AppColors.primaryBlue.withOpacity(0.4),
-            width: 1.8,
+            color: AppColors.primaryBlue.withValues(alpha: 0.4),
+            width: ResponsiveUI.value(context, 1.8),
           ),
         ),
         child: Material(
@@ -87,7 +87,7 @@ class AnimatedCustomerGroupCard extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: ResponsiveUI.borderRadius(context, 25),
-          backgroundColor: AppColors.primaryBlue.withOpacity(0.8),
+          backgroundColor: AppColors.darkBlue,
           child: Icon(
             Icons.group,
             color: AppColors.white,
@@ -114,7 +114,7 @@ class AnimatedCustomerGroupCard extends StatelessWidget {
               //   _formatDate(customerGroup.createdAt),
               //   style: TextStyle(
               //     fontSize: ResponsiveUI.fontSize(context, 12),
-              //     color: AppColors.darkGray.withOpacity(0.6),
+              //     color: AppColors.darkGray.withValues(alpha: 0.6),
               //   ),
               // ),
             ],
@@ -154,7 +154,7 @@ class AnimatedCustomerGroupCard extends StatelessWidget {
           LocaleKeys.status.tr(),
           style: TextStyle(
             fontSize: ResponsiveUI.fontSize(context, 12),
-            color: AppColors.darkGray.withOpacity(0.6),
+            color: AppColors.darkGray.withValues(alpha: 0.6),
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -167,8 +167,8 @@ class AnimatedCustomerGroupCard extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             color: customerGroup.status 
-                ? AppColors.successGreen.withOpacity(0.1)
-                : AppColors.red.withOpacity(0.1),
+                ? AppColors.successGreen.withValues(alpha: 0.1)
+                : AppColors.red.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 6)),
           ),
           child: Text(
@@ -192,7 +192,7 @@ class AnimatedCustomerGroupCard extends StatelessWidget {
           LocaleKeys.version.tr(),
           style: TextStyle(
             fontSize: ResponsiveUI.fontSize(context, 12),
-            color: AppColors.darkGray.withOpacity(0.6),
+            color: AppColors.darkGray.withValues(alpha: 0.6),
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -220,7 +220,7 @@ class AnimatedCustomerGroupCard extends StatelessWidget {
           LocaleKeys.last_updated.tr(),
           style: TextStyle(
             fontSize: ResponsiveUI.fontSize(context, 12),
-            color: AppColors.darkGray.withOpacity(0.6),
+            color: AppColors.darkGray.withValues(alpha: 0.6),
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -259,3 +259,5 @@ class AnimatedCustomerGroupCard extends StatelessWidget {
     return '${_formatDate(date)} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
   }
 }
+
+

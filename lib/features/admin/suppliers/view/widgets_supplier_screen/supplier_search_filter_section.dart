@@ -41,7 +41,7 @@ class SupplierSearchFilterSection extends StatelessWidget {
         color: AppColors.white,
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadowGray.withOpacity(0.1),
+            color: AppColors.shadowGray.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -68,7 +68,7 @@ class SupplierSearchFilterSection extends StatelessWidget {
       decoration: InputDecoration(
         hintText: LocaleKeys.search_hint.tr(),
         hintStyle: TextStyle(
-          color: AppColors.darkGray.withOpacity(0.5),
+          color: AppColors.darkGray.withValues(alpha: 0.5),
           fontSize: ResponsiveUI.fontSize(context, 14),
         ),
         prefixIcon: Icon(
@@ -104,9 +104,9 @@ class SupplierSearchFilterSection extends StatelessWidget {
           borderRadius: BorderRadius.circular(
             ResponsiveUI.borderRadius(context, 16),
           ),
-          borderSide: const BorderSide(
+          borderSide: BorderSide(
             color: AppColors.primaryBlue,
-            width: 2,
+            width: ResponsiveUI.value(context, 2),
           ),
         ),
         contentPadding: EdgeInsets.symmetric(
@@ -177,7 +177,7 @@ class SupplierSearchFilterSection extends StatelessWidget {
           hint: Text(
             hint,
             style: TextStyle(
-              color: AppColors.darkGray.withOpacity(0.6),
+              color: AppColors.darkGray.withValues(alpha: 0.6),
               fontSize: ResponsiveUI.fontSize(context, 14),
             ),
           ),
@@ -257,3 +257,4 @@ class SupplierSearchFilterSection extends StatelessWidget {
     );
   }
 }
+

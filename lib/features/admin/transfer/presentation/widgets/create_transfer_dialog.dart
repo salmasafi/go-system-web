@@ -254,8 +254,8 @@ class _CreateTransferDialogState extends State<CreateTransferDialog> {
                           children: [
                             Text(
                               LocaleKeys.products.tr(),
-                              style: const TextStyle(
-                                fontSize: 18, 
+                              style: TextStyle(
+                                fontSize: ResponsiveUI.fontSize(context, 18), 
                                 fontWeight: FontWeight.bold
                               ),
                             ),
@@ -265,7 +265,7 @@ class _CreateTransferDialogState extends State<CreateTransferDialog> {
                                       _availableProductIds.isNotEmpty
                                   ? _addProductRow
                                   : null,
-                              icon: const Icon(Icons.add),
+                              icon: Icon(Icons.add),
                               label: Text(LocaleKeys.add_product.tr()),
                             )
                           ],
@@ -313,7 +313,7 @@ class _CreateTransferDialogState extends State<CreateTransferDialog> {
     final availableProductsForRow = _getAvailableProductsForRow(index);
     
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
+      padding: EdgeInsets.only(bottom: ResponsiveUI.padding(context, 12.0)),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -343,12 +343,12 @@ class _CreateTransferDialogState extends State<CreateTransferDialog> {
                           ? Colors.red
                           : Colors.grey[300]!,
                     ),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
                   ),
                   child: DropdownButton<String>(
                     value: selectedProduct.productId,
                     isExpanded: true,
-                    underline: const SizedBox(),
+                    underline: SizedBox(),
                     hint: Text(
                       LocaleKeys.select_product.tr(),
                       style: TextStyle(color: Colors.grey[600]),
@@ -378,19 +378,19 @@ class _CreateTransferDialogState extends State<CreateTransferDialog> {
                 ),
                 if (selectedProduct.error != null)
                   Padding(
-                    padding: const EdgeInsets.only(top: 4.0),
+                    padding: EdgeInsets.only(top: ResponsiveUI.padding(context, 4.0)),
                     child: Text(
                       selectedProduct.error!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.red,
-                        fontSize: 12,
+                        fontSize: ResponsiveUI.fontSize(context, 12),
                       ),
                     ),
                   ),
               ],
             ),
           ),
-          const SizedBox(width: 10),
+          SizedBox(width: ResponsiveUI.value(context, 10)),
           // Quantity Input
           Expanded(
             flex: 1,
@@ -407,7 +407,7 @@ class _CreateTransferDialogState extends State<CreateTransferDialog> {
           Padding(
             padding: EdgeInsets.only(top: index == 0 ? 25 : 5),
             child: IconButton(
-              icon: const Icon(Icons.delete_outline, color: Colors.red),
+              icon: Icon(Icons.delete_outline, color: Colors.red),
               onPressed: () => _removeProductRow(index),
             ),
           ),
@@ -423,8 +423,8 @@ class _CreateTransferDialogState extends State<CreateTransferDialog> {
         borderRadius: BorderRadius.circular(
           ResponsiveUI.borderRadius(context, 12),
         ),
-        border: Border.all(color: Colors.blue[100]!),
-        color: Colors.blue[50],
+        border: Border.all(color: Colors.red[100]!),
+        color: Colors.red[50],
       ),
       child: Row(
         children: [
@@ -443,7 +443,7 @@ class _CreateTransferDialogState extends State<CreateTransferDialog> {
             child: Text(
               "Loading products from warehouse...",
               style: TextStyle(
-                color: Colors.blue[800],
+                color: Colors.red[800],
                 fontSize: ResponsiveUI.fontSize(context, 14),
               ),
             ),
@@ -519,7 +519,7 @@ class _CreateTransferDialogState extends State<CreateTransferDialog> {
       ),
       boxShadow: [
         BoxShadow(
-          color: AppColors.black.withOpacity(0.2),
+          color: AppColors.black.withValues(alpha: 0.2),
           blurRadius: ResponsiveUI.value(context, 30),
           offset: Offset(0, ResponsiveUI.value(context, 10)),
         ),
@@ -541,26 +541,26 @@ class _CreateTransferDialogState extends State<CreateTransferDialog> {
       padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
       decoration: BoxDecoration(
         color: AppColors.primaryBlue,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(ResponsiveUI.borderRadius(context, 20)),
+          topRight: Radius.circular(ResponsiveUI.borderRadius(context, 20)),
         ),
       ),
       child: Row(
         children: [
-          const Icon(Icons.swap_horiz, color: Colors.white),
-          const SizedBox(width: 10),
+          Icon(Icons.swap_horiz, color: Colors.white),
+          SizedBox(width: ResponsiveUI.value(context, 10)),
           Text(
             LocaleKeys.create_transfer.tr(),
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
-              fontSize: 20,
+              fontSize: ResponsiveUI.fontSize(context, 20),
               fontWeight: FontWeight.bold,
             ),
           ),
           const Spacer(),
           IconButton(
-            icon: const Icon(Icons.close, color: Colors.white),
+            icon: Icon(Icons.close, color: Colors.white),
             onPressed: () => Navigator.pop(context),
           )
         ],
@@ -578,13 +578,13 @@ class _CreateTransferDialogState extends State<CreateTransferDialog> {
             onPressed: isLoading ? null : () => Navigator.pop(context),
             child: Text(LocaleKeys.cancel.tr()),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: ResponsiveUI.value(context, 16)),
           ElevatedButton(
             onPressed: isLoading ? null : _submit,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryBlue,
               foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+              padding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 32), vertical: ResponsiveUI.padding(context, 12)),
             ),
             child: Text(LocaleKeys.submit.tr()),
           ),

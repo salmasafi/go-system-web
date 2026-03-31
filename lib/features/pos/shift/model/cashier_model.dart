@@ -73,6 +73,20 @@ class CashierModel {
       updatedAt: json['updatedAt'] ?? '',
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'name': name,
+      'ar_name': arName,
+      'warehouse_id': {'_id': warehouse.id, 'name': warehouse.name},
+      'status': status,
+      'cashier_active': cashierActive,
+      'bankAccounts': bankAccounts,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
+    };
+  }
 }
 
 class WarehouseModel {

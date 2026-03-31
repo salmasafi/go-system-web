@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../core/constants/app_colors.dart';
@@ -21,39 +22,39 @@ class BottomNavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final activeColor = color ?? AppColors.primaryBlue;
-    final inactiveColor = AppColors.darkGray.withOpacity(0.5);
+    final inactiveColor = AppColors.darkGray.withValues(alpha: 0.5);
 
     return Expanded(
       child: InkWell(
         onTap: onTap,
-        splashColor: activeColor.withOpacity(0.1),
-        highlightColor: activeColor.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(12),
+        splashColor: activeColor.withValues(alpha: 0.1),
+        highlightColor: activeColor.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 8)),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(ResponsiveUI.padding(context, 8)),
                 decoration: BoxDecoration(
                   color: isActive
-                      ? activeColor.withOpacity(0.15)
+                      ? activeColor.withValues(alpha: 0.15)
                       : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                 ),
                 child: Icon(
                   icon,
-                  size: 26,
+                  size: ResponsiveUI.iconSize(context, 26),
                   color: isActive ? activeColor : inactiveColor,
                 ),
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: ResponsiveUI.value(context, 4)),
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: ResponsiveUI.fontSize(context, 12),
                   color: isActive ? activeColor : inactiveColor,
                   fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
                   letterSpacing: 0.1,
@@ -61,12 +62,12 @@ class BottomNavItem extends StatelessWidget {
               ),
               if (isActive)
                 Container(
-                  margin: const EdgeInsets.only(top: 4),
-                  height: 3,
-                  width: 24,
+                  margin: EdgeInsets.only(top: ResponsiveUI.padding(context, 4)),
+                  height: ResponsiveUI.value(context, 3),
+                  width: ResponsiveUI.value(context, 24),
                   decoration: BoxDecoration(
                     color: activeColor,
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 2)),
                   ),
                 ),
             ],

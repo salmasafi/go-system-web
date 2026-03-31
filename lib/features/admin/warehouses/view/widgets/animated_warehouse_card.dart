@@ -101,7 +101,7 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
               borderRadius: BorderRadius.circular(borderRadiusValue),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primaryBlue.withOpacity(0.15),
+                  color: AppColors.primaryBlue.withValues(alpha: 0.15),
                   blurRadius: ResponsiveUI.value(context, 15),
                   offset: Offset(0, ResponsiveUI.value(context, 5)),
                 ),
@@ -182,7 +182,7 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
                       widget.warehouse.address ?? LocaleKeys.warehouse_no_address.tr(),
                       style: TextStyle(
                         fontSize: fontSizeAddress,
-                        color: AppColors.darkGray.withOpacity(0.6),
+                        color: AppColors.darkGray.withValues(alpha: 0.6),
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -238,7 +238,7 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
             widget.warehouse.phone ?? LocaleKeys.warehouse_no_phone.tr(),
             style: TextStyle(
               fontSize: fontSize13,
-              color: AppColors.darkGray.withOpacity(0.7),
+              color: AppColors.darkGray.withValues(alpha: 0.7),
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -252,7 +252,7 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
             widget.warehouse.email ?? LocaleKeys.warehouse_no_email.tr(),
             style: TextStyle(
               fontSize: fontSize13,
-              color: AppColors.darkGray.withOpacity(0.7),
+              color: AppColors.darkGray.withValues(alpha: 0.7),
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -262,3 +262,4 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
     );
   }
 }
+

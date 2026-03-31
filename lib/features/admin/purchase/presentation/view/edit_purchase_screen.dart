@@ -104,7 +104,7 @@ class _EditPurchaseBottomSheetState extends State<EditPurchaseBottomSheet> {
           constraints: BoxConstraints(maxWidth: maxWidth),
           decoration: BoxDecoration(
             color: const Color.fromARGB(255, 243, 249, 254),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(ResponsiveUI.borderRadius(context, 24))),
           ),
           child: Material(
              color: Colors.transparent,
@@ -119,14 +119,14 @@ class _EditPurchaseBottomSheetState extends State<EditPurchaseBottomSheet> {
                 children: [
                   Center(
                     child: Container(
-                      width: 40, height: 4,
-                      decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2)),
+                      width: ResponsiveUI.value(context, 40), height: ResponsiveUI.value(context, 4),
+                      decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 2))),
                     ),
                   ),
-                  SizedBox(height: 12),
+                  SizedBox(height: ResponsiveUI.value(context, 12)),
                   Text(
                     "Edit Purchase",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 20), fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
             
@@ -137,7 +137,7 @@ class _EditPurchaseBottomSheetState extends State<EditPurchaseBottomSheet> {
                   Row(
                     children: [
                       Expanded(child: _buildTextField(controller: _shippingCostController, title: "Shipping", hint: "0")),
-                      SizedBox(width: 16),
+                      SizedBox(width: ResponsiveUI.value(context, 16)),
                       Expanded(child: _buildTextField(controller: _discountController, title: "Discount", hint: "0")),
                     ],
                   ),
@@ -150,13 +150,13 @@ class _EditPurchaseBottomSheetState extends State<EditPurchaseBottomSheet> {
                     onRemove: _removeImage,
                   ),
             
-                  SizedBox(height: 24),
+                  SizedBox(height: ResponsiveUI.value(context, 24)),
                   CustomElevatedButton(
                     onPressed: isLoading ? null : _submitUpdate,
                     text: isLoading ? "Updating..." : "Update Purchase",
                     isLoading: isLoading,
                   ),
-                  SizedBox(height: 16),
+                  SizedBox(height: ResponsiveUI.value(context, 16)),
                 ],
               ),
             ),
@@ -170,9 +170,9 @@ class _EditPurchaseBottomSheetState extends State<EditPurchaseBottomSheet> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 16),
+        SizedBox(height: ResponsiveUI.value(context, 16)),
         Text(title, style: TextStyle(color: AppColors.darkGray, fontWeight: FontWeight.w500)),
-        SizedBox(height: 8),
+        SizedBox(height: ResponsiveUI.value(context, 8)),
         CustomTextField(controller: controller, labelText: '', hintText: hint, hasBoxDecoration: false, hasBorder: true),
       ],
     );
@@ -194,22 +194,22 @@ class _EditPurchaseBottomSheetState extends State<EditPurchaseBottomSheet> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 16),
+        SizedBox(height: ResponsiveUI.value(context, 16)),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(title, style: TextStyle(color: AppColors.darkGray, fontWeight: FontWeight.w500)),
             if (selectedLocalImage != null)
-              TextButton.icon(icon: Icon(Icons.delete, color: Colors.red, size: 18), label: Text("Remove", style: TextStyle(color: Colors.red)), onPressed: onRemove),
+              TextButton.icon(icon: Icon(Icons.delete, color: Colors.red, size: ResponsiveUI.iconSize(context, 18)), label: Text("Remove", style: TextStyle(color: Colors.red)), onPressed: onRemove),
           ],
         ),
-        SizedBox(height: 8),
+        SizedBox(height: ResponsiveUI.value(context, 8)),
         GestureDetector(
           onTap: onPick,
           child: Container(
-            width: 120, height: 120,
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey)),
-            child: ClipRRect(borderRadius: BorderRadius.circular(12), child: displayImage),
+            width: ResponsiveUI.value(context, 120), height: ResponsiveUI.value(context, 120),
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)), border: Border.all(color: Colors.grey)),
+            child: ClipRRect(borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)), child: displayImage),
           ),
         ),
       ],

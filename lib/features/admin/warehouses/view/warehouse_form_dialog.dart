@@ -132,7 +132,7 @@ class _WarehouseFormDialogState extends State<WarehouseFormDialog>
       borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 24)),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.2),
+          color: Colors.black.withValues(alpha: 0.2),
           blurRadius: ResponsiveUI.value(context, 30),
           offset: Offset(0, ResponsiveUI.value(context, 10)),
         ),

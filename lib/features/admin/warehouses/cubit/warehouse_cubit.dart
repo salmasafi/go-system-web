@@ -5,6 +5,7 @@ import 'package:systego/features/admin/warehouses/cubit/warehouse_state.dart';
 import 'package:systego/generated/locale_keys.g.dart';
 import '../../../../core/services/dio_helper.dart';
 import '../../../../core/services/endpoints.dart';
+import '../../../../core/utils/error_handler.dart';
 import '../model/ware_house_model.dart';
 
 class WareHouseCubit extends Cubit<WarehousesState> {
@@ -219,6 +220,97 @@ class WareHouseCubit extends Cubit<WarehousesState> {
     } catch (error) {
       log(' Delete Error: $error');
       emit(WarehousesError(error.toString()));
+    }
+  }
+
+  /// Get Warehouse Products
+  Future<Map<String, dynamic>?> getWarehouseProducts(String warehouseId) async {
+    emit(WarehousesLoading());
+
+    try {
+      log(' Fetching products for warehouse ID: $warehouseId');
+
+      final response = await DioHelper.getData(
+        url: EndPoint.getWareHouseProducts(warehouseId),
+      );
+
+      log(' Warehouse Products Response Status Code: ${response.statusCode}');
+      log(' Warehouse Products Response Data: ${response.data}');
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        if (data['success'] == true && data['data'] != null) {
+          log(' Warehouse products fetched successfully');
+          emit(WarehousesSuccess());
+          return data['data'];
+        } else {
+          final errorMessage = data['message'] ?? 'Failed to fetch warehouse products';
+          log(' Warehouse products fetch failed: $errorMessage');
+          emit(WarehousesError(errorMessage));
+          return null;
+        }
+      } else {
+        final errorMessage = 'Failed to fetch warehouse products: ${response.statusCode}';
+        log(' Response error: $errorMessage');
+        emit(WarehousesError(errorMessage));
+        return null;
+      }
+    } catch (error) {
+      log(' Warehouse products fetch error caught: $error');
+      final errorMessage = ErrorHandler.handleError(error);
+      emit(WarehousesError(errorMessage));
+      return null;
+    }
+  }
+
+  /// Add Product to Warehouse
+  Future<bool> addProductToWarehouse({
+    required String productId,
+    required String warehouseId,
+    required int quantity,
+    required int lowStock,
+  }) async {
+    emit(WarehousesLoading());
+
+    try {
+      log(' Adding product $productId to warehouse $warehouseId');
+
+      final response = await DioHelper.postData(
+        url: EndPoint.addProductToWarehouse(warehouseId),
+        data: {
+          'productId': productId,
+          'warehouseId': warehouseId,
+          'quantity': quantity,
+          'low_stock': lowStock,
+        },
+      );
+
+      log(' Add Product Response Status Code: ${response.statusCode}');
+      log(' Add Product Response Data: ${response.data}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = response.data;
+        if (data['success'] == true) {
+          log(' Product added to warehouse successfully');
+          emit(WarehousesSuccess());
+          return true;
+        } else {
+          final errorMessage = data['message'] ?? 'Failed to add product to warehouse';
+          log(' Add product failed: $errorMessage');
+          emit(WarehousesError(errorMessage));
+          return false;
+        }
+      } else {
+        final errorMessage = 'Failed to add product to warehouse: ${response.statusCode}';
+        log(' Response error: $errorMessage');
+        emit(WarehousesError(errorMessage));
+        return false;
+      }
+    } catch (error) {
+      log(' Add product error caught: $error');
+      final errorMessage = ErrorHandler.handleError(error);
+      emit(WarehousesError(errorMessage));
+      return false;
     }
   }
 }

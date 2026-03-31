@@ -1,17 +1,17 @@
-// Updated UI: home_screen.dart
-// Changes:
-// - Added imports for notifications cubit and state.
-// - Wrapped Scaffold in BlocProvider<NotificationsCubit> with auto-fetch.
-// - Used BlocBuilder to dynamically get unreadCount for appBarWithActions (default 0 on loading/error).
-// - Removed hardcoded notificationCount: 5; now dynamic.
-// - Added onPressed stub for notifications (implement navigation later).
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/services/cache_helper.dart';
+import 'package:systego/features/admin/dashboard/cubit/notifications_cubit.dart';
 import 'package:systego/features/admin/dashboard/presentation/view/dashboard_screens.dart';
+import 'package:systego/features/admin/settings/presentation/settings_screen.dart';
+import 'package:systego/features/admin/warehouses/view/widgets/custom_delete_dialog.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import 'package:systego/main.dart';
 import '../../../../POS/home/presentation/view/pos_home_screen.dart';
+import '../../../../POS/online_orders/cubit/online_orders_cubit.dart';
+import '../../../../POS/online_orders/presentation/view/online_orders_screen.dart';
 import '../../../auth/presentation/view/login_screen.dart';
 import '../widgets/custom_bottom_app_bar_widget.dart';
 
@@ -23,29 +23,67 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int currentIndex = 0;  // Moved here to persist state across rebuilds
+  // Tabs: 0=Dashboard, 1=OnlineOrders, 2=POS (center), 3=Settings, 4=Logout
+  int currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<NotificationsCubit>().getNotifications();
+    });
+  }
+
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => CustomDeleteDialog(
+        title: LocaleKeys.exit.tr(),
+        message: LocaleKeys.exit_confirmation_message.tr(),
+        icon: Icons.exit_to_app_rounded,
+        iconColor: AppColors.primaryBlue,
+        deleteText: LocaleKeys.exit.tr(),
+        onDelete: () async {
+          Navigator.pop(dialogContext);
+          await CacheHelper.clearAllData();
+          navigatorKey.currentState?.pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+            (route) => false,
+          );
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> screens = [
+    // Only 4 navigable screens (logout is a dialog, not a screen)
+    final List<Widget> screens = [
       DashboardScreen(key: ValueKey(context.locale.languageCode)),
-      //Container(),
-      POSHomeScreen(),
-      //Container(),
-      Container(),
+      BlocProvider(
+        create: (_) => OnlineOrdersCubit(),
+        child: const OnlineOrdersScreen(),
+      ),
+      const POSHomeScreen(),
+      const SettingsScreen(),
     ];
+
+    // Map tab index to screen index (logout tab 4 has no screen)
+    final screenIndex = currentIndex < 4 ? currentIndex : 3;
+
     return Scaffold(
-      body: screens[currentIndex],
+      body: IndexedStack(
+        index: screenIndex,
+        children: screens,
+      ),
       bottomNavigationBar: CustomBottomAppBar(
         key: ValueKey(context.locale.languageCode),
-        currentIndex: currentIndex,
-        onTap: (index) async {
-          if (index == 2) {
-            await CacheHelper.clearAllData();
-            navigatorKey.currentState?.pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => const LoginScreen()),
-              (route) => false,
-            );
+        currentIndex: currentIndex > 3 ? 3 : currentIndex,
+        onTap: (index) {
+          if (index == 4) {
+            _showLogoutDialog();
+            // Don't update currentIndex — stay on current screen
           } else {
             setState(() {
               currentIndex = index;

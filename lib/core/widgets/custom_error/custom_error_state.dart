@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 
 import '../../constants/app_colors.dart';
@@ -25,52 +26,52 @@ class CustomErrorState extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
             decoration: BoxDecoration(
-              color: (iconColor ?? AppColors.red).withOpacity(0.1),
+              color: (iconColor ?? AppColors.red).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
               icon ?? Icons.error_outline,
-              size: 80,
+              size: ResponsiveUI.iconSize(context, 80),
               color: iconColor ?? AppColors.red,
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: ResponsiveUI.value(context, 24)),
           Text(
             title ?? 'Error',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: ResponsiveUI.fontSize(context, 20),
               fontWeight: FontWeight.bold,
               color: AppColors.darkGray,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: ResponsiveUI.value(context, 12)),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
+            padding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 40)),
             child: Text(
               message,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 14,
-                color: AppColors.darkGray.withOpacity(0.7),
+                fontSize: ResponsiveUI.fontSize(context, 14),
+                color: AppColors.darkGray.withValues(alpha: 0.7),
               ),
             ),
           ),
           if (onRetry != null) ...[
-            const SizedBox(height: 32),
+            SizedBox(height: ResponsiveUI.value(context, 32)),
             ElevatedButton.icon(
               onPressed: onRetry,
-              icon: const Icon(Icons.refresh),
+              icon: Icon(Icons.refresh),
               label: const Text('Retry'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryBlue,
                 foregroundColor: AppColors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                padding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 40), vertical: ResponsiveUI.padding(context, 16)),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 16)),
                 ),
-                elevation: 5,
+                elevation: ResponsiveUI.value(context, 5),
               ),
             ),
           ],

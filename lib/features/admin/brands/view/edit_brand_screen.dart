@@ -61,7 +61,7 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
           content: Text(LocaleKeys.please_enter_brand_name.tr()),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8))),
           margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
         ),
       );
@@ -72,7 +72,7 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
           content: Text(LocaleKeys.please_enter_brand_ar_name.tr()),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8))),
           margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
         ),
       );
@@ -119,7 +119,7 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
               backgroundColor: Colors.red,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
               ),
               margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
             ),
@@ -135,7 +135,7 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
               backgroundColor: Colors.green,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
               ),
               margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
             ),
@@ -149,7 +149,7 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
               backgroundColor: Colors.red,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
               ),
               margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
             ),
@@ -175,7 +175,7 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
               ? Container(
                   height: ResponsiveUI.value(context, 300),
                   padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-                  child: const Center(child: CustomLoadingState(size: 60)),
+                  child: Center(child: CustomLoadingState(size: ResponsiveUI.iconSize(context, 60))),
                 )
               : SingleChildScrollView(
                   padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
@@ -214,7 +214,7 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
                         prefixIcon: Icons.branding_watermark,
                         hasBoxDecoration: false,
                         hasBorder: true,
-                        prefixIconColor: AppColors.darkGray.withOpacity(0.7),
+                        prefixIconColor: AppColors.darkGray.withValues(alpha: 0.7),
                       ),
                       SizedBox(height: ResponsiveUI.spacing(context, 12)),
                       CustomTextField(
@@ -224,7 +224,7 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
                         prefixIcon: Icons.branding_watermark,
                         hasBoxDecoration: false,
                         hasBorder: true,
-                        prefixIconColor: AppColors.darkGray.withOpacity(0.7),
+                        prefixIconColor: AppColors.darkGray.withValues(alpha: 0.7),
                       ),
                       SizedBox(height: ResponsiveUI.spacing(context, 12)),
                       Text(
@@ -243,7 +243,7 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
                           decoration: BoxDecoration(
                             border: Border.all(
                               color: Colors.grey[300]!,
-                              width: 1,
+                              width: ResponsiveUI.value(context, 1),
                             ),
                             borderRadius: BorderRadius.circular(
                               ResponsiveUI.borderRadius(context, 12),
@@ -358,3 +358,4 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
     );
   }
 }
+

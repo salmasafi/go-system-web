@@ -1,3 +1,4 @@
+import 'package:systego/core/utils/responsive_ui.dart';
 // lib/features/pos/shift/ui/cashier_selection_screen.dart
 
 import 'package:flutter/material.dart';
@@ -50,8 +51,8 @@ class _CashierSelectionScreenState extends State<CashierSelectionScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, size: 60, color: Colors.red),
-                  const SizedBox(height: 10),
+                  Icon(Icons.error_outline, size: ResponsiveUI.iconSize(context, 60), color: Colors.red),
+                  SizedBox(height: ResponsiveUI.value(context, 10)),
                   Text(state.message),
                   TextButton(
                     onPressed: () => cubit.getCashiers(),
@@ -63,11 +64,11 @@ class _CashierSelectionScreenState extends State<CashierSelectionScreen> {
           }
 
           if (cubit.cashiersList.isEmpty) {
-            return const Center(child: Text("No Cashiers Found"));
+            return Center(child: Text("No Cashiers Found"));
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
             itemCount: cubit.cashiersList.length,
             itemBuilder: (context, index) {
               final cashier = cubit.cashiersList[index];
@@ -76,10 +77,10 @@ class _CashierSelectionScreenState extends State<CashierSelectionScreen> {
               return Card(
                 elevation: isBusy ? 0 : 4,
                 color: isBusy ? Colors.grey.shade200 : Colors.white,
-                margin: const EdgeInsets.only(bottom: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                margin: EdgeInsets.only(bottom: ResponsiveUI.padding(context, 12)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12))),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  contentPadding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 16), vertical: ResponsiveUI.padding(context, 8)),
                   enabled: !isBusy,
                   leading: CircleAvatar(
                     backgroundColor: isBusy ? Colors.grey : AppColors.primaryBlue,
@@ -100,8 +101,8 @@ class _CashierSelectionScreenState extends State<CashierSelectionScreen> {
                       ? const Text("Occupied", style: TextStyle(color: Colors.red))
                       : Text(cashier.arName),
                   trailing: isBusy
-                      ? const Icon(Icons.block, color: Colors.red)
-                      : const Icon(Icons.arrow_forward_ios, size: 16, color: AppColors.primaryBlue),
+                      ? Icon(Icons.block, color: Colors.red)
+                      : Icon(Icons.arrow_forward_ios, size: ResponsiveUI.iconSize(context, 16), color: AppColors.primaryBlue),
                   onTap: isBusy ? null : () => cubit.selectCashier(cashier),
                 ),
               );

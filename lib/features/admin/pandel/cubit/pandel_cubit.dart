@@ -80,11 +80,13 @@ class PandelCubit extends Cubit<PandelState> {
 
   Future<void> addPandel({
     required String name,
-    required List<String> productsId,
+    required List<PandelProduct> products,
     required List<File> images,
     required DateTime startDate,
     required DateTime endDate,
     required double price,
+    bool allWarehouses = true,
+    List<String>? warehouseIds,
   }) async {
     emit(CreatePandelLoading());
 
@@ -101,14 +103,20 @@ class PandelCubit extends Cubit<PandelState> {
 
       final data = {
         "name": name,
-        "productsId": productsId,
+        "products": products.map((p) => p.toJson()).toList(),
         "images": base64Images,
         "startdate": startDate.toIso8601String().split('T').first,
         "enddate": endDate.toIso8601String().split('T').first,
         "price": price,
+        "all_warehouses": allWarehouses,
+        "status": true,
       };
+      
+      if (!allWarehouses && warehouseIds != null) {
+        data["warehouse_ids"] = warehouseIds;
+      }
 
-      log(" add pandel ${data}");
+      log("add pandel $data");
 
       final response = await DioHelper.postData(
         url: EndPoint.addPandel,
@@ -132,23 +140,24 @@ class PandelCubit extends Cubit<PandelState> {
   Future<void> updatePandel({
     required String pandelId,
     required String name,
-    required List<String> productsId,
+    required List<PandelProduct> products,
     required List<File> newImages,
-    required List<String> existingImages, // Keep existing images
+    required List<String> existingImages,
     required DateTime startDate,
     required DateTime endDate,
     required double price,
+    bool allWarehouses = true,
+    List<String>? warehouseIds,
   }) async {
     emit(UpdatePandelLoading());
 
     try {
-      // final List<String> allImages = [...existingImages];
       final List<String> allImages = [];
 
       // Convert existing images (URLs → base64)
       for (final image in existingImages) {
         if (_isBase64(image)) {
-          allImages.add(image); // already base64
+          allImages.add(image);
         } else {
           final base64Image = await _convertImageUrlToBase64(image);
           if (base64Image != null) {
@@ -167,14 +176,20 @@ class PandelCubit extends Cubit<PandelState> {
 
       final data = {
         "name": name,
-        "productsId": productsId,
+        "products": products.map((p) => p.toJson()).toList(),
         "images": allImages,
         "startdate": startDate.toIso8601String().split('T').first,
         "enddate": endDate.toIso8601String().split('T').first,
         "price": price,
+        "all_warehouses": allWarehouses,
+        "status": true,
       };
+      
+      if (!allWarehouses && warehouseIds != null) {
+        data["warehouse_ids"] = warehouseIds;
+      }
 
-      log(" update pandel ${data}");
+      log("update pandel $data");
 
       final response = await DioHelper.putData(
         url: EndPoint.updatePandel(
@@ -226,17 +241,6 @@ class PandelCubit extends Cubit<PandelState> {
   Future<String?> _convertFileToBase64(File imageFile) async {
     try {
       final bytes = await imageFile.readAsBytes();
-
-      String? mimeType;
-      final ext = imageFile.path.toLowerCase().split('.').last;
-      if (ext == 'png') {
-        mimeType = "image/png";
-      } else if (ext == 'jpg' || ext == 'jpeg') {
-        mimeType = "image/jpeg";
-      } else {
-        mimeType = "application/octet-stream";
-      }
-
       return base64Encode(bytes);
     } catch (e) {
       log("Error converting image: $e");

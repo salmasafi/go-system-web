@@ -45,7 +45,8 @@ class _DiscountFormDialogState extends State<DiscountFormDialog>
   void _initializeControllers() {
     if (isEditMode) {
       _nameController.text = widget.discount!.name;
-      selectedType = widget.discount!.type[0].toUpperCase() +
+      selectedType =
+          widget.discount!.type[0].toUpperCase() +
           widget.discount!.type.substring(1).toLowerCase();
       _amountController.text = widget.discount!.amount.toString();
       status = widget.discount!.status;
@@ -53,8 +54,10 @@ class _DiscountFormDialogState extends State<DiscountFormDialog>
   }
 
   void _setupAnimation() {
-    _animationController =
-        AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
     _scaleAnimation = CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeOutBack,
@@ -85,7 +88,8 @@ class _DiscountFormDialogState extends State<DiscountFormDialog>
           listener: _handleStateChanges,
           builder: (context, state) {
             final isLoading =
-                state is CreateDiscountLoading || state is UpdateDiscountLoading;
+                state is CreateDiscountLoading ||
+                state is UpdateDiscountLoading;
 
             return Container(
               constraints: BoxConstraints(
@@ -115,7 +119,9 @@ class _DiscountFormDialogState extends State<DiscountFormDialog>
                                   hint: LocaleKeys.hint_discount_name.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
-                                          v, LocaleKeys.discount_name.tr()),
+                                        v,
+                                        LocaleKeys.discount_name.tr(),
+                                      ),
                                 ),
                                 SizedBox(
                                   height: ResponsiveUI.spacing(context, 12),
@@ -131,8 +137,9 @@ class _DiscountFormDialogState extends State<DiscountFormDialog>
                                   onChanged: (val) {
                                     setState(() => selectedType = val);
                                   },
-                                  validator: (v) =>
-                                      v == null ? LocaleKeys.please_select_type.tr() : null,
+                                  validator: (v) => v == null
+                                      ? LocaleKeys.please_select_type.tr()
+                                      : null,
                                 ),
                                 SizedBox(
                                   height: ResponsiveUI.spacing(context, 12),
@@ -142,7 +149,8 @@ class _DiscountFormDialogState extends State<DiscountFormDialog>
                                   controller: _amountController,
                                   label: LocaleKeys.discount_amount.tr(),
                                   icon: Icons.attach_money,
-                                  hint: LocaleKeys.please_enter_minimum_amount.tr(),
+                                  hint: LocaleKeys.please_enter_minimum_amount
+                                      .tr(),
                                   validator: (v) {
                                     if (v == null || v.isEmpty) {
                                       return LocaleKeys.enter_amount.tr();
@@ -158,7 +166,7 @@ class _DiscountFormDialogState extends State<DiscountFormDialog>
                                   height: ResponsiveUI.spacing(context, 12),
                                 ),
 
-                                 Row(
+                                Row(
                                   children: [
                                     Text(
                                       LocaleKeys.active.tr(),
@@ -209,23 +217,25 @@ class _DiscountFormDialogState extends State<DiscountFormDialog>
   BoxDecoration _buildDecoration(BuildContext context) {
     return BoxDecoration(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 24)),
+      borderRadius: BorderRadius.circular(
+        ResponsiveUI.borderRadius(context, 24),
+      ),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.2),
+          color: Colors.black.withValues(alpha: 0.2),
           blurRadius: 30,
           offset: Offset(0, 10),
-        )
+        ),
       ],
     );
   }
 
   Widget _buildHeader(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.primaryBlue, AppColors.primaryBlue.withOpacity(0.8)],
+          colors: [AppColors.primaryBlue, AppColors.darkBlue],
         ),
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(ResponsiveUI.borderRadius(context, 24)),
@@ -233,14 +243,18 @@ class _DiscountFormDialogState extends State<DiscountFormDialog>
       ),
       child: Row(
         children: [
-          Icon(Icons.local_offer, color: Colors.white, size: 28),
-          SizedBox(
-                                  width: ResponsiveUI.spacing(context, 15),
-                                ),
+          Icon(
+            Icons.local_offer,
+            color: Colors.white,
+            size: ResponsiveUI.iconSize(context, 28),
+          ),
+          SizedBox(width: ResponsiveUI.spacing(context, 15)),
           Text(
-            isEditMode ? LocaleKeys.edit_discount.tr() : LocaleKeys.new_discount.tr(),
+            isEditMode
+                ? LocaleKeys.edit_discount.tr()
+                : LocaleKeys.new_discount.tr(),
             style: TextStyle(
-              fontSize: 22,
+              fontSize: ResponsiveUI.fontSize(context, 22),
               color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
@@ -248,8 +262,12 @@ class _DiscountFormDialogState extends State<DiscountFormDialog>
           Spacer(),
           InkWell(
             onTap: () => Navigator.pop(context),
-            child: Icon(Icons.close, color: Colors.white, size: 26),
-          )
+            child: Icon(
+              Icons.close,
+              color: Colors.white,
+              size: ResponsiveUI.iconSize(context, 26),
+            ),
+          ),
         ],
       ),
     );
@@ -281,6 +299,7 @@ class _DiscountFormDialogState extends State<DiscountFormDialog>
   void _handleStateChanges(BuildContext context, DiscountsState state) {
     if (state is CreateDiscountSuccess || state is UpdateDiscountSuccess) {
       Navigator.pop(context);
+      context.read<DiscountsCubit>().getDiscounts();
     } else if (state is CreateDiscountError) {
       CustomSnackbar.showError(context, state.error);
     } else if (state is UpdateDiscountError) {
@@ -288,7 +307,6 @@ class _DiscountFormDialogState extends State<DiscountFormDialog>
     }
   }
 }
-
 
 class DiscountDialogButtons extends StatelessWidget {
   final bool isEditMode;
@@ -382,7 +400,9 @@ class DiscountDialogButtons extends StatelessWidget {
                   SizedBox(width: spacing8),
                   Flexible(
                     child: Text(
-                      isEditMode ? LocaleKeys.update_discount.tr() : LocaleKeys.create_discount.tr(),
+                      isEditMode
+                          ? LocaleKeys.update_discount.tr()
+                          : LocaleKeys.create_discount.tr(),
                       style: TextStyle(
                         fontSize: value14,
                         fontWeight: FontWeight.bold,

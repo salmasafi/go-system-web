@@ -19,7 +19,7 @@ class SectionTitle extends StatelessWidget {
         Container(
           padding: EdgeInsets.all(ResponsiveUI.padding(context, 8)),
           decoration: BoxDecoration(
-            color: AppColors.primaryBlue.withOpacity(0.1),
+            color: AppColors.primaryBlue.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 10)),
           ),
           child: Icon(
@@ -86,7 +86,7 @@ class ContactItem extends StatelessWidget {
                   title,
                   style: TextStyle(
                     fontSize: ResponsiveUI.fontSize(context, 12),
-                    color: AppColors.darkGray.withOpacity(0.6),
+                    color: AppColors.darkGray.withValues(alpha: 0.6),
                   ),
                 ),
                 SizedBox(height: ResponsiveUI.spacing(context, 4)),
@@ -131,7 +131,7 @@ class LocationCard extends StatelessWidget {
         border: Border.all(color: AppColors.lightGray),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadowGray.withOpacity(0.1),
+            color: AppColors.shadowGray.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -149,7 +149,7 @@ class LocationCard extends StatelessWidget {
             title,
             style: TextStyle(
               fontSize: ResponsiveUI.fontSize(context, 12),
-              color: AppColors.darkGray.withOpacity(0.6),
+              color: AppColors.darkGray.withValues(alpha: 0.6),
             ),
           ),
           SizedBox(height: ResponsiveUI.spacing(context, 4)),

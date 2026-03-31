@@ -52,7 +52,7 @@ class _VariationCardState extends State<VariationCard> {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryBlue.withOpacity(0.1),
+              color: AppColors.primaryBlue.withValues(alpha: 0.1),
               blurRadius: ResponsiveUI.borderRadius(context, 10),
               offset: const Offset(0, 5),
             ),
@@ -131,7 +131,7 @@ class _VariationCardState extends State<VariationCard> {
               //   style: TextStyle(
               //     fontSize: ResponsiveUI.fontSize(context, 14),
               //     fontWeight: FontWeight.w500,
-              //     color: AppColors.darkGray.withOpacity(0.7),
+              //     color: AppColors.darkGray.withValues(alpha: 0.7),
               //     overflow: TextOverflow.ellipsis,
               //   ),
               // ),
@@ -156,7 +156,7 @@ class _VariationCardState extends State<VariationCard> {
           '${LocaleKeys.options_label.tr()} ${allOptions.map((o) => o.name).join(', ')}',
           style: TextStyle(
             fontSize: ResponsiveUI.fontSize(context, 12),
-            color: AppColors.darkGray.withOpacity(0.6),
+            color: AppColors.darkGray.withValues(alpha: 0.6),
           ),
         ),
         SizedBox(height: ResponsiveUI.spacing(context, 4)),
@@ -171,7 +171,7 @@ class _VariationCardState extends State<VariationCard> {
           '${LocaleKeys.inactive_label.tr()} ${inactiveOptions.isEmpty ?  LocaleKeys.no_inactive_items.tr() : inactiveOptions.map((o) => o.name).join(', ')}',
           style: TextStyle(
             fontSize: ResponsiveUI.fontSize(context, 14),
-            color: AppColors.darkGray.withOpacity(0.6),
+            color: AppColors.darkGray.withValues(alpha: 0.6),
           ),
         ),
       ],

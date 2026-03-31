@@ -9,7 +9,6 @@ import '../../../../../core/widgets/custom_loading/custom_loading_state.dart';
 import '../../../checkout/cubit/checkout_cubit/checkout_cubit.dart';
 import '../../cubit/pos_home_state.dart';
 import 'product_card.dart';
-import 'product_details_dialog.dart';
 import 'variation_selector_dialog.dart';
 
 class POSProductGrid extends StatefulWidget {
@@ -17,10 +16,7 @@ class POSProductGrid extends StatefulWidget {
   // إذا كانت فارغة أو null، يمكننا استخدام القائمة من الـ state مباشرة
   final List<Product>? filteredProducts;
 
-  const POSProductGrid({
-    super.key,
-    this.filteredProducts,
-  });
+  const POSProductGrid({super.key, this.filteredProducts});
 
   @override
   State<POSProductGrid> createState() => _POSProductGridState();
@@ -33,6 +29,7 @@ class _POSProductGridState extends State<POSProductGrid> {
     final posCubit = context.read<PosCubit>();
 
     if (product.differentPrice && product.prices.isNotEmpty) {
+      // منتج بـ variations → اعرض الـ selector
       showDialog(
         context: context,
         builder: (_) => VariationSelectorDialog(
@@ -47,19 +44,9 @@ class _POSProductGridState extends State<POSProductGrid> {
         ),
       );
     } else {
-      showDialog(
-        context: context,
-        builder: (_) => ProductDetailsDialog(
-          product: product,
-          onAddToCart: () {
-            checkoutCubit.addToCart(product);
-            posCubit.selectTab(
-              tab: posCubit.selectedTab,
-              noFliterRefresh: true,
-            );
-          },
-        ),
-      );
+      // منتج بسعر واحد → أضف مباشرة بدون dialog
+      checkoutCubit.addToCart(product);
+      posCubit.selectTab(tab: posCubit.selectedTab, noFliterRefresh: true);
     }
   }
 
@@ -71,52 +58,71 @@ class _POSProductGridState extends State<POSProductGrid> {
 
         // 1. الأولوية للتحميل: إذا كان هناك أي نوع من التحميل، اعرض اللودنج فوراً
         // حتى لو كانت الحالة PosDataLoaded، نتحقق من الـ flags
-        if (state is PosProductsLoading || 
-            state is PosLoading || 
-            cubit.isCategoryProductsLoading || 
+        if (state is PosProductsLoading ||
+            state is PosLoading ||
+            cubit.isCategoryProductsLoading ||
             cubit.isBrandProductsLoading) {
           return const CustomLoadingState();
         }
 
         // 2. إذا كان الفلتر مفتوحاً، اخفِ الشبكة (اختياري)
         if (cubit.showBrandFilters || cubit.showCategoryFilters) {
-          return const SizedBox();
+          return SizedBox();
         }
 
         // 3. عرض البيانات
         if (state is PosDataLoaded) {
           // نستخدم القائمة الممررة من البحث إذا وجدت، وإلا نستخدم القائمة من الـ state
-          final productsToShow = widget.filteredProducts ?? state.displayedProducts;
+          final productsToShow =
+              widget.filteredProducts ?? state.displayedProducts;
 
           if (productsToShow.isNotEmpty) {
-            return AnimatedElement(
-              delay: const Duration(milliseconds: 100),
-              child: GridView.builder(
-                padding: EdgeInsets.only(
-                  right: ResponsiveUI.padding(context, 16),
-                  left: ResponsiveUI.padding(context, 16),
-                  top: ResponsiveUI.padding(context, 16),
-                  bottom: ResponsiveUI.padding(context, 75), // مساحة للـ FAB/Bottom Sheet
-                ),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.8, // تم تعديل النسبة لتناسب الكارت
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                ),
-                itemCount: productsToShow.length,
-                itemBuilder: (_, i) => POSProductCard(
-                  product: productsToShow[i],
-                  onTap: () => _addToCart(productsToShow[i]),
-                ),
-              ),
+            return BlocBuilder<CheckoutCubit, CheckoutState>(
+              builder: (context, _) {
+                final cartItems = context.read<CheckoutCubit>().cartItems;
+                return AnimatedElement(
+                  delay: const Duration(milliseconds: 100),
+                  child: GridView.builder(
+                    padding: EdgeInsets.only(
+                      right: ResponsiveUI.padding(context, 16),
+                      left: ResponsiveUI.padding(context, 16),
+                      top: ResponsiveUI.padding(context, 16),
+                      bottom: ResponsiveUI.padding(
+                        context,
+                        75,
+                      ), // مساحة للـ FAB/Bottom Sheet
+                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio:
+                              0.8, // تم تحديد النسبة لتحسين التناسب
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                        ),
+                    itemCount: productsToShow.length,
+                    itemBuilder: (_, i) {
+                      final product = productsToShow[i];
+                      final quantityInCart = cartItems
+                          .where((item) => item.product.id == product.id)
+                          .fold<int>(0, (sum, item) => sum + item.quantity);
+                      return POSProductCard(
+                        product: product,
+                        onTap: () => _addToCart(product),
+                        cartQuantity: quantityInCart,
+                      );
+                    },
+                  ),
+                );
+              },
             );
           } else {
             // قائمة فارغة بعد انتهاء التحميل (سواء من البحث أو الفلتر)
             return const CustomEmptyState(
               icon: Icons.inventory_2_outlined,
               title: 'No Products Found',
-              message: 'Try adjusting your search or selecting a different category',
+              message:
+                  'Try adjusting your search or selecting a different category',
             );
           }
         }

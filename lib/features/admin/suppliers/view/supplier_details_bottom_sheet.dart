@@ -50,7 +50,7 @@ class SupplierDetailsBottomSheet extends StatelessWidget {
           children: [
             _buildHandleBar(context),
             _buildHeader(context),
-            Divider(height: 1, color: AppColors.lightGray),
+            Divider(height: ResponsiveUI.value(context, 1), color: AppColors.lightGray),
             Expanded(child: _buildContent(context)),
           ],
         ),
@@ -108,7 +108,7 @@ class SupplierDetailsBottomSheet extends StatelessWidget {
       },
       builder: (context, state) {
         if (state is SupplierLoading) {
-          return const Center(
+          return Center(
             child: CustomLoadingState(),
           );
         }
@@ -127,7 +127,7 @@ class SupplierDetailsBottomSheet extends StatelessWidget {
           return SupplierDetailsContent(supplier: supplier);
         }
 
-        return const SizedBox();
+        return SizedBox();
       },
     );
   }
@@ -156,7 +156,7 @@ class SupplierDetailsBottomSheet extends StatelessWidget {
             onPressed: () {
               context.read<SupplierCubit>().getSupplierById(supplierId);
             },
-            icon: const Icon(Icons.refresh),
+            icon: Icon(Icons.refresh),
             label: const Text('Retry'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryBlue,
@@ -176,7 +176,7 @@ class SupplierDetailsBottomSheet extends StatelessWidget {
           Icon(
             Icons.inbox_outlined,
             size: ResponsiveUI.iconSize(context, 48),
-            color: AppColors.darkGray.withOpacity(0.5),
+            color: AppColors.darkGray.withValues(alpha: 0.5),
           ),
           SizedBox(height: ResponsiveUI.spacing(context, 16)),
           Text(
@@ -191,3 +191,4 @@ class SupplierDetailsBottomSheet extends StatelessWidget {
     );
   }
 }
+

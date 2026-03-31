@@ -47,7 +47,7 @@ class CustomDeleteDialog extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
               decoration: BoxDecoration(
-                color: (iconColor ?? AppColors.red).withOpacity(0.1),
+                color: (iconColor ?? AppColors.red).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -118,3 +118,4 @@ class CustomDeleteDialog extends StatelessWidget {
     );
   }
 }
+
