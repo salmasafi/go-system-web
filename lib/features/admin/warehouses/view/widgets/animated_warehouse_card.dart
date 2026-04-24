@@ -161,7 +161,7 @@ class _AnimatedWarehouseCardState extends State<AnimatedWarehouseCard>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                widget.warehouse.name ?? LocaleKeys.warehouse_default_name.tr(),
+                widget.warehouse.name,
                 style: TextStyle(
                   fontSize: fontSizeName,
                   fontWeight: FontWeight.bold,

@@ -16,7 +16,7 @@ class WareHouseCubit extends Cubit<WarehousesState> {
 
   String getWarehouseNameById(String warehouseId) {
   try {
-    return warehouses.firstWhere((w) => w.id == warehouseId).name ?? warehouseId;
+    return warehouses.firstWhere((w) => w.id == warehouseId).name;
   } catch (e) {
     return warehouseId;
   }
@@ -48,7 +48,7 @@ class WareHouseCubit extends Cubit<WarehousesState> {
         log(
           ' First warehouse type: ${warehouses.isNotEmpty ? warehouses.first.runtimeType : "empty"}',
         );
-        log(' Warehouses loaded successfully: ${warehouses}');
+        log(' Warehouses loaded successfully: $warehouses');
         emit(WarehousesLoaded(warehouses));
 
         // emit(WarehousesSuccess());

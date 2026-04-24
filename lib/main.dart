@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/services/session_helper.dart';
@@ -69,7 +70,7 @@ void main() async {
   log('isLoggedIn $isLoggedIn');
   log(token ?? '');
 
-  final deviceLocale = WidgetsBinding.instance.window.locale;
+  final deviceLocale = PlatformDispatcher.instance.locale;
   final startLocale = deviceLocale.languageCode == 'ar'
       ? Locale('ar')
       : Locale('en');
@@ -191,8 +192,8 @@ class _MainAppState extends State<MainApp> {
             ),
           ),
           checkboxTheme: CheckboxThemeData(
-            fillColor: MaterialStateColor.resolveWith((states) {
-              if (states.contains(MaterialState.selected)) {
+            fillColor: WidgetStateColor.resolveWith((states) {
+              if (states.contains(WidgetState.selected)) {
                 return AppColors
                     .mediumBlue700; // the color when checkbox is selected;
               }

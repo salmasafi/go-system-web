@@ -47,7 +47,7 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
         _filteredWarehouses = warehouses;
       } else {
         _filteredWarehouses = warehouses.where((warehouse) {
-          final nameLower = (warehouse.name ?? '').toLowerCase();
+          final nameLower = warehouse.name.toLowerCase();
           final locationLower = (warehouse.address ?? '').toLowerCase();
           final searchLower = query.toLowerCase();
 
@@ -231,7 +231,7 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
   }
 
   void _showDeleteDialog(BuildContext context, Warehouses warehouse) {
-    if (warehouse.id == null || warehouse.id!.isEmpty) {
+    if (warehouse.id.isEmpty) {
       CustomSnackbar.showError(context, LocaleKeys.invalid_warehouse_id.tr());
       return;
     }
@@ -248,7 +248,7 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
 
           // Call delete method from cubit
           context.read<WareHouseCubit>().deleteWarehouse(
-            warehouseId: warehouse.id!,
+            warehouseId: warehouse.id,
           );
         },
       ),

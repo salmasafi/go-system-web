@@ -41,7 +41,7 @@ class _WarehouseFormDialogState extends State<WarehouseFormDialog>
 
   void _initializeControllers() {
     if (isEditMode) {
-      _nameController.text = widget.warehouse!.name ?? '';
+      _nameController.text = widget.warehouse!.name;
       _addressController.text = widget.warehouse!.address ?? '';
       _phoneController.text = widget.warehouse!.phone ?? '';
       _emailController.text = widget.warehouse!.email ?? '';
@@ -173,7 +173,7 @@ class _WarehouseFormDialogState extends State<WarehouseFormDialog>
 
       if (isEditMode) {
         cubit.updateWarehouse(
-          warehouseId: widget.warehouse!.id!,
+          warehouseId: widget.warehouse!.id,
           name: _nameController.text.trim(),
           address: _addressController.text.trim(),
           phone: _phoneController.text.trim(),
