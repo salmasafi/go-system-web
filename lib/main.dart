@@ -2,7 +2,9 @@ import 'dart:developer';
 import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:systego/core/config/app_config.dart';
 import 'package:systego/core/services/session_helper.dart';
+import 'package:systego/core/supabase/supabase_client.dart';
 import 'package:systego/features/POS/history/cubit/history_cubit.dart';
 import 'package:systego/features/admin/adjustment/cubit/adjustment_cubit.dart';
 import 'package:systego/features/admin/admins_screen/cubit/admins_cubit.dart';
@@ -56,19 +58,28 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   // Ensure Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize AppConfig (loads .env files)
+  await AppConfig.initialize();
+
+  // Initialize Supabase
+  await SupabaseClientWrapper.initialize();
+
   await EasyLocalization.ensureInitialized();
 
   // Initialize CacheHelper for local storage
   await CacheHelper.init();
 
-  // Initialize DioHelper for API calls
+  // Initialize DioHelper for API calls (legacy, will be phased out)
   DioHelper.init();
 
-  // Check if user is logged in
+  // Check if user is logged in (support both Dio and Supabase)
   final String? token = CacheHelper.getData(key: 'token');
-  final isLoggedIn = token != null && token.toString().isNotEmpty;
-  log('isLoggedIn $isLoggedIn');
-  log(token ?? '');
+  final bool hasDioToken = token != null && token.toString().isNotEmpty;
+  final bool hasSupabaseSession = SupabaseClientWrapper.isAuthenticated;
+  final isLoggedIn = hasDioToken || hasSupabaseSession;
+  log('isLoggedIn $isLoggedIn (Dio: $hasDioToken, Supabase: $hasSupabaseSession)');
+  if (hasDioToken) log('Dio token: ${token.substring(0, token.length > 20 ? 20 : token.length)}...');
 
   final deviceLocale = PlatformDispatcher.instance.locale;
   final startLocale = deviceLocale.languageCode == 'ar'

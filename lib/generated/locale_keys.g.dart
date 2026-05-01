@@ -611,6 +611,8 @@ abstract class  LocaleKeys {
   static const coupon_created_success = 'coupon_created_success';
   static const coupon_updated_success = 'coupon_updated_success';
   static const coupon_deleted_success = 'coupon_deleted_success';
+  static const coupon_activated_success = 'coupon_activated_success';
+  static const coupon_deactivated_success = 'coupon_deactivated_success';
   static const financial_accounts = 'financial_accounts';
   static const warehouse = 'warehouse';
   static const balance = 'balance';

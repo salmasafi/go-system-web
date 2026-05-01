@@ -2,7 +2,6 @@
 import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/services/endpoints.dart';
-import 'package:systego/features/admin/product/models/warehouse_product.dart';
 import '../../../../../core/services/dio_helper.dart';
 import '../../../../../core/utils/error_handler.dart';
 import '../../models/product_model.dart';
@@ -92,7 +91,7 @@ class ProductsCubit extends Cubit<ProductsState> {
     required String arName,
     required String description,
     required String arDescription,
-    required String image,
+    String? image, // Made optional
     required String? code,
     required List<String> categoryIds,
     required String brandId,
@@ -125,7 +124,7 @@ class ProductsCubit extends Cubit<ProductsState> {
       'description': description,
       'ar_description': arDescription,
       if (code != null) 'code': code,
-      'image': image,
+      if (image != null && image.isNotEmpty) 'image': image, // Only add if provided
       'categoryId': categoryIds,
       'brandId': brandId,
       'purchase_unit': purchaseUnit,
@@ -190,7 +189,7 @@ class ProductsCubit extends Cubit<ProductsState> {
     required String arName,
     required String description,
     required String arDescription,
-    required String image,
+    String? image, // Made optional
     required String? code,
     required List<String> categoryIds,
     required String brandId,
@@ -221,7 +220,7 @@ class ProductsCubit extends Cubit<ProductsState> {
       'description': description,
       'ar_description': arDescription,
       if (code != null) 'code': code,
-      'image': image,
+      if (image != null && image.isNotEmpty) 'image': image, // Only add if provided
       'categoryId': categoryIds,
       'brandId': brandId,
       'unit': unit,
@@ -356,27 +355,21 @@ class ProductsCubit extends Cubit<ProductsState> {
 
   Future<void> deleteProduct(String productId) async {
     emit(ProductsLoading());
-
     try {
       log('Starting product delete request...');
 
       final response = await DioHelper.deleteData(
-        url: EndPoint.deleteProduct(productId.toString()),
+        url: EndPoint.deleteProduct(productId),
       );
 
       log('Response received: ${response.statusCode}');
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 204) {
         final data = response.data;
-        if (data['success'] == true && data['data'] != null) {
-          final message = data['data']['message'] as String? ?? '';
-          log('product delete successful');
-          emit(ProductDeleteSuccess(message));
-        } else {
-          final errorMessage = data['message'] ?? 'Failed to delete product';
-          log('Product delete failed: $errorMessage');
-          emit(ProductsError(errorMessage));
-        }
+        final message = data?['message'] ?? 'Product deleted successfully';
+        log('Product delete successful');
+        emit(ProductDeleteSuccess(message));
+        await getProducts();
       } else {
         final errorMessage = ErrorHandler.handleError(response);
         log('Response error: $errorMessage');
@@ -384,8 +377,22 @@ class ProductsCubit extends Cubit<ProductsState> {
       }
     } catch (error) {
       log('Product delete error caught: $error');
-      final errorMessage = ErrorHandler.handleError(error);
-      emit(ProductsError(errorMessage));
+      final errorStr = error.toString();
+      // Check for foreign key violation errors
+      if (errorStr.contains('foreign key') || 
+          errorStr.contains('violates') ||
+          errorStr.contains('constraint') ||
+          errorStr.contains('referenced') ||
+          errorStr.contains('transfer_products') ||
+          errorStr.contains('sale_items') ||
+          errorStr.contains('purchase_items')) {
+        emit(ProductsError(
+          'Cannot delete product: it is used in sales, purchases, or transfers',
+        ));
+      } else {
+        final errorMessage = ErrorHandler.handleError(error);
+        emit(ProductsError(errorMessage));
+      }
     }
   }
 

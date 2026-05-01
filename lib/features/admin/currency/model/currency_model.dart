@@ -62,7 +62,7 @@ class CurrencyModel {
 
   factory CurrencyModel.fromJson(Map<String, dynamic> json) {
     return CurrencyModel(
-      id: json['_id'] as String,
+      id: (json['id'] ?? json['_id'])?.toString() ?? '',
       name: json['name'] as String,
       isDefault: json['isdefault'] as bool,
       // amount: json['amount'] as double ?? 0,

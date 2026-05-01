@@ -72,13 +72,13 @@ class CategorySelection {
 
   factory CategorySelection.fromJson(Map<String, dynamic> json) {
     return CategorySelection(
-      id: json['_id'] as String,
-      name: json['name'] as String,
-      arName: json['ar_name'] as String,
-      status: json['status'] as bool,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
-      version: json['__v'] as int,
+      id: (json['id'] ?? json['_id'])?.toString() ?? '',
+      name: json['name'] as String? ?? '',
+      arName: json['ar_name'] as String? ?? '',
+      status: json['status'] as bool? ?? false,
+      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt'] as String) : DateTime.now(),
+      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt'] as String) : DateTime.now(),
+      version: json['__v'] as int? ?? 0,
     );
   }
 
@@ -140,7 +140,7 @@ class AccountSelection {
     // );
 
     return AccountSelection(
-      id: json['_id'] as String? ?? '', 
+      id: (json['id'] ?? json['_id'])?.toString() ?? '', 
       
       name: json['name'] as String? ?? '',
 
@@ -201,13 +201,13 @@ class CategoryModel {
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
     return CategoryModel(
-      id: json['_id'] as String,
-      name: json['name'] as String,
-      arName: json['ar_name'] as String,
-      status: json['status'] as bool,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
-      version: json['__v'] as int,
+      id: (json['id'] ?? json['_id'])?.toString() ?? '',
+      name: json['name'] as String? ?? '',
+      arName: json['ar_name'] as String? ?? '',
+      status: json['status'] as bool? ?? false,
+      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt'] as String) : DateTime.now(),
+      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt'] as String) : DateTime.now(),
+      version: json['__v'] as int? ?? 0,
     );
   }
 
@@ -253,19 +253,19 @@ class FinancialAccountModel {
 
   factory FinancialAccountModel.fromJson(Map<String, dynamic> json) {
     return FinancialAccountModel(
-      id: json['_id'] as String,
-      name: json['name'] as String,
-      warehouseId: (json['warehouseId'] as List<dynamic>)
-          .map((item) => item as String)
-          .toList(),
+      id: (json['id'] ?? json['_id'])?.toString() ?? '',
+      name: json['name'] as String? ?? '',
+      warehouseId: (json['warehouseId'] as List<dynamic>?)
+          ?.map((item) => item.toString())
+          .toList() ?? [],
       image: json['image'] as String?,
-      balance: (json['balance'] as num).toDouble(),
-      description: json['description'] as String,
-      status: json['status'] as bool,
-      inPOS: json['in_POS'] as bool,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
-      version: json['__v'] as int,
+      balance: (json['balance'] as num?)?.toDouble() ?? 0.0,
+      description: json['description'] as String? ?? '',
+      status: json['status'] as bool? ?? false,
+      inPOS: json['in_POS'] as bool? ?? false,
+      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt'] as String) : DateTime.now(),
+      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt'] as String) : DateTime.now(),
+      version: json['__v'] as int? ?? 0,
     );
   }
 

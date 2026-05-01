@@ -506,9 +506,9 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
                               },
                             ),
                             title: Text(product.name),
-                            subtitle: product.variations.isNotEmpty && isSelected
+                            subtitle: product.prices.isNotEmpty && isSelected
                                 ? DropdownButton<String>(
-                                    hint: Text('Select variation'),
+                                    hint: Text('select_variation'.tr()),
                                     value: selectedPriceId,
                                     isExpanded: true,
                                     onChanged: (value) => setModalState(() {
@@ -516,10 +516,10 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
                                         tempPriceIds[product.id] = value;
                                       }
                                     }),
-                                    items: product.variations.map((variation) {
+                                    items: product.prices.map((price) {
                                       return DropdownMenuItem<String>(
-                                        value: variation.id,
-                                        child: Text('${variation.name} - \$${variation.price}'),
+                                        value: price.id,
+                                        child: Text('${price.code} - \$${price.price}'),
                                       );
                                     }).toList(),
                                   )

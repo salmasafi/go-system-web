@@ -43,7 +43,7 @@ class ZoneData {
 
 class ZoneModel {
   final String id;
-  final num cost;
+  final num? cost;
   final String name;
   final String arName;
   final CountryForZone country;
@@ -64,10 +64,10 @@ class ZoneModel {
   // Also specify Map<String, dynamic> for type safety
   factory ZoneModel.fromJson(Map<String, dynamic> json) {
     return ZoneModel(
-      id: json['_id'] as String,
-      cost: json['cost'] as num,
-      name: json['name'] as String,
-      arName: json['ar_name'] as String,
+      id: (json['id'] ?? json['_id'])?.toString() ?? '',
+      cost: json['cost'] as num?,
+      name: json['name'] as String? ?? '',
+      arName: json['ar_name'] as String? ?? '',
       country: CountryForZone.fromJson(
         json['countryId'] as Map<String, dynamic>,
       ),
@@ -98,9 +98,9 @@ class CountryForZone {
 
   factory CountryForZone.fromJson(Map<String, dynamic> json) {
     return CountryForZone(
-      id: json['_id'] as String,
-      name: json['name'] as String,
-      arName: json['ar_name'] as String,
+      id: (json['id'] ?? json['_id'])?.toString() ?? '',
+      name: json['name'] as String? ?? '',
+      arName: json['ar_name'] as String? ?? '',
     );
   }
 
@@ -124,10 +124,10 @@ class CityForZone {
 
   factory CityForZone.fromJson(Map<String, dynamic> json) {
     return CityForZone(
-      id: json['_id'] as String,
-      name: json['name'] as String,
-      arName: json['ar_name'] as String,
-      shipingCost: json['shipingCost'] as num,
+      id: (json['id'] ?? json['_id'])?.toString() ?? '',
+      name: json['name'] as String? ?? '',
+      arName: json['ar_name'] as String? ?? '',
+      shipingCost: json['shipingCost'] as num? ?? 0,
     );
   }
 

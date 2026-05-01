@@ -70,7 +70,6 @@ class UnitsCubit extends Cubit<UnitsState> {
     String? baseUnit,
     required String operator,
     required double operatorValue,
-    required bool isBaseUnit,
     required bool status,
   }) async {
     emit(CreateUnitLoading());
@@ -82,7 +81,6 @@ class UnitsCubit extends Cubit<UnitsState> {
         if (baseUnit != null) 'base_unit': baseUnit,
         'operator': operator,
         'operator_value': operatorValue,
-        'is_base_unit': isBaseUnit,
         'status': status,
       };
 
@@ -111,7 +109,6 @@ class UnitsCubit extends Cubit<UnitsState> {
     String? baseUnit,
     required String operator,
     required double operatorValue,
-    required bool isBaseUnit,
     required bool status,
   }) async {
     emit(UpdateUnitLoading());
@@ -123,7 +120,6 @@ class UnitsCubit extends Cubit<UnitsState> {
         if (baseUnit != null) 'base_unit': baseUnit,
         'operator': operator,
         'operator_value': operatorValue,
-        'is_base_unit': isBaseUnit,
         'status': status,
       };
 

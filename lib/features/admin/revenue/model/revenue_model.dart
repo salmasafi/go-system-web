@@ -55,9 +55,9 @@ class CategoryModel {
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
     return CategoryModel(
-      id: json['_id'] as String,
-      name: json['name'] as String,
-      arName: json['ar_name'] as String,
+      id: (json['id'] ?? json['_id'])?.toString() ?? '',
+      name: json['name'] as String? ?? '',
+      arName: json['ar_name'] as String? ?? '',
     );
   }
 
@@ -81,8 +81,8 @@ class AdminModel {
 
   factory AdminModel.fromJson(Map<String, dynamic> json) {
     return AdminModel(
-      id: json['_id'] as String,
-      username: json['username'] as String,
+      id: (json['id'] ?? json['_id'])?.toString() ?? '',
+      username: json['username'] as String? ?? '',
     );
   }
 
@@ -105,8 +105,8 @@ class FinancialAccountModel {
 
   factory FinancialAccountModel.fromJson(Map<String, dynamic> json) {
     return FinancialAccountModel(
-      id: json['_id'] as String,
-      name: json['name'] as String,
+      id: (json['id'] ?? json['_id'])?.toString() ?? '',
+      name: json['name'] as String? ?? '',
     );
   }
 
@@ -220,7 +220,7 @@ class RevenueModel {
   factory RevenueModel.fromJson(Map<String, dynamic> json) {
     return RevenueModel(
       // Use helper to safely get String, defaulting to empty if null
-      id: json['_id'] as String? ?? '', 
+      id: (json['id'] ?? json['_id'])?.toString() ?? '', 
       name: json['name'] as String? ?? '',
       
       // Safely parse numbers

@@ -210,17 +210,8 @@ class _CreatePopupScreenState extends State<CreatePopupScreen> {
           context, LocaleKeys.warning_enter_description_ar.tr());
       return;
     }
-    if (_selectedEnImage == null) {
-      CustomSnackbar.showWarning(
-          context, LocaleKeys.warning_select_en_image.tr());
-      return;
-    }
-    if (_selectedArImage == null) {
-      CustomSnackbar.showWarning(
-          context, LocaleKeys.warning_select_ar_image.tr());
-      return;
-    }
-
+    // Images are now optional - removed validation
+    
     context.read<PopupCubit>().addPopup(
           titleEn: _titleEnController.text.trim(),
           titleAr: _titleArController.text.trim(),

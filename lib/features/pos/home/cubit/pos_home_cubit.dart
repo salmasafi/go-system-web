@@ -277,11 +277,12 @@ class PosCubit extends Cubit<PosState> {
         paymentMethods = (json['paymentMethods'] as List)
             .map((e) => PaymentMethod.fromJson(e))
             .toList();
+        
+        // Select the first payment method with name 'Cash', or just the first one
         selectedPaymentMethod = paymentMethods.isNotEmpty
-            ? paymentMethods.firstWhere(
-                (element) => element.name == 'Cash',
-                orElse: () => paymentMethods.first,
-              )
+            ? (paymentMethods.where((element) => element.name == 'Cash').isNotEmpty
+                ? paymentMethods.where((element) => element.name == 'Cash').first
+                : paymentMethods.first)
             : null;
       }
     } catch (e) {

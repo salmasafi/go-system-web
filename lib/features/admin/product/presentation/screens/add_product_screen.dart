@@ -948,10 +948,7 @@ class _AddProductScreenState extends State<AddProductScreen>
       CustomSnackbar.showError(context, 'Please enter product name (AR)');
       return;
     }
-    if (_mainImage == null) {
-      CustomSnackbar.showError(context, 'Please select main product image');
-      return;
-    }
+    // Image is now optional - removed validation
     if (_selectedCategories == null || _selectedCategories!.isEmpty) {
       CustomSnackbar.showError(context, 'Please select at least one category');
       return;
@@ -1021,8 +1018,10 @@ class _AddProductScreenState extends State<AddProductScreen>
       // Remove duplicates from codes list if needed (optional, but ensures no duplicates after processing)
       //codes = codes.toSet().toList();
     }
-    // === Encode Images ===
-    final String mainImageBase64 = ImageHelper.encodeImageToBase64(_mainImage!);
+    // === Encode Images (optional) ===
+    final String? mainImageBase64 = _mainImage != null 
+        ? ImageHelper.encodeImageToBase64(_mainImage!) 
+        : null;
     final List<String> galleryBase64 = _galleryImages
         .map((img) => ImageHelper.encodeImageToBase64(img))
         .toList();

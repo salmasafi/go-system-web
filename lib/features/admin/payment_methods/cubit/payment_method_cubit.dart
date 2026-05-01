@@ -142,8 +142,20 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
         emit(UpdatePaymentMethodError(errorMessage));
       }
     } catch (e) {
+      log('Error updating payment method: $e');
       final errorMessage = _extractErrorMessage(e);
-      emit(UpdatePaymentMethodError(errorMessage));
+      
+      // Check if error is related to foreign key constraint
+      String errorString = errorMessage.toString();
+      if (errorString.contains('violates') || 
+          errorString.contains('foreign key') ||
+          errorString.contains('constraint')) {
+        emit(UpdatePaymentMethodError(
+          'Cannot update this payment method because it may affect existing transactions. Please check the references first.'
+        ));
+      } else {
+        emit(UpdatePaymentMethodError(errorMessage));
+      }
     }
   }
 
@@ -164,8 +176,20 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
         emit(DeletePaymentMethodError(errorMessage));
       }
     } catch (e) {
+      log('Error deleting payment method: $e');
       final errorMessage = _extractErrorMessage(e);
-      emit(DeletePaymentMethodError(errorMessage));
+      
+      // Check if error is related to foreign key constraint
+      String errorString = errorMessage.toString();
+      if (errorString.contains('violates') || 
+          errorString.contains('foreign key') ||
+          errorString.contains('constraint')) {
+        emit(DeletePaymentMethodError(
+          'Cannot delete this payment method because it is being used in transactions. Please remove all references first.'
+        ));
+      } else {
+        emit(DeletePaymentMethodError(errorMessage));
+      }
     }
   }
 

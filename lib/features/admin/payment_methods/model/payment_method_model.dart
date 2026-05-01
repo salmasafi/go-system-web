@@ -72,7 +72,7 @@ class PaymentMethodModel {
   // Also specify Map<String, dynamic> for type safety
   factory PaymentMethodModel.fromJson(Map<String, dynamic> json) {
     return PaymentMethodModel(
-      id: json['_id'] as String,
+      id: (json['id'] ?? json['_id'])?.toString() ?? '',
       name: json['name'] as String,
       arName: json['ar_name'] ?? '', //as String,
       type: json['type'] ?? '', // as String,

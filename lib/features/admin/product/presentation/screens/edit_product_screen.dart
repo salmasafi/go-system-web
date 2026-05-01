@@ -148,10 +148,6 @@ class _EditProductScreenState extends State<EditProductScreen>
     }
   }
 
-  void _removeGalleryImage(int index) {
-    setState(() => _galleryImages.removeAt(index));
-  }
-
   Future<void> _selectExpiryDate() async {
     final picked = await showDatePicker(
       context: context,
@@ -835,10 +831,7 @@ class _EditProductScreenState extends State<EditProductScreen>
       CustomSnackbar.showError(context, 'Please enter product name (AR)');
       return;
     }
-    if (_mainImage == null && mainImageUrl == null) {
-      CustomSnackbar.showError(context, 'Please select main product image');
-      return;
-    }
+    // Image is now optional - removed validation
     if (_selectedCategories == null || _selectedCategories!.isEmpty) {
       CustomSnackbar.showError(context, 'Please select at least one category');
       return;
@@ -910,7 +903,10 @@ class _EditProductScreenState extends State<EditProductScreen>
     }
 
     // === Encode Images ===
-    String? mainImageBase64 = _mainImage != null ? ImageHelper.encodeImageToBase64(_mainImage!) : null;
+    // If no new image selected, keep the existing URL; otherwise encode new image
+    String? mainImageBase64 = _mainImage != null 
+        ? ImageHelper.encodeImageToBase64(_mainImage!) 
+        : mainImageUrl; // keep existing image URL if no new image picked
     List<String> galleryBase64 = [...galleryImageUrls, ..._galleryImages.map((img) => ImageHelper.encodeImageToBase64(img))];
 
     // === Call Cubit ===
@@ -920,7 +916,7 @@ class _EditProductScreenState extends State<EditProductScreen>
       arName: _arNameController.text.trim(),
       description: _descriptionController.text.trim(),
       arDescription: _arDescriptionController.text.trim(),
-      image: mainImageBase64 ?? '',
+      image: mainImageBase64, // Made optional
       categoryIds: _selectedCategories!.map((c) => c.id).toList(),
       brandId: _selectedBrand!.id,
       unit: _unitController.text.trim(),

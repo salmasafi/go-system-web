@@ -93,7 +93,7 @@ class BankAccountModel {
     }
 
     return BankAccountModel(
-      id: json['_id'] as String,
+      id: json['id']?.toString() ?? json['_id']?.toString() ?? '',
       name: json['name'] as String,
       wareHouseId: warehouseId,
       warehouseName: warehouseName,

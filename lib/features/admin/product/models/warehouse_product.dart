@@ -16,11 +16,11 @@ class WarehouseProduct {
 
   factory WarehouseProduct.fromJson(Map<String, dynamic> json) {
     return WarehouseProduct(
-      id: json['_id'] as String,
+      id: (json['id'] ?? json['_id'])?.toString() ?? '',
       productId: json['productId'] != null ? ProductId.fromJson(json['productId'] as Map<String, dynamic>) : null,
-      warehouseId: json['WarehouseId'] as String,
-      quantity: json['quantity'] as int,
-      v: json['__v'] as int,
+      warehouseId: json['WarehouseId']?.toString() ?? '',
+      quantity: json['quantity'] as int? ?? 0,
+      v: json['__v'] as int? ?? 0,
     );
   }
 
@@ -46,8 +46,8 @@ class ProductId {
 
   factory ProductId.fromJson(Map<String, dynamic> json) {
     return ProductId(
-      id: json['_id'] as String,
-      name: json['name'] as String,
+      id: (json['id'] ?? json['_id'])?.toString() ?? '',
+      name: json['name'] as String? ?? '',
     );
   }
 

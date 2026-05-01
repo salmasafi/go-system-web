@@ -41,7 +41,7 @@ class PointsModel {
 
   factory PointsModel.fromJson(Map<String, dynamic> json) {
     return PointsModel(
-      id: json['_id']?.toString() ?? '',
+      id: (json['id'] ?? json['_id'])?.toString() ?? '',
       amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
       points: (json['points'] as num?)?.toInt() ?? 0,
     );

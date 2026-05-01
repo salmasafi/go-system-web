@@ -265,11 +265,8 @@ class _CreatePandelScreenState extends State<CreatePandelScreen> {
       CustomSnackbar.showWarning(context, LocaleKeys.warning_end_date_before_start.tr());
       return;
     }
-    if (_selectedImages.isEmpty) {
-      CustomSnackbar.showWarning(
-          context, LocaleKeys.warning_select_at_least_one_image.tr());
-      return;
-    }
+    // Images are now optional - removed validation
+    
     if (_priceController.text.trim().isEmpty) {
       CustomSnackbar.showWarning(context, LocaleKeys.warning_enter_price.tr());
       return;

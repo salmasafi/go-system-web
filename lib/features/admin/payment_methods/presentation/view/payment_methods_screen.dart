@@ -47,6 +47,9 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
         } else if (state is DeletePaymentMethodSuccess) {
           CustomSnackbar.showSuccess(context, state.message);
           paymentMethodsInit();
+        } else if (state is UpdatePaymentMethodError) {
+          CustomSnackbar.showError(context, state.error);
+          paymentMethodsInit();
         } else if (state is SelectPaymentMethodError) {
           CustomSnackbar.showError(context, state.error);
           paymentMethodsInit();

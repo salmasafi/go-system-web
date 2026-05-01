@@ -268,28 +268,11 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                                 );
                                 return;
                               }
-                              if (_selectedImage == null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      LocaleKeys.please_select_logo.tr(),
-                                    ),
-                                    backgroundColor: Colors.red,
-                                    behavior: SnackBarBehavior.floating,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
-                                    ),
-                                    margin: EdgeInsets.all(
-                                      ResponsiveUI.padding(context, 12),
-                                    ),
-                                  ),
-                                );
-                                return;
-                              }
+                              // Logo is now optional - removed validation
                               BrandsCubit.get(context).createBrand(
                                 name: _nameController.text.trim(),
                                 arName: _arNameController.text.trim(),
-                                logoFile: _selectedImage!,
+                                logoFile: _selectedImage,
                               );
                             },
                       // style: ElevatedButton.styleFrom(

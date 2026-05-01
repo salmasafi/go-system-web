@@ -53,13 +53,16 @@ class CouponsCubit extends Cubit<CouponsState> {
 
     try {
       final data = {
-        "coupon_code": couponCode,
-        "type": type,
-        "amount": amount,
-        "minimum_amount": minimumAmount,
-        "quantity": quantity,
-        "expired_date": expiredDate,
-        "available": available
+        "code": couponCode,
+        "name": couponCode,
+        "discount_type": type,
+        "discount_value": amount,
+        "min_purchase": minimumAmount,
+        "usage_limit": quantity,
+        "usage_count": 0,
+        "start_date": DateTime.now().toIso8601String(),
+        "end_date": expiredDate,
+        "status": true,
       };
 
       final response =
@@ -91,13 +94,13 @@ class CouponsCubit extends Cubit<CouponsState> {
 
     try {
       final data = {
-        "coupon_code": couponCode,
-        "type": type,
-        "amount": amount,
-        "minimum_amount": minimumAmount,
-        "quantity": quantity,
-        "expired_date": expiredDate,
-        "available": available
+        "code": couponCode,
+        "name": couponCode,
+        "discount_type": type,
+        "discount_value": amount,
+        "min_purchase": minimumAmount,
+        "usage_limit": quantity,
+        "end_date": expiredDate,
       };
 
       final response = await DioHelper.putData(
@@ -135,6 +138,34 @@ class CouponsCubit extends Cubit<CouponsState> {
     } catch (e) {
       final errorMessage = ErrorHandler.handleError(e);
       emit(DeleteCouponError(errorMessage));
+    }
+  }
+
+  // ---------------------- Toggle Coupon Status ----------------------
+  Future<void> toggleCouponStatus(String couponId, bool newStatus) async {
+    emit(ChangeCouponStatusLoading());
+
+    try {
+      final data = {"status": newStatus};
+
+      final response = await DioHelper.putData(
+        url: EndPoint.updateCoupon(couponId),
+        data: data,
+      );
+
+      if (response.statusCode == 200) {
+        emit(ChangeCouponStatusSuccess(
+          newStatus 
+            ? LocaleKeys.coupon_activated_success.tr() 
+            : LocaleKeys.coupon_deactivated_success.tr()
+        ));
+      } else {
+        final errorMessage = ErrorHandler.handleError(response);
+        emit(ChangeCouponStatusError(errorMessage));
+      }
+    } catch (e) {
+      final errorMessage = ErrorHandler.handleError(e);
+      emit(ChangeCouponStatusError(errorMessage));
     }
   }
 }

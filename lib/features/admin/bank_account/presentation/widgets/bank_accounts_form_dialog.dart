@@ -44,6 +44,10 @@ class _BankAccountFormDialogState extends State<BankAccountFormDialog>
   bool inPos = true;
   String? selectedWareHouse;
 
+  // Cache warehouses locally to avoid dropdown assertion errors on setState
+  List<String> _cachedWarehouseIds = [];
+  List<String> _cachedWarehouseNames = [];
+
   final _picker = ImagePicker();
 
   Future<void> _pickImage() async {
@@ -178,12 +182,18 @@ void didChangeDependencies() {
 
                                 BlocBuilder<WareHouseCubit, WarehousesState>(
                                   builder: (context, state) {
-                                    // Default values
-                                    List<String> warehouseIds = [];
-                                    List<String> warehouseNames = [];
+                                    // Update cache when warehouses are loaded
+                                    if (state is WarehousesLoaded) {
+                                      _cachedWarehouseIds = state.warehouses
+                                          .map((w) => w.id)
+                                          .toList();
+                                      _cachedWarehouseNames = state.warehouses
+                                          .map((w) => w.name)
+                                          .toList();
+                                    }
 
-                                    // Loading state
-                                    if (state is WarehousesLoading) {
+                                    // Loading state - show spinner only if no cache yet
+                                    if (state is WarehousesLoading && _cachedWarehouseIds.isEmpty) {
                                       return Padding(
                                         padding: EdgeInsets.symmetric(
                                           vertical: ResponsiveUI.padding(context, 20),
@@ -194,18 +204,8 @@ void didChangeDependencies() {
                                       );
                                     }
 
-                                    // Success – we have data
-                                    if (state is WarehousesLoaded) {
-                                      warehouseIds = state.warehouses
-                                          .map((w) => w.id)
-                                          .toList();
-                                      warehouseNames = state.warehouses
-                                          .map((w) => w.name)
-                                          .toList();
-                                    }
-
                                     // If we have no warehouses at all (even after loading)
-                                    if (warehouseIds.isEmpty) {
+                                    if (_cachedWarehouseIds.isEmpty) {
                                       return Padding(
                                         padding: EdgeInsets.symmetric(
                                           vertical: ResponsiveUI.padding(context, 20),
@@ -220,12 +220,17 @@ void didChangeDependencies() {
                                       );
                                     }
 
+                                    // Ensure selectedWareHouse is valid (exists in list)
+                                    final validSelectedWarehouse = _cachedWarehouseIds.contains(selectedWareHouse)
+                                        ? selectedWareHouse
+                                        : null;
+
                                     return buildDropdownField<String>(
                                       context,
-                                      value: selectedWareHouse,
-                                      items: warehouseIds,
+                                      value: validSelectedWarehouse,
+                                      items: _cachedWarehouseIds,
                                       label: LocaleKeys.warehouse.tr(),
-                                      hint:  LocaleKeys.select_warehouse.tr(),
+                                      hint: LocaleKeys.select_warehouse.tr(),
                                       icon: Icons.warehouse_rounded,
                                       onChanged: (value) {
                                         setState(() {
@@ -233,9 +238,9 @@ void didChangeDependencies() {
                                         });
                                       },
                                       itemLabel: (id) {
-                                        final index = warehouseIds.indexOf(id);
+                                        final index = _cachedWarehouseIds.indexOf(id);
                                         return index != -1
-                                            ? warehouseNames[index]
+                                            ? _cachedWarehouseNames[index]
                                             : 'Unknown';
                                       },
                                       validator: (value) {

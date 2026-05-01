@@ -78,23 +78,27 @@ class CategoriesCubit extends Cubit<CategoriesState> {
   Future<void> createCategory({
     required String name,
     required String arName,
-    required File imageFile,
+    File? imageFile, // Made optional
     String? parentId,
   }) async {
     emit(CreateCategoryLoading());
     try {
-      if (await imageFile.length() > 5 * 1024 * 1024) {
-        emit(CreateCategoryError('Image exceeds 5MB'));
-        return;
-      }
+      String? base64Image;
+      
+      if (imageFile != null) {
+        if (await imageFile.length() > 5 * 1024 * 1024) {
+          emit(CreateCategoryError('Image exceeds 5MB'));
+          return;
+        }
 
-      final bytes = await imageFile.readAsBytes();
-      final base64Image = base64Encode(bytes);
+        final bytes = await imageFile.readAsBytes();
+        base64Image = base64Encode(bytes);
+      }
 
       final data = {
         'name': name,
         'ar_name': arName,
-        'image': base64Image,
+        if (base64Image != null) 'image': base64Image, // Only add if provided
         if (parentId != null && parentId.isNotEmpty) 'parentId': parentId,
       };
 
@@ -209,8 +213,19 @@ class CategoriesCubit extends Cubit<CategoriesState> {
         emit(DeleteCategoryError(errorMessage));
       }
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(DeleteCategoryError(errorMessage));
+      final errorStr = e.toString();
+      // Check for foreign key violation errors
+      if (errorStr.contains('foreign key') || 
+          errorStr.contains('violates') ||
+          errorStr.contains('constraint') ||
+          errorStr.contains('referenced')) {
+        emit(DeleteCategoryError(
+          'Cannot delete category: it is linked to products or other records',
+        ));
+      } else {
+        final errorMessage = ErrorHandler.handleError(e);
+        emit(DeleteCategoryError(errorMessage));
+      }
     }
   }
 }

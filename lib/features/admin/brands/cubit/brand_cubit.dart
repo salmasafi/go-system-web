@@ -73,20 +73,27 @@ class BrandsCubit extends Cubit<BrandsState> {
   Future<void> createBrand({
     required String name,
     required String arName,
-    required File logoFile,
+    File? logoFile, // Made optional
   }) async {
     emit(CreateBrandLoading());
     try {
-      if (await logoFile.length() > 5 * 1024 * 1024) {
-        emit(CreateBrandError('Image exceeds 5MB'));
-        return;
+      String? base64Logo;
+      
+      if (logoFile != null) {
+        if (await logoFile.length() > 5 * 1024 * 1024) {
+          emit(CreateBrandError('Image exceeds 5MB'));
+          return;
+        }
+
+        final bytes = await logoFile.readAsBytes();
+        base64Logo = base64Encode(bytes);
       }
 
-      //    final token = CacheHelper.getData(key: 'token') as String?;
-      final bytes = await logoFile.readAsBytes();
-      final base64Logo = base64Encode(bytes);
-
-      final data = {'name': name, 'ar_name': arName, 'logo': base64Logo};
+      final data = {
+        'name': name, 
+        'ar_name': arName, 
+        if (base64Logo != null) 'logo': base64Logo, // Only add if provided
+      };
 
       final response = await DioHelper.postData(
         url: EndPoint.createBrand,
@@ -196,8 +203,19 @@ class BrandsCubit extends Cubit<BrandsState> {
         emit(DeleteBrandError(errorMessage));
       }
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(DeleteBrandError(errorMessage));
+      final errorStr = e.toString();
+      // Check for foreign key violation errors
+      if (errorStr.contains('foreign key') || 
+          errorStr.contains('violates') ||
+          errorStr.contains('constraint') ||
+          errorStr.contains('referenced')) {
+        emit(DeleteBrandError(
+          'Cannot delete brand: it is linked to products',
+        ));
+      } else {
+        final errorMessage = ErrorHandler.handleError(e);
+        emit(DeleteBrandError(errorMessage));
+      }
     }
   }
 }

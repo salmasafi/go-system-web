@@ -60,8 +60,8 @@ class VariationModel {
 
   factory VariationModel.fromJson(Map<String, dynamic> json) {
     return VariationModel(
-      id: json['_id'] as String,
-      name: json['name'] as String,
+      id: (json['id'] ?? json['_id'])?.toString() ?? '',
+      name: json['name'] as String? ?? '',
       arName: json['ar_name'] as String?,
       createdAt: json['createdAt'] as String,
       updatedAt: json['updatedAt'] as String,
@@ -106,9 +106,9 @@ class VariationOption {
 
   factory VariationOption.fromJson(Map<String, dynamic> json) {
     return VariationOption(
-      id: json['_id'] as String,
-      variationId: json['variationId'] as String,
-      name: json['name'] as String,
+      id: (json['id'] ?? json['_id'])?.toString() ?? '',
+      variationId: json['variationId'] as String? ?? '',
+      name: json['name'] as String? ?? '',
       status: json['status'] as bool,
       createdAt: json['createdAt'] as String,
       updatedAt: json['updatedAt'] as String,

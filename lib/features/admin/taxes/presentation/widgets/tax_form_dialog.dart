@@ -61,11 +61,9 @@ class _TaxFormDialogState extends State<TaxFormDialog>
   void _initializeControllers() {
     if (isEditMode) {
       _nameController.text = widget.tax!.name;
-      _arNameController.text = widget.tax!.arName ?? '';
+      _arNameController.text = widget.tax!.arName;
       _amountController.text = widget.tax!.amount.toString();
-      selectedtaxType =
-          widget.tax!.type[0].toUpperCase() +
-          widget.tax!.type.substring(1).toLowerCase();
+      selectedtaxType = widget.tax!.type.toLowerCase();
     }
   }
 
@@ -164,21 +162,18 @@ class _TaxFormDialogState extends State<TaxFormDialog>
                                 buildDropdownField<String>(
                                   context,
                                   value: selectedtaxType,
-                                   items: [
-                                    LocaleKeys.tax_type_fixed.tr(),
-                                    LocaleKeys.tax_type_percentage.tr()
-                                  ],
+                                   items: const ['fixed', 'percentage'],
                                   label: LocaleKeys.tax_type.tr(),
                                   icon: Icons.price_change_rounded,
-
                                   hint: LocaleKeys.tax_type_hint.tr(),
-
                                   onChanged: (value) {
                                     setState(() {
                                       selectedtaxType = value;
                                     });
                                   },
-                                  itemLabel: (type) => type,
+                                  itemLabel: (type) => type == 'fixed'
+                                      ? LocaleKeys.tax_type_fixed.tr()
+                                      : LocaleKeys.tax_type_percentage.tr(),
                                   validator: (value) {
                                     if (value == null) {
                                       return LocaleKeys.please_select_tax_type.tr();
@@ -258,14 +253,14 @@ class _TaxFormDialogState extends State<TaxFormDialog>
           taxId: widget.tax!.id,
           name: _nameController.text.trim(),
           arName: _arNameController.text.trim(),
-          taxType: selectedtaxType!.toLowerCase(),
+          taxType: selectedtaxType!,
           amount: double.parse(_amountController.text.trim()),
         );
       } else {
         cubit.createTax(
           name: _nameController.text.trim(),
           arName: _arNameController.text.trim(),
-          taxType: selectedtaxType!.toLowerCase(),
+          taxType: selectedtaxType!,
           amount: double.parse(_amountController.text.trim()),
         );
       }

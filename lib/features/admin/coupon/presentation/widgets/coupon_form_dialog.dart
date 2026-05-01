@@ -57,6 +57,8 @@ class _CouponFormDialogState extends State<CouponFormDialog>
       _quantityController.text = widget.coupon!.quantity.toString();
       _expiredDateController.text =
           widget.coupon!.expiredDate.split("T").first;
+      // Calculate available coupons: quantity - (quantity - available)
+      // If available represents remaining count, use it directly
       _availableController.text = widget.coupon!.available.toString();
     }
   }

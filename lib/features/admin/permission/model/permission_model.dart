@@ -67,7 +67,7 @@ class PermissionModel {
 
   factory PermissionModel.fromJson(Map<String, dynamic> json) {
     return PermissionModel(
-      id: json['_id'] as String,
+      id: (json['id'] ?? json['_id'])?.toString() ?? '',
       name: json['name'] as String,
       createdAt: json['createdAt'] as String,
       updatedAt: json['updatedAt'] as String,

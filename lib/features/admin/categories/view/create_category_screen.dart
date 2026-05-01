@@ -523,32 +523,8 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                                 );
                                 return;
                               }
-                              if (_selectedImage == null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      LocaleKeys.please_select_image.tr(),
-                                      style: TextStyle(
-                                        fontSize: ResponsiveUI.fontSize(
-                                          context,
-                                          14,
-                                        ),
-                                      ),
-                                    ),
-                                    backgroundColor: AppColors.red,
-                                    behavior: SnackBarBehavior.floating,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        ResponsiveUI.borderRadius(context, 8),
-                                      ),
-                                    ),
-                                    margin: EdgeInsets.all(
-                                      ResponsiveUI.padding(context, 12),
-                                    ),
-                                  ),
-                                );
-                                return;
-                              }
+                              // Image is now optional - removed validation
+                              
                               if (!_makeParentCategory &&
                                   _selectedParentCategory == null) {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -579,7 +555,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                               cubit.createCategory(
                                 name: _nameController.text.trim(),
                                 arName: _arNameController.text.trim(),
-                                imageFile: _selectedImage!,
+                                imageFile: _selectedImage, // Made optional
                                 parentId: _makeParentCategory
                                     ? null
                                     : _selectedParentCategory?.id,

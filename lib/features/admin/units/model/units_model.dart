@@ -44,7 +44,6 @@ class UnitModel {
   final BaseUnit? baseUnit;
   final String operator;
   final double operatorValue;
-  final bool isBaseUnit;
   final bool status;
   final String createdAt;
   final String updatedAt;
@@ -58,7 +57,6 @@ class UnitModel {
     this.baseUnit,
     required this.operator,
     required this.operatorValue,
-    required this.isBaseUnit,
     required this.status,
     required this.createdAt,
     required this.updatedAt,
@@ -74,10 +72,9 @@ class UnitModel {
       baseUnit: json['base_unit'] != null 
           ? BaseUnit.fromJson(json['base_unit'] as Map<String, dynamic>)
           : null,
-      operator: json['operator'] as String,
-      operatorValue: (json['operator_value'] as num).toDouble(),
-      isBaseUnit: json['is_base_unit'] as bool,
-      status: json['status'] as bool,
+      operator: json['operator'] as String? ?? '',
+      operatorValue: (json['operator_value'] as num?)?.toDouble() ?? 1.0,
+      status: json['status'] as bool? ?? true,
       createdAt: json['createdAt'] as String,
       updatedAt: json['updatedAt'] as String,
       version: json['__v'] as int,
@@ -93,7 +90,6 @@ class UnitModel {
       'base_unit': baseUnit?.toJson(),
       'operator': operator,
       'operator_value': operatorValue,
-      'is_base_unit': isBaseUnit,
       'status': status,
       'createdAt': createdAt,
       'updatedAt': updatedAt,

@@ -230,7 +230,7 @@ class _AnimatedUnitCardState extends State<AnimatedUnitCard> {
               SizedBox(height: ResponsiveUI.spacing(context, 2)),
           
               Text(
-                unit.isBaseUnit ? LocaleKeys.unit_yes.tr() : (unit.baseUnit?.name ?? LocaleKeys.unit_no.tr()),
+                unit.baseUnit == null ? LocaleKeys.unit_yes.tr() : (unit.baseUnit?.name ?? LocaleKeys.unit_no.tr()),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 14),
                   fontWeight: FontWeight.w500,
@@ -260,7 +260,7 @@ class _AnimatedUnitCardState extends State<AnimatedUnitCard> {
               SizedBox(height: ResponsiveUI.spacing(context, 2)),
           
               Text(
-                unit.isBaseUnit ? LocaleKeys.base.tr() : '${unit.operator} ${unit.operatorValue}',
+                unit.baseUnit == null ? LocaleKeys.base.tr() : '${unit.operator} ${unit.operatorValue}',
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 14),
                   fontWeight: FontWeight.w500,

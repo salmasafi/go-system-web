@@ -71,7 +71,7 @@ class _UnitFormDialogState extends State<UnitFormDialog>
       _codeController.text = widget.unit!.code;
       selectedOperator = widget.unit!.operator;
       _operatorValueController.text = widget.unit!.operatorValue.toString();
-      isBaseUnit = widget.unit!.isBaseUnit;
+      isBaseUnit = widget.unit!.baseUnit == null;
       status = widget.unit!.status;
       selectedBaseUnit = widget.unit!.baseUnit?.id;
     }
@@ -337,7 +337,6 @@ class _UnitFormDialogState extends State<UnitFormDialog>
           baseUnit: selectedBaseUnit,
           operator: selectedOperator ?? '*',
           operatorValue: isBaseUnit ? 1.0 : double.parse(_operatorValueController.text.trim()),
-          isBaseUnit: isBaseUnit,
           status: status,
         );
       } else {
@@ -348,7 +347,6 @@ class _UnitFormDialogState extends State<UnitFormDialog>
           baseUnit: selectedBaseUnit,
           operator: selectedOperator ?? '*',
           operatorValue: isBaseUnit ? 1.0 : double.parse(_operatorValueController.text.trim()),
-          isBaseUnit: isBaseUnit,
           status: status,
         );
       }

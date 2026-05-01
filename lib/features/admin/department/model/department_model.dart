@@ -62,8 +62,8 @@ class DepartmentModel {
 
   factory DepartmentModel.fromJson(Map<String, dynamic> json) {
     return DepartmentModel(
-      id: json['_id'] as String,
-      name: json['name'] as String,
+      id: (json['id'] ?? json['_id'])?.toString() ?? '',
+      name: json['name'] as String? ?? '',
       description: json['description'] as String,
       arName: json['ar_name'] as String?,
       arDescription: json['ar_description'] as String?,

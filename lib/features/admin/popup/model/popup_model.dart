@@ -66,7 +66,7 @@ class PopupModel {
 
   factory PopupModel.fromJson(Map<String, dynamic> json) {
     return PopupModel(
-      id: json['_id'] as String,
+      id: (json['id'] ?? json['_id'])?.toString() ?? '',
       titleEn: json['title_En'] as String,
       titleAr: json['title_ar'] as String,
       descriptionAr: json['description_ar'] as String,

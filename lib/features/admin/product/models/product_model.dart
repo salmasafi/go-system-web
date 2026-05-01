@@ -1,4 +1,6 @@
 // models/product_model.dart
+import 'product_attribute_model.dart';
+
 class Product {
   final String id;
   final String name;
@@ -27,6 +29,7 @@ class Product {
   final DateTime createdAt;
   final DateTime updatedAt;
   final List<Price> prices;
+  final List<ProductAttribute> attributes; // NEW: Product attributes
 
   Product({
     required this.id,
@@ -56,7 +59,11 @@ class Product {
     required this.createdAt,
     required this.updatedAt,
     required this.prices,
+    this.attributes = const [], // NEW
   });
+
+  /// Check if product has attributes assigned
+  bool get hasAttributes => attributes.isNotEmpty;
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
@@ -100,6 +107,11 @@ class Product {
               ?.map((e) => Price.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
+      attributes:
+          (json['attributes'] as List<dynamic>?)
+              ?.map((e) => ProductAttribute.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
     );
   }
 
@@ -130,6 +142,7 @@ class Product {
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
       'prices': prices.map((e) => e.toJson()).toList(),
+      'attributes': attributes.map((e) => e.toJson()).toList(),
     };
   }
 }

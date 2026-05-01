@@ -81,7 +81,7 @@ class PandelCubit extends Cubit<PandelState> {
   Future<void> addPandel({
     required String name,
     required List<PandelProduct> products,
-    required List<File> images,
+    List<File>? images, // Made optional
     required DateTime startDate,
     required DateTime endDate,
     required double price,
@@ -93,18 +93,20 @@ class PandelCubit extends Cubit<PandelState> {
     try {
       final List<String> base64Images = [];
 
-      // Convert all images to base64
-      for (final image in images) {
-        final base64Image = await _convertFileToBase64(image);
-        if (base64Image != null) {
-          base64Images.add(base64Image);
+      // Convert all images to base64 only if provided
+      if (images != null) {
+        for (final image in images) {
+          final base64Image = await _convertFileToBase64(image);
+          if (base64Image != null) {
+            base64Images.add(base64Image);
+          }
         }
       }
 
       final data = {
         "name": name,
         "products": products.map((p) => p.toJson()).toList(),
-        "images": base64Images,
+        if (base64Images.isNotEmpty) "images": base64Images, // Only add if provided
         "startdate": startDate.toIso8601String().split('T').first,
         "enddate": endDate.toIso8601String().split('T').first,
         "price": price,

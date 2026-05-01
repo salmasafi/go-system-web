@@ -42,39 +42,41 @@ class TaxData {
 class TaxModel {
   final String id;
   final String name;
-  final String? arName;
+  final String? _arName;
   final String type;   
   final bool status;
   final double amount;
-  final String createdAt;
-  final String updatedAt;
-  final int version;
+  final String? createdAt;
+  final String? updatedAt;
+  final int? version;
+
+  String get arName => _arName ?? '';
 
   TaxModel({
     required this.id,
     required this.name,
-     this.arName,
+    String? arName,
     required this.type,
     required this.status,
     required this.amount,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.version
-  });
+    this.createdAt,
+    this.updatedAt,
+    this.version,
+  }) : _arName = arName;
 
 
 
   factory TaxModel.fromJson(Map json) {
     return TaxModel(
-      id: json['_id'] as String,
-      name: json['name'] as String,
-      arName: json['ar_name'] as String?,
-      type: json['type'] as String,     
-      status: json['status'] as bool,
-      amount: (json['amount'] as num).toDouble(),
-      createdAt: json['createdAt'] as String,
-      updatedAt: json['updatedAt'] as String,
-      version: json['__v'] as int,
+      id: (json['id'] ?? json['_id'])?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      arName: json['ar_name']?.toString(),
+      type: json['type']?.toString() ?? 'percentage',
+      status: json['status'] as bool? ?? true,
+      amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
+      createdAt: json['createdAt']?.toString(),
+      updatedAt: json['updatedAt']?.toString(),
+      version: json['__v'] as int?,
     );
   }
 
