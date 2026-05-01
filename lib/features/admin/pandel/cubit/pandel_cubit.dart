@@ -4,18 +4,14 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
-import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
-
-import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/core/services/endpoints.dart';
 
 import 'package:systego/features/admin/pandel/model/pandel_model.dart';
 import 'package:systego/generated/locale_keys.g.dart';
+import 'package:systego/features/admin/pandel/data/repositories/bundle_repository.dart';
 
-import 'package:systego/features/admin/pandel/data/repositories/bundle_repository.dart';\r\n\r\npart 'pandel_state.dart';
+part 'pandel_state.dart';
 
 class PandelCubit extends Cubit<PandelState> {
   final BundleRepository _repository;
@@ -77,8 +73,8 @@ class PandelCubit extends Cubit<PandelState> {
         status: true,
         allWarehouses: allWarehouses,
         warehouseIds: warehouseIds,
-        createdAt: '',
-        updatedAt: '',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
         version: 0,
       );
 
@@ -94,10 +90,12 @@ class PandelCubit extends Cubit<PandelState> {
     required String name,
     required List<PandelProduct> products,
     List<File>? images,
+    List<File>? newImages,
+    List<String>? existingImages,
     required DateTime startDate,
     required DateTime endDate,
     required double price,
-    required bool status,
+    bool? status,
     bool allWarehouses = true,
     List<String>? warehouseIds,
   }) async {
@@ -105,8 +103,9 @@ class PandelCubit extends Cubit<PandelState> {
 
     try {
       final List<String> base64Images = [];
-      if (images != null) {
-        for (final image in images) {
+      final effectiveImages = newImages ?? images;
+      if (effectiveImages != null) {
+        for (final image in effectiveImages) {
           final base64Image = await _convertFileToBase64(image);
           if (base64Image != null) base64Images.add(base64Image);
         }
@@ -120,11 +119,11 @@ class PandelCubit extends Cubit<PandelState> {
         startDate: startDate,
         endDate: endDate,
         price: price,
-        status: status,
+        status: status ?? true,
         allWarehouses: allWarehouses,
         warehouseIds: warehouseIds,
-        createdAt: '',
-        updatedAt: '',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
         version: 0,
       );
 

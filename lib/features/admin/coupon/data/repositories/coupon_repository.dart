@@ -237,7 +237,7 @@ class _CouponDioDataSource implements CouponRepositoryInterface {
   Future<CouponModel?> validateCoupon(String code) async {
     try {
       final response = await DioHelper.postData(
-        url: EndPoint.applyCoupon,
+        url: '/api/admin/coupon/apply',
         data: {'code': code},
       );
       if (response.statusCode == 200) {

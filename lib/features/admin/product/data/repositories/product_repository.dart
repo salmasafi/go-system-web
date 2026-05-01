@@ -21,6 +21,7 @@ abstract class ProductRepositoryInterface {
   Future<Product> updateProduct(String id, Product product, {List<File>? images});
   Future<void> deleteProduct(String id);
   Future<String?> generateProductCode();
+  Future<Map<String, dynamic>> getProductFilters();
 }
 
 /// Hybrid repository that supports both Dio and Supabase for products
@@ -563,6 +564,20 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
 
 /// Dio implementation for Product data source (legacy)
 class _ProductDioDataSource implements ProductRepositoryInterface {
+  @override
+  Future<Map<String, dynamic>> getProductFilters() async {
+    try {
+      final response = await DioHelper.getData(url: EndPoint.productFilter);
+      if (response.statusCode == 200 && response.data['success'] == true) {
+        return response.data['data'] as Map<String, dynamic>;
+      }
+      return {};
+    } catch (e) {
+      log('Dio: Error getting product filters - $e');
+      return {};
+    }
+  }
+
   @override
   Future<List<Product>> getAllProducts() async {
     try {

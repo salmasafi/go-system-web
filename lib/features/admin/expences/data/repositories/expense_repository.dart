@@ -62,17 +62,15 @@ class SupabaseExpenseModel {
     );
   }
 
-  ExpenseModel toLegacyModel() {
-    return ExpenseModel(
+  ExpenseAdminModel toLegacyModel() {
+    return ExpenseAdminModel(
       id: id,
       name: description,
       amount: amount,
       categoryId: categoryId,
-      note: receiptNumber,
+      note: receiptNumber ?? '',
       financialAccountId: bankAccountId,
       createdAt: createdAt,
-      updatedAt: createdAt,
-      version: 0,
     );
   }
 }
@@ -221,8 +219,7 @@ class _ExpenseSupabaseDataSource implements ExpenseRepositoryInterface {
       financialAccountId: json['bank_account_id'] ?? '',
       financialAccountName: account != null ? account['name'] : null,
       categoryId: json['category_id'] ?? '',
-      categoryName: category != null ? category['name'] : null,
-      v: json['version'] ?? 1,
+      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : DateTime.now(),
     );
   }
 }
@@ -276,7 +273,7 @@ class _ExpenseDioDataSource implements ExpenseRepositoryInterface {
   @override
   Future<void> deleteExpense(String id) async {
     try {
-      final response = await DioHelper.deleteData(url: '${EndPoint.deleteExpense}/$id');
+      final response = await DioHelper.deleteData(url: EndPoint.updatePosExpense(id));
       if (response.statusCode != 200) {
         throw Exception(ErrorHandler.handleError(response));
       }

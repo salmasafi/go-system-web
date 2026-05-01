@@ -13,9 +13,9 @@ import 'package:systego/features/admin/customer/model/customer_model.dart';
 import 'package:systego/features/admin/customer_group/model/customer_group_model.dart';
 import 'package:systego/generated/locale_keys.g.dart';
 
-part 'customer_state.dart';
-
 import 'package:systego/features/admin/customer/data/repositories/customer_repository.dart';
+
+part 'customer_state.dart';
 
 class CustomerCubit extends Cubit<CustomerState> {
   final CustomerRepository _repository;
@@ -185,7 +185,4 @@ class CustomerCubit extends Cubit<CustomerState> {
       emit(DeleteCustomerGroupError(e.toString().replaceAll('Exception: ', '')));
     }
   }
-}
-
- 
 }

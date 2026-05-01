@@ -155,11 +155,11 @@ class _DepartmentSupabaseDataSource implements DepartmentRepositoryInterface {
       id: json['id'] ?? '',
       name: json['name'] ?? '',
       description: json['description'] ?? '',
-      arName: json['ar_name'] ?? '',
-      arDescription: json['ar_description'] ?? '',
-      v: json['version'] ?? 1,
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : DateTime.now(),
-      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : DateTime.now(),
+      arName: json['ar_name'],
+      arDescription: json['ar_description'],
+      version: (json['version'] as num?)?.toInt() ?? 1,
+      createdAt: json['created_at']?.toString() ?? DateTime.now().toIso8601String(),
+      updatedAt: json['updated_at']?.toString() ?? DateTime.now().toIso8601String(),
     );
   }
 }

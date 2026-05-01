@@ -7,7 +7,9 @@ import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/features/admin/discount/model/discount_model.dart';
 import 'package:systego/generated/locale_keys.g.dart';
 
-import 'package:systego/features/admin/discount/data/repositories/discount_repository.dart';\r\n\r\npart 'discount_state.dart';
+import 'package:systego/features/admin/discount/data/repositories/discount_repository.dart';
+
+part 'discount_state.dart';
 
 class DiscountsCubit extends Cubit<DiscountsState> {
   final DiscountRepository _repository;

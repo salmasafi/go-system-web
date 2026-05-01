@@ -138,7 +138,9 @@ class _ExpenseCategorySupabaseDataSource implements ExpenseCategoryRepositoryInt
       name: json['name'] ?? '',
       arName: json['ar_name'] ?? '',
       status: json['status'] ?? true,
-      v: json['version'] ?? 1,
+      version: json['version'] ?? 1,
+      createdAt: json['created_at']?.toString() ?? DateTime.now().toIso8601String(),
+      updatedAt: json['updated_at']?.toString() ?? DateTime.now().toIso8601String(),
     );
   }
 }

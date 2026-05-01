@@ -166,8 +166,10 @@ class _CurrencySupabaseDataSource implements CurrencyRepositoryInterface {
       name: json['name'] ?? '',
       arName: json['ar_name'] ?? '',
       amount: (json['exchange_rate'] ?? 0).toDouble(),
-      isdefault: json['is_default'] ?? false,
-      v: json['version'] ?? 1,
+      isDefault: json['is_default'] ?? false,
+      version: json['version'] ?? 1,
+      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'].toString()) : DateTime.now(),
+      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'].toString()) : DateTime.now(),
     );
   }
 }

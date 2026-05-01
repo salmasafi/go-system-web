@@ -6,7 +6,9 @@ import 'package:systego/core/services/endpoints.dart';
 import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/features/admin/permission/model/permission_model.dart';
 
-import 'package:systego/features/admin/permission/data/repositories/permission_repository.dart';\r\n\r\npart 'permission_state.dart';
+import 'package:systego/features/admin/permission/data/repositories/permission_repository.dart';
+
+part 'permission_state.dart';
 
 class PermissionCubit extends Cubit<PermissionState> {
   final PermissionRepository _repository;

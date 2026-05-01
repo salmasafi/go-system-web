@@ -125,8 +125,8 @@ class _DiscountSupabaseDataSource implements DiscountRepositoryInterface {
       amount: (json['amount'] as num).toDouble(),
       type: json['type'],
       status: json['status'],
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : DateTime.now(),
-      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : DateTime.now(),
+      createdAt: json['created_at']?.toString() ?? DateTime.now().toIso8601String(),
+      updatedAt: json['updated_at']?.toString() ?? DateTime.now().toIso8601String(),
       version: 0, // Placeholder
     );
   }

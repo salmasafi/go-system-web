@@ -214,8 +214,8 @@ class _PaymentMethodSupabaseDataSource
       isActive: json['is_active'] ?? true,
       version: json['version'] ?? 1,
       description: json['description'] ?? '',
-      createdAt: null,
-      updatedAt: null,
+      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : DateTime.now(),
+      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : DateTime.now(),
     );
   }
 }

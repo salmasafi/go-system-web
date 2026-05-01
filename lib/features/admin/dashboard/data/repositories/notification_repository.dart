@@ -57,7 +57,6 @@ class SupabaseNotificationModel {
       isRead: isRead,
       createdAt: createdAt,
       updatedAt: createdAt,
-      version: 0,
       title: title,
     );
   }
@@ -175,10 +174,10 @@ class _NotificationSupabaseDataSource implements NotificationRepositoryInterface
     try {
       final response = await _client
           .from(_table)
-          .select('id', const FetchOptions(count: CountOption.exact))
+          .select('id')
           .eq('is_read', false);
       
-      return response.count;
+      return response.length;
     } catch (e) {
       log('NotificationSupabase: Error getting unread count - $e');
       return 0;
