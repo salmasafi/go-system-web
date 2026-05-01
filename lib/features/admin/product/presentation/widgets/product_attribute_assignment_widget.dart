@@ -27,8 +27,7 @@ class ProductAttributeAssignmentWidget extends StatefulWidget {
 }
 
 class _ProductAttributeAssignmentWidgetState extends State<ProductAttributeAssignmentWidget> {
-  Map<String, List<String>> _selectedAttributeValues = {}; // attributeTypeId -> selected value IDs
-  Map<String, List<AttributeValue>> _availableValues = {}; // attributeTypeId -> available values
+  final Map<String, List<String>> _selectedAttributeValues = {}; // attributeTypeId -> selected value IDs
 
   @override
   void initState() {
@@ -80,7 +79,7 @@ class _ProductAttributeAssignmentWidgetState extends State<ProductAttributeAssig
             padding: const EdgeInsets.all(12),
             margin: const EdgeInsets.only(bottom: 16),
             decoration: BoxDecoration(
-              color: Colors.orange.withOpacity(0.1),
+              color: Colors.orange.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: Colors.orange),
             ),
@@ -119,7 +118,7 @@ class _ProductAttributeAssignmentWidgetState extends State<ProductAttributeAssig
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 18),
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      color: AppColors.darkGray,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -132,7 +131,7 @@ class _ProductAttributeAssignmentWidgetState extends State<ProductAttributeAssig
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 18),
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      color: AppColors.darkGray,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -199,7 +198,7 @@ class _ProductAttributeAssignmentWidgetState extends State<ProductAttributeAssig
                     'Values: ${attr.attributeValueIds.length} selected',
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 14),
-                      color: AppColors.textSecondary,
+                      color: AppColors.linkBlue,
                     ),
                   ),
                 ],

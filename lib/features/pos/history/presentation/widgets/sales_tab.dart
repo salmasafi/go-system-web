@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
-import 'package:systego/features/POS/history/model/sale_model.dart';
-import 'package:systego/features/POS/history/presentation/views/sale_details_screen.dart';
+import 'package:systego/features/pos/history/model/sale_model.dart';
+import 'package:systego/features/pos/history/presentation/views/sale_details_screen.dart';
 import '../../cubit/history_cubit.dart';
 import '../../cubit/history_state.dart';
 

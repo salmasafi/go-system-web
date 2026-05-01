@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/services/dio_helper.dart';
 import 'package:systego/core/services/endpoints.dart';
 import 'package:systego/core/utils/error_handler.dart';
-import 'package:systego/features/POS/expenses/model/expense_model.dart';
+import 'package:systego/features/pos/expenses/model/expense_model.dart';
 import 'package:systego/features/admin/expences_category/model/expences_categories_model.dart';
 
 part 'expense_state.dart';

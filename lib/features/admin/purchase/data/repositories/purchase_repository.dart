@@ -2,13 +2,13 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../core/migration/migration_service.dart';
-import '../../../../core/services/dio_helper.dart';
-import '../../../../core/services/endpoints.dart';
-import '../../../../core/supabase/supabase_client.dart';
-import '../../../../core/supabase/storage_service.dart';
-import '../../../../core/supabase/supabase_error_handler.dart';
-import '../../../../core/utils/error_handler.dart';
+import '../../../../../core/migration/migration_service.dart';
+import '../../../../../core/services/dio_helper.dart';
+import '../../../../../core/services/endpoints.dart';
+import '../../../../../core/supabase/supabase_client.dart';
+import '../../../../../core/supabase/storage_service.dart';
+import '../../../../../core/supabase/supabase_error_handler.dart';
+import '../../../../../core/utils/error_handler.dart';
 import '../../model/purchase_model.dart';
 
 /// Interface for purchase data operations
@@ -497,38 +497,12 @@ class _PurchaseSupabaseDataSource implements PurchaseRepositoryInterface {
 class _PurchaseDioDataSource implements PurchaseRepositoryInterface {
   @override
   Future<PurchaseData> getAllPurchases() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getPurchase);
-
-      if (response.statusCode == 200) {
-        final model = PurchaseResponse.fromJson(response.data);
-        if (model.success) {
-          return model.data;
-        }
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
+    throw UnimplementedError('Not supported in legacy API');
   }
 
   @override
   Future<Purchase?> getPurchaseById(String id) async {
-    try {
-      final response = await DioHelper.getData(
-        url: '${EndPoint.getPurchase}/$id',
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final purchaseJson = response.data['data']?['purchase'];
-        if (purchaseJson != null) {
-          return Purchase.fromJson(purchaseJson);
-        }
-      }
-      return null;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
+    throw UnimplementedError('Not supported in legacy API');
   }
 
   @override
@@ -545,43 +519,7 @@ class _PurchaseDioDataSource implements PurchaseRepositoryInterface {
     File? receiptImageFile,
     List<Map<String, dynamic>>? payments,
   }) async {
-    try {
-      final data = <String, dynamic>{
-        'warehouse_id': warehouseId,
-        'supplier_id': supplierId,
-        'items': items,
-        'grand_total': grandTotal,
-        'tax_amount': taxAmount ?? 0.0,
-        'discount': discount ?? 0.0,
-        'shipping_cost': shippingCost ?? 0.0,
-        'note': note ?? '',
-        if (receiptImage != null) 'receipt_img': receiptImage,
-        if (payments != null) 'payments': payments,
-      };
-
-      // Handle image file if provided
-      if (receiptImageFile != null) {
-        final bytes = await receiptImageFile.readAsBytes();
-        final base64 = base64Encode(bytes);
-        data['receipt_img'] = 'data:image/jpeg;base64,$base64';
-      }
-
-      final response = await DioHelper.postData(
-        url: EndPoint.createPurchase,
-        data: data,
-      );
-
-      if ((response.statusCode == 200 || response.statusCode == 201) &&
-          response.data['success'] == true) {
-        final purchaseId = response.data['data']?['purchase']?['_id'];
-        if (purchaseId != null) {
-          return await getPurchaseById(purchaseId) as Purchase;
-        }
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
+    throw UnimplementedError('Not supported in legacy API');
   }
 
   @override
@@ -597,97 +535,26 @@ class _PurchaseDioDataSource implements PurchaseRepositoryInterface {
     String? note,
     String? paymentStatus,
   }) async {
-    try {
-      final data = <String, dynamic>{};
-      if (warehouseId != null) data['warehouse_id'] = warehouseId;
-      if (supplierId != null) data['supplier_id'] = supplierId;
-      if (items != null) data['items'] = items;
-      if (grandTotal != null) data['grand_total'] = grandTotal;
-      if (taxAmount != null) data['tax_amount'] = taxAmount;
-      if (discount != null) data['discount'] = discount;
-      if (shippingCost != null) data['shipping_cost'] = shippingCost;
-      if (note != null) data['note'] = note;
-      if (paymentStatus != null) data['payment_status'] = paymentStatus;
-
-      final response = await DioHelper.putData(
-        url: '${EndPoint.getPurchase}/$id',
-        data: data,
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        return await getPurchaseById(id) as Purchase;
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
+    throw UnimplementedError('Not supported in legacy API');
   }
 
   @override
   Future<void> deletePurchase(String id) async {
-    try {
-      final response = await DioHelper.deleteData(
-        url: '${EndPoint.getPurchase}/$id',
-      );
-
-      if (response.statusCode != 200 || response.data['success'] != true) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
+    throw UnimplementedError('Not supported in legacy API');
   }
 
   @override
   Future<bool> handleDuePayment(String purchaseId, double amount, String financialAccountId) async {
-    try {
-      final response = await DioHelper.postData(
-        url: '${EndPoint.getPurchase}/$purchaseId/payment',
-        data: {
-          'amount': amount,
-          'financial_account_id': financialAccountId,
-        },
-      );
-
-      return response.statusCode == 200 && response.data['success'] == true;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
+    throw UnimplementedError('Not supported in legacy API');
   }
 
   @override
   Future<List<Purchase>> getPurchasesBySupplier(String supplierId) async {
-    try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getPurchase,
-        query: {'supplier_id': supplierId},
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final purchasesList = response.data['data']?['purchases']?['full'] as List? ?? [];
-        return purchasesList.map((e) => Purchase.fromJson(e)).toList();
-      }
-      return [];
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
+    throw UnimplementedError('Not supported in legacy API');
   }
 
   @override
   Future<List<Purchase>> getPurchasesByWarehouse(String warehouseId) async {
-    try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getPurchase,
-        query: {'warehouse_id': warehouseId},
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final purchasesList = response.data['data']?['purchases']?['full'] as List? ?? [];
-        return purchasesList.map((e) => Purchase.fromJson(e)).toList();
-      }
-      return [];
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
+    throw UnimplementedError('Not supported in legacy API');
   }
 }

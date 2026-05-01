@@ -11,8 +11,12 @@ import '../model/supplier_whis_id_model.dart' as supplier_details;
 import '../model/supplier_whis_id_model.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'dart:io';
+import 'package:systego/features/admin/suppliers/data/repositories/supplier_repository.dart';
+
 class SupplierCubit extends Cubit<SupplierStates> {
-  SupplierCubit() : super(SupplierInitial());
+  final SupplierRepository _repository;
+  SupplierCubit(this._repository) : super(SupplierInitial());
 
   supplier_list.SupplierModel? supplierModel;
   List<supplier_list.Suppliers>? suppliers;
@@ -22,88 +26,40 @@ class SupplierCubit extends Cubit<SupplierStates> {
   supplier_details.SupplierWhisIdModel? supplierWhisIdModel;
   supplier_details.Supplier? currentSupplier;
 
-  String? getToken() {
-    return CacheHelper.getData(key: 'token');
-  }
-
   Future<void> getSuppliers() async {
     emit(SupplierLoading());
-
     try {
-      final token = getToken();
-
-      final response = await DioHelper.getData(
-        url: EndPoint.getSuppliers,
-        token: token,
-      );
-
-      log('Suppliers Response: ${response.data}');
-
-      if (response.statusCode == 200) {
-        supplierModel = supplier_list.SupplierModel.fromJson(response.data);
-        suppliers = supplierModel?.data?.suppliers;
-        cities = supplierModel?.data?.city;
-        countries = supplierModel?.data?.country;
-
-        log('Suppliers Count: ${suppliers?.length}');
-        log('Cities Count: ${cities?.length}');
-        log('Countries Count: ${countries?.length}');
-
-        emit(SupplierSuccess());
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        log('Error: $errorMessage');
-        emit(SupplierError(errorMessage));
-      }
+      final supplierList = await _repository.getAllSuppliers();
+      suppliers = supplierList;
+      emit(SupplierSuccess());
     } catch (error) {
-      final errorMessage = ErrorHandler.handleError(error);
-      log('Exception: $errorMessage');
-      emit(SupplierError(errorMessage));
+      emit(SupplierError(error.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> getSupplierById(String id) async {
     emit(SupplierLoading());
-
     try {
-      final token = getToken();
-
-      final response = await DioHelper.getData(
-        url: EndPoint.getSupplierById(id),
-        token: token,
-      );
-
-      log('Supplier Details Response: ${response.data}');
-
-      if (response.statusCode == 200) {
-        supplierWhisIdModel = supplier_details.SupplierWhisIdModel.fromJson(response.data);
-        currentSupplier = supplierWhisIdModel?.data?.supplier;
-
-        log('Supplier Name: ${currentSupplier?.username}');
-        log('Company: ${currentSupplier?.companyName}');
-
+      final supplier = await _repository.getSupplierById(id);
+      if (supplier != null) {
+        currentSupplier = supplier_details.Supplier(
+          id: supplier.id,
+          username: supplier.username,
+          email: supplier.email,
+          phoneNumber: supplier.phoneNumber,
+          address: supplier.address,
+          companyName: supplier.companyName,
+          image: supplier.image,
+          cityId: supplier.cityId != null ? supplier_details.CityId(id: supplier.cityId!.id, name: supplier.cityId!.name) : null,
+          countryId: supplier.countryId != null ? supplier_details.CountryId(id: supplier.countryId!.id, name: supplier.countryId!.name) : null,
+          v: supplier.v,
+        );
         emit(SupplierSuccess());
       } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        log('Error: $errorMessage');
-        emit(SupplierError(errorMessage));
+        emit(SupplierError('Supplier not found'));
       }
     } catch (error) {
-      final errorMessage = ErrorHandler.handleError(error);
-      log('Exception: $errorMessage');
-      emit(SupplierError(errorMessage));
-    }
-  }
-
-  // Convert image file to base64
-  Future<String?> convertImageToBase64(XFile imageFile) async {
-    try {
-      final bytes = await imageFile.readAsBytes();
-      final base64Image = 'data:image/png;base64,${base64Encode(bytes)}';
-      return base64Image;
-    } catch (e) {
-      log('Error converting image: $e');
-      return null;
+      emit(SupplierError(error.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -117,45 +73,22 @@ class SupplierCubit extends Cubit<SupplierStates> {
     required String companyName,
     XFile? imageFile,
   }) async {
+    emit(SupplierLoading());
     try {
-      final token = getToken();
-
-      String? base64Image;
-      if (imageFile != null) {
-        base64Image = await convertImageToBase64(imageFile);
-      }
-
-      final data = {
-        'username': username,
-        'email': email,
-        'phone_number': phoneNumber,
-        'address': address,
-        'cityId': cityId,
-        'countryId': countryId,
-        'company_name': companyName,
-        if (base64Image != null) 'image': base64Image,
-      };
-
-      final response = await DioHelper.postData(
-        url: EndPoint.createSupplier,
-        data: data,
-        token: token,
+      await _repository.createSupplier(
+        username: username,
+        email: email,
+        phoneNumber: phoneNumber,
+        address: address,
+        companyName: companyName,
+        countryId: countryId,
+        cityId: cityId,
+        imageFile: imageFile != null ? File(imageFile.path) : null,
       );
-
-      log('Create Supplier Response: ${response.data}');
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        log('Supplier created successfully');
-        await getSuppliers();
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        log('Error: $errorMessage');
-        emit(SupplierError(errorMessage));
-      }
+      await getSuppliers();
+      emit(SupplierSuccess());
     } catch (error) {
-      final errorMessage = ErrorHandler.handleError(error);
-      log('Exception: $errorMessage');
-      emit(SupplierError(errorMessage));
+      emit(SupplierError(error.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -170,73 +103,38 @@ class SupplierCubit extends Cubit<SupplierStates> {
     String? companyName,
     XFile? imageFile,
   }) async {
+    emit(SupplierLoading());
     try {
-      final token = getToken();
+      // Get current values if not provided to satisfy repo interface
+      final current = await _repository.getSupplierById(id);
+      if (current == null) throw Exception('Supplier not found');
 
-      String? base64Image;
-      if (imageFile != null) {
-        base64Image = await convertImageToBase64(imageFile);
-      }
-
-      final data = {
-        if (username != null) 'username': username,
-        if (email != null) 'email': email,
-        if (phoneNumber != null) 'phone_number': phoneNumber,
-        if (address != null) 'address': address,
-        if (cityId != null) 'cityId': cityId,
-        if (countryId != null) 'countryId': countryId,
-        if (companyName != null) 'company_name': companyName,
-        if (base64Image != null) 'image': base64Image,
-      };
-
-      final response = await DioHelper.putData(
-        url: '${EndPoint.updateSupplier}/$id',
-        data: data,
-        token: token,
+      await _repository.updateSupplier(
+        id: id,
+        username: username ?? current.username ?? '',
+        email: email ?? current.email ?? '',
+        phoneNumber: phoneNumber ?? current.phoneNumber ?? '',
+        address: address ?? current.address ?? '',
+        companyName: companyName ?? current.companyName ?? '',
+        countryId: countryId ?? current.countryId?.id,
+        cityId: cityId ?? current.cityId?.id,
+        imageFile: imageFile != null ? File(imageFile.path) : null,
       );
-
-      log('Update Supplier Response: ${response.data}');
-
-      if (response.statusCode == 200) {
-        log('Supplier updated successfully');
-        // أعد تحميل البيانات فوراً
-        await getSuppliers();
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        log('Error: $errorMessage');
-        emit(SupplierError(errorMessage));
-      }
+      await getSuppliers();
+      emit(SupplierSuccess());
     } catch (error) {
-      final errorMessage = ErrorHandler.handleError(error);
-      log('Exception: $errorMessage');
-      emit(SupplierError(errorMessage));
+      emit(SupplierError(error.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> deleteSupplier(String id) async {
+    emit(SupplierLoading());
     try {
-      final token = getToken();
-
-      final response = await DioHelper.deleteData(
-        url: '${EndPoint.deleteSupplier}/$id',
-        token: token,
-      );
-
-      log('Delete Supplier Response: ${response.data}');
-
-      if (response.statusCode == 200) {
-        log('Supplier deleted successfully');
-        // أعد تحميل البيانات فوراً
-        await getSuppliers();
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        log('Error: $errorMessage');
-        emit(SupplierError(errorMessage));
-      }
+      await _repository.deleteSupplier(id);
+      await getSuppliers();
+      emit(SupplierSuccess());
     } catch (error) {
-      final errorMessage = ErrorHandler.handleError(error);
-      log('Exception: $errorMessage');
-      emit(SupplierError(errorMessage));
+      emit(SupplierError(error.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -283,3 +181,4 @@ class SupplierCubit extends Cubit<SupplierStates> {
     supplierWhisIdModel = null;
   }
 }
+

@@ -3,10 +3,13 @@ import 'package:systego/core/services/dio_helper.dart';
 import 'package:systego/core/services/endpoints.dart';
 import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/features/admin/redeem_points/model/redeem_points_model.dart';
+import 'package:systego/features/admin/redeem_points/data/repositories/redeem_points_repository.dart';
+
 part 'redeem_points_state.dart';
 
 class RedeemPointsCubit extends Cubit<RedeemPointsState> {
-  RedeemPointsCubit() : super(RedeemPointsInitial());
+  final RedeemPointsRepository _repository;
+  RedeemPointsCubit(this._repository) : super(RedeemPointsInitial());
 
   List<RedeemPointsModel> allRedeemPoints = [];
   List<RedeemPointsModel> filteredRedeemPoints = [];
@@ -15,18 +18,12 @@ class RedeemPointsCubit extends Cubit<RedeemPointsState> {
   Future<void> getRedeemPoints() async {
     emit(GetRedeemPointsLoading());
     try {
-      final response = await DioHelper.getData(url: EndPoint.redeemPoints);
-      if (response.statusCode == 200) {
-        final data = response.data['data']['points'] as List;
-        allRedeemPoints = data.map((e) => RedeemPointsModel.fromJson(e)).toList();
-        filteredRedeemPoints = List.from(allRedeemPoints);
-        emit(GetRedeemPointsSuccess(filteredRedeemPoints));
-      } else {
-        emit(GetRedeemPointsError('Failed to load redeem points'));
-      }
+      final list = await _repository.getRedeemRules();
+      allRedeemPoints = list;
+      filteredRedeemPoints = List.from(allRedeemPoints);
+      emit(GetRedeemPointsSuccess(filteredRedeemPoints));
     } catch (e) {
-      final msg = ErrorHandler.handleError(e);
-      emit(GetRedeemPointsError(msg));
+      emit(GetRedeemPointsError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -37,23 +34,13 @@ class RedeemPointsCubit extends Cubit<RedeemPointsState> {
   }) async {
     emit(CreateRedeemPointsLoading());
     try {
-      final response = await DioHelper.postData(
-        url: EndPoint.redeemPoints,
-        data: {
-          'amount': amount,
-          'points': points,
-        },
+      await _repository.createRedeemRule(
+        RedeemPointsModel(id: '', amount: amount, points: points),
       );
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final message = response.data['data']['message'] ?? 'Redeem points created successfully';
-        await getRedeemPoints(); // Refresh the list
-        emit(CreateRedeemPointsSuccess(message));
-      } else {
-        emit(CreateRedeemPointsError('Failed to create redeem points'));
-      }
+      await getRedeemPoints(); // Refresh the list
+      emit(CreateRedeemPointsSuccess('Redeem points created successfully'));
     } catch (e) {
-      final msg = ErrorHandler.handleError(e);
-      emit(CreateRedeemPointsError(msg));
+      emit(GetRedeemPointsError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -65,23 +52,13 @@ class RedeemPointsCubit extends Cubit<RedeemPointsState> {
   }) async {
     emit(UpdateRedeemPointsLoading());
     try {
-      final response = await DioHelper.putData(
-        url: '${EndPoint.redeemPoints}/$id',
-        data: {
-          'amount': amount,
-          'points': points,
-        },
+      await _repository.updateRedeemRule(
+        RedeemPointsModel(id: id, amount: amount, points: points),
       );
-      if (response.statusCode == 200) {
-        final message = response.data['data']['message'] ?? 'Redeem points updated successfully';
-        await getRedeemPoints(); // Refresh the list
-        emit(UpdateRedeemPointsSuccess(message));
-      } else {
-        emit(UpdateRedeemPointsError('Failed to update redeem points'));
-      }
+      await getRedeemPoints(); // Refresh the list
+      emit(UpdateRedeemPointsSuccess('Redeem points updated successfully'));
     } catch (e) {
-      final msg = ErrorHandler.handleError(e);
-      emit(UpdateRedeemPointsError(msg));
+      emit(UpdateRedeemPointsError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -89,17 +66,11 @@ class RedeemPointsCubit extends Cubit<RedeemPointsState> {
   Future<void> deleteRedeemPoints(String id) async {
     emit(DeleteRedeemPointsLoading());
     try {
-      final response = await DioHelper.deleteData(url: '${EndPoint.redeemPoints}/$id');
-      if (response.statusCode == 200) {
-        final message = response.data['data']['message'] ?? 'Redeem points deleted successfully';
-        await getRedeemPoints(); // Refresh the list
-        emit(DeleteRedeemPointsSuccess(message));
-      } else {
-        emit(DeleteRedeemPointsError('Failed to delete redeem points'));
-      }
+      await _repository.deleteRedeemRule(id);
+      await getRedeemPoints(); // Refresh the list
+      emit(DeleteRedeemPointsSuccess('Redeem points deleted successfully'));
     } catch (e) {
-      final msg = ErrorHandler.handleError(e);
-      emit(DeleteRedeemPointsError(msg));
+      emit(DeleteRedeemPointsError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -110,10 +81,10 @@ class RedeemPointsCubit extends Cubit<RedeemPointsState> {
     } else {
       filteredRedeemPoints = allRedeemPoints.where((redeemPoint) {
         return redeemPoint.amount.toString().contains(query.toLowerCase()) ||
-               redeemPoint.points.toString().contains(query.toLowerCase());
+            redeemPoint.points.toString().contains(query.toLowerCase());
       }).toList();
     }
-    
+
     if (state is GetRedeemPointsSuccess) {
       emit(GetRedeemPointsSuccess(filteredRedeemPoints));
     }

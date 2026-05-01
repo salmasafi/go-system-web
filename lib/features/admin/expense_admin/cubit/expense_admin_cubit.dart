@@ -4,8 +4,11 @@ import 'package:systego/core/services/endpoints.dart';
 import '../model/expense_admin_model.dart';
 import 'expense_admin_state.dart';
 
+import 'package:systego/features/admin/expences/data/repositories/expense_repository.dart';
+
 class ExpenseAdminCubit extends Cubit<ExpenseAdminState> {
-  ExpenseAdminCubit() : super(ExpenseAdminInitial());
+  final ExpenseRepository _repository;
+  ExpenseAdminCubit(this._repository) : super(ExpenseAdminInitial());
 
   List<ExpenseAdminModel> expenses = [];
   List<ExpenseAdminModel> _filtered = [];
@@ -17,21 +20,12 @@ class ExpenseAdminCubit extends Cubit<ExpenseAdminState> {
   Future<void> getExpenses() async {
     emit(GetExpensesAdminLoading());
     try {
-      final response = await DioHelper.getData(url: EndPoint.getAllExpenseAdmin);
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final data = ExpenseAdminResponse.fromJson(
-          response.data as Map<String, dynamic>,
-        );
-        expenses = data.data.expenses;
-        _applySearch();
-        emit(GetExpensesAdminSuccess(displayed));
-      } else {
-        emit(GetExpensesAdminError(
-          response.data['message']?.toString() ?? 'Failed to load expenses',
-        ));
-      }
+      final list = await _repository.getAllExpenses();
+      expenses = list;
+      _applySearch();
+      emit(GetExpensesAdminSuccess(displayed));
     } catch (e) {
-      emit(GetExpensesAdminError(e.toString()));
+      emit(GetExpensesAdminError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -44,28 +38,20 @@ class ExpenseAdminCubit extends Cubit<ExpenseAdminState> {
   }) async {
     emit(CreateExpenseAdminLoading());
     try {
-      final response = await DioHelper.postData(
-        url: EndPoint.addPosExpense,
-        data: {
-          'name': name,
-          'amount': amount,
-          'Category_id': categoryId,
-          'financial_accountId': financialAccountId,
-          'note': note,
-        },
+      await _repository.createExpense(
+        name: name,
+        amount: amount,
+        categoryId: categoryId,
+        financialAccountId: financialAccountId,
+        note: note,
       );
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateExpenseAdminSuccess('Expense created successfully'));
-        await getExpenses();
-      } else {
-        emit(CreateExpenseAdminError(
-          response.data['message']?.toString() ?? 'Failed to create expense',
-        ));
-      }
+      emit(CreateExpenseAdminSuccess('Expense created successfully'));
+      await getExpenses();
     } catch (e) {
-      emit(CreateExpenseAdminError(e.toString()));
+      emit(CreateExpenseAdminError(e.toString().replaceAll('Exception: ', '')));
     }
   }
+
 
   void search(String query) {
     _searchQuery = query.trim().toLowerCase();

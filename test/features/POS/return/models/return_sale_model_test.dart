@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:systego/features/POS/return/models/return_sale_model.dart';
-import 'package:systego/features/POS/return/models/return_item_model.dart';
+import 'package:systego/features/pos/return/models/return_sale_model.dart';
+import 'package:systego/features/pos/return/models/return_item_model.dart';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 

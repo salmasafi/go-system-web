@@ -7,10 +7,11 @@ import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/features/admin/discount/model/discount_model.dart';
 import 'package:systego/generated/locale_keys.g.dart';
 
-part 'discount_state.dart';
+import 'package:systego/features/admin/discount/data/repositories/discount_repository.dart';\r\n\r\npart 'discount_state.dart';
 
 class DiscountsCubit extends Cubit<DiscountsState> {
-  DiscountsCubit() : super(DiscountsInitial());
+  final DiscountRepository _repository;
+  DiscountsCubit(this._repository) : super(DiscountsInitial());
 
   List<DiscountModel> allDiscounts = [];
 
@@ -18,25 +19,11 @@ class DiscountsCubit extends Cubit<DiscountsState> {
   Future<void> getDiscounts() async {
     emit(GetDiscountsLoading());
     try {
-      final response = await DioHelper.getData(url: EndPoint.getAllDiscounts);
-      log(response.data.toString());
-
-      if (response.statusCode == 200) {
-        final model = DiscountResponse.fromJson(response.data);
-
-        if (model.success == true) {
-          emit(GetDiscountsSuccess(model.data.discounts));
-        } else {
-          final errorMessage = ErrorHandler.handleError(response);
-          emit(GetDiscountsError(errorMessage));
-        }
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(GetDiscountsError(errorMessage));
-      }
+      final discounts = await _repository.getAllDiscounts();
+      allDiscounts = discounts;
+      emit(GetDiscountsSuccess(discounts));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(GetDiscountsError(errorMessage));
+      emit(GetDiscountsError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -50,29 +37,21 @@ class DiscountsCubit extends Cubit<DiscountsState> {
     emit(CreateDiscountLoading());
     var _amount = (type == 'fixed') ? amount : amount / 100;
     try {
-      final data = {
-        "name": name,
-        "amount": _amount,
-        "type": type,
-        "status": status,
-      };
-
-      final response = await DioHelper.postData(
-        url: EndPoint.addDiscount,
-        data: data,
+      final discount = DiscountModel(
+        id: '',
+        name: name,
+        amount: _amount,
+        type: type,
+        status: status,
+        createdAt: '',
+        updatedAt: '',
+        version: 0,
       );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(
-          CreateDiscountSuccess(LocaleKeys.discount_created_successfully.tr()),
-        );
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(CreateDiscountError(errorMessage));
-      }
+      await _repository.createDiscount(discount);
+      emit(CreateDiscountSuccess(LocaleKeys.discount_created_successfully.tr()));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(CreateDiscountError(errorMessage));
+      emit(CreateDiscountError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -87,53 +66,36 @@ class DiscountsCubit extends Cubit<DiscountsState> {
     emit(UpdateDiscountLoading());
     var _amount = (type == 'fixed') ? amount : amount / 100;
     try {
-      final data = {
-        "name": name,
-        "amount": _amount,
-        "type": type,
-        "status": status,
-      };
-
-      final response = await DioHelper.putData(
-        url: EndPoint.updateDiscount(discountId),
-        data: data,
+      final discount = DiscountModel(
+        id: discountId,
+        name: name,
+        amount: _amount,
+        type: type,
+        status: status,
+        createdAt: '',
+        updatedAt: '',
+        version: 0,
       );
 
-      if (response.statusCode == 200) {
-        emit(
-          UpdateDiscountSuccess(LocaleKeys.discount_updated_successfully.tr()),
-        );
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(UpdateDiscountError(errorMessage));
-      }
+      await _repository.updateDiscount(discount);
+      emit(UpdateDiscountSuccess(LocaleKeys.discount_updated_successfully.tr()));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(UpdateDiscountError(errorMessage));
+      emit(UpdateDiscountError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
   // ---------------------- Delete Discount ----------------------
   Future<void> deleteDiscount(String discountId) async {
     emit(DeleteDiscountLoading());
-
     try {
-      final response = await DioHelper.deleteData(
-        url: EndPoint.deleteDiscount(discountId),
-      );
-
-      if (response.statusCode == 200) {
-        allDiscounts.removeWhere((d) => d.id == discountId);
-        emit(
-          DeleteDiscountSuccess(LocaleKeys.discount_deleted_successfully.tr()),
-        );
+      final success = await _repository.deleteDiscount(discountId);
+      if (success) {
+        emit(DeleteDiscountSuccess(LocaleKeys.discount_deleted_successfully.tr()));
       } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(DeleteDiscountError(errorMessage));
+        emit(DeleteDiscountError('Failed to delete discount'));
       }
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(DeleteDiscountError(errorMessage));
+      emit(DeleteDiscountError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 }

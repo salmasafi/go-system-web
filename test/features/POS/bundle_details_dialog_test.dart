@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:systego/features/POS/home/model/pos_models.dart';
-import 'package:systego/features/POS/home/presentation/widgets/bundle_details_dialog.dart';
+import 'package:systego/features/pos/home/model/pos_models.dart';
+import 'package:systego/features/pos/home/presentation/widgets/bundle_details_dialog.dart';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 

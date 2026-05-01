@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/POS/customer/cubit/pos_customer_cubit.dart';
+import 'package:systego/features/pos/customer/cubit/pos_customer_cubit.dart';
 import 'customer_create_dialog.dart';
 import 'customer_picker_sheet.dart';
 

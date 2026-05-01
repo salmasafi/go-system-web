@@ -9,12 +9,12 @@ import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../../checkout/presentation/widgets/checkout_dialog.dart';
 import '../../cubit/history_cubit.dart';
 import '../../cubit/history_state.dart';
-import 'package:systego/features/POS/checkout/cubit/checkout_cubit/checkout_cubit.dart';
-import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
+import 'package:systego/features/pos/checkout/cubit/checkout_cubit/checkout_cubit.dart';
+import 'package:systego/features/pos/home/cubit/pos_home_cubit.dart';
 
 // Models
 import '../../model/pending_sale_details_model.dart';
-import 'package:systego/features/POS/home/model/pos_models.dart'; // For Product & PriceVariation models
+import 'package:systego/features/pos/home/model/pos_models.dart'; // For Product & PriceVariation models
 
 class PendingSaleDetailsScreen extends StatelessWidget {
   final String saleId;

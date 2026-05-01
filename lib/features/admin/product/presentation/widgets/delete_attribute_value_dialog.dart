@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../cubit/attribute_value_cubit/attribute_value_cubit.dart';
 import '../../cubit/attribute_value_cubit/attribute_value_state.dart';
 
@@ -31,10 +30,7 @@ class DeleteAttributeValueDialog extends StatelessWidget {
           const SizedBox(height: 12),
           const Text(
             'Warning: This will remove the value from all products that use it.',
-            style: TextStyle(
-              color: Colors.orange,
-              fontSize: 12,
-            ),
+            style: TextStyle(color: Colors.orange, fontSize: 12),
           ),
         ],
       ),
@@ -48,9 +44,7 @@ class DeleteAttributeValueDialog extends StatelessWidget {
             final isLoading = state is AttributeValueDeleting;
             return ElevatedButton(
               onPressed: isLoading ? null : onDelete,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-              ),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
               child: isLoading
                   ? const SizedBox(
                       width: 20,

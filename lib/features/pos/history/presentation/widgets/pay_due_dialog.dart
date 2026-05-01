@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/POS/history/cubit/history_cubit.dart';
-import 'package:systego/features/POS/history/model/sale_model.dart';
-import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
-import 'package:systego/features/POS/home/model/pos_models.dart';
+import 'package:systego/features/pos/history/cubit/history_cubit.dart';
+import 'package:systego/features/pos/history/model/sale_model.dart';
+import 'package:systego/features/pos/home/cubit/pos_home_cubit.dart';
+import 'package:systego/features/pos/home/model/pos_models.dart';
 
 // ─── Entry point ─────────────────────────────────────────────────────────────
 

@@ -16,6 +16,7 @@ import '../../../../core/widgets/custom_loading/custom_loading_state_with_shimme
 import '../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../model/supplier_model.dart';
 import '../../../../generated/locale_keys.g.dart';
+import '../data/repositories/supplier_repository.dart';
 
 class SupplierScreen extends StatefulWidget {
   const SupplierScreen({super.key});
@@ -39,7 +40,7 @@ class _SupplierScreenState extends State<SupplierScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => SupplierCubit()..getSuppliers(),
+      create: (context) => SupplierCubit(SupplierRepository())..getSuppliers(),
       child: Scaffold(
         appBar: appBarWithActions(
           context,

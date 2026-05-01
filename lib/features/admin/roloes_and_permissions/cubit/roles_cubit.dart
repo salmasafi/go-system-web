@@ -8,64 +8,33 @@ import 'package:systego/core/services/endpoints.dart';
 import 'package:systego/features/admin/roloes_and_permissions/model/role_model.dart';
 import 'package:systego/generated/locale_keys.g.dart';
 
+import 'package:systego/features/admin/roloes_and_permissions/data/repositories/role_repository.dart';
+
 part 'roles_state.dart';
 
 class RolesCubit extends Cubit<RolesState> {
-  RolesCubit() : super(RolesInitial());
+  final RoleRepository _repository;
+  RolesCubit(this._repository) : super(RolesInitial());
 
   // ================= GET ALL ROLES =================
   Future<void> getAllRoles() async {
     emit(RolesLoading());
     try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getAllRoles, // Make sure this endpoint exists
-      );
-
-      if (response.statusCode == 200) {
-        final data = response.data;
-        final jsonData = data is String ? json.decode(data) : data;
-
-         log('API Response: ${jsonEncode(jsonData)}');
-      log('Success field type: ${jsonData['success'].runtimeType}');
-      log('Success field value: ${jsonData['success']}');
-        
-        // Parse the response based on your RoleResponse model
-        final roleResponse = RoleResponse.fromJson(jsonData);
-        emit(RolesLoaded(roleResponse.data.roles));
-      } else {
-        emit(RolesError(LocaleKeys.roles_load_failed.tr()));
-      }
+      final roles = await _repository.getAllRoles();
+      emit(RolesLoaded(roles));
     } catch (e) {
-      log('Error getting roles: $e');
-      emit(RolesError(e.toString()));
+      emit(RolesError(e.toString().replaceAll('Exception: ', '')));
     }
   }
-
 
   // ================= GET USER'S ROLES/Permissions =================
   Future<void> getUserRoles(String userId) async {
     emit(RolesLoading());
     try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getUserPermissions(userId),
-      );
-
-      if (response.statusCode == 200) {
-        final data = response.data;
-        final jsonData = data is String ? json.decode(data) : data;
-        
-        // Assuming the endpoint returns a list of roles for the user
-        final roles = (jsonData['data'] as List)
-            .map((roleJson) => RoleModel.fromJson(roleJson))
-            .toList();
-        
-        emit(RolesLoaded(roles));
-      } else {
-        emit(RolesError(LocaleKeys.roles_load_failed.tr()));
-      }
+      final roles = await _repository.getUserRoles(userId);
+      emit(RolesLoaded(roles));
     } catch (e) {
-      log('Error getting user roles: $e');
-      emit(RolesError(e.toString()));
+      emit(RolesError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -78,33 +47,16 @@ class RolesCubit extends Cubit<RolesState> {
   }) async {
     emit(RolesUpdating());
     try {
-      final data = {
-        if (name != null) 'name': name,
-        if (status != null) 'status': status,
-        'permissions': permissions
-            .map((p) => {
-                  'module': p.module,
-                  'actions': p.actions.map((a) => a.toJson()).toList(),
-                })
-            .toList(),
-      };
-
-      log("edited data ${data}");
-
-      final response = await DioHelper.putData(
-        url: EndPoint.updateRole(roleId), // Changed from updatepermission
-        data: data,
+      await _repository.updateRole(
+        id: roleId,
+        name: name,
+        status: status,
+        permissions: permissions,
       );
-
-      if (response.statusCode == 200) {
-        emit(RolesUpdateSuccess(LocaleKeys.role_updated.tr()));
-        // Refresh the roles list after update
-        getAllRoles();
-      } else {
-        emit(RolesUpdateError(LocaleKeys.role_update_failed.tr()));
-      }
+      emit(RolesUpdateSuccess(LocaleKeys.role_updated.tr()));
+      getAllRoles();
     } catch (e) {
-      emit(RolesUpdateError(e.toString()));
+      emit(RolesUpdateError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -116,29 +68,15 @@ class RolesCubit extends Cubit<RolesState> {
   }) async {
     emit(RolesCreating());
     try {
-      final response = await DioHelper.postData(
-        url: EndPoint.createRolePermission,
-        data: {
-          'name': name,
-          'status': status,
-          'permissions': permissions
-              .map((p) => {
-                    'module': p.module,
-                    'actions': p.actions.map((a) => a.toJson()).toList(),
-                  })
-              .toList(),
-        },
+      await _repository.createRole(
+        name: name,
+        status: status,
+        permissions: permissions,
       );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(RolesCreateSuccess(LocaleKeys.role_created.tr()));
-        // Refresh the roles list after creation
-        getAllRoles();
-      } else {
-        emit(RolesCreateError(LocaleKeys.role_create_failed.tr()));
-      }
+      emit(RolesCreateSuccess(LocaleKeys.role_created.tr()));
+      getAllRoles();
     } catch (e) {
-      emit(RolesCreateError(e.toString()));
+      emit(RolesCreateError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -148,19 +86,12 @@ class RolesCubit extends Cubit<RolesState> {
   }) async {
     emit(RolesDeleting());
     try {
-      final response = await DioHelper.deleteData(
-        url: EndPoint.deleteRole(roleId),
-      );
-
-      if (response.statusCode == 200) {
-        emit(RolesDeleteSuccess(LocaleKeys.role_deleted.tr()));
-        // Refresh the roles list after deletion
-        getAllRoles();
-      } else {
-        emit(RolesDeleteError(LocaleKeys.role_delete_failed.tr()));
-      }
+      await _repository.deleteRole(roleId);
+      emit(RolesDeleteSuccess(LocaleKeys.role_deleted.tr()));
+      getAllRoles();
     } catch (e) {
-      emit(RolesDeleteError(e.toString()));
+      emit(RolesDeleteError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 }
+

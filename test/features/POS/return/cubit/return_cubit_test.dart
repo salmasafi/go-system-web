@@ -6,9 +6,9 @@ import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:systego/core/services/cache_helper.dart';
 import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/features/POS/return/cubit/return_cubit.dart';
-import 'package:systego/features/POS/return/models/return_item_model.dart';
-import 'package:systego/features/POS/return/models/return_sale_model.dart';
+import 'package:systego/features/pos/return/cubit/return_cubit.dart';
+import 'package:systego/features/pos/return/models/return_item_model.dart';
+import 'package:systego/features/pos/return/models/return_sale_model.dart';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 

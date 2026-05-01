@@ -3,8 +3,8 @@
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/features/POS/home/cubit/pos_home_state.dart';
-import 'package:systego/features/POS/home/model/pos_models.dart';
+import 'package:systego/features/pos/home/cubit/pos_home_state.dart';
+import 'package:systego/features/pos/home/model/pos_models.dart';
 import 'package:systego/features/admin/discount/model/discount_model.dart';
 import '../../../../core/services/dio_helper.dart';
 import '../../../../core/services/endpoints.dart';

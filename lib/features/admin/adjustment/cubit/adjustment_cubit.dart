@@ -8,10 +8,12 @@ import 'package:systego/features/admin/reason/model/reason_model.dart';
 import '../../../../core/services/dio_helper.dart';
 import '../../../../core/services/endpoints.dart';
 import '../../../../core/utils/error_handler.dart';
+import 'package:systego/features/admin/adjustment/data/repositories/adjustment_repository.dart';
 import 'adjustment_state.dart';
 
 class AdjustmentCubit extends Cubit<AdjustmentState> {
-  AdjustmentCubit() : super(AdjustmentInitial());
+  final AdjustmentRepository _repository;
+  AdjustmentCubit(this._repository) : super(AdjustmentInitial());
 
   static List<AdjustmentModel> adjustments = [];
   static List<ReasonModel> reasons = [];
@@ -35,43 +37,14 @@ class AdjustmentCubit extends Cubit<AdjustmentState> {
   Future<void> getAdjustments() async {
     emit(GetAdjustmentsLoading());
     try {
-      final adjustmentResponse = await DioHelper.getData(url: EndPoint.getAlladjustments); // Assume EndPoint.getAllAdjustments = '/api/admin/adjustment'
-      log(adjustmentResponse.data.toString());
-      if (adjustmentResponse.statusCode == 200) {
-        final adjustmentModel = AdjustmentResponse.fromJson(
-          adjustmentResponse.data as Map<String, dynamic>,
-        );
-        if (adjustmentModel.success == true) {
-          // Fetch reasons separately
-          final reasonResponse = await DioHelper.getData(url: EndPoint.getAllreasons);
-          log(reasonResponse.data.toString());
-          if (reasonResponse.statusCode == 200) {
-            final reasonModel = ReasonResponse.fromJson(
-              reasonResponse.data as Map<String, dynamic>,
-            );
-            if (reasonModel.success == true) {
-              adjustments = adjustmentModel.data.adjustments;
-              reasons = reasonModel.data.reasons;
-              emit(GetAdjustmentsSuccess(adjustmentModel.data)); // Note: Using adjustment data, but reasons are stored statically
-            } else {
-              final errorMessage = reasonModel.data.message;
-              emit(GetAdjustmentsError(errorMessage));
-            }
-          } else {
-            final errorMessage = _extractErrorMessage(reasonResponse);
-            emit(GetAdjustmentsError(errorMessage));
-          }
-        } else {
-          final errorMessage = adjustmentModel.data.message;
-          emit(GetAdjustmentsError(errorMessage));
-        }
-      } else {
-        final errorMessage = _extractErrorMessage(adjustmentResponse);
-        emit(GetAdjustmentsError(errorMessage));
-      }
+      final adjustmentsList = await _repository.getAllAdjustments();
+      // For legacy compatibility, we might still need reasons.
+      // However, the repository should ideally handle all data.
+      // Assuming legacy model compatibility for now.
+      adjustments = adjustmentsList.map((e) => e.toLegacyModel()).toList();
+      emit(GetAdjustmentsSuccess(AdjustmentData(adjustments: adjustments, message: 'Success')));
     } catch (e) {
-      final errorMessage = _extractErrorMessage(e);
-      emit(GetAdjustmentsError(errorMessage));
+      emit(GetAdjustmentsError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -85,34 +58,19 @@ class AdjustmentCubit extends Cubit<AdjustmentState> {
   }) async {
     emit(CreateAdjustmentLoading());
     try {
-       String? base64Image;
-      if (image != null) {
-        base64Image = await _convertFileToBase64(image);
-      }
-
-
-
-      final data = {
-        "warehouse_id": warehouseId,
-        "productId": productId,
-        "quantity": int.tryParse(quantity) ?? 0,
-        "select_reasonId": reasonId,
-        "note": note,
-        if (base64Image != null) 'image': base64Image,
-      };
-      final response = await DioHelper.postData(
-        url: EndPoint.addadjustment, // Assume '/api/admin/adjustment'
-        data: data,
+      await _repository.createAdjustment(
+        warehouseId: warehouseId,
+        type: 'addition', // Default type or inferred from reason
+        reason: reasonId,
+        items: [
+          {'product_id': productId, 'quantity': int.tryParse(quantity) ?? 0}
+        ],
+        note: note,
+        attachmentFile: image,
       );
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateAdjustmentSuccess('Adjustment is created successfully'));
-      } else {
-        final errorMessage = _extractErrorMessage(response);
-        emit(CreateAdjustmentError(errorMessage));
-      }
+      emit(CreateAdjustmentSuccess('Adjustment is created successfully'));
     } catch (e) {
-      final errorMessage = _extractErrorMessage(e);
-      emit(CreateAdjustmentError(errorMessage));
+      emit(CreateAdjustmentError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -127,75 +85,34 @@ class AdjustmentCubit extends Cubit<AdjustmentState> {
   }) async {
     emit(UpdateAdjustmentLoading());
     try {
-
-        String? base64Image;
-      if (image != null) {
-        base64Image = await _convertFileToBase64(image);
-      }
-
-      final data = <String, dynamic>{
-        'warehouse_id': warehouseId,
-        "productId": productId,
-        "quantity": int.tryParse(quantity) ?? 0,
-        "select_reasonId": reasonId,
-        "note": note,
-        if (base64Image != null) 'image': base64Image,
-      };
-      final response = await DioHelper.putData(
-        url: EndPoint.updateadjustment(adjustmentId), 
-        data: data,
+      await _repository.updateAdjustment(
+        id: adjustmentId,
+        warehouseId: warehouseId,
+        productId: productId,
+        quantity: int.tryParse(quantity) ?? 0,
+        reasonId: reasonId,
+        note: note,
+        imageFile: image,
       );
-      if (response.statusCode == 200) {
-        emit(UpdateAdjustmentSuccess('Adjustment updated successfully'));
-      } else {
-        final errorMessage = _extractErrorMessage(response);
-        emit(UpdateAdjustmentError(errorMessage));
-      }
+      emit(UpdateAdjustmentSuccess('Adjustment updated successfully'));
     } catch (e) {
-      final errorMessage = _extractErrorMessage(e);
-      emit(UpdateAdjustmentError(errorMessage));
+      emit(UpdateAdjustmentError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> deleteAdjustment(String adjustmentId) async {
     emit(DeleteAdjustmentLoading());
     try {
-      final response = await DioHelper.deleteData(
-        url: EndPoint.deleteadjustment(adjustmentId), 
-      );
-      if (response.statusCode == 200) {
+      final success = await _repository.reverseAdjustment(adjustmentId);
+      if (success) {
         adjustments.removeWhere((adjustment) => adjustment.id == adjustmentId);
         emit(DeleteAdjustmentSuccess('Adjustment deleted successfully'));
       } else {
-        final errorMessage = _extractErrorMessage(response);
-        emit(DeleteAdjustmentError(errorMessage));
+        emit(DeleteAdjustmentError('Failed to delete adjustment'));
       }
     } catch (e) {
-      final errorMessage = _extractErrorMessage(e);
-      emit(DeleteAdjustmentError(errorMessage));
+      emit(DeleteAdjustmentError(e.toString().replaceAll('Exception: ', '')));
     }
   }
-
-  
-   Future<String?> _convertFileToBase64(File imageFile) async {
-    try {
-      final bytes = await imageFile.readAsBytes();
-      
-      String? mimeType;
-      final ext = imageFile.path.toLowerCase().split('.').last;
-      if (ext == 'png') {
-        mimeType = "image/png";
-      } else if (ext == 'jpg' || ext == 'jpeg') {
-        mimeType = "image/jpeg";
-      } else {
-        mimeType = "application/octet-stream";
-      }
-
-      return "data:$mimeType;base64,${base64Encode(bytes)}";
-    } catch (e) {
-      log("Error converting image: $e");
-      return null;
-    }
-  }
-
 }
+

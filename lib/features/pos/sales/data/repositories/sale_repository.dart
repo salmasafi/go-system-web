@@ -1,13 +1,10 @@
 import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../core/migration/migration_service.dart';
-import '../../../../core/services/dio_helper.dart';
-import '../../../../core/services/endpoints.dart';
-import '../../../../core/supabase/supabase_client.dart';
-import '../../../../core/supabase/supabase_error_handler.dart';
-import '../../../../core/utils/error_handler.dart';
-import '../../history/model/sale_model.dart';
-import '../../history/model/pending_sale_details_model.dart';
+import '../../../../../core/migration/migration_service.dart';
+import '../../../../../core/supabase/supabase_client.dart';
+import '../../../../../core/supabase/supabase_error_handler.dart';
+import '../../../history/model/sale_model.dart';
+import '../../../history/model/pending_sale_details_model.dart';
 
 /// Interface for sale data operations
 abstract class SaleRepositoryInterface {
@@ -38,17 +35,7 @@ class SaleRepository implements SaleRepositoryInterface {
   late final SaleRepositoryInterface _dataSource;
 
   SaleRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('sales')) {
-      log('SaleRepository: Using Supabase');
-      _dataSource = _SaleSupabaseDataSource();
-    } else {
-      log('SaleRepository: Using Dio (legacy)');
-      _dataSource = _SaleDioDataSource();
-    }
+    _dataSource = _SaleSupabaseDataSource();
   }
 
   @override
@@ -106,15 +93,7 @@ class SaleRepository implements SaleRepositoryInterface {
   Future<List<SaleItemModel>> searchSalesByReference(String query) =>
       _dataSource.searchSalesByReference(query);
 
-  void enableSupabase() {
-    MigrationService.enableSupabase('sales');
-    _initializeDataSource();
-  }
 
-  void enableDio() {
-    MigrationService.enableDio('sales');
-    _initializeDataSource();
-  }
 }
 
 /// Supabase implementation for Sale data source
@@ -430,8 +409,10 @@ class _SaleSupabaseDataSource implements SaleRepositoryInterface {
     final warehouse = json['warehouse'] as Map<String, dynamic>?;
     final products = (json['items'] as List? ?? [])
         .map((item) => PendingSaleProductItem(
+              id: item['id'] ?? '',
               productId: item['product']?['id'] ?? item['product_id'] ?? '',
               productName: item['product']?['name'] ?? 'Unknown',
+              productImage: item['product']?['image_url'] ?? '',
               quantity: (item['quantity'] as num?)?.toInt() ?? 0,
               price: (item['price'] as num?)?.toDouble() ?? 0.0,
               subtotal: (item['subtotal'] as num?)?.toDouble() ?? 0.0,
@@ -457,7 +438,7 @@ class _SaleSupabaseDataSource implements SaleRepositoryInterface {
         id: warehouse?['id'] ?? '',
         name: warehouse?['name'] ?? '',
       ),
-      cashier: CashierInfo(id: '', name: ''),
+      cashier: CashierInfo(id: '', email: ''),
       products: products,
       payloadForCreateSale: {},
     );
@@ -479,184 +460,4 @@ class _SaleSupabaseDataSource implements SaleRepositoryInterface {
   }
 }
 
-/// Dio implementation for Sale data source (legacy)
-class _SaleDioDataSource implements SaleRepositoryInterface {
-  @override
-  Future<List<SaleItemModel>> getAllSales({int? page, int? limit}) async {
-    try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getSales,
-        query: {'page': page, 'limit': limit},
-      );
 
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final salesList = response.data['data']?['sales'] as List? ?? [];
-        return salesList.map((e) => SaleItemModel.fromJson(e)).toList();
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<SaleDetailModel?> getSaleById(String id) async {
-    try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getSaleById(id),
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        return SaleDetailModel.fromJson(response.data['data']);
-      }
-      return null;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<List<PendingSaleModel>> getPendingSales() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getPendingSales);
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final pendingList = response.data['data']?['pending'] as List? ?? [];
-        return pendingList.map((e) => PendingSaleModel.fromJson(e)).toList();
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<PendingSaleDetailsModel?> getPendingSaleDetails(String id) async {
-    try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getPendingSaleDetails(id),
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        return PendingSaleDetailsModel.fromJson(response.data['data']);
-      }
-      return null;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<List<DueSaleModel>> getDueSales() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getDueSales);
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final dueList = response.data['data']?['dues'] as List? ?? [];
-        return dueList.map((e) => DueSaleModel.fromJson(e)).toList();
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<SaleDetailModel> createSale({
-    required String customerId,
-    required String warehouseId,
-    required List<Map<String, dynamic>> items,
-    required double grandTotal,
-    double? taxAmount,
-    double? discount,
-    String? note,
-    String? couponCode,
-    List<Map<String, dynamic>>? payments,
-  }) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.createSale,
-        data: {
-          'customer_id': customerId,
-          'warehouse_id': warehouseId,
-          'items': items,
-          'grand_total': grandTotal,
-          'tax_amount': taxAmount ?? 0.0,
-          'discount': discount ?? 0.0,
-          'note': note ?? '',
-          'coupon_code': couponCode,
-          'payments': payments ?? [],
-        },
-      );
-
-      if ((response.statusCode == 200 || response.statusCode == 201) &&
-          response.data['success'] == true) {
-        final saleId = response.data['data']?['sale']?['_id'];
-        if (saleId != null) {
-          return await getSaleById(saleId) as SaleDetailModel;
-        }
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<bool> completePendingSale(String saleId) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.completePendingSale(saleId),
-      );
-      return response.statusCode == 200 && response.data['success'] == true;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<bool> cancelSale(String saleId) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.cancelSale(saleId),
-      );
-      return response.statusCode == 200 && response.data['success'] == true;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<bool> applyCoupon(String saleId, String couponCode) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.applyCoupon,
-        data: {
-          'sale_id': saleId,
-          'coupon_code': couponCode,
-        },
-      );
-      return response.statusCode == 200 && response.data['success'] == true;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<List<SaleItemModel>> searchSalesByReference(String query) async {
-    try {
-      final response = await DioHelper.getData(
-        url: EndPoint.searchSales,
-        query: {'reference': query},
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final salesList = response.data['data']?['sales'] as List? ?? [];
-        return salesList.map((e) => SaleItemModel.fromJson(e)).toList();
-      }
-      return [];
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-}

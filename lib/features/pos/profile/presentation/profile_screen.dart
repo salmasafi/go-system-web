@@ -504,7 +504,7 @@ class _StatusDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       onChanged: onChanged,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 14), vertical: ResponsiveUI.padding(context, 13)),

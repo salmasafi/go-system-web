@@ -396,13 +396,7 @@ class TransfersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => TransfersCubit()),
-        BlocProvider(create: (context) => WareHouseCubit()..getWarehouses()),
-      ],
-      child: const TransfersView(),
-    );
+    return const TransfersView();
   }
 }
 

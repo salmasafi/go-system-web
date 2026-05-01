@@ -253,140 +253,140 @@ This implementation plan breaks down the Product Attributes feature into discret
     - Update via cubit
     - _Requirements: 1.3_
 
-- [ ] 13. Build ProductAttributeAssignmentWidget for product edit screen
-  - [ ] 13.1 Create widget layout
+- [x] 13. Build ProductAttributeAssignmentWidget for product edit screen
+  - [x] 13.1 Create widget layout
     - Check product.differentPrice field
     - Display warning banner if price variations enabled
     - Show multi-select for attribute types
     - _Requirements: 2.1, 2.7_
   
-  - [ ] 13.2 Implement attribute type selection
+  - [x] 13.2 Implement attribute type selection
     - Multi-select dropdown for attribute types
     - Load available types from AttributeTypeCubit
     - _Requirements: 2.1, 2.2_
   
-  - [ ] 13.3 Implement attribute value selection
+  - [x] 13.3 Implement attribute value selection
     - For each selected type, show multi-select for values
     - Load values from AttributeValueCubit
     - _Requirements: 2.3, 2.4_
   
-  - [ ] 13.4 Implement save functionality
+  - [x] 13.4 Implement save functionality
     - Validate selections
     - Call ProductAttributeCubit.assignAttributeToProduct
     - Display success/error messages
     - _Requirements: 2.5, 6.3_
   
-  - [ ] 13.5 Add remove attribute functionality
+  - [x] 13.5 Add remove attribute functionality
     - Button to remove attribute assignment
     - Confirmation dialog
     - _Requirements: 6.3_
 
-- [ ] 14. Build AttributeSelectionDialog for POS
-  - [ ] 14.1 Create dialog layout
+- [x] 14. Build AttributeSelectionDialog for POS
+  - [x] 14.1 Create dialog layout
     - Display product name and image
     - Show all attribute types for product
     - Add dropdown/button group for each attribute
     - _Requirements: 3.1, 3.2_
   
-  - [ ] 14.2 Implement attribute value selection UI
+  - [x] 14.2 Implement attribute value selection UI
     - Dropdown or button group for each attribute type
     - Display localized names
     - Track selections in local state
     - _Requirements: 3.2, 3.3_
   
-  - [ ] 14.3 Implement validation logic
+  - [x] 14.3 Implement validation logic
     - Disable "Add to Cart" until all attributes selected
     - Highlight missing selections
     - Display validation error messages
     - _Requirements: 3.3, 9.1, 9.2_
   
-  - [ ] 14.4 Implement Add to Cart functionality
+  - [x] 14.4 Implement Add to Cart functionality
     - Create SelectedAttribute objects
     - Return selections to caller
     - Close dialog
     - _Requirements: 3.4, 4.1_
 
-- [ ] 15. Build BundleAttributeSelectionDialog for POS
-  - [ ] 15.1 Create dialog layout for bundle products
+- [x] 15. Build BundleAttributeSelectionDialog for POS
+  - [x] 15.1 Create dialog layout for bundle products
     - Display bundle name
     - Show each product in bundle
     - For products with attributes, show selection UI
     - _Requirements: 5.1, 5.2_
   
-  - [ ] 15.2 Implement attribute selection for each product
+  - [x] 15.2 Implement attribute selection for each product
     - Reuse attribute selection logic from AttributeSelectionDialog
     - Track selections per product
     - _Requirements: 5.2_
   
-  - [ ] 15.3 Implement validation for bundle
+  - [x] 15.3 Implement validation for bundle
     - Validate all required attributes across all products
     - Disable "Add Bundle to Cart" until complete
     - _Requirements: 5.2, 9.1_
   
-  - [ ] 15.4 Implement Add Bundle to Cart functionality
+  - [x] 15.4 Implement Add Bundle to Cart functionality
     - Create map of productId → List<SelectedAttribute>
     - Return to caller
     - _Requirements: 5.4_
 
-- [ ] 16. Build CartItemAttributeDisplay widget
-  - [ ] 16.1 Create compact display widget
+- [x] 16. Build CartItemAttributeDisplay widget
+  - [x] 16.1 Create compact display widget
     - Show selected attributes below product name
     - Format: "Color: Red, Size: Large" (localized)
     - Handle both regular products and bundle products
     - _Requirements: 4.2, 5.5_
   
-  - [ ] 16.2 Implement localization
+  - [x] 16.2 Implement localization
     - Use current locale to display names
     - Switch between name and arName
     - _Requirements: 4.2_
 
-- [ ] 17. Update POS product selection flow
-  - [ ] 17.1 Modify product selection handler
+- [x] 17. Update POS product selection flow
+  - [x] 17.1 Modify product selection handler
     - Check product.hasAttributes
     - If true, show AttributeSelectionDialog
     - If false, add directly to cart
     - _Requirements: 3.1, 3.2, 8.1_
   
-  - [ ] 17.2 Update bundle selection handler
+  - [x] 17.2 Update bundle selection handler
     - Check if any products in bundle have attributes
     - If yes, show BundleAttributeSelectionDialog
     - If no, add bundle directly to cart
     - _Requirements: 5.1, 5.2_
   
-  - [ ] 17.3 Update cart addition logic
+  - [x] 17.3 Update cart addition logic
     - Create CartItem with selectedAttributes
     - For bundles, include bundleProductAttributes map
     - _Requirements: 4.1, 5.4_
 
-- [ ] 18. Update cart management logic
-  - [ ] 18.1 Modify cart item comparison logic
+- [x] 18. Update cart management logic
+  - [x] 18.1 Modify cart item comparison logic
     - Use CartItem.isSameAs() to compare items
     - Compare product ID and selected attributes
     - _Requirements: 4.3, 4.4_
   
-  - [ ] 18.2 Update quantity increment logic
+  - [x] 18.2 Update quantity increment logic
     - If identical item exists (same attributes), increment quantity
     - If different attributes, add as separate item
     - _Requirements: 4.4_
   
-  - [ ] 18.3 Update cart display
+  - [x] 18.3 Update cart display
     - Integrate CartItemAttributeDisplay widget
     - Show selected attributes for each item
     - _Requirements: 4.2_
 
-- [ ] 19. Update checkout flow to save attribute selections
-  - [ ] 19.1 Modify sale creation logic
+- [x] 19. Update checkout flow to save attribute selections
+  - [x] 19.1 Modify sale creation logic
     - Include selectedAttributes in sale item data
     - For bundles, include bundleProductAttributes
     - _Requirements: 4.5, 5.4_
   
-  - [ ] 19.2 Implement sale item attribute persistence
+  - [x] 19.2 Implement sale item attribute persistence
     - After creating sale items, insert sale_item_attributes records
     - Batch insert for efficiency
     - Denormalize attribute names (name/ar_name for both type and value) for historical accuracy
     - _Requirements: 4.5, 6.7, 10.1_
   
-  - [ ] 19.3 Add error handling for attribute persistence
+  - [x] 19.3 Add error handling for attribute persistence
     - Handle database errors
     - Rollback sale if attribute save fails
     - _Requirements: 6.7_

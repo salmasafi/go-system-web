@@ -2,16 +2,16 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../core/migration/migration_service.dart';
-import '../../../../core/services/dio_helper.dart';
-import '../../../../core/services/endpoints.dart';
-import '../../../../core/supabase/supabase_client.dart';
-import '../../../../core/supabase/storage_service.dart';
-import '../../../../core/supabase/supabase_error_handler.dart';
-import '../../../../core/utils/error_handler.dart';
+import '../../../../../core/migration/migration_service.dart';
+import '../../../../../core/services/dio_helper.dart';
+import '../../../../../core/services/endpoints.dart';
+import '../../../../../core/supabase/supabase_client.dart';
+import '../../../../../core/supabase/storage_service.dart';
+import '../../../../../core/supabase/supabase_error_handler.dart';
+import '../../../../../core/utils/error_handler.dart';
 import '../../models/return_sale_model.dart';
 import '../../models/return_item_model.dart';
-import '../../../admin/purchase_returns/model/purchase_return_model.dart';
+import '../../../../admin/purchase_returns/model/purchase_return_model.dart';
 
 /// Interface for return data operations
 abstract class ReturnRepositoryInterface {
@@ -346,15 +346,21 @@ class _ReturnSupabaseDataSource implements ReturnRepositoryInterface {
     final customer = json['customer'] as Map<String, dynamic>?;
     final warehouse = json['warehouse'] as Map<String, dynamic>?;
     final items = (json['items'] as List? ?? [])
-        .map((item) => ReturnItemModel(
-              productId: item['product']?['id'] ?? item['product_id'] ?? '',
-              productName: item['product']?['name'] ?? 'Unknown',
-              originalQuantity: (item['quantity'] as num?)?.toInt() ?? 0,
-              availableToReturn: (item['quantity'] as num?)?.toInt() ?? 0,
-              returnQuantity: 0,
-              price: (item['price'] as num?)?.toDouble() ?? 0.0,
-              reason: '',
-            ))
+        .map((item) {
+          final product = item['product'] as Map<String, dynamic>?;
+          return ReturnItemModel(
+            id: item['id'] ?? '',
+            saleId: json['id'] ?? '',
+            productName: product?['name'] ?? 'Unknown',
+            productCode: product?['code'] ?? '',
+            productPriceId: item['id'] ?? '',
+            quantity: (item['quantity'] as num?)?.toInt() ?? 0,
+            alreadyReturned: 0,
+            availableToReturn: (item['quantity'] as num?)?.toInt() ?? 0,
+            returnQuantity: 0,
+            reason: '',
+          );
+        })
         .toList();
 
     return ReturnSaleModel(
@@ -405,19 +411,7 @@ class _ReturnSupabaseDataSource implements ReturnRepositoryInterface {
 class _ReturnDioDataSource implements ReturnRepositoryInterface {
   @override
   Future<ReturnSaleModel?> searchSaleForReturn(String reference) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.saleForReturn,
-        data: {'reference': reference},
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return ReturnSaleModel.fromJson(response.data as Map<String, dynamic>);
-      }
-      return null;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
+    throw UnimplementedError('Not supported in legacy API');
   }
 
   @override
@@ -429,83 +423,22 @@ class _ReturnDioDataSource implements ReturnRepositoryInterface {
     String? note,
     File? attachmentFile,
   }) async {
-    try {
-      final data = <String, dynamic>{
-        'sale_id': saleId,
-        'items': items,
-        'total_amount': totalAmount,
-        'refund_method': refundMethod ?? 'cash',
-        'note': note ?? '',
-      };
-
-      if (attachmentFile != null) {
-        final bytes = await attachmentFile.readAsBytes();
-        data['attachment'] = 'data:image/jpeg;base64,${base64Encode(bytes)}';
-      }
-
-      final response = await DioHelper.postData(
-        url: EndPoint.createSaleReturn,
-        data: data,
-      );
-
-      if ((response.statusCode == 200 || response.statusCode == 201) &&
-          response.data['success'] == true) {
-        return await searchSaleForReturn(response['data']?['reference']) as ReturnSaleModel;
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
+    throw UnimplementedError('Not supported in legacy API');
   }
 
   @override
   Future<bool> validateReturnQuantities(String saleId, List<Map<String, dynamic>> items) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.validateReturn,
-        data: {
-          'sale_id': saleId,
-          'items': items,
-        },
-      );
-
-      return response.statusCode == 200 && response.data['valid'] == true;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
+    throw UnimplementedError('Not supported in legacy API');
   }
 
   @override
   Future<List<PurchaseReturnModel>> getAllPurchaseReturns() async {
-    try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getPurchaseReturns,
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final returnsList = response.data['data']?['returns'] as List? ?? [];
-        return returnsList.map((e) => PurchaseReturnModel.fromJson(e)).toList();
-      }
-      return [];
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
+    throw UnimplementedError('Not supported in legacy API');
   }
 
   @override
   Future<PurchaseReturnModel?> getPurchaseReturnById(String id) async {
-    try {
-      final response = await DioHelper.getData(
-        url: '${EndPoint.getPurchaseReturns}/$id',
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        return PurchaseReturnModel.fromJson(response.data['data']);
-      }
-      return null;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
+    throw UnimplementedError('Not supported in legacy API');
   }
 
   @override
@@ -517,62 +450,16 @@ class _ReturnDioDataSource implements ReturnRepositoryInterface {
     String? note,
     File? attachmentFile,
   }) async {
-    try {
-      final data = <String, dynamic>{
-        'purchase_id': purchaseId,
-        'items': items,
-        'total_amount': totalAmount,
-        'refund_method': refundMethod ?? 'cash',
-        'note': note ?? '',
-      };
-
-      if (attachmentFile != null) {
-        final bytes = await attachmentFile.readAsBytes();
-        data['attachment'] = 'data:image/jpeg;base64,${base64Encode(bytes)}';
-      }
-
-      final response = await DioHelper.postData(
-        url: EndPoint.createPurchaseReturn,
-        data: data,
-      );
-
-      if ((response.statusCode == 200 || response.statusCode == 201) &&
-          response.data['success'] == true) {
-        return await getPurchaseReturnById(response['data']?['return_id']) as PurchaseReturnModel;
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
+    throw UnimplementedError('Not supported in legacy API');
   }
 
   @override
   Future<bool> restoreProductQuantities(String returnId) async {
-    try {
-      final response = await DioHelper.postData(
-        url: '${EndPoint.restoreReturnQuantities}/$returnId',
-      );
-
-      return response.statusCode == 200 && response.data['success'] == true;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
+    throw UnimplementedError('Not supported in legacy API');
   }
 
   @override
   Future<bool> updateCustomerBalance(String customerId, double amount) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.updateCustomerBalance,
-        data: {
-          'customer_id': customerId,
-          'amount': amount,
-        },
-      );
-
-      return response.statusCode == 200 && response.data['success'] == true;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
+    throw UnimplementedError('Not supported in legacy API');
   }
 }

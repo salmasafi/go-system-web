@@ -1,42 +1,26 @@
-import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:meta/meta.dart';
-import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/core/services/endpoints.dart';
-import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/features/admin/coupon/model/coupon_model.dart';
 import 'package:systego/generated/locale_keys.g.dart';
+import 'package:systego/features/admin/coupon/data/repositories/coupon_repository.dart';
 
 part 'coupon_state.dart';
 
 class CouponsCubit extends Cubit<CouponsState> {
-  CouponsCubit() : super(CouponsInitial());
+  final CouponRepository _repository;
+  CouponsCubit(this._repository) : super(CouponsInitial());
 
   List<CouponModel> allCoupons = [];
 
   Future<void> getCoupons() async {
     emit(GetCouponsLoading());
     try {
-      final response = await DioHelper.getData(url: EndPoint.getAllCoupons);
-      log(response.data.toString());
-
-      if (response.statusCode == 200) {
-        final model = CouponResponse.fromJson(response.data);
-
-        if (model.success == true) {
-          emit(GetCouponsSuccess(model.data.coupons));
-        } else {
-          final errorMessage = ErrorHandler.handleError(response);
-          emit(GetCouponsError(errorMessage));
-        }
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(GetCouponsError(errorMessage));
-      }
+      final coupons = await _repository.getAllCoupons();
+      allCoupons = coupons;
+      emit(GetCouponsSuccess(coupons));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(GetCouponsError(errorMessage));
+      emit(GetCouponsError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -52,31 +36,25 @@ class CouponsCubit extends Cubit<CouponsState> {
     emit(CreateCouponLoading());
 
     try {
-      final data = {
-        "code": couponCode,
-        "name": couponCode,
-        "discount_type": type,
-        "discount_value": amount,
-        "min_purchase": minimumAmount,
-        "usage_limit": quantity,
-        "usage_count": 0,
-        "start_date": DateTime.now().toIso8601String(),
-        "end_date": expiredDate,
-        "status": true,
-      };
+      final coupon = CouponModel(
+        id: '',
+        couponCode: couponCode,
+        type: type,
+        amount: amount,
+        minimumAmount: minimumAmount,
+        quantity: quantity,
+        available: available,
+        expiredDate: expiredDate,
+        status: true,
+        createdAt: '',
+        updatedAt: '',
+        version: 0,
+      );
 
-      final response =
-          await DioHelper.postData(url: EndPoint.addCoupon, data: data);
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateCouponSuccess(LocaleKeys.coupon_created_success.tr()));
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(CreateCouponError(errorMessage));
-      }
+      await _repository.createCoupon(coupon);
+      emit(CreateCouponSuccess(LocaleKeys.coupon_created_success.tr()));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(CreateCouponError(errorMessage));
+      emit(CreateCouponError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -88,84 +66,63 @@ class CouponsCubit extends Cubit<CouponsState> {
     required double minimumAmount,
     required int quantity,
     required String expiredDate,
-     required int available,
+    required int available,
   }) async {
     emit(UpdateCouponLoading());
 
     try {
-      final data = {
-        "code": couponCode,
-        "name": couponCode,
-        "discount_type": type,
-        "discount_value": amount,
-        "min_purchase": minimumAmount,
-        "usage_limit": quantity,
-        "end_date": expiredDate,
-      };
-
-      final response = await DioHelper.putData(
-        url: EndPoint.updateCoupon(couponId),
-        data: data,
+      final coupon = CouponModel(
+        id: couponId,
+        couponCode: couponCode,
+        type: type,
+        amount: amount,
+        minimumAmount: minimumAmount,
+        quantity: quantity,
+        available: available,
+        expiredDate: expiredDate,
+        status: true,
+        createdAt: '',
+        updatedAt: '',
+        version: 0,
       );
 
-      if (response.statusCode == 200) {
-        emit(UpdateCouponSuccess(LocaleKeys.coupon_updated_success.tr()));
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(UpdateCouponError(errorMessage));
-      }
+      await _repository.updateCoupon(coupon);
+      emit(UpdateCouponSuccess(LocaleKeys.coupon_updated_success.tr()));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(UpdateCouponError(errorMessage));
+      emit(UpdateCouponError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
-  // ---------------------- Delete Coupon ----------------------
   Future<void> deleteCoupon(String couponId) async {
     emit(DeleteCouponLoading());
-
     try {
-      final response =
-          await DioHelper.deleteData(url: EndPoint.deleteCoupon(couponId));
-
-      if (response.statusCode == 200) {
+      final success = await _repository.deleteCoupon(couponId);
+      if (success) {
         allCoupons.removeWhere((c) => c.id == couponId);
         emit(DeleteCouponSuccess(LocaleKeys.coupon_deleted_success.tr()));
       } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(DeleteCouponError(errorMessage));
+        emit(DeleteCouponError('Failed to delete coupon'));
       }
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(DeleteCouponError(errorMessage));
+      emit(DeleteCouponError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
-  // ---------------------- Toggle Coupon Status ----------------------
   Future<void> toggleCouponStatus(String couponId, bool newStatus) async {
     emit(ChangeCouponStatusLoading());
-
     try {
-      final data = {"status": newStatus};
-
-      final response = await DioHelper.putData(
-        url: EndPoint.updateCoupon(couponId),
-        data: data,
-      );
-
-      if (response.statusCode == 200) {
-        emit(ChangeCouponStatusSuccess(
-          newStatus 
-            ? LocaleKeys.coupon_activated_success.tr() 
-            : LocaleKeys.coupon_deactivated_success.tr()
-        ));
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(ChangeCouponStatusError(errorMessage));
-      }
+      final coupon = allCoupons.firstWhere((c) => c.id == couponId);
+      final updatedCoupon = coupon.copyWith(status: newStatus);
+      
+      await _repository.updateCoupon(updatedCoupon);
+      
+      emit(ChangeCouponStatusSuccess(
+        newStatus 
+          ? LocaleKeys.coupon_activated_success.tr() 
+          : LocaleKeys.coupon_deactivated_success.tr()
+      ));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(ChangeCouponStatusError(errorMessage));
+      emit(ChangeCouponStatusError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 }

@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
-import '../../../../core/constants/app_colors.dart';
+import '../../../../../core/constants/app_colors.dart';
 import '../../models/attribute_type_model.dart';
 
 class AttributeTypeCard extends StatelessWidget {
@@ -21,9 +21,7 @@ class AttributeTypeCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
@@ -51,7 +49,7 @@ class AttributeTypeCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 16),
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: AppColors.black,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -59,7 +57,7 @@ class AttributeTypeCard extends StatelessWidget {
                     attributeType.arName,
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 14),
-                      color: AppColors.textSecondary,
+                      color: AppColors.black,
                     ),
                   ),
                 ],

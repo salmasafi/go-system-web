@@ -4,10 +4,13 @@ import 'package:systego/core/services/dio_helper.dart';
 import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/features/admin/print_labels/model/label_model.dart';
 
+import 'package:systego/features/admin/print_labels/data/repositories/label_repository.dart';
+
 part 'label_state.dart';
 
 class LabelCubit extends Cubit<LabelState> {
-  LabelCubit() : super(LabelInitial());
+  final LabelRepository _repository;
+  LabelCubit(this._repository) : super(LabelInitial());
 
   // Data Holders (Public for UI access)
   List<LabelProductItem> selectedProducts = [];
@@ -25,7 +28,9 @@ class LabelCubit extends Cubit<LabelState> {
     if (newQuantity < 1) return;
 
     // Find the item and update its quantity directly
-    final index = selectedProducts.indexWhere((item) => item.productId == productId);
+    final index = selectedProducts.indexWhere(
+      (item) => item.productId == productId,
+    );
     if (index != -1) {
       selectedProducts[index].quantity = newQuantity;
       emit(LabelDataUpdated()); // Rebuild UI to show new number
@@ -42,8 +47,10 @@ class LabelCubit extends Cubit<LabelState> {
   }) {
     if (showProductName != null) labelConfig.showProductName = showProductName;
     if (showPrice != null) labelConfig.showPrice = showPrice;
-    if (showPromotionalPrice != null) labelConfig.showPromotionalPrice = showPromotionalPrice;
-    if (showBusinessName != null) labelConfig.showBusinessName = showBusinessName;
+    if (showPromotionalPrice != null)
+      labelConfig.showPromotionalPrice = showPromotionalPrice;
+    if (showBusinessName != null)
+      labelConfig.showBusinessName = showBusinessName;
     if (showBrand != null) labelConfig.showBrand = showBrand;
 
     emit(LabelDataUpdated()); // Rebuild UI to reflect toggles
@@ -54,33 +61,14 @@ class LabelCubit extends Cubit<LabelState> {
     emit(GenerateLabelsLoading());
 
     try {
-      // 1. Prepare Data
-      final data = {
-        "products": selectedProducts.map((e) => e.toApiJson()).toList(),
-        "labelConfig": labelConfig.toJson(),
-        "paperSize": paperSize,
-      };
-
-      log("Generating Labels Payload: $data");
-
-      // 2. Call API
-      // Note: Make sure EndPoint.generateLabels is defined as 'api/admin/label/generate'
-      final response = await DioHelper.postData(
-        url: 'api/admin/label/generate', // Or use EndPoint.generateLabels
-        data: data,
+      final message = await _repository.generateLabels(
+        products: selectedProducts,
+        config: labelConfig,
+        paperSize: paperSize,
       );
-
-      // 3. Handle Response
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        // You might want to handle the PDF download or URL here if the API returns one
-        emit(GenerateLabelsSuccess("Labels generated successfully"));
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(GenerateLabelsError(errorMessage));
-      }
+      emit(GenerateLabelsSuccess(message));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(GenerateLabelsError(errorMessage));
+      emit(GenerateLabelsError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 }

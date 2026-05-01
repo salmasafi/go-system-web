@@ -57,6 +57,7 @@ class CouponModel {
   final int quantity;
   final int available;
   final String expiredDate;
+  final bool status;
   final String createdAt;
   final String updatedAt;
   final int version;
@@ -70,6 +71,7 @@ class CouponModel {
     required this.quantity,
     required this.available,
     required this.expiredDate,
+    required this.status,
     required this.createdAt,
     required this.updatedAt,
     required this.version,
@@ -77,17 +79,18 @@ class CouponModel {
 
   factory CouponModel.fromJson(Map<String, dynamic> json) {
     return CouponModel(
-      id: json['_id'],
-      couponCode: json['coupon_code'],
-      type: json['type'],
-      amount: (json['amount'] as num).toDouble(),
-      minimumAmount: (json['minimum_amount'] as num).toDouble(),
-      quantity: json['quantity'],
-      available: json['available'],
-      expiredDate: json['expired_date'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
-      version: json['__v'],
+      id: (json['id'] ?? json['_id'])?.toString() ?? '',
+      couponCode: json['coupon_code']?.toString() ?? '',
+      type: json['type']?.toString() ?? '',
+      amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
+      minimumAmount: (json['minimum_amount'] as num?)?.toDouble() ?? 0.0,
+      quantity: json['quantity'] as int? ?? 0,
+      available: json['available'] as int? ?? 0,
+      expiredDate: json['expired_date']?.toString() ?? '',
+      status: json['status'] as bool? ?? true,
+      createdAt: json['createdAt']?.toString() ?? '',
+      updatedAt: json['updatedAt']?.toString() ?? '',
+      version: json['__v'] as int? ?? 0,
     );
   }
 
@@ -101,9 +104,40 @@ class CouponModel {
       'quantity': quantity,
       'available': available,
       'expired_date': expiredDate,
+      'status': status,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       '__v': version,
     };
+  }
+
+  CouponModel copyWith({
+    String? id,
+    String? couponCode,
+    String? type,
+    double? amount,
+    double? minimumAmount,
+    int? quantity,
+    int? available,
+    String? expiredDate,
+    bool? status,
+    String? createdAt,
+    String? updatedAt,
+    int? version,
+  }) {
+    return CouponModel(
+      id: id ?? this.id,
+      couponCode: couponCode ?? this.couponCode,
+      type: type ?? this.type,
+      amount: amount ?? this.amount,
+      minimumAmount: minimumAmount ?? this.minimumAmount,
+      quantity: quantity ?? this.quantity,
+      available: available ?? this.available,
+      expiredDate: expiredDate ?? this.expiredDate,
+      status: status ?? this.status,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      version: version ?? this.version,
+    );
   }
 }

@@ -11,7 +11,7 @@ class SupabaseErrorHandler {
       return _handleAuthError(error);
     } else if (error is StorageException) {
       return _handleStorageError(error);
-    } else if (error is RealtimeException) {
+    } else if (error.toString().contains('Realtime')) {
       return _handleRealtimeError(error);
     } else if (error is Exception) {
       return error.toString();
@@ -101,8 +101,8 @@ class SupabaseErrorHandler {
   }
 
   /// Handle realtime/WebSocket errors
-  static String _handleRealtimeError(RealtimeException error) {
-    final message = error.message.toLowerCase();
+  static String _handleRealtimeError(dynamic error) {
+    final message = error.toString().toLowerCase();
 
     if (message.contains('connection') || message.contains('websocket')) {
       return 'فشل الاتصال بالخادم | Connection failed. Please check your internet connection.';
@@ -112,7 +112,7 @@ class SupabaseErrorHandler {
       return 'غير مصرح بالوصول للتحديثات الفورية | Unauthorized access to real-time updates.';
     }
 
-    return 'خطأ في التحديثات الفورية | Real-time error: ${error.message}';
+    return 'خطأ في التحديثات الفورية | Real-time error: ${error.toString()}';
   }
 
   /// Get error type for programmatic handling
@@ -127,7 +127,7 @@ class SupabaseErrorHandler {
       return ErrorType.auth;
     } else if (error is StorageException) {
       return ErrorType.storage;
-    } else if (error is RealtimeException) {
+    } else if (error.toString().contains('Realtime')) {
       return ErrorType.realtime;
     }
     return ErrorType.unknown;

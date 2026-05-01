@@ -4,8 +4,11 @@ import 'package:systego/core/services/endpoints.dart';
 import '../model/points_model.dart';
 import 'points_state.dart';
 
+import 'package:systego/features/admin/points/data/repositories/points_repository.dart';
+
 class PointsCubit extends Cubit<PointsState> {
-  PointsCubit() : super(PointsInitial());
+  final PointsRepository _repository;
+  PointsCubit(this._repository) : super(PointsInitial());
 
   List<PointsModel> points = [];
   List<PointsModel> _filtered = [];
@@ -17,21 +20,12 @@ class PointsCubit extends Cubit<PointsState> {
   Future<void> getPoints() async {
     emit(GetPointsLoading());
     try {
-      final response = await DioHelper.getData(url: EndPoint.getPoints);
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final data = PointsResponse.fromJson(
-          response.data as Map<String, dynamic>,
-        );
-        points = data.data.points;
-        _applySearch();
-        emit(GetPointsSuccess(displayed));
-      } else {
-        emit(GetPointsError(
-          response.data['message']?.toString() ?? 'Failed to load points',
-        ));
-      }
+      final list = await _repository.getPointsRules();
+      points = list;
+      _applySearch();
+      emit(GetPointsSuccess(displayed));
     } catch (e) {
-      emit(GetPointsError(e.toString()));
+      emit(GetPointsError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -41,23 +35,15 @@ class PointsCubit extends Cubit<PointsState> {
   }) async {
     emit(CreatePointsLoading());
     try {
-      final response = await DioHelper.postData(
-        url: EndPoint.addPoint,
-        data: {
-          'amount': amount,
-          'points': points,
-        },
-      );
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreatePointsSuccess('Points created successfully'));
-        await getPoints();
-      } else {
-        emit(CreatePointsError(
-          response.data['message']?.toString() ?? 'Failed to create points',
-        ));
-      }
+      await _repository.createPointsRule(PointsModel(
+        id: '',
+        amount: amount,
+        points: points,
+      ));
+      emit(CreatePointsSuccess('Points created successfully'));
+      await getPoints();
     } catch (e) {
-      emit(CreatePointsError(e.toString()));
+      emit(CreatePointsError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -68,42 +54,29 @@ class PointsCubit extends Cubit<PointsState> {
   }) async {
     emit(UpdatePointsLoading());
     try {
-      final response = await DioHelper.putData(
-        url: '${EndPoint.updatePoint}/$id',
-        data: {
-          'amount': amount,
-          'points': points,
-        },
-      );
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(UpdatePointsSuccess('Points updated successfully'));
-        await getPoints();
-      } else {
-        emit(UpdatePointsError(
-          response.data['message']?.toString() ?? 'Failed to update points',
-        ));
-      }
+      await _repository.updatePointsRule(PointsModel(
+        id: id,
+        amount: amount,
+        points: points,
+      ));
+      emit(UpdatePointsSuccess('Points updated successfully'));
+      await getPoints();
     } catch (e) {
-      emit(UpdatePointsError(e.toString()));
+      emit(UpdatePointsError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> deletePoints(String id) async {
     emit(DeletePointsLoading());
     try {
-      final response = await DioHelper.deleteData(url: '${EndPoint.deletePoint}/$id');
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(DeletePointsSuccess('Points deleted successfully'));
-        await getPoints();
-      } else {
-        emit(DeletePointsError(
-          response.data['message']?.toString() ?? 'Failed to delete points',
-        ));
-      }
+      await _repository.deletePointsRule(id);
+      emit(DeletePointsSuccess('Points deleted successfully'));
+      await getPoints();
     } catch (e) {
-      emit(DeletePointsError(e.toString()));
+      emit(DeletePointsError(e.toString().replaceAll('Exception: ', '')));
     }
   }
+
 
   void search(String query) {
     _searchQuery = query.trim().toLowerCase();

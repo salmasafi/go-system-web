@@ -1,126 +1,73 @@
 import 'dart:io';
-import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/features/admin/brands/model/get_brand_by_id_model.dart';
-//import '../../../../../../../core/services/cache_helper.dart.dart';
-import '../../../../core/services/dio_helper.dart';
-import '../../../../core/services/endpoints.dart';
-import '../../../../core/utils/error_handler.dart';
+import 'package:systego/generated/locale_keys.g.dart';
 import '../model/get_brands_model.dart';
-import '../model/create_brand_model.dart';
-import '../model/delete_brand_model.dart';
 import 'brand_states.dart';
 
+import 'package:systego/features/admin/brands/data/repositories/brand_repository.dart';
+
 class BrandsCubit extends Cubit<BrandsState> {
-  BrandsCubit() : super(BrandsInitial());
+  final BrandRepository _repository;
+  BrandsCubit(this._repository) : super(BrandsInitial());
 
   static BrandsCubit get(context) => BlocProvider.of(context);
 
-  CreateBrandModel? brandModel;
   List<Brands> allBrands = [];
   BrandById? selectedBrand;
 
   Future<void> getBrands() async {
     emit(GetBrandsLoading());
     try {
-      final response = await DioHelper.getData(url: EndPoint.getBrands);
-
-      if (response.statusCode == 200) {
-        final model = GeBrandsModel.fromJson(response.data);
-        if (model.success == true && model.data != null) {
-          allBrands = model.data!.brands ?? [];
-          emit(GetBrandsSuccess(allBrands));
-        } else {
-          final errorMessage = ErrorHandler.handleError(response);
-          emit(GetBrandsError(errorMessage));
-        }
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(GetBrandsError(errorMessage));
-      }
+      final brands = await _repository.getAllBrands();
+      allBrands = brands;
+      emit(GetBrandsSuccess(brands));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(GetBrandsError(errorMessage));
+      emit(GetBrandsError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> getBrandById(String brandId) async {
     emit(GetBrandByIdLoading());
     try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getBrandById(brandId),
-      );
-
-      if (response.statusCode == 200) {
-        final model = GetBrandByIdModel.fromJson(response.data);
-        if (model.success == true && model.data?.brand != null) {
-          selectedBrand = model.data!.brand;
-          emit(GetBrandByIdSuccess(selectedBrand!));
-        } else {
-          final errorMessage = ErrorHandler.handleError(response);
-          emit(GetBrandByIdError(errorMessage));
-        }
+      final brand = await _repository.getBrandById(brandId);
+      if (brand != null) {
+        // Map Brands to BrandById if necessary for the UI
+        selectedBrand = BrandById(
+          id: brand.id,
+          name: brand.name,
+          arName: brand.arName,
+          logo: brand.logo,
+          createdAt: brand.createdAt,
+          updatedAt: brand.updatedAt,
+          v: brand.v,
+        );
+        emit(GetBrandByIdSuccess(selectedBrand!));
       } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(GetBrandByIdError(errorMessage));
+        emit(GetBrandByIdError('Brand not found'));
       }
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(GetBrandByIdError(errorMessage));
+      emit(GetBrandByIdError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> createBrand({
     required String name,
     required String arName,
-    File? logoFile, // Made optional
+    File? logoFile,
   }) async {
     emit(CreateBrandLoading());
     try {
-      String? base64Logo;
-      
-      if (logoFile != null) {
-        if (await logoFile.length() > 5 * 1024 * 1024) {
-          emit(CreateBrandError('Image exceeds 5MB'));
-          return;
-        }
-
-        final bytes = await logoFile.readAsBytes();
-        base64Logo = base64Encode(bytes);
-      }
-
-      final data = {
-        'name': name, 
-        'ar_name': arName, 
-        if (base64Logo != null) 'logo': base64Logo, // Only add if provided
-      };
-
-      final response = await DioHelper.postData(
-        url: EndPoint.createBrand,
-        data: data,
-        //   token: token,
+      await _repository.createBrand(
+        name: name,
+        arName: arName,
+        logoFile: logoFile,
       );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        brandModel = CreateBrandModel.fromJson(response.data);
-        if (brandModel?.success == true) {
-          await getBrands();
-          emit(
-            CreateBrandSuccess(
-              brandModel?.data?.message ?? 'Brand created successfully',
-            ),
-          );
-        } else {
-          final errorMessage = ErrorHandler.handleError(response);
-          emit(CreateBrandError(errorMessage));
-        }
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(CreateBrandError(errorMessage));
-      }
+      await getBrands();
+      emit(CreateBrandSuccess(LocaleKeys.success.tr()));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(CreateBrandError(errorMessage));
+      emit(CreateBrandError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -132,90 +79,29 @@ class BrandsCubit extends Cubit<BrandsState> {
   }) async {
     emit(UpdateBrandLoading());
     try {
-      //   final token = CacheHelper.getData(key: 'token') as String?;
-      final data = <String, dynamic>{'name': name, 'ar_name': arName};
-
-      if (logoFile != null) {
-        if (await logoFile.length() > 5 * 1024 * 1024) {
-          emit(UpdateBrandError('Image exceeds 5MB'));
-          return;
-        }
-        final bytes = await logoFile.readAsBytes();
-        data['logo'] = base64Encode(bytes);
-      }
-
-      final response = await DioHelper.putData(
-        url: EndPoint.updateBrand(brandId),
-        data: data,
-        //    token: token,
+      await _repository.updateBrand(
+        id: brandId,
+        name: name,
+        arName: arName,
+        logoFile: logoFile,
       );
-
-      if (response.statusCode == 200) {
-        brandModel = CreateBrandModel.fromJson(response.data);
-        if (brandModel?.success == true) {
-          await getBrands();
-          emit(
-            UpdateBrandSuccess(
-              brandModel?.data?.message ?? 'Brand updated successfully',
-            ),
-          );
-        } else {
-          final errorMessage = ErrorHandler.handleError(response);
-          emit(UpdateBrandError(errorMessage));
-        }
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(UpdateBrandError(errorMessage));
-      }
+      await getBrands();
+      emit(UpdateBrandSuccess(LocaleKeys.success.tr()));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(UpdateBrandError(errorMessage));
+      emit(UpdateBrandError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> deleteBrand(String brandId) async {
     emit(DeleteBrandLoading());
     try {
-      //final token = CacheHelper.getData(key: 'token') as String?;
-      final response = await DioHelper.deleteData(
-        url: EndPoint.deleteBrand(brandId),
-        // token: token,
-      );
-
-      if (response.statusCode == 200) {
-        final model = DeleteBrandModel.fromJson(response.data);
-        if (model.success == true) {
-          allBrands.removeWhere((brand) => brand.id == brandId);
-          if (selectedBrand?.id == brandId) {
-            selectedBrand = null;
-          }
-          emit(
-            DeleteBrandSuccess(
-              model.data?.message ?? 'Brand deleted successfully',
-            ),
-          );
-        } else {
-          final errorMessage = ErrorHandler.handleError(response);
-          emit(DeleteBrandError(errorMessage));
-        }
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(DeleteBrandError(errorMessage));
-      }
+      await _repository.deleteBrand(brandId);
+      allBrands.removeWhere((brand) => brand.id == brandId);
+      if (selectedBrand?.id == brandId) selectedBrand = null;
+      emit(DeleteBrandSuccess(LocaleKeys.success.tr()));
     } catch (e) {
-      final errorStr = e.toString();
-      // Check for foreign key violation errors
-      if (errorStr.contains('foreign key') || 
-          errorStr.contains('violates') ||
-          errorStr.contains('constraint') ||
-          errorStr.contains('referenced')) {
-        emit(DeleteBrandError(
-          'Cannot delete brand: it is linked to products',
-        ));
-      } else {
-        final errorMessage = ErrorHandler.handleError(e);
-        emit(DeleteBrandError(errorMessage));
-      }
+      emit(DeleteBrandError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 }
+

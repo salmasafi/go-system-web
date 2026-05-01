@@ -3,18 +3,18 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:meta/meta.dart';
-import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/core/services/endpoints.dart';
-import 'package:systego/core/utils/error_handler.dart';
+import 'package:systego/features/admin/bank_account/data/repositories/bank_account_repository.dart';
 import 'package:systego/features/admin/bank_account/model/bank_account_model.dart';
-import 'dart:convert';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/generated/locale_keys.g.dart';
 
 part 'bank_accounts_state.dart';
 
 class BankAccountCubit extends Cubit<BankAccountState> {
-  BankAccountCubit() : super(BankAccountInitial());
+  final BankAccountRepository _repository;
+
+  BankAccountCubit(BankAccountRepository bankAccountRepository)
+    : _repository = bankAccountRepository,
+      super(BankAccountInitial());
 
   List<BankAccountModel> allAccounts = [];
   int totalBalance = 0;
@@ -22,50 +22,25 @@ class BankAccountCubit extends Cubit<BankAccountState> {
   Future<void> getBankAccounts() async {
     emit(GetBankAccountsLoading());
     try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getAllBankAccounts,
-      );
-      dev.log(response.data.toString());
-      if (response.statusCode == 200) {
-        final model = BankAccountResponse.fromJson(response.data);
-        if (model.success) {
-          allAccounts = model.data.accounts;
-          emit(GetBankAccountsSuccess(allAccounts));
-        } else {
-          final errorMessage = ErrorHandler.handleError(response);
-          emit(GetBankAccountsError(errorMessage));
-        }
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(GetBankAccountsError(errorMessage));
-      }
+      final accounts = await _repository.getAllBankAccounts();
+      allAccounts = accounts.map((e) => e.toLegacyModel()).toList();
+      emit(GetBankAccountsSuccess(allAccounts));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(GetBankAccountsError(errorMessage));
+      emit(GetBankAccountsError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> selectBankAccount(String accountId, String name) async {
     emit(SelectBankAccountLoading());
     try {
-      final response = await DioHelper.putData(
-        url: EndPoint.updateBankAccount(accountId),
-        data: {'is_default': true},
+      await _repository.selectBankAccount(accountId);
+      emit(
+        SelectBankAccountSuccess(
+          '$name ${LocaleKeys.default_bank_account_message.tr()}',
+        ),
       );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(
-          SelectBankAccountSuccess(
-            '$name ${LocaleKeys.default_bank_account_message.tr()}',
-          ),
-        );
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(SelectBankAccountError(errorMessage));
-      }
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(SelectBankAccountError(errorMessage));
+      emit(SelectBankAccountError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -80,43 +55,23 @@ class BankAccountCubit extends Cubit<BankAccountState> {
   }) async {
     emit(CreateBankAccountLoading());
     try {
-      String? base64Image;
-      if (image != null) {
-        base64Image = await _convertFileToBase64(image);
-      }
-
-      final data = {
-        'name': name,
-        'balance': balance,
-        'status': status,
-        'in_POS': inPos,
-        'description': description,
-        'warehouseId': wareHouseId,
-        if (base64Image != null) 'image': base64Image,
-      };
-
-      // log("${data}");
-
-      // dev.log('base64Image when add: $base64Image');
-
-      final response = await DioHelper.postData(
-        url: EndPoint.addBankAccount,
-        data: data,
+      await _repository.createBankAccount(
+        name: name,
+        balance: balance,
+        status: status,
+        inPos: inPos,
+        description: description,
+        wareHouseId: wareHouseId,
+        imagePath: image?.path,
       );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(
-          CreateBankAccountSuccess(
-            LocaleKeys.financial_account_created_successfully.tr(),
-          ),
-        );
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(CreateBankAccountError(errorMessage));
-      }
+      emit(
+        CreateBankAccountSuccess(
+          LocaleKeys.financial_account_created_successfully.tr(),
+        ),
+      );
+      await getBankAccounts();
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(CreateBankAccountError(errorMessage));
+      emit(CreateBankAccountError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -132,86 +87,39 @@ class BankAccountCubit extends Cubit<BankAccountState> {
   }) async {
     emit(UpdateBankAccountLoading());
     try {
-      String? base64Image;
-      if (image != null) {
-        base64Image = await _convertFileToBase64(image);
-      }
-
-      final data = {
-        'name': name,
-        'balance': balance,
-        'status': status,
-        'in_POS': inPos,
-        'description': description,
-        'warehouseId': wareHouseId,
-        if (base64Image != null) 'image': base64Image,
-      };
-
-      dev.log('Sending data: $data');
-
-      final response = await DioHelper.putData(
-        url: EndPoint.updateBankAccount(accountId),
-        data: data,
+      await _repository.updateBankAccount(
+        id: accountId,
+        name: name,
+        balance: balance,
+        status: status,
+        inPos: inPos,
+        description: description,
+        wareHouseId: wareHouseId,
+        imagePath: image?.path,
       );
-
-      if (response.statusCode == 200) {
-        emit(
-          UpdateBankAccountSuccess(
-            LocaleKeys.financial_account_updated_successfully.tr(),
-          ),
-        );
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(UpdateBankAccountError(errorMessage));
-      }
+      emit(
+        UpdateBankAccountSuccess(
+          LocaleKeys.financial_account_updated_successfully.tr(),
+        ),
+      );
+      await getBankAccounts();
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(UpdateBankAccountError(errorMessage));
+      emit(UpdateBankAccountError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> deleteBankAccount(String accountId) async {
     emit(DeleteBankAccountLoading());
     try {
-      final response = await DioHelper.deleteData(
-        url: EndPoint.deleteBankAccount(accountId),
+      await _repository.deleteBankAccount(accountId);
+      allAccounts.removeWhere((account) => account.id == accountId);
+      emit(
+        DeleteBankAccountSuccess(
+          LocaleKeys.financial_account_deleted_successfully.tr(),
+        ),
       );
-
-      if (response.statusCode == 200) {
-        allAccounts.removeWhere((account) => account.id == accountId);
-        emit(
-          DeleteBankAccountSuccess(
-            LocaleKeys.financial_account_deleted_successfully.tr(),
-          ),
-        );
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(DeleteBankAccountError(errorMessage));
-      }
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(DeleteBankAccountError(errorMessage));
-    }
-  }
-
-  Future<String?> _convertFileToBase64(File imageFile) async {
-    try {
-      final bytes = await imageFile.readAsBytes();
-
-      String? mimeType;
-      final ext = imageFile.path.toLowerCase().split('.').last;
-      if (ext == 'png') {
-        mimeType = "image/png";
-      } else if (ext == 'jpg' || ext == 'jpeg') {
-        mimeType = "image/jpeg";
-      } else {
-        mimeType = "application/octet-stream";
-      }
-
-      return "data:$mimeType;base64,${base64Encode(bytes)}";
-    } catch (e) {
-      dev.log("Error converting image: $e");
-      return null;
+      emit(DeleteBankAccountError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 }

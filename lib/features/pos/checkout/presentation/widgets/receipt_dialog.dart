@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:intl/intl.dart';
-import 'package:systego/features/POS/checkout/cubit/checkout_cubit/checkout_cubit.dart';
-import 'package:systego/features/POS/checkout/model/reciept_data.dart';
-import 'package:systego/features/POS/checkout/presentation/view/reciept_screen.dart';
-import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
+import 'package:systego/features/pos/checkout/cubit/checkout_cubit/checkout_cubit.dart';
+import 'package:systego/features/pos/checkout/model/reciept_data.dart';
+import 'package:systego/features/pos/checkout/presentation/view/reciept_screen.dart';
+import 'package:systego/features/pos/home/cubit/pos_home_cubit.dart';
 
 class POSReceiptDialog extends StatefulWidget {
   //final List<CartItem> cartItems;

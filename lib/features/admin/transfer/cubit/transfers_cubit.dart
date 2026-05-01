@@ -1,34 +1,25 @@
 import 'package:bloc/bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:meta/meta.dart';
-import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/generated/locale_keys.g.dart';
-import '../model/transfer_model.dart'; // Import your model
+import '../model/transfer_model.dart'; 
+import 'package:systego/features/admin/transfer/data/repositories/transfer_repository.dart';
 
 part 'transfers_state.dart';
 
 class TransfersCubit extends Cubit<TransfersState> {
-  TransfersCubit() : super(TransfersInitial());
+  final TransferRepository _repository;
+  TransfersCubit(this._repository) : super(TransfersInitial());
 
   // 1. Get All Transfers (History Tab)
   Future<void> getAllTransfers() async {
     emit(GetTransfersLoading());
     try {
-      final response = await DioHelper.getData(url: '/api/admin/transfer'); // Use EndPoint.allTransfers
-      
-      if (response.statusCode == 200) {
-        final model = TransferResponse.fromJson(response.data);
-        if (model.success) {
-          emit(GetTransfersSuccess(model.data.allTransfers));
-        } else {
-          emit(GetTransfersError(model.data.message));
-        }
-      } else {
-        emit(GetTransfersError(ErrorHandler.handleError(response)));
-      }
+      final transfers = await _repository.getAllTransfers();
+      final legacyModels = transfers.map((e) => e.toLegacyModel()).toList();
+      emit(GetTransfersSuccess(legacyModels));
     } catch (e) {
-      emit(GetTransfersError(ErrorHandler.handleError(e)));
+      emit(GetTransfersError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -36,24 +27,11 @@ class TransfersCubit extends Cubit<TransfersState> {
   Future<void> getIncomingTransfers(String warehouseId) async {
     emit(GetIncomingLoading());
     try {
-      // Assuming EndPoint structure: /api/admin/transfer/gettransferin/$id
-      final response = await DioHelper.getData(
-        url: '/api/admin/transfer/gettransferin/$warehouseId', 
-      );
-      
-      if (response.statusCode == 200) {
-        final model = TransferResponse.fromJson(response.data);
-        if (model.success) {
-          // We combine pending and done for display, or you can separate them in UI
-          emit(GetIncomingSuccess(model.data.combinedFiltered)); 
-        } else {
-          emit(GetIncomingError(model.data.message));
-        }
-      } else {
-        emit(GetIncomingError(ErrorHandler.handleError(response)));
-      }
+      final transfers = await _repository.getIncomingTransfers(warehouseId);
+      final legacyModels = transfers.map((e) => e.toLegacyModel()).toList();
+      emit(GetIncomingSuccess(legacyModels));
     } catch (e) {
-      emit(GetIncomingError(ErrorHandler.handleError(e)));
+      emit(GetIncomingError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -61,23 +39,11 @@ class TransfersCubit extends Cubit<TransfersState> {
   Future<void> getOutgoingTransfers(String warehouseId) async {
     emit(GetOutgoingLoading());
     try {
-       // Assuming EndPoint structure: /api/admin/transfer/gettransferout/$id
-      final response = await DioHelper.getData(
-        url: '/api/admin/transfer/gettransferout/$warehouseId',
-      );
-      
-      if (response.statusCode == 200) {
-        final model = TransferResponse.fromJson(response.data);
-        if (model.success) {
-          emit(GetOutgoingSuccess(model.data.combinedFiltered));
-        } else {
-          emit(GetOutgoingError(model.data.message));
-        }
-      } else {
-        emit(GetOutgoingError(ErrorHandler.handleError(response)));
-      }
+      final transfers = await _repository.getOutgoingTransfers(warehouseId);
+      final legacyModels = transfers.map((e) => e.toLegacyModel()).toList();
+      emit(GetOutgoingSuccess(legacyModels));
     } catch (e) {
-      emit(GetOutgoingError(ErrorHandler.handleError(e)));
+      emit(GetOutgoingError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -85,58 +51,42 @@ class TransfersCubit extends Cubit<TransfersState> {
   Future<void> createTransfer({
     required String fromId,
     required String toId,
-    required List<Map<String, dynamic>> products, // [{productId: "...", quantity: 5}]
+    required List<Map<String, dynamic>> products,
   }) async {
     emit(CreateTransferLoading());
     try {
-      final data = {
-        'fromWarehouseId': fromId,
-        'toWarehouseId': toId,
-        'products': products,
-        // Add other required fields if necessary
-      };
-
-      final response = await DioHelper.postData(
-        url: '/api/admin/transfer',
-        data: data,
+      await _repository.createTransfer(
+        fromWarehouseId: fromId,
+        toWarehouseId: toId,
+        items: products,
       );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateTransferSuccess(LocaleKeys.transfer_created_success.tr()));
-      } else {
-        emit(CreateTransferError(ErrorHandler.handleError(response)));
-      }
+      emit(CreateTransferSuccess(LocaleKeys.transfer_created_success.tr()));
     } catch (e) {
-      emit(CreateTransferError(ErrorHandler.handleError(e)));
+      emit(CreateTransferError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
-  // 5. Mark Transfer as Received (PUT)
-  Future<void> markAsReceived({
-    required String transferId,
-    required String warehouseId, // The ID of the warehouse receiving the items
-  }) async {
+  // 5. Approve/Receive Transfer
+  Future<void> approveTransfer(String transferId) async {
     emit(UpdateTransferStatusLoading());
     try {
-      final data = {
-        "warehouseId": warehouseId,
-        "status": "received" // API expects this
-      };
-
-      final response = await DioHelper.putData(
-        url: '/api/admin/transfer/$transferId', 
-        data: data,
-      );
-
-      if (response.statusCode == 200) {
+      final success = await _repository.approveTransfer(transferId);
+      if (success) {
         emit(UpdateTransferStatusSuccess(LocaleKeys.transfer_received_success.tr()));
-        // Trigger a refresh of incoming list after success
-        getIncomingTransfers(warehouseId);
+        getAllTransfers();
       } else {
-        emit(UpdateTransferStatusError(ErrorHandler.handleError(response)));
+        emit(UpdateTransferStatusError('Failed to approve transfer'));
       }
     } catch (e) {
-      emit(UpdateTransferStatusError(ErrorHandler.handleError(e)));
+      emit(UpdateTransferStatusError(e.toString().replaceAll('Exception: ', '')));
     }
+  }
+
+  // 6. Mark as Received (UI alias for approveTransfer)
+  Future<void> markAsReceived({
+    required String transferId,
+    required String warehouseId,
+  }) async {
+    await approveTransfer(transferId);
   }
 }

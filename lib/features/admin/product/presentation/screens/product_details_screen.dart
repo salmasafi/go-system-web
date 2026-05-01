@@ -9,6 +9,7 @@ import 'package:systego/features/admin/product/presentation/widgets/product_imag
 import 'package:systego/features/admin/product/presentation/widgets/product_info_grid.dart';
 import 'package:systego/features/admin/product/presentation/widgets/product_info_item.dart';
 import 'package:systego/features/admin/product/presentation/widgets/product_title.dart';
+import 'package:systego/features/admin/product/presentation/widgets/product_attribute_assignment_widget.dart';
 import '../../cubit/product_details_cubit/product_details_cubit.dart';
 import '../../cubit/product_details_cubit/product_details_state.dart';
 
@@ -551,6 +552,94 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         //     ),
                         //   ],
                         // ),
+                        SizedBox(
+                          height: ResponsiveUI.verticalSpacing(context, 3),
+                        ),
+
+                        // 🎨 Product Attributes Section
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: ResponsiveUI.padding(context, 12),
+                            vertical: ResponsiveUI.padding(context, 16),
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.white,
+                            borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.shadowGray.withValues(alpha: 0.08),
+                                blurRadius: 12,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                            border: Border.all(
+                              color: AppColors.lightGray.withValues(alpha: 0.2),
+                              width: ResponsiveUI.value(context, 1),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Section Header
+                              Row(
+                                children: [
+                                  Container(
+                                    width: ResponsiveUI.value(context, 40),
+                                    height: ResponsiveUI.value(context, 40),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.successGreen.withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 10)),
+                                    ),
+                                    child: Icon(
+                                      Icons.tune_outlined,
+                                      color: AppColors.successGreen,
+                                      size: ResponsiveUI.iconSize(context, 20),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: ResponsiveUI.padding(context, 12),
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Product Attributes',
+                                          style: TextStyle(
+                                            fontSize: ResponsiveUI.fontSize(context, 18),
+                                            fontWeight: FontWeight.w700,
+                                            color: AppColors.darkBlue,
+                                            letterSpacing: -0.3,
+                                          ),
+                                        ),
+                                        SizedBox(height: ResponsiveUI.value(context, 4)),
+                                        Text(
+                                          'Manage product variations and attributes',
+                                          style: TextStyle(
+                                            fontSize: ResponsiveUI.fontSize(context, 12),
+                                            color: AppColors.darkGray,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              SizedBox(
+                                height: ResponsiveUI.verticalSpacing(context, 3),
+                              ),
+
+                              // Attribute Assignment Widget
+                              ProductAttributeAssignmentWidget(
+                                productId: product.id,
+                                differentPrice: product.differentPrice,
+                              ),
+                            ],
+                          ),
+                        ),
+
                         SizedBox(
                           height: ResponsiveUI.verticalSpacing(context, 3),
                         ),

@@ -1,7 +1,7 @@
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:systego/features/POS/checkout/model/reciept_data.dart';
+import 'package:systego/features/pos/checkout/model/reciept_data.dart';
 
 class PrintableReceipt extends StatelessWidget {
   final RecieptData recieptData;

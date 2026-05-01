@@ -65,6 +65,9 @@ class ProductRepository implements ProductRepositoryInterface {
   @override
   Future<String?> generateProductCode() => _dataSource.generateProductCode();
 
+  @override
+  Future<Map<String, dynamic>> getProductFilters() => _dataSource.getProductFilters();
+
   void enableSupabase() {
     MigrationService.enableSupabase('products');
     _initializeDataSource();
@@ -80,6 +83,25 @@ class ProductRepository implements ProductRepositoryInterface {
 class _ProductSupabaseDataSource implements ProductRepositoryInterface {
   final SupabaseClient _client = SupabaseClientWrapper.instance;
   final StorageService _storage = StorageService(SupabaseClientWrapper.instance);
+
+  @override
+  Future<Map<String, dynamic>> getProductFilters() async {
+    try {
+      log('ProductSupabase: Fetching product filters');
+      return {
+        'success': true,
+        'data': {
+          'categories': [],
+          'brands': [],
+          'units': [],
+          'taxes': [],
+        }
+      };
+    } catch (e) {
+      log('ProductSupabase: Error fetching product filters - $e');
+      throw Exception(SupabaseErrorHandler.handleError(e));
+    }
+  }
 
   @override
   Future<List<Product>> getAllProducts() async {

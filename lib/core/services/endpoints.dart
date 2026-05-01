@@ -261,7 +261,11 @@ class EndPoint {
   static String getRevenueSelection = '/api/admin/revenue/selection';
 
   /// units
-  static String getUnits = '/api/admin/units';
+  static const String getUnits = '/api/admin/units';
+  static const String createUnit = '/api/admin/units';
+  static String updateUnit(String id) => '/api/admin/units/$id';
+  static String deleteUnit(String id) => '/api/admin/units/$id';
+  static String updateUnitStatus(String id) => '/api/admin/units/status/$id';
 
   /// purchase
   static String getPurchase = '/api/admin/purchase';

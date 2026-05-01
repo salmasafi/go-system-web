@@ -5,7 +5,7 @@ import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/animation/animated_element.dart';
 import 'package:systego/core/widgets/custom_gradient_divider.dart';
 import 'package:systego/core/widgets/custom_popup_menu.dart';
-import 'package:systego/features/admin/units/model/units_model.dart';
+import 'package:systego/features/admin/units/model/unit_model.dart';
 import '../../../../../generated/locale_keys.g.dart';
 
 class AnimatedUnitCard extends StatefulWidget {

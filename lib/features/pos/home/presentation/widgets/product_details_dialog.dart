@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/POS/home/model/pos_models.dart';
+import 'package:systego/features/pos/home/model/pos_models.dart';
 import '../../../../../core/constants/app_colors.dart';
 
 class ProductDetailsDialog extends StatelessWidget {

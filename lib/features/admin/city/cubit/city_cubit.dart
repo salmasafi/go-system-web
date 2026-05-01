@@ -2,80 +2,29 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/features/admin/country/model/country_model.dart';
-import '../../../../core/services/dio_helper.dart';
-import '../../../../core/services/endpoints.dart';
-import '../../../../core/utils/error_handler.dart';
 import '../model/city_model.dart';
 import 'city_state.dart';
 
+import 'package:systego/features/admin/city/data/repositories/city_repository.dart';
+
 class CityCubit extends Cubit<CityState> {
-  CityCubit() : super(CityInitial());
+  final CityRepository _repository;
+  CityCubit(this._repository) : super(CityInitial());
 
- static  List<CityModel> cities = [];
+  static List<CityModel> cities = [];
   static List<CountryModel> countries = [];
-
-  String _extractErrorMessage(dynamic errorOrResponse) {
-    // Helper to safely extract message, bypassing ErrorHandler issues
-    if (errorOrResponse is Map<String, dynamic>) {
-      return errorOrResponse['message']?.toString() ?? 'Unknown error occurred';
-    } else if (errorOrResponse is Response) {
-      final data = errorOrResponse.data;
-      if (data is Map<String, dynamic>) {
-        return data['message']?.toString() ??
-            'Server error: ${errorOrResponse.statusCode}';
-      }
-      return 'Server error: ${errorOrResponse.statusCode}';
-    }
-    // Fallback to ErrorHandler for non-Dio errors (e.g., network issues)
-    return ErrorHandler.handleError(errorOrResponse);
-  }
 
   Future<void> getCities() async {
     emit(GetCitiesLoading());
     try {
-      final response = await DioHelper.getData(url: EndPoint.getCities);
-      log(response.data.toString()); // Safer log with toString()
-      if (response.statusCode == 200) {
-        final model = CityResponse.fromJson(
-          response.data as Map<String, dynamic>,
-        );
-        if (model.success == true) {
-          cities = model.data.cities;
-          countries = model.data.countries;
-          emit(GetCitiesSuccess(model.data));
-        } else {
-          final errorMessage = model.data.message;
-          emit(GetCitiesError(errorMessage));
-        }
-      } else {
-        final errorMessage = _extractErrorMessage(response);
-        emit(GetCitiesError(errorMessage));
-      }
+      final cityData = await _repository.getCities();
+      cities = cityData.cities;
+      countries = cityData.countries;
+      emit(GetCitiesSuccess(cityData));
     } catch (e) {
-      final errorMessage = _extractErrorMessage(e);
-      emit(GetCitiesError(errorMessage));
+      emit(GetCitiesError(e.toString().replaceAll('Exception: ', '')));
     }
   }
-
-  // Future<void> selectCity(String cityId, String name) async {
-  //   emit(SelectCityLoading());
-  //   try {
-  //     final response = await DioHelper.putData(
-  //       url: EndPoint.selectCity(cityId),
-  //       data: {'isDefault': true},
-  //     );
-
-  //     if (response.statusCode == 200 || response.statusCode == 201) {
-  //       emit(SelectCitySuccess('$name is the default City now!'));
-  //     } else {
-  //       final errorMessage = _extractErrorMessage(response);
-  //       emit(SelectCityError(errorMessage));
-  //     }
-  //   } catch (e) {
-  //     final errorMessage = _extractErrorMessage(e);
-  //     emit(SelectCityError(errorMessage));
-  //   }
-  // }
 
   Future<void> createCity({
     required String name,
@@ -85,27 +34,16 @@ class CityCubit extends Cubit<CityState> {
   }) async {
     emit(CreateCityLoading());
     try {
-      final data = {
-        "name": name,
-        "ar_name": arName,
-        "country": countryId,
-        "shipingCost": shipingCost,
-      };
-
-      final response = await DioHelper.postData(
-        url: EndPoint.createCity,
-        data: data,
+      await _repository.createCity(
+        name: name,
+        arName: arName,
+        countryId: countryId,
+        shipingCost: shipingCost,
       );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateCitySuccess('City is created successfully'));
-      } else {
-        final errorMessage = _extractErrorMessage(response);
-        emit(CreateCityError(errorMessage));
-      }
+      emit(CreateCitySuccess('City is created successfully'));
+      getCities();
     } catch (e) {
-      final errorMessage = _extractErrorMessage(e);
-      emit(CreateCityError(errorMessage));
+      emit(CreateCityError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -118,47 +56,28 @@ class CityCubit extends Cubit<CityState> {
   }) async {
     emit(UpdateCityLoading());
     try {
-      final data = <String, dynamic>{
-        'name': name,
-        "ar_name": arName,
-        "country": countryId,
-        "shipingCost": shipingCost,
-      };
-
-      final response = await DioHelper.putData(
-        url: EndPoint.updateCity(cityId),
-        data: data,
+      await _repository.updateCity(
+        cityId: cityId,
+        name: name,
+        arName: arName,
+        countryId: countryId,
+        shipingCost: shipingCost,
       );
-
-      if (response.statusCode == 200) {
-        emit(UpdateCitySuccess('City updated successfully'));
-      } else {
-        final errorMessage = _extractErrorMessage(response);
-        emit(UpdateCityError(errorMessage));
-      }
+      emit(UpdateCitySuccess('City updated successfully'));
+      getCities();
     } catch (e) {
-      final errorMessage = _extractErrorMessage(e);
-      emit(UpdateCityError(errorMessage));
+      emit(UpdateCityError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> deleteCity(String cityId) async {
     emit(DeleteCityLoading());
     try {
-      final response = await DioHelper.deleteData(
-        url: EndPoint.deleteCity(cityId),
-      );
-
-      if (response.statusCode == 200) {
-        cities.removeWhere((city) => city.id == cityId);
-        emit(DeleteCitySuccess('City deleted successfully'));
-      } else {
-        final errorMessage = _extractErrorMessage(response);
-        emit(DeleteCityError(errorMessage));
-      }
+      await _repository.deleteCity(cityId);
+      cities.removeWhere((city) => city.id == cityId);
+      emit(DeleteCitySuccess('City deleted successfully'));
     } catch (e) {
-      final errorMessage = _extractErrorMessage(e);
-      emit(DeleteCityError(errorMessage));
+      emit(DeleteCityError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 }

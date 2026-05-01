@@ -3,7 +3,7 @@ import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/features/POS/history/presentation/views/pending_sale_details_screen.dart';
+import 'package:systego/features/pos/history/presentation/views/pending_sale_details_screen.dart';
 import '../../../../../core/widgets/custom_loading/custom_loading_state.dart';
 import '../../cubit/history_cubit.dart';
 import '../../cubit/history_state.dart';

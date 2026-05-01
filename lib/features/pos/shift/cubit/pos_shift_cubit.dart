@@ -4,7 +4,7 @@ import 'package:systego/core/services/cache_helper.dart';
 import 'package:systego/core/services/dio_helper.dart';
 import 'package:systego/core/services/endpoints.dart';
 import 'package:systego/core/utils/error_handler.dart';
-import 'package:systego/features/POS/shift/model/cashier_model.dart'; // تأكد من المسار
+import 'package:systego/features/pos/shift/model/cashier_model.dart'; // تأكد من المسار
 import '../model/shift_model.dart'; // تأكد من المسار
 
 part 'pos_shift_state.dart';

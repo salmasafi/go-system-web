@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/services/dio_helper.dart';
 import 'package:systego/core/services/endpoints.dart';
 import 'package:systego/core/utils/error_handler.dart'; // تأكد من المسار
+import 'package:systego/features/admin/product/models/selected_attribute_model.dart';
 import '../../../home/model/pos_models.dart';
 import '../../model/checkout_models.dart';
 
@@ -20,41 +21,59 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   // Methods for cart manipulation (addToCart, etc.) are good as they are in your previous code.
   // I'll focus on createSale below.
 
-  void addBundleToCart(BundleModel bundle) {
-    final existingIndex = cartItems.indexWhere(
-      (i) => i.isBundle && i.bundle!.id == bundle.id,
-    );
-    if (existingIndex >= 0) {
-      cartItems[existingIndex].quantity++;
-    } else {
-      final bundleAsProduct = Product(
+  void addBundleToCart(
+    BundleModel bundle, {
+    Map<String, List<SelectedAttribute>>? bundleProductAttributes,
+  }) {
+    // Create new cart item
+    final newItem = CartItem(
+      product: Product(
         id: bundle.id,
         name: bundle.name,
         code: 'BUNDLE-${bundle.id}',
         description: 'Bundle: ${bundle.name}',
         price: bundle.price,
-      );
-      cartItems.add(
-        CartItem(product: bundleAsProduct, quantity: 1, bundle: bundle),
-      );
+      ),
+      quantity: 1,
+      bundle: bundle,
+      bundleProductAttributes: bundleProductAttributes,
+    );
+
+    // Check for existing identical bundle
+    final existingIndex = cartItems.indexWhere((i) => i.isSameAs(newItem));
+
+    if (existingIndex >= 0) {
+      cartItems[existingIndex].quantity++;
+    } else {
+      cartItems.add(newItem);
     }
     emit(PosCartUpdated(cartItems));
   }
 
-  void addToCart(Product product, {PriceVariation? variation}) {
-    final existingIndex = cartItems.indexWhere(
-      (i) =>
-          i.product.id == product.id &&
-          (i.selectedVariation?.id == variation?.id ||
-              (i.selectedVariation == null && variation == null)),
+  void addToCart(
+    Product product, {
+    PriceVariation? variation,
+    List<SelectedAttribute>? selectedAttributes,
+  }) {
+    // Create a new cart item with the provided attributes
+    final newItem = CartItem(
+      product: product,
+      selectedVariation: variation,
+      quantity: 1,
+      selectedAttributes: selectedAttributes ?? [],
     );
+
+    // Check if an identical item already exists in cart
+    final existingIndex = cartItems.indexWhere((item) => item.isSameAs(newItem));
+
     if (existingIndex >= 0) {
+      // Item with same product, variation, and attributes exists → increment quantity
       cartItems[existingIndex].quantity++;
     } else {
-      cartItems.add(
-        CartItem(product: product, selectedVariation: variation, quantity: 1),
-      );
+      // New unique item → add to cart
+      cartItems.add(newItem);
     }
+
     emit(PosCartUpdated(cartItems));
   }
 
@@ -111,6 +130,8 @@ class CheckoutCubit extends Cubit<CheckoutState> {
         "subtotal": item.subtotal.toStringAsFixed(2),
         if (item.isWholePriceActive)
           "whole_price": item.wholePrice!.toStringAsFixed(2),
+        if (item.hasSelectedAttributes)
+          "attributes": item.selectedAttributesToJson(),
       };
     }).toList();
 
@@ -121,6 +142,10 @@ class CheckoutCubit extends Cubit<CheckoutState> {
         "quantity": item.quantity.toString(),
         "price": item.bundle!.price.toStringAsFixed(2),
         "subtotal": (item.bundle!.price * item.quantity).toStringAsFixed(2),
+        if (item.hasBundleAttributes)
+          "attributes_per_product": item.bundleProductAttributes!.map(
+            (key, value) => MapEntry(key, value.map((a) => a.toJson()).toList()),
+          ),
       };
     }).toList();
 

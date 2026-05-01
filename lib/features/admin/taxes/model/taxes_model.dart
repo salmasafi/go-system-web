@@ -93,5 +93,29 @@ class TaxModel {
       '__v': version,
     };
   }
+
+  TaxModel copyWith({
+    String? id,
+    String? name,
+    String? arName,
+    String? type,
+    bool? status,
+    double? amount,
+    String? createdAt,
+    String? updatedAt,
+    int? version,
+  }) {
+    return TaxModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      arName: arName ?? this.arName,
+      type: type ?? this.type,
+      status: status ?? this.status,
+      amount: amount ?? this.amount,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      version: version ?? this.version,
+    );
+  }
 }
 

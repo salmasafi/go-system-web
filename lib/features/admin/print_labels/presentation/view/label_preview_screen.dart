@@ -8,6 +8,7 @@ import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:systego/features/admin/print_labels/cubit/label_cubit.dart'; // Import your cubit
 import 'package:systego/features/admin/print_labels/model/label_model.dart'; // Import your models
 import 'package:systego/features/admin/print_labels/presentation/view/print_labels_screen.dart'; // For LabelSelectionItem
+import 'package:systego/features/admin/print_labels/data/repositories/label_repository.dart';
 
 class LabelPreviewScreen extends StatelessWidget {
   final List<LabelSelectionItem> selectedItems;
@@ -21,7 +22,7 @@ class LabelPreviewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) {
-        final cubit = LabelCubit();
+        final cubit = LabelCubit(LabelRepository());
         // Convert the generic selection items to the specific LabelProductItems for the API
         final labelItems = selectedItems.map((item) {
           return LabelProductItem(

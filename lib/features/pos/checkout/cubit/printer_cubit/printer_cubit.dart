@@ -8,7 +8,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:image/image.dart' as img;
 import 'dart:developer' as developer;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/features/POS/checkout/model/reciept_data.dart';
+import 'package:systego/features/pos/checkout/model/reciept_data.dart';
 import '../../presentation/widgets/printable_reciept.dart';
 part 'printer_state.dart';
 
@@ -54,6 +54,7 @@ class PrinterCubit extends Cubit<PrinterState> {
       _char ??= await _getWriteCharacteristic(device);
       if (_char == null) return false;
 
+      if (!context.mounted) return false;
       final bytes = await _generateReceiptImage(context, receipt: receipt);
 
       if (bytes.isEmpty) return false;
@@ -98,6 +99,7 @@ class PrinterCubit extends Cubit<PrinterState> {
     );
 
     await Future.delayed(const Duration(milliseconds: 500));
+    if (!context.mounted) throw Exception('Context unmounted during rendering');
 
     try {
       final render =

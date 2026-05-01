@@ -15,8 +15,11 @@ import 'package:systego/generated/locale_keys.g.dart';
 
 part 'customer_state.dart';
 
+import 'package:systego/features/admin/customer/data/repositories/customer_repository.dart';
+
 class CustomerCubit extends Cubit<CustomerState> {
-  CustomerCubit() : super(CustomerInitial());
+  final CustomerRepository _repository;
+  CustomerCubit(this._repository) : super(CustomerInitial());
 
   List<CustomerModel> allCustomers = [];
   List<CustomerGroup> allCustomerGroups = []; 
@@ -24,54 +27,25 @@ class CustomerCubit extends Cubit<CustomerState> {
   Future<void> getAllCustomers() async {
     emit(GetCustomersLoading());
     try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getAllCustomers, // Update with your endpoint
-      );
-
-      log(response.data.toString());
-
-      if (response.statusCode == 200) {
-        final model = CustomerResponse.fromJson(response.data);
-
-        if (model.success) {
-          allCustomers = model.data.customers;
-          emit(GetCustomersSuccess(model.data.customers));
-        } else {
-          final errorMessage = ErrorHandler.handleError(response);
-          emit(GetCustomersError(errorMessage));
-        }
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(GetCustomersError(errorMessage));
-      }
+      final customers = await _repository.getAllCustomers();
+      allCustomers = customers;
+      emit(GetCustomersSuccess(customers));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(GetCustomersError(errorMessage));
+      emit(GetCustomersError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> getCustomerById(String customerId) async {
     emit(GetCustomerByIdLoading());
     try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getCustomerById(customerId), // Update with your endpoint
-      );
-
-      if (response.statusCode == 200) {
-        final model = CustomerResponse.fromJson(response.data);
-
-        if (model.success && model.data.customers.isNotEmpty) {
-          emit(GetCustomerByIdSuccess(model.data.customers.first));
-        } else {
-          emit(GetCustomerByIdError(LocaleKeys.customer_not_found.tr()));
-        }
+      final customer = await _repository.getCustomerById(customerId);
+      if (customer != null) {
+        emit(GetCustomerByIdSuccess(customer));
       } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(GetCustomerByIdError(errorMessage));
+        emit(GetCustomerByIdError(LocaleKeys.customer_not_found.tr()));
       }
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(GetCustomerByIdError(errorMessage));
+      emit(GetCustomerByIdError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -88,40 +62,20 @@ class CustomerCubit extends Cubit<CustomerState> {
     int totalPointsEarned = 0,
   }) async {
     emit(CreateCustomerLoading());
-
     try {
-      final data = {
-        "name": name,
-        "email": email,
-        "phone_number": phoneNumber,
-        "address": address,
-        "country": country,
-        "city": city,
-        if (customerGroupId != null && customerGroupId.isNotEmpty) 
-          "customer_group_id": customerGroupId,
-        "is_Due": isDue,
-        "amount_Due": amountDue,
-        "total_points_earned": totalPointsEarned,
-      };
-
-      log("Add customer data: $data");
-
-      final response = await DioHelper.postData(
-        url: EndPoint.addCustomer, // Update with your endpoint
-        data: data,
+      await _repository.createCustomer(
+        name: name,
+        email: email,
+        phoneNumber: phoneNumber,
+        address: address,
+        countryId: country,
+        cityId: city,
+        customerGroupId: customerGroupId,
       );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateCustomerSuccess(LocaleKeys.customer_created_success.tr()));
-        // Refresh the list after creation
-        await getAllCustomers();
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(CreateCustomerError(errorMessage));
-      }
+      emit(CreateCustomerSuccess(LocaleKeys.customer_created_success.tr()));
+      await getAllCustomers();
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(CreateCustomerError(errorMessage));
+      emit(CreateCustomerError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -136,115 +90,59 @@ class CustomerCubit extends Cubit<CustomerState> {
     String? customerGroupId,
   }) async {
     emit(UpdateCustomerLoading());
-
     try {
-      final data = {
-        "name": name,
-        "email": email,
-        "phone_number": phoneNumber,
-        "address": address,
-        "country": country,
-        "city": city,
-        if (customerGroupId != null && customerGroupId.isNotEmpty) 
-          "customer_group_id": customerGroupId,
-      };
-
-      log("Update customer data: $data");
-
-      final response = await DioHelper.putData(
-        url: EndPoint.updateCustomer(customerId), // Update with your endpoint
-        data: data,
+      await _repository.updateCustomer(
+        id: customerId,
+        name: name,
+        email: email,
+        phoneNumber: phoneNumber,
+        address: address,
+        countryId: country,
+        cityId: city,
+        customerGroupId: customerGroupId,
       );
-
-      if (response.statusCode == 200) {
-        emit(UpdateCustomerSuccess(LocaleKeys.customer_updated_success.tr()));
-        // Refresh the list after update
-        await getAllCustomers();
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(UpdateCustomerError(errorMessage));
-      }
+      emit(UpdateCustomerSuccess(LocaleKeys.customer_updated_success.tr()));
+      await getAllCustomers();
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(UpdateCustomerError(errorMessage));
+      emit(UpdateCustomerError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> deleteCustomer(String customerId) async {
     emit(DeleteCustomerLoading());
     try {
-      final response = await DioHelper.deleteData(
-        url: EndPoint.deleteCustomer(customerId), // Update with your endpoint
-      );
-
-      if (response.statusCode == 200) {
-        allCustomers.removeWhere((customer) => customer.id == customerId);
-        emit(DeleteCustomerSuccess(LocaleKeys.customer_deleted_success.tr()));
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(DeleteCustomerError(errorMessage));
-      }
+      await _repository.deleteCustomer(customerId);
+      allCustomers.removeWhere((customer) => customer.id == customerId);
+      emit(DeleteCustomerSuccess(LocaleKeys.customer_deleted_success.tr()));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(DeleteCustomerError(errorMessage));
+      emit(DeleteCustomerError(e.toString().replaceAll('Exception: ', '')));
     }
   }
-
-
 
   // ==================== CUSTOMER GROUP METHODS ====================
 
   Future<void> getAllCustomerGroups() async {
     emit(GetCustomerGroupsLoading());
     try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getCustomerGroup, // Update with your endpoint
-      );
-
-      log(response.data.toString());
-
-      if (response.statusCode == 200) {
-        final model = CustomerGroupResponse.fromJson(response.data);
-
-        if (model.success) {
-          allCustomerGroups = model.data.groups;
-          emit(GetCustomerGroupsSuccess(model.data.groups));
-        } else {
-          final errorMessage = ErrorHandler.handleError(response);
-          emit(GetCustomerGroupsError(errorMessage));
-        }
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(GetCustomerGroupsError(errorMessage));
-      }
+      final groups = await _repository.getAllCustomerGroups();
+      allCustomerGroups = groups;
+      emit(GetCustomerGroupsSuccess(groups));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(GetCustomerGroupsError(errorMessage));
+      emit(GetCustomerGroupsError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> getCustomerGroupById(String groupId) async {
     emit(GetCustomerGroupByIdLoading());
     try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getCustomerGroupById(groupId), // Update with your endpoint
-      );
-
-      if (response.statusCode == 200) {
-        final model = CustomerGroupResponse.fromJson(response.data);
-
-        if (model.success && model.data.groups.isNotEmpty) {
-          emit(GetCustomerGroupByIdSuccess(model.data.groups.first));
-        } else {
-          emit(GetCustomerGroupByIdError(LocaleKeys.customer_group_not_found.tr()));
-        }
+      final group = await _repository.getCustomerGroupById(groupId);
+      if (group != null) {
+        emit(GetCustomerGroupByIdSuccess(group));
       } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(GetCustomerGroupByIdError(errorMessage));
+        emit(GetCustomerGroupByIdError(LocaleKeys.customer_group_not_found.tr()));
       }
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(GetCustomerGroupByIdError(errorMessage));
+      emit(GetCustomerGroupByIdError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -253,34 +151,14 @@ class CustomerCubit extends Cubit<CustomerState> {
     required bool status,
   }) async {
     emit(CreateCustomerGroupLoading());
-
     try {
-      final data = {
-        "name": name,
-        "status": status,
-      };
-
-      log("Add customer group data: $data");
-
-      final response = await DioHelper.postData(
-        url: EndPoint.createCustomerGroup, // Update with your endpoint
-        data: data,
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateCustomerGroupSuccess(LocaleKeys.customer_group_created_success.tr()));
-        // Refresh the list after creation
-        await getAllCustomerGroups();
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(CreateCustomerGroupError(errorMessage));
-      }
+      await _repository.createCustomerGroup(name: name, status: status);
+      emit(CreateCustomerGroupSuccess(LocaleKeys.customer_group_created_success.tr()));
+      await getAllCustomerGroups();
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(CreateCustomerGroupError(errorMessage));
+      emit(CreateCustomerGroupError(e.toString().replaceAll('Exception: ', '')));
     }
   }
-
 
   Future<void> updateCustomerGroup({
     required String name,
@@ -288,57 +166,26 @@ class CustomerCubit extends Cubit<CustomerState> {
     required String id,
   }) async {
     emit(UpdateCustomerGroupLoading());
-
     try {
-      final data = {
-        "name": name,
-        "status": status,
-      };
-
-      log("Add customer group data: $data");
-
-      final response = await DioHelper.putData(
-        url: EndPoint.updateCustomerGroup(id), // Update with your endpoint
-        data: data,
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(UpdateCustomerGroupSuccess(LocaleKeys.customer_group_updated_success.tr()));
-        await getAllCustomerGroups();
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(UpdateCustomerGroupError(errorMessage));
-      }
+      await _repository.updateCustomerGroup(id: id, name: name, status: status);
+      emit(UpdateCustomerGroupSuccess(LocaleKeys.customer_group_updated_success.tr()));
+      await getAllCustomerGroups();
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(UpdateCustomerGroupError(errorMessage));
+      emit(UpdateCustomerGroupError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
-  Future<void> deleteCustomerGroup(
-      String id,
-  ) async {
+  Future<void> deleteCustomerGroup(String id) async {
     emit(DeleteCustomerGroupLoading());
-
     try {
-     
-
-      final response = await DioHelper.deleteData(
-        url: EndPoint.deleteCustomerGroup(id),
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(DeleteCustomerGroupSuccess(LocaleKeys.customer_group_deleted_success.tr()));
-        // Refresh the list after creation
-        await getAllCustomerGroups();
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(DeleteCustomerGroupError(errorMessage));
-      }
+      await _repository.deleteCustomerGroup(id);
+      emit(DeleteCustomerGroupSuccess(LocaleKeys.customer_group_deleted_success.tr()));
+      await getAllCustomerGroups();
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(DeleteCustomerGroupError(errorMessage));
+      emit(DeleteCustomerGroupError(e.toString().replaceAll('Exception: ', '')));
     }
   }
+}
+
  
 }

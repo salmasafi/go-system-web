@@ -3,7 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
+import 'package:systego/features/pos/home/cubit/pos_home_cubit.dart';
 import '../cubit/return_cubit.dart';
 import '../screens/return_details_screen.dart';
 

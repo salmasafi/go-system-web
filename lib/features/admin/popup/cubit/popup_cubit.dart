@@ -11,43 +11,28 @@ import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/generated/locale_keys.g.dart';
 
+import 'package:systego/features/admin/popup/data/repositories/popup_repository.dart';
+
 part 'popup_state.dart';
 
 class PopupCubit extends Cubit<PopupState> {
-  PopupCubit() : super(PopupInitial());
+  final PopupRepository _repository;
+  PopupCubit(this._repository) : super(PopupInitial());
 
   List<PopupModel> allPopups = [];
 
   Future<void> getAllPopups() async {
     emit(GetPopupsLoading());
     try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getAllPopups,
-      );
-
-      log(response.data.toString());
-
-      if (response.statusCode == 200) {
-        final model = PopupResponse.fromJson(response.data);
-
-        if (model.success) {
-          allPopups = model.data.popups;
-          emit(GetPopupsSuccess(model.data.popups));
-        } else {
-          final errorMessage = ErrorHandler.handleError(response);
-          emit(GetPopupsError(errorMessage));
-        }
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(GetPopupsError(errorMessage));
-      }
+      final popups = await _repository.getAllPopups();
+      allPopups = popups;
+      emit(GetPopupsSuccess(popups));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(GetPopupsError(errorMessage));
+      emit(GetPopupsError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
-Future<void> addPopup({
+  Future<void> addPopup({
     required String titleAr,
     required String titleEn,
     required String descriptionAr,
@@ -56,49 +41,21 @@ Future<void> addPopup({
     required File? image,
   }) async {
     emit(CreatePopupLoading());
-
     try {
-      String? base64Image;
-      // String? base64ImageEn;
-
-      if (image != null) {
-        base64Image = await _convertFileToBase64(image);
-      }
-
-      // if (imageEn != null) {
-      //   base64ImageEn = await _convertFileToBase64(imageEn);
-      // }
-
-      final data = {
-        "title_ar": titleAr,
-        "title_En": titleEn,
-        "description_ar": descriptionAr,
-        "description_En": descriptionEn,
-        "link": link,
-        if (base64Image != null) "image": base64Image,
-        // if (base64ImageEn != null) "image_En": base64ImageEn,
-      };
-
-      log("add popup Data ${data}");
-
-      final response = await DioHelper.postData(
-        url: EndPoint.addPopup,
-        data: data,
+      await _repository.createPopup(
+        titleAr: titleAr,
+        titleEn: titleEn,
+        descriptionAr: descriptionAr,
+        descriptionEn: descriptionEn,
+        link: link,
+        imagePath: image?.path,
       );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreatePopupSuccess(LocaleKeys.popup_created_success.tr()));
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(CreatePopupError(errorMessage));
-      }
+      emit(CreatePopupSuccess(LocaleKeys.popup_created_success.tr()));
+      getAllPopups();
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(CreatePopupError(errorMessage));
+      emit(CreatePopupError(e.toString().replaceAll('Exception: ', '')));
     }
   }
-
-
 
   Future<void> updatePopup({
     required String popupId,
@@ -108,88 +65,33 @@ Future<void> addPopup({
     required String descriptionEn,
     required String link,
     required File? image,
-    // required File? imageEn,
   }) async {
     emit(UpdatePopupLoading());
     try {
-
-      // String? base64ImageAr;
-      String? base64Image;
-
-      if (image != null) {
-        base64Image = await _convertFileToBase64(image);
-      }
-
-      // if (imageEn != null) {
-      //   base64ImageEn = await _convertFileToBase64(imageEn);
-      // }
-
-
-      final data = {
-        "title_ar": titleAr,
-        "title_En": titleEn,
-        "description_ar": descriptionAr,
-        "description_En": descriptionEn,
-        "link": link,
-        if (base64Image != null) "image": base64Image,
-        // if (base64ImageEn != null) "image_En": base64ImageEn,
-      };
-
-      final response = await DioHelper.putData(
-        url: EndPoint.updatePopup(popupId),
-        data: data,
+      await _repository.updatePopup(
+        popupId: popupId,
+        titleAr: titleAr,
+        titleEn: titleEn,
+        descriptionAr: descriptionAr,
+        descriptionEn: descriptionEn,
+        link: link,
+        imagePath: image?.path,
       );
-
-      if (response.statusCode == 200) {
-       emit(UpdatePopupSuccess(LocaleKeys.popup_updated_success.tr()));
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(UpdatePopupError(errorMessage));
-      }
+      emit(UpdatePopupSuccess(LocaleKeys.popup_updated_success.tr()));
+      getAllPopups();
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(UpdatePopupError(errorMessage));
+      emit(UpdatePopupError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> deletePopup(String popupId) async {
     emit(DeletePopupLoading());
     try {
-      final response = await DioHelper.deleteData(
-        url: EndPoint.deletePopup(popupId),
-      );
-
-      if (response.statusCode == 200) {
-        allPopups.removeWhere((popup) => popup.id == popupId);
-        emit(DeletePopupSuccess(LocaleKeys.popup_deleted_success.tr()));
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(DeletePopupError(errorMessage));
-      }
+      await _repository.deletePopup(popupId);
+      allPopups.removeWhere((popup) => popup.id == popupId);
+      emit(DeletePopupSuccess(LocaleKeys.popup_deleted_success.tr()));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(DeletePopupError(errorMessage));
-    }
-  }
-
-  Future<String?> _convertFileToBase64(File imageFile) async {
-    try {
-      final bytes = await imageFile.readAsBytes();
-      
-      String? mimeType;
-      final ext = imageFile.path.toLowerCase().split('.').last;
-      if (ext == 'png') {
-        mimeType = "image/png";
-      } else if (ext == 'jpg' || ext == 'jpeg') {
-        mimeType = "image/jpeg";
-      } else {
-        mimeType = "application/octet-stream";
-      }
-
-      return "data:$mimeType;base64,${base64Encode(bytes)}";
-    } catch (e) {
-      log("Error converting image: $e");
-      return null;
+      emit(DeletePopupError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 }

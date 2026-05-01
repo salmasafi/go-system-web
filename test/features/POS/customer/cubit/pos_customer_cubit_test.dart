@@ -5,8 +5,8 @@ import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:systego/core/services/cache_helper.dart';
 import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/features/POS/customer/cubit/pos_customer_cubit.dart';
-import 'package:systego/features/POS/customer/model/pos_customer_model.dart';
+import 'package:systego/features/pos/customer/cubit/pos_customer_cubit.dart';
+import 'package:systego/features/pos/customer/model/pos_customer_model.dart';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

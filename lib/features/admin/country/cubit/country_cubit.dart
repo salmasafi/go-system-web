@@ -6,51 +6,32 @@ import '../../../../core/utils/error_handler.dart';
 import '../model/country_model.dart';
 import 'Country_state.dart';
 
+import 'package:systego/features/admin/country/data/repositories/country_repository.dart';
+
 class CountryCubit extends Cubit<CountryState> {
-  CountryCubit() : super(CountryInitial());
+  final CountryRepository _repository;
+  CountryCubit(this._repository) : super(CountryInitial());
 
   List<CountryModel> allCountries = [];
 
   Future<void> getCountries() async {
     emit(GetCountriesLoading());
     try {
-      final response = await DioHelper.getData(url: EndPoint.getCountries);
-      log(response.data.toString());
-      if (response.statusCode == 200) {
-        final model = CountryResponse.fromJson(response.data);
-        if (model.success == true) {
-          emit(GetCountriesSuccess(model.data.countries));
-        } else {
-          final errorMessage = ErrorHandler.handleError(response);
-          emit(GetCountriesError(errorMessage));
-        }
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(GetCountriesError(errorMessage));
-      }
+      final countries = await _repository.getCountries();
+      allCountries = countries;
+      emit(GetCountriesSuccess(countries));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(GetCountriesError(errorMessage));
+      emit(GetCountriesError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> selectCountry(String countryId, String name) async {
     emit(SelectCountryLoading());
     try {
-      final response = await DioHelper.putData(
-        url: EndPoint.selectCountry(countryId),
-        data: {'isDefault': true},
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(SelectCountrySuccess('$name is the default country now!'));
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(SelectCountryError(errorMessage));
-      }
+      await _repository.selectCountry(countryId);
+      emit(SelectCountrySuccess('$name is the default country now!'));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(SelectCountryError(errorMessage));
+      emit(SelectCountryError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -60,22 +41,11 @@ class CountryCubit extends Cubit<CountryState> {
   }) async {
     emit(CreateCountryLoading());
     try {
-      final data = {'name': name, 'ar_name': arName};
-
-      final response = await DioHelper.postData(
-        url: EndPoint.createCountry,
-        data: data,
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateCountrySuccess('Country is created successfully'));
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(CreateCountryError(errorMessage));
-      }
+      await _repository.createCountry(name: name, arName: arName);
+      emit(CreateCountrySuccess('Country is created successfully'));
+      getCountries();
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(CreateCountryError(errorMessage));
+      emit(CreateCountryError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -86,42 +56,23 @@ class CountryCubit extends Cubit<CountryState> {
   }) async {
     emit(UpdateCountryLoading());
     try {
-      final data = {'name': name, 'ar_name': arName};
-
-      final response = await DioHelper.putData(
-        url: EndPoint.updateCountry(countryId),
-        data: data,
-      );
-
-      if (response.statusCode == 200) {
-        emit(UpdateCountrySuccess('Country updated successfully'));
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(UpdateCountryError(errorMessage));
-      }
+      await _repository.updateCountry(countryId: countryId, name: name, arName: arName);
+      emit(UpdateCountrySuccess('Country updated successfully'));
+      getCountries();
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(UpdateCountryError(errorMessage));
+      emit(UpdateCountryError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> deleteCountry(String countryId) async {
     emit(DeleteCountryLoading());
     try {
-      final response = await DioHelper.deleteData(
-        url: EndPoint.deleteCountry(countryId),
-      );
-
-      if (response.statusCode == 200) {
-        allCountries.removeWhere((country) => country.id == countryId);
-        emit(DeleteCountrySuccess('Country deleted successfully'));
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(DeleteCountryError(errorMessage));
-      }
+      await _repository.deleteCountry(countryId);
+      allCountries.removeWhere((country) => country.id == countryId);
+      emit(DeleteCountrySuccess('Country deleted successfully'));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(DeleteCountryError(errorMessage));
+      emit(DeleteCountryError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 }
+

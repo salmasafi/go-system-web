@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
-import '../../../../core/constants/app_colors.dart';
+import '../../../../../core/constants/app_colors.dart';
 import '../../cubit/attribute_type_cubit/attribute_type_cubit.dart';
 import '../../cubit/attribute_type_cubit/attribute_type_state.dart';
 import '../../models/attribute_type_model.dart';
@@ -12,7 +12,8 @@ class CreateAttributeTypeDialog extends StatefulWidget {
   const CreateAttributeTypeDialog({super.key, this.attributeType});
 
   @override
-  State<CreateAttributeTypeDialog> createState() => _CreateAttributeTypeDialogState();
+  State<CreateAttributeTypeDialog> createState() =>
+      _CreateAttributeTypeDialogState();
 }
 
 class _CreateAttributeTypeDialogState extends State<CreateAttributeTypeDialog> {
@@ -122,7 +123,9 @@ class _CreateAttributeTypeDialogState extends State<CreateAttributeTypeDialog> {
         ),
         BlocBuilder<AttributeTypeCubit, AttributeTypeState>(
           builder: (context, state) {
-            final isLoading = state is AttributeTypeCreating || state is AttributeTypeUpdating;
+            final isLoading =
+                state is AttributeTypeCreating ||
+                state is AttributeTypeUpdating;
             return ElevatedButton(
               onPressed: isLoading ? null : _submit,
               style: ElevatedButton.styleFrom(

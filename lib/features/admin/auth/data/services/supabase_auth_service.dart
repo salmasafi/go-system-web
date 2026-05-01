@@ -1,8 +1,8 @@
 import 'dart:developer';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../core/services/cache_helper.dart';
-import '../../../../core/supabase/supabase_error_handler.dart';
-import '../../model/user_model.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide User;
+import '../../../../../core/services/cache_helper.dart';
+import '../../../../../core/supabase/supabase_error_handler.dart';
+import '../../model/user_model.dart' as model;
 import 'auth_service_interface.dart';
 
 /// Authentication service using Supabase Auth
@@ -14,7 +14,7 @@ class SupabaseAuthService implements AuthServiceInterface {
 
   /// Login with email and password
   /// Returns UserModel to match existing API structure
-  Future<UserModel> login({
+  Future<model.UserModel> login({
     required String email,
     required String password,
   }) async {
@@ -35,7 +35,7 @@ class SupabaseAuthService implements AuthServiceInterface {
       final userData = await _fetchAdminData(response.user!.id);
 
       // Build UserModel to match existing structure
-      final user = User(
+      final user = model.User(
         id: response.user!.id,
         username: userData?['username'] ?? email.split('@').first,
         email: email,
@@ -47,7 +47,7 @@ class SupabaseAuthService implements AuthServiceInterface {
         hasOpenShift: userData?['has_open_shift'] ?? false,
       );
 
-      final data = Data(
+      final data = model.Data(
         message: 'Login successful',
         token: response.session!.accessToken,
         user: user,
@@ -58,7 +58,7 @@ class SupabaseAuthService implements AuthServiceInterface {
 
       log('SupabaseAuth: Login successful for ${user.username}');
 
-      return UserModel(success: true, data: data);
+      return model.UserModel(success: true, data: data);
     } on AuthException catch (e) {
       log('SupabaseAuth: AuthException - ${e.message}');
       throw Exception(SupabaseErrorHandler.handleError(e));
@@ -98,14 +98,14 @@ class SupabaseAuthService implements AuthServiceInterface {
   }
 
   /// Get current user
-  User? getCurrentUser() {
+  model.User? getCurrentUser() {
     final supabaseUser = _client.auth.currentUser;
     if (supabaseUser == null) return null;
 
     // Try to get cached user data first
-    final cachedUser = CacheHelper.getModel<User>(
+    final cachedUser = CacheHelper.getModel<model.User>(
       key: 'user',
-      fromJson: (json) => User.fromJson(json),
+      fromJson: (json) => model.User.fromJson(json),
     );
 
     if (cachedUser != null) {
@@ -113,7 +113,7 @@ class SupabaseAuthService implements AuthServiceInterface {
     }
 
     // Fallback to basic user from auth
-    return User(
+    return model.User(
       id: supabaseUser.id,
       email: supabaseUser.email,
       username: supabaseUser.email?.split('@').first,
@@ -155,9 +155,9 @@ class SupabaseAuthService implements AuthServiceInterface {
   }
 
   /// Save authentication data to cache
-  Future<void> _saveToCache(String token, User user) async {
+  Future<void> _saveToCache(String token, model.User user) async {
     await CacheHelper.saveData(key: 'token', value: token);
-    await CacheHelper.saveModel<User>(
+    await CacheHelper.saveModel<model.User>(
       key: 'user',
       model: user,
       toJson: (u) => u.toJson(),

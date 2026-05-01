@@ -246,7 +246,7 @@ class _StatusFilter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-      value: selected.isEmpty ? null : selected,
+      initialValue: selected.isEmpty ? null : selected,
       isExpanded: true,
       hint: Row(
         children: [

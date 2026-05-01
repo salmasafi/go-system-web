@@ -2,6 +2,7 @@ import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../model/checkout_models.dart';
+import 'cart_item_attribute_display.dart';
 import 'cart_item_details_dialog.dart';
 
 class CartItemTile extends StatelessWidget {
@@ -97,6 +98,10 @@ class CartItemTile extends StatelessWidget {
                       ),
                     ],
                   ),
+
+                  // Attribute display (Color: Red, Size: M, etc.)
+                  if (item.hasSelectedAttributes || item.hasBundleAttributes)
+                    CartItemAttributeDisplay(item: item),
 
                   // Variation Code (if exists)
                   SizedBox(height: ResponsiveUI.value(context, 4)),

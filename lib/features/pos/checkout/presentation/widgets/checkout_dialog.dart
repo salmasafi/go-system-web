@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_textfield/build_text_field.dart';
-import 'package:systego/features/POS/checkout/model/reciept_data.dart';
-import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
-import 'package:systego/features/POS/home/model/pos_models.dart';
+import 'package:systego/features/pos/checkout/model/reciept_data.dart';
+import 'package:systego/features/pos/home/cubit/pos_home_cubit.dart';
+import 'package:systego/features/pos/home/model/pos_models.dart';
 import 'package:systego/features/admin/discount/model/discount_model.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../cubit/checkout_cubit/checkout_cubit.dart';
@@ -50,7 +50,7 @@ Widget buildDropdownField<T>(
       ),
       SizedBox(height: spacing8),
       DropdownButtonFormField<T>(
-        value: value,
+        initialValue: value,
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: TextStyle(

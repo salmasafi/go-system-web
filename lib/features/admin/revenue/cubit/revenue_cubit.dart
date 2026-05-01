@@ -8,10 +8,12 @@ import 'package:systego/features/admin/revenue/model/revenue_model.dart';
 import 'package:systego/features/admin/revenue/model/selection_revenue_model.dart';
 import 'package:systego/generated/locale_keys.g.dart';
 
+import 'package:systego/features/admin/revenue/data/repositories/revenue_repository.dart';
 part 'revenue_state.dart';
 
 class RevenueCubit extends Cubit<RevenueState> {
-  RevenueCubit() : super(RevenueInitial());
+  final RevenueRepository _repository;
+  RevenueCubit(this._repository) : super(RevenueInitial());
 
   List<RevenueModel> allRevenues = [];
 // Add these lists to persist data across state changes
@@ -23,28 +25,20 @@ class RevenueCubit extends Cubit<RevenueState> {
   Future<void> getSelectionData() async {
     emit(GetSelectionDataLoading());
     try {
-      final response = await DioHelper.getData(url: EndPoint.getRevenueSelection);
-      log('Selection Data Response: ${response.data}');
+      final response = await _repository.getSelectionData();
+      log('Selection Data Response: $response');
 
-      if (response.statusCode == 200) {
-       
-        final model = RevenueSelectionDataResponse.fromJson(response.data);
+      final model = RevenueSelectionDataResponse.fromJson(response);
 
-        if (model.success == true) {
-          selectionCategories = model.data.categories;
-          selectionAccounts = model.data.accounts;
-          emit(GetSelectionDataSuccess(selectionCategories, selectionAccounts));
-        } else {
-          final errorMessage = ErrorHandler.handleError(response);
-          emit(GetSelectionDataError(errorMessage));
-        }
+      if (model.success == true) {
+        selectionCategories = model.data.categories;
+        selectionAccounts = model.data.accounts;
+        emit(GetSelectionDataSuccess(selectionCategories, selectionAccounts));
       } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(GetSelectionDataError(errorMessage));
+        emit(GetSelectionDataError('Failed to fetch selection data'));
       }
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(GetSelectionDataError(errorMessage));
+      emit(GetSelectionDataError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -52,26 +46,11 @@ class RevenueCubit extends Cubit<RevenueState> {
   Future<void> getRevenues() async {
     emit(GetRevenuesLoading());
     try {
-      final response = await DioHelper.getData(url: EndPoint.getAllRevenues);
-      log(response.data.toString());
-
-      if (response.statusCode == 200) {
-        final model = RevenueResponse.fromJson(response.data);
-
-        if (model.success == true) {
-          allRevenues = model.data.revenues;
-          emit(GetRevenuesSuccess(allRevenues));
-        } else {
-          final errorMessage = ErrorHandler.handleError(response);
-          emit(GetRevenuesError(errorMessage));
-        }
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(GetRevenuesError(errorMessage));
-      }
+      final revenues = await _repository.getAllRevenues();
+      allRevenues = revenues.map((e) => e.toLegacyModel()).toList();
+      emit(GetRevenuesSuccess(allRevenues));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(GetRevenuesError(errorMessage));
+      emit(GetRevenuesError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -79,20 +58,14 @@ class RevenueCubit extends Cubit<RevenueState> {
   Future<void> getRevenueById(String revenueId) async {
     emit(GetRevenueByIdLoading());
     try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getRevenueById(revenueId),
-      );
-
-      if (response.statusCode == 200) {
-        final model = RevenueModel.fromJson(response.data['data']);
-        emit(GetRevenueByIdSuccess(model));
+      final revenue = await _repository.getRevenueById(revenueId);
+      if (revenue != null) {
+        emit(GetRevenueByIdSuccess(revenue.toLegacyModel()));
       } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(GetRevenueByIdError(errorMessage));
+        emit(GetRevenueByIdError(LocaleKeys.error_occurred.tr()));
       }
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(GetRevenueByIdError(errorMessage));
+      emit(GetRevenueByIdError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -105,32 +78,19 @@ class RevenueCubit extends Cubit<RevenueState> {
   }) async {
     emit(CreateRevenueLoading());
     try {
-      final data = {
-        "name": name,
-        "amount": amount,
-        "Category_id": categoryId,
-        "note": note,
-        "financial_accountId": financialAccountId,
-      };
-
-      final response = await DioHelper.postData(
-        url: EndPoint.addRevenue,
-        data: data,
+      await _repository.createRevenue(
+        categoryId: categoryId,
+        bankAccountId: financialAccountId,
+        amount: amount,
+        description: name,
+        receiptNumber: note,
       );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        // Optionally refresh the list
-        // await getRevenues();
-        emit(
-          CreateRevenueSuccess(LocaleKeys.revenue_created_successfully.tr()),
-        );
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(CreateRevenueError(errorMessage));
-      }
+      emit(
+        CreateRevenueSuccess(LocaleKeys.revenue_created_successfully.tr()),
+      );
+      await getRevenues();
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(CreateRevenueError(errorMessage));
+      emit(CreateRevenueError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -145,41 +105,28 @@ class RevenueCubit extends Cubit<RevenueState> {
   }) async {
     emit(UpdateRevenueLoading());
     try {
-      final data = {
-        "name": name,
-        "amount": amount,
-        "Category_id": categoryId,
-        "note": note,
-        "financial_accountId": financialAccountId,
-      };
-
-
-      log("update revenue data ${data}");
-
-      final response = await DioHelper.putData(
-        url: EndPoint.updateRevenue(revenueId),
-        data: data,
+      final updated = await _repository.updateRevenue(
+        id: revenueId,
+        categoryId: categoryId,
+        bankAccountId: financialAccountId,
+        amount: amount,
+        description: name,
+        receiptNumber: note,
       );
 
-      if (response.statusCode == 200) {
-        // Update the local list
-        final index = allRevenues.indexWhere((r) => r.id == revenueId);
-        if (index != -1) {
-          final updatedRevenue = RevenueModel.fromJson(response.data['data']);
-          allRevenues[index] = updatedRevenue;
-        }
-        emit(
-          UpdateRevenueSuccess(LocaleKeys.revenue_updated_successfully.tr()),
-        );
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(UpdateRevenueError(errorMessage));
+      // Update the local list
+      final index = allRevenues.indexWhere((r) => r.id == revenueId);
+      if (index != -1) {
+        allRevenues[index] = updated.toLegacyModel();
       }
+      
+      emit(
+        UpdateRevenueSuccess(LocaleKeys.revenue_updated_successfully.tr()),
+      );
+      await getRevenues();
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(UpdateRevenueError(errorMessage));
+      emit(UpdateRevenueError(e.toString().replaceAll('Exception: ', '')));
     }
   }
-
-
 }
+

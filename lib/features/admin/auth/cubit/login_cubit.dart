@@ -8,8 +8,11 @@ import '../../../../core/utils/error_handler.dart';
 import '../model/user_model.dart';
 import 'login_state.dart';
 
+import 'package:systego/features/admin/auth/data/repositories/auth_repository.dart';
+
 class LoginCubit extends Cubit<LoginState> {
-  LoginCubit() : super(LoginInitial()) {
+  final AuthRepository _repository;
+  LoginCubit(this._repository) : super(LoginInitial()) {
     _loadSavedUser(); // Load saved user on app start
   }
 
@@ -42,51 +45,39 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       log('Starting login request for: $email');
 
-      final response = await DioHelper.postData(
-        url: EndPoint.login,
-        data: {'email': email, 'password': password},
-      );
+      final result = await _repository.login(email: email, password: password);
 
-      log('Login response: ${response.statusCode}');
-      DioHelper.printResponse(response);
+      userModel = result;
 
-      if (response.statusCode == 200) {
-        userModel = UserModel.fromJson(response.data);
+      if (userModel?.success == true && userModel?.data != null) {
+        final data = userModel!.data!;
 
-        if (userModel?.success == true && userModel?.data != null) {
-          final data = userModel!.data!;
-
-          // Save token
-          if (data.token != null && data.token!.isNotEmpty) {
-            await CacheHelper.saveData(key: 'token', value: data.token);
-            log('Token saved');
-          }
-
-          // Save user
-          if (data.user != null) {
-            await CacheHelper.saveModel<User>(
-              key: 'user',
-              model: data.user!,
-              toJson: (user) => user.toJson(),
-            );
-            _savedUser = data.user; // Keep in memory
-            log('User saved: ${data.user!.username}');
-          }
-
-          emit(LoginSuccess());
-        } else {
-          final errorMsg = userModel?.data?.message ?? 'Login failed';
-          log('Login failed: $errorMsg');
-          emit(LoginError(errorMsg));
+        // Save token
+        if (data.token != null && data.token!.isNotEmpty) {
+          await CacheHelper.saveData(key: 'token', value: data.token);
+          log('Token saved');
         }
+
+        // Save user
+        if (data.user != null) {
+          await CacheHelper.saveModel<User>(
+            key: 'user',
+            model: data.user!,
+            toJson: (user) => user.toJson(),
+          );
+          _savedUser = data.user; // Keep in memory
+          log('User saved: ${data.user!.username}');
+        }
+
+        emit(LoginSuccess());
       } else {
-        final errorMsg = ErrorHandler.handleError(response);
+        final errorMsg = userModel?.data?.message ?? 'Login failed';
+        log('Login failed: $errorMsg');
         emit(LoginError(errorMsg));
       }
     } catch (error) {
       log('Login exception: $error');
-      final errorMsg = ErrorHandler.handleError(error);
-      emit(LoginError(errorMsg));
+      emit(LoginError(error.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -107,6 +98,7 @@ class LoginCubit extends Cubit<LoginState> {
   // Optional: Logout
   Future<void> logout() async {
     try {
+      await _repository.logout();
       await CacheHelper.removeData(key: 'token');
       await CacheHelper.removeData(key: 'user');
       userModel = null;

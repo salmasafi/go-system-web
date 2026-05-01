@@ -6,60 +6,42 @@ import 'package:meta/meta.dart';
 import 'package:systego/core/services/dio_helper.dart';
 import 'package:systego/core/services/endpoints.dart';
 import 'package:systego/core/utils/error_handler.dart';
-import 'package:systego/features/admin/units/model/units_model.dart';
+import 'package:systego/features/admin/units/model/unit_model.dart';
 import '../../../../../generated/locale_keys.g.dart';
+
+import 'package:systego/features/admin/units/data/repositories/unit_repository.dart';
 
 part 'units_state.dart';
 
 class UnitsCubit extends Cubit<UnitsState> {
-  UnitsCubit() : super(UnitsInitial());
+  final UnitRepository _repository;
+  UnitsCubit(this._repository) : super(UnitsInitial());
 
   List<UnitModel> allUnits = [];
 
   Future<void> getUnits() async {
     emit(GetUnitsLoading());
     try {
-      final response = await DioHelper.getData(url: EndPoint.getUnits);
-      log(response.data.toString());
-      if (response.statusCode == 200) {
-        final model = UnitsResponse.fromJson(response.data);
-        if (model.success == true) {
-          emit(GetUnitsSuccess(model.data.units));
-        } else {
-          final errorMessage = ErrorHandler.handleError(response);
-          emit(GetUnitsError(errorMessage));
-        }
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(GetUnitsError(errorMessage));
-      }
+      final units = await _repository.getAllUnits();
+      allUnits = units;
+      emit(GetUnitsSuccess(units));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(GetUnitsError(errorMessage));
+      emit(GetUnitsError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> changeUnitStatus(String unitId, String name, bool status) async {
     emit(ChangeUnitStatusLoading());
     try {
-      final response = await DioHelper.putData(
-        url: '${EndPoint.getUnits}/$unitId',
-        data: {'status': status},
+      await _repository.updateUnitStatus(unitId, status);
+      emit(
+        ChangeUnitStatusSuccess(
+          '$name ${status ? LocaleKeys.activated_successfully.tr() : LocaleKeys.deactivated_successfully.tr()}',
+        ),
       );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(
-          ChangeUnitStatusSuccess(
-            '$name ${status ? LocaleKeys.activated_successfully.tr() : LocaleKeys.deactivated_successfully.tr()}',
-          ),
-        );
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(ChangeUnitStatusError(errorMessage));
-      }
+      await getUnits();
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(ChangeUnitStatusError(errorMessage));
+      emit(ChangeUnitStatusError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -74,30 +56,18 @@ class UnitsCubit extends Cubit<UnitsState> {
   }) async {
     emit(CreateUnitLoading());
     try {
-      final data = {
-        'name': name,
-        'ar_name': arName,
-        'code': code,
-        if (baseUnit != null) 'base_unit': baseUnit,
-        'operator': operator,
-        'operator_value': operatorValue,
-        'status': status,
-      };
-
-      final response = await DioHelper.postData(
-        url: EndPoint.getUnits,
-        data: data,
+      await _repository.createUnit(
+        name: name,
+        arName: arName,
+        code: code,
+        baseUnitId: baseUnit,
+        operator: operator,
+        operatorValue: operatorValue,
       );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateUnitSuccess(LocaleKeys.unit_created_successfully.tr()));
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(CreateUnitError(errorMessage));
-      }
+      emit(CreateUnitSuccess(LocaleKeys.unit_created_successfully.tr()));
+      await getUnits();
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(CreateUnitError(errorMessage));
+      emit(CreateUnitError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -113,50 +83,30 @@ class UnitsCubit extends Cubit<UnitsState> {
   }) async {
     emit(UpdateUnitLoading());
     try {
-      final data = {
-        'name': name,
-        'ar_name': arName,
-        'code': code,
-        if (baseUnit != null) 'base_unit': baseUnit,
-        'operator': operator,
-        'operator_value': operatorValue,
-        'status': status,
-      };
-
-      final response = await DioHelper.putData(
-        url: '${EndPoint.getUnits}/$unitId',
-        data: data,
+      await _repository.updateUnit(
+        id: unitId,
+        name: name,
+        arName: arName,
+        code: code,
+        baseUnitId: baseUnit,
+        operator: operator,
+        operatorValue: operatorValue,
       );
-
-      if (response.statusCode == 200) {
-        emit(UpdateUnitSuccess(LocaleKeys.unit_updated_successfully.tr()));
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(UpdateUnitError(errorMessage));
-      }
+      emit(UpdateUnitSuccess(LocaleKeys.unit_updated_successfully.tr()));
+      await getUnits();
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(UpdateUnitError(errorMessage));
+      emit(UpdateUnitError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> deleteUnit(String unitId) async {
     emit(DeleteUnitLoading());
     try {
-      final response = await DioHelper.deleteData(
-        url: '${EndPoint.getUnits}/$unitId',
-      );
-
-      if (response.statusCode == 200) {
-        allUnits.removeWhere((unit) => unit.id == unitId);
-        emit(DeleteUnitSuccess('Unit deleted successfully'));
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(DeleteUnitError(errorMessage));
-      }
+      await _repository.deleteUnit(unitId);
+      allUnits.removeWhere((unit) => unit.id == unitId);
+      emit(DeleteUnitSuccess('Unit deleted successfully'));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(DeleteUnitError(errorMessage));
+      emit(DeleteUnitError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 }

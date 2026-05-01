@@ -4,55 +4,40 @@ import 'package:systego/core/services/endpoints.dart';
 import 'package:systego/core/utils/error_handler.dart';
 import '../model/purchase_return_model.dart';
 
+import 'package:systego/features/admin/purchase_returns/data/repositories/purchase_return_repository.dart';
+
 part 'purchase_return_state.dart';
 
+
 class PurchaseReturnCubit extends Cubit<PurchaseReturnState> {
-  PurchaseReturnCubit() : super(PurchaseReturnInitial());
+  final PurchaseReturnRepository _repository;
+  PurchaseReturnCubit(this._repository) : super(PurchaseReturnInitial());
 
   List<PurchaseReturnModel> returns = [];
 
   Future<void> getReturns() async {
     emit(GetReturnsLoading());
     try {
-      final response =
-          await DioHelper.getData(url: EndPoint.getAllPurchaseReturns);
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final data = PurchaseReturnData.fromJson(response.data['data']);
-        returns = data.returns;
-        emit(GetReturnsSuccess(data));
-      } else {
-        emit(GetReturnsError(ErrorHandler.handleError(response)));
-      }
+      final list = await _repository.getAllReturns();
+      returns = list;
+      final data = PurchaseReturnData(returns: list, totalReturns: list.length, totalAmount: 0.0);
+      emit(GetReturnsSuccess(data));
     } catch (e) {
-      emit(GetReturnsError(ErrorHandler.handleError(e)));
+      emit(GetReturnsError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> searchPurchaseByReference(String reference) async {
     emit(SearchPurchaseLoading());
     try {
-      final response = await DioHelper.getData(
-          url: EndPoint.getPurchaseByReference(reference.trim()));
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final data = response.data['data'];
-        // purchases come in full/later/partial lists - merge all
-        final allPurchases = [
-          ...(data['purchases']?['full'] as List? ?? []),
-          ...(data['purchases']?['later'] as List? ?? []),
-          ...(data['purchases']?['partial'] as List? ?? []),
-        ];
-        if (allPurchases.isEmpty) {
-          emit(SearchPurchaseError('No purchase found with reference: $reference'));
-          return;
-        }
-        final purchase = allPurchases.first as Map<String, dynamic>;
-        emit(SearchPurchaseSuccess(purchase));
-      } else {
-        emit(SearchPurchaseError(
-            response.data['message']?.toString() ?? 'Purchase not found'));
+      final purchase = await _repository.getPurchaseByReference(reference.trim());
+      if (purchase == null) {
+        emit(SearchPurchaseError('No purchase found with reference: $reference'));
+        return;
       }
+      emit(SearchPurchaseSuccess(purchase));
     } catch (e) {
-      emit(SearchPurchaseError(ErrorHandler.handleError(e)));
+      emit(SearchPurchaseError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -65,25 +50,17 @@ class PurchaseReturnCubit extends Cubit<PurchaseReturnState> {
   }) async {
     emit(CreateReturnLoading());
     try {
-      final response = await DioHelper.postData(
-        url: EndPoint.createPurchaseReturn,
-        data: {
-          'purchase_id': purchaseId,
-          'note': note,
-          'refund_method': refundMethod,
-          'refund_account_id': refundAccountId,
-          'items': items,
-        },
+      await _repository.createReturn(
+        purchaseId: purchaseId,
+        note: note,
+        refundMethod: refundMethod,
+        refundAccountId: refundAccountId,
+        items: items,
       );
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateReturnSuccess('Return created successfully'));
-        await getReturns();
-      } else {
-        emit(CreateReturnError(
-            response.data['message']?.toString() ?? 'Failed'));
-      }
+      emit(CreateReturnSuccess('Return created successfully'));
+      await getReturns();
     } catch (e) {
-      emit(CreateReturnError(ErrorHandler.handleError(e)));
+      emit(CreateReturnError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -94,37 +71,27 @@ class PurchaseReturnCubit extends Cubit<PurchaseReturnState> {
   }) async {
     emit(UpdateReturnLoading());
     try {
-      final response = await DioHelper.putData(
-        url: EndPoint.updatePurchaseReturn(id),
-        data: {'note': note, 'refund_method': refundMethod},
+      await _repository.updateReturn(
+        id: id,
+        note: note,
+        refundMethod: refundMethod,
       );
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(UpdateReturnSuccess('Return updated successfully'));
-        await getReturns();
-      } else {
-        emit(UpdateReturnError(
-            response.data['message']?.toString() ?? 'Failed'));
-      }
+      emit(UpdateReturnSuccess('Return updated successfully'));
+      await getReturns();
     } catch (e) {
-      emit(UpdateReturnError(ErrorHandler.handleError(e)));
+      emit(UpdateReturnError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> deleteReturn(String id) async {
     emit(DeleteReturnLoading());
     try {
-      final response =
-          await DioHelper.deleteData(url: EndPoint.deletePurchaseReturn(id));
-      if (response.statusCode == 200) {
-        returns.removeWhere((r) => r.id == id);
-        emit(DeleteReturnSuccess('Return deleted successfully'));
-        await getReturns();
-      } else {
-        emit(DeleteReturnError(
-            response.data['message']?.toString() ?? 'Failed'));
-      }
+      await _repository.deleteReturn(id);
+      returns.removeWhere((r) => r.id == id);
+      emit(DeleteReturnSuccess('Return deleted successfully'));
+      await getReturns();
     } catch (e) {
-      emit(DeleteReturnError(ErrorHandler.handleError(e)));
+      emit(DeleteReturnError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
-import '../../../../core/constants/app_colors.dart';
+import '../../../../../core/constants/app_colors.dart';
 import '../../cubit/attribute_value_cubit/attribute_value_cubit.dart';
 import '../../cubit/attribute_value_cubit/attribute_value_state.dart';
 import '../../models/attribute_value_model.dart';
@@ -17,10 +17,12 @@ class CreateAttributeValueDialog extends StatefulWidget {
   });
 
   @override
-  State<CreateAttributeValueDialog> createState() => _CreateAttributeValueDialogState();
+  State<CreateAttributeValueDialog> createState() =>
+      _CreateAttributeValueDialogState();
 }
 
-class _CreateAttributeValueDialogState extends State<CreateAttributeValueDialog> {
+class _CreateAttributeValueDialogState
+    extends State<CreateAttributeValueDialog> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _arNameController = TextEditingController();
@@ -69,7 +71,9 @@ class _CreateAttributeValueDialogState extends State<CreateAttributeValueDialog>
     final isEditing = widget.attributeValue != null;
 
     return AlertDialog(
-      title: Text(isEditing ? 'Edit Attribute Value' : 'Create Attribute Value'),
+      title: Text(
+        isEditing ? 'Edit Attribute Value' : 'Create Attribute Value',
+      ),
       content: Form(
         key: _formKey,
         child: Column(
@@ -128,7 +132,9 @@ class _CreateAttributeValueDialogState extends State<CreateAttributeValueDialog>
         ),
         BlocBuilder<AttributeValueCubit, AttributeValueState>(
           builder: (context, state) {
-            final isLoading = state is AttributeValueCreating || state is AttributeValueUpdating;
+            final isLoading =
+                state is AttributeValueCreating ||
+                state is AttributeValueUpdating;
             return ElevatedButton(
               onPressed: isLoading ? null : _submit,
               style: ElevatedButton.styleFrom(

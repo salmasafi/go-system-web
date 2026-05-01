@@ -312,6 +312,24 @@ CREATE POLICY "Cashiers can manage their shifts" ON shifts
 -- SEED DATA
 -- ============================================
 
+-- Ensure bank_accounts columns exist (for reruns)
+ALTER TABLE bank_accounts ADD COLUMN IF NOT EXISTS account_type VARCHAR(50) DEFAULT 'checking';
+ALTER TABLE bank_accounts ADD COLUMN IF NOT EXISTS is_default BOOLEAN DEFAULT FALSE;
+ALTER TABLE bank_accounts ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
+
+-- Add constraint if it doesn't exist
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint 
+        WHERE conname = 'bank_accounts_account_type_check'
+    ) THEN
+        ALTER TABLE bank_accounts 
+        ADD CONSTRAINT bank_accounts_account_type_check 
+        CHECK (account_type IN ('checking', 'savings', 'cash', 'credit'));
+    END IF;
+END $$;
+
 -- Ensure expense_categories columns exist (for reruns)
 ALTER TABLE expense_categories ADD COLUMN IF NOT EXISTS description TEXT;
 ALTER TABLE expense_categories ADD COLUMN IF NOT EXISTS color VARCHAR(20) DEFAULT '#666666';
@@ -349,6 +367,15 @@ ON CONFLICT DO NOTHING;
 -- TRIGGERS
 -- ============================================
 
+-- Drop existing triggers if they exist (for reruns)
+DROP TRIGGER IF EXISTS update_bank_accounts_updated_at ON bank_accounts;
+DROP TRIGGER IF EXISTS update_expenses_updated_at ON expenses;
+DROP TRIGGER IF EXISTS update_expense_categories_updated_at ON expense_categories;
+DROP TRIGGER IF EXISTS update_revenues_updated_at ON revenues;
+DROP TRIGGER IF EXISTS update_revenue_categories_updated_at ON revenue_categories;
+DROP TRIGGER IF EXISTS update_shifts_updated_at ON shifts;
+
+-- Create triggers
 CREATE TRIGGER update_bank_accounts_updated_at BEFORE UPDATE ON bank_accounts
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 

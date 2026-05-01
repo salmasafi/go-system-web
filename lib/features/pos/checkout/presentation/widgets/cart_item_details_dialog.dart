@@ -1,4 +1,4 @@
-// lib/features/POS/checkout/presentation/widgets/cart_item_details_dialog.dart
+// lib/features/pos/checkout/presentation/widgets/cart_item_details_dialog.dart
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import '../../model/checkout_models.dart';
@@ -67,7 +67,7 @@ class CartItemDetailsDialog extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: AppColors.white.withOpacity(0.2),
+              color: AppColors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
@@ -96,9 +96,9 @@ class CartItemDetailsDialog extends StatelessWidget {
       width: double.infinity,
       height: 200,
       decoration: BoxDecoration(
-        color: AppColors.lightBlueBackground.withOpacity(0.3),
+        color: AppColors.lightBlueBackground.withValues(alpha: 0.3),
         border: Border(
-          bottom: BorderSide(color: AppColors.lightGray.withOpacity(0.5)),
+          bottom: BorderSide(color: AppColors.lightGray.withValues(alpha: 0.5)),
         ),
       ),
       child: item.product.image != null
@@ -126,7 +126,7 @@ class CartItemDetailsDialog extends StatelessWidget {
           Text(
             'No Image',
             style: TextStyle(
-              color: AppColors.darkGray.withOpacity(0.5),
+              color: AppColors.darkGray.withValues(alpha: 0.5),
               fontSize: 14,
             ),
           ),
@@ -156,10 +156,10 @@ class CartItemDetailsDialog extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: AppColors.successGreen.withOpacity(0.1),
+              color: AppColors.successGreen.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: AppColors.successGreen.withOpacity(0.3),
+                color: AppColors.successGreen.withValues(alpha: 0.3),
               ),
             ),
             child: Row(
@@ -228,7 +228,7 @@ class CartItemDetailsDialog extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: AppColors.darkBlue.withOpacity(0.1),
+              color: AppColors.darkBlue.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
@@ -328,7 +328,7 @@ class CartItemDetailsDialog extends StatelessWidget {
                         color: AppColors.lightBlueBackground,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: AppColors.primaryBlue.withOpacity(0.3),
+                          color: AppColors.primaryBlue.withValues(alpha: 0.3),
                         ),
                       ),
                       child: Row(
@@ -394,7 +394,7 @@ class CartItemDetailsDialog extends StatelessWidget {
               item.product.description,
               style: TextStyle(
                 fontSize: 14,
-                color: AppColors.darkGray.withOpacity(0.8),
+                color: AppColors.darkGray.withValues(alpha: 0.8),
                 height: 1.5,
               ),
             ),
@@ -413,7 +413,7 @@ class CartItemDetailsDialog extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.lightBlueBackground.withOpacity(0.5),
+        color: AppColors.lightBlueBackground.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -456,7 +456,7 @@ class CartItemDetailsDialog extends StatelessWidget {
           bottomRight: Radius.circular(20),
         ),
         border: Border(
-          top: BorderSide(color: AppColors.lightGray.withOpacity(0.3)),
+          top: BorderSide(color: AppColors.lightGray.withValues(alpha: 0.3)),
         ),
       ),
       child: SizedBox(

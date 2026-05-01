@@ -5,56 +5,24 @@ import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/generated/locale_keys.g.dart';
-import '../../../../core/services/dio_helper.dart';
-import '../../../../core/services/endpoints.dart';
-import '../../../../core/utils/error_handler.dart';
 import '../model/payment_method_model.dart';
 import 'payment_method_state.dart';
+import 'package:systego/features/admin/payment_methods/data/repositories/payment_method_repository.dart';
 
 class PaymentMethodCubit extends Cubit<PaymentMethodState> {
-  PaymentMethodCubit() : super(PaymentMethodInitial());
+  final PaymentMethodRepository _repository;
+  PaymentMethodCubit(this._repository) : super(PaymentMethodInitial());
 
   List<PaymentMethodModel> allPaymentMethods = [];
-
-  String _extractErrorMessage(dynamic errorOrResponse) {
-    // Helper to safely extract message, bypassing ErrorHandler issues
-    if (errorOrResponse is Map<String, dynamic>) {
-      return errorOrResponse['message']?.toString() ?? 'Unknown error occurred';
-    } else if (errorOrResponse is Response) {
-      final data = errorOrResponse.data;
-      if (data is Map<String, dynamic>) {
-        return data['message']?.toString() ??
-            'Server error: ${errorOrResponse.statusCode}';
-      }
-      return 'Server error: ${errorOrResponse.statusCode}';
-    }
-    // Fallback to ErrorHandler for non-Dio errors (e.g., network issues)
-    return ErrorHandler.handleError(errorOrResponse);
-  }
 
   Future<void> getPaymentMethods() async {
     emit(GetPaymentMethodsLoading());
     try {
-      final response = await DioHelper.getData(url: EndPoint.getPaymentMethods);
-      log(response.data.toString());
-      if (response.statusCode == 200) {
-        final model = PaymentMethodResponse.fromJson(
-          response.data as Map<String, dynamic>,
-        );
-        if (model.success == true) {
-          allPaymentMethods = model.data.paymentMethods;
-          emit(GetPaymentMethodsSuccess(allPaymentMethods));
-        } else {
-          final errorMessage = model.data.message;
-          emit(GetPaymentMethodsError(errorMessage));
-        }
-      } else {
-        final errorMessage = _extractErrorMessage(response);
-        emit(GetPaymentMethodsError(errorMessage));
-      }
+      final paymentMethods = await _repository.getPaymentMethods();
+      allPaymentMethods = paymentMethods;
+      emit(GetPaymentMethodsSuccess(paymentMethods));
     } catch (e) {
-      final errorMessage = _extractErrorMessage(e);
-      emit(GetPaymentMethodsError(errorMessage));
+      emit(GetPaymentMethodsError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -68,36 +36,18 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
   }) async {
     emit(CreatePaymentMethodLoading());
     try {
-      String? base64Image;
-      if (icon != null) {
-        base64Image = await _convertFileToBase64(icon);
-      }
-
-      final data = {
-        "name": name,
-        "ar_name": arName,
-        'discription': description,
-        if (base64Image != null) 'icon': base64Image,
-        'isActive': isActive,
-        'type': type,
-      };
-
-       log("dataaaaaaaaaaaaaaaaa: $data");
-
-      final response = await DioHelper.postData(
-        url: EndPoint.createPaymentMethod,
-        data: data,
+      await _repository.createPaymentMethod(
+        name: name,
+        arName: arName,
+        description: description,
+        type: type,
+        isActive: isActive,
+        iconPath: icon?.path,
       );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreatePaymentMethodSuccess(LocaleKeys.payment_method_created_success.tr()));
-      } else {
-        final errorMessage = _extractErrorMessage(response);
-        emit(CreatePaymentMethodError(errorMessage));
-      }
+      emit(CreatePaymentMethodSuccess(LocaleKeys.payment_method_created_success.tr()));
+      getPaymentMethods();
     } catch (e) {
-      final errorMessage = _extractErrorMessage(e);
-      emit(CreatePaymentMethodError(errorMessage));
+      emit(CreatePaymentMethodError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -112,106 +62,32 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
   }) async {
     emit(UpdatePaymentMethodLoading());
     try {
-      String? base64Image;
-      if (icon != null) {
-        base64Image = await _convertFileToBase64(icon);
-      }
-
-
-
-      final data = <String, dynamic>{
-        "name": name,
-        "ar_name": arName,
-        'discription': description,
-        if (base64Image != null) 'icon': base64Image,
-        'isActive': isActive,
-        'type': type,
-      };
-
-      log("dataaaaaaaaaaaaaaaaa: $data");
-
-      final response = await DioHelper.putData(
-        url: EndPoint.updatePaymentMethod(paymentMethodId),
-        data: data,
+      await _repository.updatePaymentMethod(
+        paymentMethodId: paymentMethodId,
+        name: name,
+        arName: arName,
+        description: description,
+        type: type,
+        isActive: isActive,
+        iconPath: icon?.path,
       );
-
-      if (response.statusCode == 200) {
-        emit(UpdatePaymentMethodSuccess(LocaleKeys.payment_method_updated_success.tr()));
-      } else {
-        final errorMessage = _extractErrorMessage(response);
-        emit(UpdatePaymentMethodError(errorMessage));
-      }
+      emit(UpdatePaymentMethodSuccess(LocaleKeys.payment_method_updated_success.tr()));
+      getPaymentMethods();
     } catch (e) {
-      log('Error updating payment method: $e');
-      final errorMessage = _extractErrorMessage(e);
-      
-      // Check if error is related to foreign key constraint
-      String errorString = errorMessage.toString();
-      if (errorString.contains('violates') || 
-          errorString.contains('foreign key') ||
-          errorString.contains('constraint')) {
-        emit(UpdatePaymentMethodError(
-          'Cannot update this payment method because it may affect existing transactions. Please check the references first.'
-        ));
-      } else {
-        emit(UpdatePaymentMethodError(errorMessage));
-      }
+      emit(UpdatePaymentMethodError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> deletePaymentMethod(String paymentMethodId) async {
     emit(DeletePaymentMethodLoading());
     try {
-      final response = await DioHelper.deleteData(
-        url: EndPoint.deletePaymentMethod(paymentMethodId),
+      await _repository.deletePaymentMethod(paymentMethodId);
+      allPaymentMethods.removeWhere(
+        (paymentMethod) => paymentMethod.id == paymentMethodId,
       );
-
-      if (response.statusCode == 200) {
-        allPaymentMethods.removeWhere(
-          (paymentMethod) => paymentMethod.id == paymentMethodId,
-        );
-         emit(DeletePaymentMethodSuccess(LocaleKeys.payment_method_deleted_success.tr()));
-      } else {
-        final errorMessage = _extractErrorMessage(response);
-        emit(DeletePaymentMethodError(errorMessage));
-      }
+      emit(DeletePaymentMethodSuccess(LocaleKeys.payment_method_deleted_success.tr()));
     } catch (e) {
-      log('Error deleting payment method: $e');
-      final errorMessage = _extractErrorMessage(e);
-      
-      // Check if error is related to foreign key constraint
-      String errorString = errorMessage.toString();
-      if (errorString.contains('violates') || 
-          errorString.contains('foreign key') ||
-          errorString.contains('constraint')) {
-        emit(DeletePaymentMethodError(
-          'Cannot delete this payment method because it is being used in transactions. Please remove all references first.'
-        ));
-      } else {
-        emit(DeletePaymentMethodError(errorMessage));
-      }
-    }
-  }
-
-  
-   Future<String?> _convertFileToBase64(File imageFile) async {
-    try {
-      final bytes = await imageFile.readAsBytes();
-      
-      String? mimeType;
-      final ext = imageFile.path.toLowerCase().split('.').last;
-      if (ext == 'png') {
-        mimeType = "image/png";
-      } else if (ext == 'jpg' || ext == 'jpeg') {
-        mimeType = "image/jpeg";
-      } else {
-        mimeType = "application/octet-stream";
-      }
-
-      return "data:$mimeType;base64,${base64Encode(bytes)}";
-    } catch (e) {
-      log("Error converting image: $e");
-      return null;
+      emit(DeletePaymentMethodError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 }

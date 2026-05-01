@@ -147,7 +147,7 @@ class RealtimeService {
 
   /// Handle incoming Postgres change events
   void _handlePostgresChange(
-    PostgresChangesPayload payload,
+    dynamic payload,
     Function(Map<String, dynamic>) onInsert,
     Function(Map<String, dynamic>) onUpdate,
     Function(Map<String, dynamic>) onDelete,

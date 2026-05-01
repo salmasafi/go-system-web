@@ -6,63 +6,26 @@ import '../../../../core/services/dio_helper.dart';
 import '../../../../core/services/endpoints.dart';
 import '../../../../core/utils/error_handler.dart';
 import '../model/currency_model.dart';
+import 'package:systego/features/admin/currency/data/repositories/currency_repository.dart';
+
 part 'currency_state.dart';
 
 class CurrencyCubit extends Cubit<CurrencyState> {
-  CurrencyCubit() : super(CurrencyInitial());
+  final CurrencyRepository _repository;
+  CurrencyCubit(this._repository) : super(CurrencyInitial());
 
-  //CreateCurrencyModel? currencyModel;
   List<CurrencyModel> allCurrencies = [];
-  // CurrencyModel? selectedCurrency;
 
   Future<void> getCurrencies() async {
     emit(GetCurrenciesLoading());
     try {
-      final response = await DioHelper.getData(url: EndPoint.getCurrencies);
-      log(response.data.toString());
-      if (response.statusCode == 200) {
-        final model = CurrenciesResponse.fromJson(response.data);
-        if (model.success == true && model.data.currencies.isNotEmpty) {
-          emit(GetCurrenciesSuccess(model.data.currencies));
-        } else {
-          final errorMessage = ErrorHandler.handleError(response);
-          emit(GetCurrenciesError(errorMessage));
-        }
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(GetCurrenciesError(errorMessage));
-      }
+      final currencies = await _repository.getCurrencies();
+      allCurrencies = currencies;
+      emit(GetCurrenciesSuccess(currencies));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(GetCurrenciesError(errorMessage));
+      emit(GetCurrenciesError(e.toString().replaceAll('Exception: ', '')));
     }
   }
-
-  // Future<void> getCurrencyById(String currencyId) async {
-  //   emit(GetCurrencyByIdLoading());
-  //   try {
-  //     final response = await DioHelper.getData(
-  //       url: EndPoint.getCurrencyById(currencyId),
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       final json = response.data;
-  //       if (json['success'] == true && json['data']?['Currency'] != null) {
-  //         selectedCurrency = CurrencyModel.fromJson(json['data']['Currency']);
-  //         emit(GetCurrencyByIdSuccess(selectedCurrency!));
-  //       } else {
-  //         final errorMessage = ErrorHandler.handleError(response);
-  //         emit(GetCurrencyByIdError(errorMessage));
-  //       }
-  //     } else {
-  //       final errorMessage = ErrorHandler.handleError(response);
-  //       emit(GetCurrencyByIdError(errorMessage));
-  //     }
-  //   } catch (e) {
-  //     final errorMessage = ErrorHandler.handleError(e);
-  //     emit(GetCurrencyByIdError(errorMessage));
-  //   }
-  // }
 
   Future<void> createCurrency({
     required String name,
@@ -72,27 +35,16 @@ class CurrencyCubit extends Cubit<CurrencyState> {
   }) async {
     emit(CreateCurrencyLoading());
     try {
-      final data = {
-        'name': name,
-        'ar_name': arName,
-        'amount': amount,
-        'isdefault': isDefault,
-      };
-
-      final response = await DioHelper.postData(
-        url: EndPoint.createCurrency,
-        data: data,
+      await _repository.createCurrency(
+        name: name,
+        arName: arName,
+        amount: amount,
+        isDefault: isDefault,
       );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateCurrencySuccess(LocaleKeys.currency_created_success.tr()));
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(CreateCurrencyError(errorMessage));
-      }
+      emit(CreateCurrencySuccess(LocaleKeys.currency_created_success.tr()));
+      getCurrencies();
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(CreateCurrencyError(errorMessage));
+      emit(CreateCurrencyError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -105,47 +57,28 @@ class CurrencyCubit extends Cubit<CurrencyState> {
   }) async {
     emit(UpdateCurrencyLoading());
     try {
-      final data = {
-        'name': name,
-        'ar_name': arName,
-        'amount': amount,
-        'isdefault': isDefault,
-      };
-
-      final response = await DioHelper.putData(
-        url: EndPoint.updateCurrency(currencyId),
-        data: data,
+      await _repository.updateCurrency(
+        currencyId: currencyId,
+        name: name,
+        arName: arName,
+        amount: amount,
+        isDefault: isDefault,
       );
-
-      if (response.statusCode == 200) {
-        emit(UpdateCurrencySuccess(LocaleKeys.currency_updated_success.tr()));
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(UpdateCurrencyError(errorMessage));
-      }
+      emit(UpdateCurrencySuccess(LocaleKeys.currency_updated_success.tr()));
+      getCurrencies();
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(UpdateCurrencyError(errorMessage));
+      emit(UpdateCurrencyError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> deleteCurrency(String currencyId) async {
     emit(DeleteCurrencyLoading());
     try {
-      final response = await DioHelper.deleteData(
-        url: EndPoint.deleteCurrency(currencyId),
-      );
-
-      if (response.statusCode == 200) {
-        allCurrencies.removeWhere((currency) => currency.id == currencyId);
-        emit(DeleteCurrencySuccess(LocaleKeys.currency_deleted_success.tr()));
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(DeleteCurrencyError(errorMessage));
-      }
+      await _repository.deleteCurrency(currencyId);
+      allCurrencies.removeWhere((currency) => currency.id == currencyId);
+      emit(DeleteCurrencySuccess(LocaleKeys.currency_deleted_success.tr()));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(DeleteCurrencyError(errorMessage));
+      emit(DeleteCurrencyError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 }

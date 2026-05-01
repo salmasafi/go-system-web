@@ -90,6 +90,8 @@ CREATE TABLE public.bank_accounts (
   created_by uuid,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
+  account_type character varying DEFAULT 'checking'::character varying CHECK (account_type::text = ANY (ARRAY['checking'::character varying, 'savings'::character varying, 'cash'::character varying, 'credit'::character varying]::text[])),
+  is_active boolean DEFAULT true,
   CONSTRAINT bank_accounts_pkey PRIMARY KEY (id),
   CONSTRAINT bank_accounts_warehouse_id_fkey FOREIGN KEY (warehouse_id) REFERENCES public.warehouses(id),
   CONSTRAINT bank_accounts_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.admins(id)
@@ -323,6 +325,8 @@ CREATE TABLE public.expense_categories (
   status boolean DEFAULT true,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
+  description text,
+  color character varying DEFAULT '#666666'::character varying,
   CONSTRAINT expense_categories_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.expenses (
@@ -344,7 +348,8 @@ CREATE TABLE public.expenses (
   CONSTRAINT expenses_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.expense_categories(id),
   CONSTRAINT expenses_bank_account_id_fkey FOREIGN KEY (bank_account_id) REFERENCES public.bank_accounts(id),
   CONSTRAINT expenses_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.admins(id),
-  CONSTRAINT fk_expenses_shift FOREIGN KEY (shift_id) REFERENCES public.shifts(id)
+  CONSTRAINT fk_expenses_shift FOREIGN KEY (shift_id) REFERENCES public.shifts(id),
+  CONSTRAINT fk_expense_category FOREIGN KEY (category_id) REFERENCES public.expense_categories(id)
 );
 CREATE TABLE public.financial_transactions (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
@@ -392,9 +397,13 @@ CREATE TABLE public.notifications (
   severity text DEFAULT 'info'::text,
   notification_key text,
   updated_at timestamp with time zone DEFAULT now(),
+  user_id uuid,
+  body text,
+  related_id uuid,
   CONSTRAINT notifications_pkey PRIMARY KEY (id),
   CONSTRAINT notifications_admin_id_fkey FOREIGN KEY (admin_id) REFERENCES public.admins(id),
-  CONSTRAINT notifications_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id)
+  CONSTRAINT notifications_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id),
+  CONSTRAINT notifications_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.user_profiles(id)
 );
 CREATE TABLE public.online_order_items (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
@@ -670,6 +679,8 @@ CREATE TABLE public.revenue_categories (
   status boolean DEFAULT true,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
+  description text,
+  color character varying DEFAULT '#666666'::character varying,
   CONSTRAINT revenue_categories_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.revenues (
@@ -685,7 +696,16 @@ CREATE TABLE public.revenues (
   CONSTRAINT revenues_pkey PRIMARY KEY (id),
   CONSTRAINT revenues_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.revenue_categories(id),
   CONSTRAINT revenues_bank_account_id_fkey FOREIGN KEY (bank_account_id) REFERENCES public.bank_accounts(id),
-  CONSTRAINT revenues_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.admins(id)
+  CONSTRAINT revenues_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.admins(id),
+  CONSTRAINT fk_revenue_category FOREIGN KEY (category_id) REFERENCES public.revenue_categories(id)
+);
+CREATE TABLE public.role_permissions (
+  role_id uuid NOT NULL,
+  permission_id uuid NOT NULL,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT role_permissions_pkey PRIMARY KEY (role_id, permission_id),
+  CONSTRAINT role_permissions_role_id_fkey FOREIGN KEY (role_id) REFERENCES public.roles(id),
+  CONSTRAINT role_permissions_permission_id_fkey FOREIGN KEY (permission_id) REFERENCES public.permissions(id)
 );
 CREATE TABLE public.roles (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
@@ -695,6 +715,7 @@ CREATE TABLE public.roles (
   updated_at timestamp with time zone DEFAULT now(),
   permissions jsonb DEFAULT '[]'::jsonb,
   status boolean DEFAULT true,
+  description text,
   CONSTRAINT roles_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.sale_item_attributes (
@@ -921,8 +942,13 @@ CREATE TABLE public.user_profiles (
   role character varying DEFAULT 'user'::character varying,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
+  role_id uuid,
+  warehouse_id uuid,
+  is_active boolean DEFAULT true,
   CONSTRAINT user_profiles_pkey PRIMARY KEY (id),
-  CONSTRAINT user_profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
+  CONSTRAINT user_profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id),
+  CONSTRAINT user_profiles_role_id_fkey FOREIGN KEY (role_id) REFERENCES public.roles(id),
+  CONSTRAINT user_profiles_warehouse_id_fkey FOREIGN KEY (warehouse_id) REFERENCES public.warehouses(id)
 );
 CREATE TABLE public.users (
   id uuid NOT NULL DEFAULT gen_random_uuid(),

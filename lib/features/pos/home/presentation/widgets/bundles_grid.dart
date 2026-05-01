@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
-import 'package:systego/features/POS/checkout/cubit/checkout_cubit/checkout_cubit.dart';
-import 'package:systego/features/POS/home/model/pos_models.dart';
+import 'package:systego/features/pos/checkout/cubit/checkout_cubit/checkout_cubit.dart';
+import 'package:systego/features/pos/home/model/pos_models.dart';
 import 'bundle_card.dart';
+import 'bundle_attribute_selection_dialog.dart';
 import 'bundle_details_dialog.dart';
 
 class POSBundlesGrid extends StatelessWidget {
@@ -41,7 +42,7 @@ class POSBundlesGrid extends StatelessWidget {
           bundle: bundle,
           index: i,
           onTap: () => _showBundleDetails(context, bundle),
-          onAddToCart: () => _addBundleToCart(context, bundle),
+          onAddToCart: () => _handleAddBundle(context, bundle),
         );
       },
     );
@@ -52,12 +53,34 @@ class POSBundlesGrid extends StatelessWidget {
       context: context,
       builder: (_) => BundleDetailsDialog(
         bundle: bundle,
-        onAddToCart: () => _addBundleToCart(context, bundle),
+        onAddToCart: () => _handleAddBundle(context, bundle),
       ),
     );
   }
 
-  void _addBundleToCart(BuildContext context, BundleModel bundle) {
-    context.read<CheckoutCubit>().addBundleToCart(bundle);
+  /// Determines whether any product in the bundle requires attribute selection.
+  /// If yes → show BundleAttributeSelectionDialog.
+  /// If no  → add directly to cart.
+  void _handleAddBundle(BuildContext context, BundleModel bundle) {
+    final hasAnyAttributes =
+        bundle.products.any((p) => p.hasAttributes);
+
+    if (hasAnyAttributes) {
+      showDialog(
+        context: context,
+        builder: (_) => BundleAttributeSelectionDialog(
+          bundle: bundle,
+          onAttributesSelected: (bundleProductAttributes) {
+            context.read<CheckoutCubit>().addBundleToCart(
+                  bundle,
+                  bundleProductAttributes: bundleProductAttributes,
+                );
+          },
+        ),
+      );
+    } else {
+      context.read<CheckoutCubit>().addBundleToCart(bundle);
+    }
   }
 }
+

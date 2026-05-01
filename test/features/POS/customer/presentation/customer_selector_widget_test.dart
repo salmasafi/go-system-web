@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:systego/features/POS/customer/cubit/pos_customer_cubit.dart';
-import 'package:systego/features/POS/customer/model/pos_customer_model.dart';
-import 'package:systego/features/POS/customer/presentation/widgets/customer_selector_widget.dart';
+import 'package:systego/features/pos/customer/cubit/pos_customer_cubit.dart';
+import 'package:systego/features/pos/customer/model/pos_customer_model.dart';
+import 'package:systego/features/pos/customer/presentation/widgets/customer_selector_widget.dart';
 
 // ── Mock ─────────────────────────────────────────────────────────────────────
 

@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
-import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
-import 'package:systego/features/POS/return/cubit/return_cubit.dart';
-import 'package:systego/features/POS/return/widgets/return_items_table.dart';
+import 'package:systego/features/pos/home/cubit/pos_home_cubit.dart';
+import 'package:systego/features/pos/return/cubit/return_cubit.dart';
+import 'package:systego/features/pos/return/widgets/return_items_table.dart';
 import 'package:systego/features/admin/reason/cubit/reason_cubit.dart';
 
 class ReturnDetailsScreen extends StatefulWidget {

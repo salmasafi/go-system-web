@@ -1,9 +1,9 @@
 // ── Header (search + chips) ───────────────────────────────────────────────
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/features/POS/customer/presentation/widgets/customer_selector_widget.dart';
-import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
-import 'package:systego/features/POS/home/cubit/pos_home_state.dart';
+import 'package:systego/features/pos/customer/presentation/widgets/customer_selector_widget.dart';
+import 'package:systego/features/pos/home/cubit/pos_home_cubit.dart';
+import 'package:systego/features/pos/home/cubit/pos_home_state.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
 import 'search_bar.dart';

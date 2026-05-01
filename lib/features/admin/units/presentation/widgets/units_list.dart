@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/features/admin/units/cubit/units_cubit.dart';
-import 'package:systego/features/admin/units/model/units_model.dart';
+import 'package:systego/features/admin/units/model/unit_model.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../../warehouses/view/widgets/custom_delete_dialog.dart';
 import 'animated_unit_card.dart';

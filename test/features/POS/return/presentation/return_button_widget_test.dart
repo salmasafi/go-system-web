@@ -9,8 +9,8 @@ import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:systego/core/services/cache_helper.dart';
 import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/features/POS/return/cubit/return_cubit.dart';
-import 'package:systego/features/POS/return/widgets/return_search_dialog.dart';
+import 'package:systego/features/pos/return/cubit/return_cubit.dart';
+import 'package:systego/features/pos/return/widgets/return_search_dialog.dart';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 

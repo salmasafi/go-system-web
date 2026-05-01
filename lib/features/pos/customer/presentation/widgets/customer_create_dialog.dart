@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
 import 'package:systego/core/widgets/custom_textfield/build_text_field.dart';
-import 'package:systego/features/POS/customer/cubit/pos_customer_cubit.dart';
+import 'package:systego/features/pos/customer/cubit/pos_customer_cubit.dart';
 
 class CustomerCreateDialog extends StatefulWidget {
   const CustomerCreateDialog({super.key});

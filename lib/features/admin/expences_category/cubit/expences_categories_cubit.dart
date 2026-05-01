@@ -7,37 +7,26 @@ import 'package:systego/core/services/endpoints.dart';
 import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/features/admin/expences_category/model/expences_categories_model.dart';
 import 'package:systego/generated/locale_keys.g.dart';
+import 'package:systego/features/admin/expences_category/data/repositories/expense_category_repository.dart';
 
 part 'expences_categories_state.dart';
 
 class ExpenseCategoryCubit extends Cubit<ExpenseCategoryState> {
-  ExpenseCategoryCubit() : super(ExpenseCategoryInitial());
+  final ExpenseCategoryRepository _repository;
+  ExpenseCategoryCubit(this._repository) : super(ExpenseCategoryInitial());
 
   List<ExpenseCategoryModel> allExpenseCategories = [];
 
   Future<void> getExpenseCategories() async {
     emit(GetExpenseCategoriesLoading());
     try {
-      final response = await DioHelper.getData(url: EndPoint.getAllexpencesCategories);
-      log(response.data.toString());
-
-      if (response.statusCode == 200) {
-        final model = ExpenseCategoryResponse.fromJson(response.data);
-
-        if (model.success == true) {
-          allExpenseCategories = model.data.expenseCategories;
-          emit(GetExpenseCategoriesSuccess(model.data.expenseCategories));
-        } else {
-          final errorMessage = ErrorHandler.handleError(response);
-          emit(GetExpenseCategoriesError(errorMessage));
-        }
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(GetExpenseCategoriesError(errorMessage));
-      }
+      final categories = await _repository.getExpenseCategories();
+      allExpenseCategories = categories;
+      emit(GetExpenseCategoriesSuccess(categories));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(GetExpenseCategoriesError(errorMessage));
+      emit(
+        GetExpenseCategoriesError(e.toString().replaceAll('Exception: ', '')),
+      );
     }
   }
 
@@ -47,30 +36,22 @@ class ExpenseCategoryCubit extends Cubit<ExpenseCategoryState> {
     required bool status,
   }) async {
     emit(CreateExpenseCategoryLoading());
-
     try {
-      final data = {
-        "name": name,
-        "ar_name": arName,
-        "status": status,
-      };
-
-      final response =
-          await DioHelper.postData(url: EndPoint.addExpencesCategory, data: data);
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateExpenseCategorySuccess(
-          LocaleKeys.expense_category_created_success.tr()
-        ));
-        // Refresh the list after successful creation
-        await getExpenseCategories();
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(CreateExpenseCategoryError(errorMessage));
-      }
+      await _repository.createExpenseCategory(
+        name: name,
+        arName: arName,
+        status: status,
+      );
+      emit(
+        CreateExpenseCategorySuccess(
+          LocaleKeys.expense_category_created_success.tr(),
+        ),
+      );
+      getExpenseCategories();
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(CreateExpenseCategoryError(errorMessage));
+      emit(
+        CreateExpenseCategoryError(e.toString().replaceAll('Exception: ', '')),
+      );
     }
   }
 
@@ -81,53 +62,40 @@ class ExpenseCategoryCubit extends Cubit<ExpenseCategoryState> {
     required bool status,
   }) async {
     emit(UpdateExpenseCategoryLoading());
-
     try {
-      final data = {
-        "name": name,
-        "ar_name": arName,
-        "status": status,
-      };
-
-      final response = await DioHelper.putData(
-        url: EndPoint.updateExpencesCategory(categoryId),
-        data: data,
+      await _repository.updateExpenseCategory(
+        categoryId: categoryId,
+        name: name,
+        arName: arName,
+        status: status,
       );
-
-      log("data updating: ${data}");
-
-      if (response.statusCode == 200) {
-        emit(UpdateExpenseCategorySuccess(LocaleKeys.expense_category_updated_success.tr()));
-        // Refresh the list after successful update
-        await getExpenseCategories();
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(UpdateExpenseCategoryError(errorMessage));
-      }
+      emit(
+        UpdateExpenseCategorySuccess(
+          LocaleKeys.expense_category_updated_success.tr(),
+        ),
+      );
+      getExpenseCategories();
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(UpdateExpenseCategoryError(errorMessage));
+      emit(
+        UpdateExpenseCategoryError(e.toString().replaceAll('Exception: ', '')),
+      );
     }
   }
 
   Future<void> deleteExpenseCategory(String categoryId) async {
     emit(DeleteExpenseCategoryLoading());
-
     try {
-      final response =
-          await DioHelper.deleteData(url: EndPoint.deleteExpencesCategory(categoryId));
-
-      if (response.statusCode == 200) {
-        allExpenseCategories.removeWhere((c) => c.id == categoryId);
-        emit(DeleteExpenseCategorySuccess(LocaleKeys.expense_category_deleted_success.tr()));
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(DeleteExpenseCategoryError(errorMessage));
-      }
+      await _repository.deleteExpenseCategory(categoryId);
+      allExpenseCategories.removeWhere((c) => c.id == categoryId);
+      emit(
+        DeleteExpenseCategorySuccess(
+          LocaleKeys.expense_category_deleted_success.tr(),
+        ),
+      );
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(DeleteExpenseCategoryError(errorMessage));
+      emit(
+        DeleteExpenseCategoryError(e.toString().replaceAll('Exception: ', '')),
+      );
     }
   }
-
 }

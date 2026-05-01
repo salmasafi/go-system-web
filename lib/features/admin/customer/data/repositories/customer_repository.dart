@@ -35,6 +35,20 @@ abstract class CustomerRepositoryInterface {
   });
   Future<void> deleteCustomer(String id);
   Future<double> calculateDueAmount(String customerId);
+  
+  // Customer Group Methods
+  Future<List<CustomerGroup>> getAllCustomerGroups();
+  Future<CustomerGroup?> getCustomerGroupById(String id);
+  Future<CustomerGroup> createCustomerGroup({
+    required String name,
+    required bool status,
+  });
+  Future<CustomerGroup> updateCustomerGroup({
+    required String id,
+    required String name,
+    required bool status,
+  });
+  Future<void> deleteCustomerGroup(String id);
 }
 
 /// Hybrid repository that supports both Dio and Supabase for customers
@@ -109,6 +123,28 @@ class CustomerRepository implements CustomerRepositoryInterface {
 
   @override
   Future<double> calculateDueAmount(String customerId) => _dataSource.calculateDueAmount(customerId);
+
+  @override
+  Future<List<CustomerGroup>> getAllCustomerGroups() => _dataSource.getAllCustomerGroups();
+
+  @override
+  Future<CustomerGroup?> getCustomerGroupById(String id) => _dataSource.getCustomerGroupById(id);
+
+  @override
+  Future<CustomerGroup> createCustomerGroup({
+    required String name,
+    required bool status,
+  }) => _dataSource.createCustomerGroup(name: name, status: status);
+
+  @override
+  Future<CustomerGroup> updateCustomerGroup({
+    required String id,
+    required String name,
+    required bool status,
+  }) => _dataSource.updateCustomerGroup(id: id, name: name, status: status);
+
+  @override
+  Future<void> deleteCustomerGroup(String id) => _dataSource.deleteCustomerGroup(id);
 
   void enableSupabase() {
     MigrationService.enableSupabase('customers');
@@ -335,6 +371,80 @@ class _CustomerSupabaseDataSource implements CustomerRepositoryInterface {
     }
   }
 
+  @override
+  Future<List<CustomerGroup>> getAllCustomerGroups() async {
+    try {
+      log('CustomerSupabase: Fetching all customer groups');
+      final response = await _client.from('customer_groups').select().order('name');
+      return (response as List).map((json) => _mapSupabaseToCustomerGroup(json)).toList();
+    } catch (e) {
+      log('CustomerSupabase: Error fetching customer groups - $e');
+      throw Exception(SupabaseErrorHandler.handleError(e));
+    }
+  }
+
+  @override
+  Future<CustomerGroup?> getCustomerGroupById(String id) async {
+    try {
+      log('CustomerSupabase: Fetching customer group by id: $id');
+      final response = await _client.from('customer_groups').select().eq('id', id).maybeSingle();
+      if (response == null) return null;
+      return _mapSupabaseToCustomerGroup(response);
+    } catch (e) {
+      log('CustomerSupabase: Error fetching customer group - $e');
+      throw Exception(SupabaseErrorHandler.handleError(e));
+    }
+  }
+
+  @override
+  Future<CustomerGroup> createCustomerGroup({required String name, required bool status}) async {
+    try {
+      log('CustomerSupabase: Creating customer group: $name');
+      final response = await _client.from('customer_groups').insert({
+        'name': name,
+        'status': status,
+      }).select().single();
+      return _mapSupabaseToCustomerGroup(response);
+    } catch (e) {
+      log('CustomerSupabase: Error creating customer group - $e');
+      throw Exception(SupabaseErrorHandler.handleError(e));
+    }
+  }
+
+  @override
+  Future<CustomerGroup> updateCustomerGroup({required String id, required String name, required bool status}) async {
+    try {
+      log('CustomerSupabase: Updating customer group: $id');
+      final response = await _client.from('customer_groups').update({
+        'name': name,
+        'status': status,
+      }).eq('id', id).select().single();
+      return _mapSupabaseToCustomerGroup(response);
+    } catch (e) {
+      log('CustomerSupabase: Error updating customer group - $e');
+      throw Exception(SupabaseErrorHandler.handleError(e));
+    }
+  }
+
+  @override
+  Future<void> deleteCustomerGroup(String id) async {
+    try {
+      log('CustomerSupabase: Deleting customer group: $id');
+      await _client.from('customer_groups').delete().eq('id', id);
+    } catch (e) {
+      log('CustomerSupabase: Error deleting customer group - $e');
+      throw Exception(SupabaseErrorHandler.handleError(e));
+    }
+  }
+
+  CustomerGroup _mapSupabaseToCustomerGroup(Map<String, dynamic> json) {
+    return CustomerGroup(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      status: json['status'] ?? false,
+    );
+  }
+
   /// Map Supabase response to CustomerModel
   CustomerModel _mapSupabaseToCustomerModel(Map<String, dynamic> json) {
     final countryData = json['country'] as Map<String, dynamic>?;
@@ -523,6 +633,84 @@ class _CustomerDioDataSource implements CustomerRepositoryInterface {
         return (response.data['data']?['due_amount'] as num?)?.toDouble() ?? 0.0;
       }
       return 0.0;
+    } catch (e) {
+      throw Exception(ErrorHandler.handleError(e));
+    }
+  }
+
+  @override
+  Future<List<CustomerGroup>> getAllCustomerGroups() async {
+    try {
+      final response = await DioHelper.getData(url: EndPoint.getCustomerGroup);
+      if (response.statusCode == 200) {
+        final model = CustomerGroupResponse.fromJson(response.data);
+        if (model.success) {
+          return model.data.groups;
+        }
+      }
+      throw Exception(ErrorHandler.handleError(response));
+    } catch (e) {
+      throw Exception(ErrorHandler.handleError(e));
+    }
+  }
+
+  @override
+  Future<CustomerGroup?> getCustomerGroupById(String id) async {
+    try {
+      final response = await DioHelper.getData(url: EndPoint.getCustomerGroupById(id));
+      if (response.statusCode == 200) {
+        final model = CustomerGroupResponse.fromJson(response.data);
+        if (model.success && model.data.groups.isNotEmpty) {
+          return model.data.groups.first;
+        }
+      }
+      return null;
+    } catch (e) {
+      throw Exception(ErrorHandler.handleError(e));
+    }
+  }
+
+  @override
+  Future<CustomerGroup> createCustomerGroup({required String name, required bool status}) async {
+    try {
+      final response = await DioHelper.postData(
+        url: EndPoint.createCustomerGroup,
+        data: {'name': name, 'status': status},
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Legacy API might not return the group object directly in the same way
+        // Fetch list to find it or return a dummy with the name
+        return CustomerGroup(id: '', name: name, status: status);
+      }
+      throw Exception(ErrorHandler.handleError(response));
+    } catch (e) {
+      throw Exception(ErrorHandler.handleError(e));
+    }
+  }
+
+  @override
+  Future<CustomerGroup> updateCustomerGroup({required String id, required String name, required bool status}) async {
+    try {
+      final response = await DioHelper.putData(
+        url: EndPoint.updateCustomerGroup(id),
+        data: {'name': name, 'status': status},
+      );
+      if (response.statusCode == 200) {
+        return CustomerGroup(id: id, name: name, status: status);
+      }
+      throw Exception(ErrorHandler.handleError(response));
+    } catch (e) {
+      throw Exception(ErrorHandler.handleError(e));
+    }
+  }
+
+  @override
+  Future<void> deleteCustomerGroup(String id) async {
+    try {
+      final response = await DioHelper.deleteData(url: EndPoint.deleteCustomerGroup(id));
+      if (response.statusCode != 200) {
+        throw Exception(ErrorHandler.handleError(response));
+      }
     } catch (e) {
       throw Exception(ErrorHandler.handleError(e));
     }

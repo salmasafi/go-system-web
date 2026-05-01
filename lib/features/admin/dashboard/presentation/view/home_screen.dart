@@ -9,9 +9,9 @@ import 'package:systego/features/admin/settings/presentation/settings_screen.dar
 import 'package:systego/features/admin/warehouses/view/widgets/custom_delete_dialog.dart';
 import 'package:systego/generated/locale_keys.g.dart';
 import 'package:systego/main.dart';
-import '../../../../POS/home/presentation/view/pos_home_screen.dart';
-import '../../../../POS/online_orders/cubit/online_orders_cubit.dart';
-import '../../../../POS/online_orders/presentation/view/online_orders_screen.dart';
+import '../../../../pos/home/presentation/view/pos_home_screen.dart';
+import '../../../../pos/online_orders/cubit/online_orders_cubit.dart';
+import '../../../../pos/online_orders/presentation/view/online_orders_screen.dart';
 import '../../../auth/presentation/view/login_screen.dart';
 import '../widgets/custom_bottom_app_bar_widget.dart';
 

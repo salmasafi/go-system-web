@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/features/POS/home/cubit/pos_home_cubit.dart';
-import 'package:systego/features/POS/home/model/pos_models.dart';
+import 'package:systego/features/pos/home/cubit/pos_home_cubit.dart';
+import 'package:systego/features/pos/home/model/pos_models.dart';
 import '../../../../../core/utils/responsive_ui.dart';
 import '../../../../../core/widgets/animation/animated_element.dart';
 import '../../../../../core/widgets/custom_error/custom_empty_state.dart';
@@ -10,6 +10,7 @@ import '../../../checkout/cubit/checkout_cubit/checkout_cubit.dart';
 import '../../cubit/pos_home_state.dart';
 import 'product_card.dart';
 import 'variation_selector_dialog.dart';
+import 'attribute_selection_dialog.dart';
 
 class POSProductGrid extends StatefulWidget {
   // نستقبل القائمة المفلترة من البحث (اختياري)
@@ -28,8 +29,24 @@ class _POSProductGridState extends State<POSProductGrid> {
     final checkoutCubit = context.read<CheckoutCubit>();
     final posCubit = context.read<PosCubit>();
 
-    if (product.differentPrice && product.prices.isNotEmpty) {
-      // منتج بـ variations → اعرض الـ selector
+    // Check if product has attributes
+    if (product.attributes.isNotEmpty) {
+      // Product has attributes → show attribute selection dialog
+      showDialog(
+        context: context,
+        builder: (_) => AttributeSelectionDialog(
+          product: product,
+          onAttributesSelected: (selectedAttributes) {
+            checkoutCubit.addToCart(product, selectedAttributes: selectedAttributes);
+            posCubit.selectTab(
+              tab: posCubit.selectedTab,
+              noFliterRefresh: true,
+            );
+          },
+        ),
+      );
+    } else if (product.differentPrice && product.prices.isNotEmpty) {
+      // Product has price variations → show variation selector
       showDialog(
         context: context,
         builder: (_) => VariationSelectorDialog(
@@ -44,7 +61,7 @@ class _POSProductGridState extends State<POSProductGrid> {
         ),
       );
     } else {
-      // منتج بسعر واحد → أضف مباشرة بدون dialog
+      // Simple product → add directly to cart
       checkoutCubit.addToCart(product);
       posCubit.selectTab(tab: posCubit.selectedTab, noFliterRefresh: true);
     }

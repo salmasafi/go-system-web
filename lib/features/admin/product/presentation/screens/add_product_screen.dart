@@ -15,8 +15,7 @@ import 'package:systego/features/admin/product/cubit/get_products_cubit/product_
 import 'package:systego/features/admin/product/cubit/get_products_cubit/product_state.dart';
 import 'package:systego/features/admin/product/cubit/product_filter_state.dart';
 import 'package:systego/features/admin/product/models/filter_models.dart';
-import 'package:systego/features/admin/units/cubit/unit_cubit.dart';
-import 'package:systego/features/admin/units/cubit/unit_state.dart';
+import 'package:systego/features/admin/units/cubit/units_cubit.dart';
 import 'package:systego/features/admin/units/model/unit_model.dart';
 import '../../../../../core/utils/image_handler.dart';
 import '../../cubit/filter_product_cubit/product_filter_cubit.dart';
@@ -381,10 +380,10 @@ class _AddProductScreenState extends State<AddProductScreen>
 
                        BlocBuilder<UnitsCubit, UnitsState>(
                         builder: (context, unitState) {
-                          if (unitState is UnitsLoading) {
+                          if (unitState is GetUnitsLoading) {
                             return _buildLoadingDropdown('Loading units...');
                           }
-                          if (unitState is UnitsSuccess) {
+                          if (unitState is GetUnitsSuccess) {
                             return Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [

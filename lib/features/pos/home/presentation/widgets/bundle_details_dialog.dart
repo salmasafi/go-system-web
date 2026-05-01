@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/POS/home/model/pos_models.dart';
+import 'package:systego/features/pos/home/model/pos_models.dart';
 
 class BundleDetailsDialog extends StatelessWidget {
   final BundleModel bundle;

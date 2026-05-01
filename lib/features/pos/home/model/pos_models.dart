@@ -1,4 +1,5 @@
 // lib/features/pos/home/model/pos_models.dart
+import 'package:systego/features/admin/product/models/product_attribute_model.dart';
 
 int? _toInt(dynamic value) {
   if (value == null) return null;
@@ -166,6 +167,11 @@ class Product {
   final int quantity;
   final double? wholePrice;
   final int? startQuantity;
+  // NEW: Product attributes (colors, sizes, etc.)
+  final List<ProductAttribute> attributes;
+
+  /// Whether this product requires attribute selection before adding to cart
+  bool get hasAttributes => attributes.isNotEmpty;
 
   Product({
     required this.id,
@@ -179,6 +185,7 @@ class Product {
     this.quantity = 0,
     this.wholePrice,
     this.startQuantity,
+    this.attributes = const [],
   });
 
   factory Product.fromList(Map<String, dynamic> json) {
@@ -223,6 +230,11 @@ class Product {
       quantity: (json['quantity'] as num?)?.toInt() ?? 0,
       wholePrice: _readWholePrice(json),
       startQuantity: _readStartQuantity(json),
+      attributes:
+          (json['attributes'] as List<dynamic>?)
+              ?.map((e) => ProductAttribute.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
     );
   }
 
@@ -271,6 +283,11 @@ class Product {
       quantity: (json['quantity'] as num?)?.toInt() ?? 0,
       wholePrice: _readWholePrice(json),
       startQuantity: _readStartQuantity(json),
+      attributes:
+          (json['attributes'] as List<dynamic>?)
+              ?.map((e) => ProductAttribute.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
     );
   }
 }
@@ -379,6 +396,8 @@ class BundleProduct {
   final String? image;
   final double price;
   final int quantity;
+  // NEW: attributes for this bundle product
+  final List<ProductAttribute> attributes;
 
   BundleProduct({
     required this.productId,
@@ -386,7 +405,10 @@ class BundleProduct {
     this.image,
     required this.price,
     required this.quantity,
+    this.attributes = const [],
   });
+
+  bool get hasAttributes => attributes.isNotEmpty;
 
   factory BundleProduct.fromJson(Map<String, dynamic> json) {
     final product = json['product'] as Map<String, dynamic>? ?? {};
@@ -396,6 +418,12 @@ class BundleProduct {
       image: product['image']?.toString(),
       price: (product['price'] as num?)?.toDouble() ?? 0.0,
       quantity: (json['quantity'] as num?)?.toInt() ?? 0,
+      attributes:
+          (product['attributes'] as List<dynamic>?)
+              ?.map((e) =>
+                  ProductAttribute.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
     );
   }
 }

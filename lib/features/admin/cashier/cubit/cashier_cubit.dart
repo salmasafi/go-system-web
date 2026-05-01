@@ -2,43 +2,26 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:meta/meta.dart';
-import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/core/services/endpoints.dart';
-import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/generated/locale_keys.g.dart';
 import 'package:systego/features/admin/cashier/model/cashirer_model.dart';
-
+import 'package:systego/features/admin/cashier/data/repositories/cashier_repository.dart';
 
 part 'cashier_state.dart';
 
 class CashierCubit extends Cubit<CashierState> {
-  CashierCubit() : super(CashierInitial());
+  final CashierRepository _repository;
+  CashierCubit(this._repository) : super(CashierInitial());
 
   List<CashierModel> allCashiers = [];
 
   Future<void> getCashiers() async {
     emit(GetCashiersLoading());
     try {
-      final response = await DioHelper.getData(url: EndPoint.getAllCashiers);
-      log(response.data.toString());
-
-      if (response.statusCode == 200) {
-        final model = CashierResponse.fromJson(response.data);
-
-        if (model.success == true) {
-          allCashiers = model.data.cashiers;
-          emit(GetCashiersSuccess(model.data.cashiers));
-        } else {
-          final errorMessage = ErrorHandler.handleError(response);
-          emit(GetCashiersError(errorMessage));
-        }
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(GetCashiersError(errorMessage));
-      }
+      final cashiersList = await _repository.getAllCashiers();
+      allCashiers = cashiersList;
+      emit(GetCashiersSuccess(cashiersList));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(GetCashiersError(errorMessage));
+      emit(GetCashiersError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -49,29 +32,17 @@ class CashierCubit extends Cubit<CashierState> {
     required bool status,
   }) async {
     emit(CreateCashierLoading());
-
     try {
-      final data = {
-        "name": name,
-        "ar_name": arName,
-        "warehouse_id": warehouseId,
-        "status": status,
-      };
-
-      final response =
-          await DioHelper.postData(url: EndPoint.createCashier, data: data);
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(CreateCashierSuccess(
-        LocaleKeys.cashier_created_success.tr()
-          ));
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(CreateCashierError(errorMessage));
-      }
+      await _repository.createCashier(
+        name: name,
+        arName: arName,
+        warehouseId: warehouseId,
+        status: status,
+      );
+      emit(CreateCashierSuccess(LocaleKeys.cashier_created_success.tr()));
+      await getCashiers();
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(CreateCashierError(errorMessage));
+      emit(CreateCashierError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -79,57 +50,36 @@ class CashierCubit extends Cubit<CashierState> {
     required String cashierId,
     required String name,
     required String arName,
-   String? warehouseId,
+    String? warehouseId,
     required bool status,
   }) async {
     emit(UpdateCashierLoading());
-
     try {
-      final data = {
-        "name": name,
-        "ar_name": arName,
-        "warehouse_id": warehouseId,
-        "status": status,
-      };
-
-      final response = await DioHelper.putData(
-        url: EndPoint.updateCashier(cashierId),
-        data: data,
+      await _repository.updateCashier(
+        id: cashierId,
+        name: name,
+        arName: arName,
+        warehouseId: warehouseId,
+        status: status,
       );
-
-      log("data updating: ${data}");
-
-      if (response.statusCode == 200) {
-        emit(UpdateCashierSuccess(LocaleKeys.cashier_updated_success.tr()));
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(UpdateCashierError(errorMessage));
-      }
+      emit(UpdateCashierSuccess(LocaleKeys.cashier_updated_success.tr()));
+      await getCashiers();
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(UpdateCashierError(errorMessage));
+      emit(UpdateCashierError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
   Future<void> deleteCashier(String cashierId) async {
     emit(DeleteCashierLoading());
-
     try {
-      final response =
-          await DioHelper.deleteData(url: EndPoint.deleteCashier(cashierId));
-
-      if (response.statusCode == 200) {
-        allCashiers.removeWhere((c) => c.id == cashierId);
-        emit(DeleteCashierSuccess(LocaleKeys.cashier_deleted_success.tr()));
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(DeleteCashierError(errorMessage));
-      }
+      await _repository.deleteCashier(cashierId);
+      allCashiers.removeWhere((c) => c.id == cashierId);
+      emit(DeleteCashierSuccess(LocaleKeys.cashier_deleted_success.tr()));
     } catch (e) {
-      final errorMessage = ErrorHandler.handleError(e);
-      emit(DeleteCashierError(errorMessage));
+      emit(DeleteCashierError(e.toString().replaceAll('Exception: ', '')));
     }
   }
+}
 
   // // Additional method to toggle cashier active status
   // Future<void> toggleCashierStatus({
@@ -219,4 +169,4 @@ class CashierCubit extends Cubit<CashierState> {
   //     emit(RemoveUserError(errorMessage));
   //   }
   // }
-}
+//}

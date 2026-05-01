@@ -7,8 +7,11 @@ import '../../../../../../core/utils/error_handler.dart';
 import '../../models/filter_models.dart';
 import '../product_filter_state.dart';
 
+import 'package:systego/features/admin/product/data/repositories/product_repository.dart';
+
 class ProductFiltersCubit extends Cubit<ProductFiltersState> {
-  ProductFiltersCubit() : super(ProductFiltersInitial());
+  final ProductRepository _repository;
+  ProductFiltersCubit(this._repository) : super(ProductFiltersInitial());
 
   static ProductFiltersCubit get(context) => BlocProvider.of(context);
 
@@ -18,33 +21,20 @@ class ProductFiltersCubit extends Cubit<ProductFiltersState> {
     emit(ProductFiltersLoading());
 
     try {
-      log('Starting filters request...');
+      log('ProductFiltersCubit: Fetching filters');
+      final data = await _repository.getProductFilters();
 
-      final response = await DioHelper.getData(url: EndPoint.productFilter);
-
-      log('Response received: ${response.statusCode}');
-
-      if (response.statusCode == 200) {
-        final data = response.data;
-        if (data['success'] == true && data['data'] != null) {
-          final filtersModel = ProductFiltersModel.fromJson(data);
-          variations = filtersModel.data?.variations ?? [];
-          log('Filters fetch successful');
-          emit(ProductFiltersSuccess(filtersModel));
-        } else {
-          final errorMessage = data['message'] ?? 'Failed to fetch filters';
-          log('Filters fetch failed: $errorMessage');
-          emit(ProductFiltersError(errorMessage));
-        }
+      if (data['success'] == true && data['data'] != null) {
+        final filtersModel = ProductFiltersModel.fromJson(data);
+        variations = filtersModel.data?.variations ?? [];
+        emit(ProductFiltersSuccess(filtersModel));
       } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        log('Response error: $errorMessage');
-        emit(ProductFiltersError(errorMessage));
+        emit(ProductFiltersError('Failed to fetch filters'));
       }
     } catch (error) {
-      log('Filters fetch error caught: $error');
-      final errorMessage = ErrorHandler.handleError(error);
-      emit(ProductFiltersError(errorMessage));
+      log('ProductFiltersCubit: Error fetching filters - $error');
+      emit(ProductFiltersError(error.toString().replaceAll('Exception: ', '')));
     }
   }
 }
+

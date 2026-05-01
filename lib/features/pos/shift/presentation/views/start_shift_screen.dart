@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:systego/core/constants/app_colors.dart';
 import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
-import 'package:systego/features/POS/shift/cubit/pos_shift_cubit.dart';
+import 'package:systego/features/pos/shift/cubit/pos_shift_cubit.dart';
 
 class StartShiftScreen extends StatelessWidget {
   const StartShiftScreen({super.key});

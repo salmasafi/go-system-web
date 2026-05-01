@@ -3,16 +3,14 @@ import 'dart:developer' as dev;
 import 'package:bloc/bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:meta/meta.dart';
-import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/core/services/endpoints.dart';
-import 'package:systego/core/utils/error_handler.dart';
 import 'package:systego/features/admin/admins_screen/model/admins_model.dart';
 import 'package:systego/generated/locale_keys.g.dart';
-
+import 'package:systego/features/admin/admins_screen/data/repositories/admin_repository.dart';
 part 'admins_state.dart';
 
 class AdminsCubit extends Cubit<AdminsState> {
-  AdminsCubit() : super(AdminsInitial());
+  final AdminRepository _repository;
+  AdminsCubit(this._repository) : super(AdminsInitial());
 
   List<AdminModel> allAdmins = [];
 
@@ -20,27 +18,11 @@ class AdminsCubit extends Cubit<AdminsState> {
   Future<void> getAdmins() async {
     emit(GetAdminsLoading());
     try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getAllAdmins,
-      );
-
-      dev.log(response.data.toString());
-
-      if (response.statusCode == 200) {
-        final model = AdminsResponse.fromJson(response.data);
-
-        if (model.success) {
-          allAdmins = model.data.admins;
-          emit(GetAdminsSuccess(allAdmins));
-        } else {
-          // If success is false, handle as error
-          emit(GetAdminsError(model.data.message));
-        }
-      } else {
-        emit(GetAdminsError(ErrorHandler.handleError(response)));
-      }
+      final admins = await _repository.getAllAdmins();
+      allAdmins = admins;
+      emit(GetAdminsSuccess(allAdmins));
     } catch (e) {
-      emit(GetAdminsError(ErrorHandler.handleError(e)));
+      emit(GetAdminsError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -48,20 +30,14 @@ class AdminsCubit extends Cubit<AdminsState> {
   Future<void> getAdminById(String adminId) async {
     emit(GetAdminByIdLoading());
     try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getAdmin(adminId),
-      );
-
-      if (response.statusCode == 200) {
-        // Adjust parsing based on your specific single-admin API response structure
-        // Assuming it returns { "success": true, "data": { ...admin object... } }
-        final admin = AdminModel.fromJson(response.data['data']);
+      final admin = await _repository.getAdminById(adminId);
+      if (admin != null) {
         emit(GetAdminByIdSuccess(admin));
       } else {
-        emit(GetAdminByIdError(ErrorHandler.handleError(response)));
+        emit(GetAdminByIdError('Admin not found'));
       }
     } catch (e) {
-      emit(GetAdminByIdError(ErrorHandler.handleError(e)));
+      emit(GetAdminByIdError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -72,38 +48,25 @@ class AdminsCubit extends Cubit<AdminsState> {
     required String phone,
     required String password,
     required String roleId,
-    required String companyName,
-    required String warehouseId,
-    required String status,
+    String? companyName,
+    String? warehouseId,
+    String? status,
   }) async {
     emit(CreateAdminLoading());
     try {
-      final data = {
-        'username': username,
-        'email': email,
-        'phone': phone,
-        'password': password,
-        'company_name': companyName,
-        'role_id': roleId, // Send role_id
-        'warehouse_id': warehouseId, // Send warehouse_id
-        'status': status,
-      };
-
-      final response = await DioHelper.postData(
-        url: EndPoint.createAdmin,
-        data: data,
+      await _repository.createAdmin(
+        username: username,
+        email: email,
+        password: password,
+        phone: phone,
+        roleId: roleId,
+        warehouseId: warehouseId,
       );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        // Refresh list after creation
-       
-        emit(CreateAdminSuccess(LocaleKeys.admin_created.tr()));
-         await getAdmins(); 
-      } else {
-        emit(CreateAdminError(ErrorHandler.handleError(response)));
-      }
+      emit(CreateAdminSuccess(LocaleKeys.admin_created.tr()));
+      await getAdmins();
     } catch (e) {
-      emit(CreateAdminError(ErrorHandler.handleError(e)));
+      dev.log('AdminsCubit.createAdmin error: $e');
+      emit(CreateAdminError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -111,46 +74,30 @@ class AdminsCubit extends Cubit<AdminsState> {
   Future<void> updateAdmin({
     required String adminId,
     required String username,
-    required String email,
     required String phone,
     required String roleId,
-    required String companyName,
     required String warehouseId,
-    required String status,
-    String? password, // Optional for update
+    String? email,
+    String? companyName,
+    String? status,
+    String? password,
+    bool? isActive,
   }) async {
     emit(UpdateAdminLoading());
     try {
-      final data = {
-        'username': username,
-        'email': email,
-        'phone': phone,
-        'company_name': companyName,
-        'role_id': roleId,
-        'warehouse_id': warehouseId,
-        'status': status,
-      };
-
-      // Only add password to payload if it's not empty
-      if (password != null && password.isNotEmpty) {
-        data['password'] = password;
-      }
-
-      final response = await DioHelper.putData(
-        url: EndPoint.updateAdmin(adminId),
-        data: data,
+      await _repository.updateAdmin(
+        id: adminId,
+        username: username,
+        phone: phone,
+        roleId: roleId,
+        warehouseId: warehouseId,
+        isActive: status != null ? status == 'active' : isActive,
       );
-
-      if (response.statusCode == 200) {
-        // Refresh list after update
-        
-        emit(UpdateAdminSuccess(LocaleKeys.update_admin.tr()));
-        await getAdmins();
-      } else {
-        emit(UpdateAdminError(ErrorHandler.handleError(response)));
-      }
+      emit(UpdateAdminSuccess(LocaleKeys.admin_updated.tr()));
+      await getAdmins();
     } catch (e) {
-      emit(UpdateAdminError(ErrorHandler.handleError(e)));
+      dev.log('AdminsCubit.updateAdmin error: $e');
+      emit(UpdateAdminError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -158,21 +105,12 @@ class AdminsCubit extends Cubit<AdminsState> {
   Future<void> deleteAdmin(String adminId) async {
     emit(DeleteAdminLoading());
     try {
-      final response = await DioHelper.deleteData(
-        url: EndPoint.deleteAdmin(adminId),
-      );
-
-      if (response.statusCode == 200) {
-        // Optimistically remove from local list to update UI instantly
-        allAdmins.removeWhere((admin) => admin.id == adminId);
-        emit(DeleteAdminSuccess(LocaleKeys.admin_deleted.tr()));
-        // Optionally fetch from server to ensure sync
-        // await getAdmins(); 
-      } else {
-        emit(DeleteAdminError(ErrorHandler.handleError(response)));
-      }
+      await _repository.deleteAdmin(adminId);
+      allAdmins.removeWhere((admin) => admin.id == adminId);
+      emit(DeleteAdminSuccess(LocaleKeys.admin_deleted.tr()));
     } catch (e) {
-      emit(DeleteAdminError(ErrorHandler.handleError(e)));
+      dev.log('AdminsCubit.deleteAdmin error: $e');
+      emit(DeleteAdminError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 }

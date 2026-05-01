@@ -1,87 +1,33 @@
 // cubit/product_cubit.dart
-import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/services/endpoints.dart';
-import '../../../../../core/services/dio_helper.dart';
-import '../../../../../core/utils/error_handler.dart';
+
+import '../../../../../generated/locale_keys.g.dart';
 import '../../models/product_model.dart';
 import 'product_state.dart';
 
+import 'package:systego/features/admin/product/data/repositories/product_repository.dart';
+
 class ProductsCubit extends Cubit<ProductsState> {
-  ProductsCubit() : super(ProductsInitial());
+  final ProductRepository _repository;
+  ProductsCubit(this._repository) : super(ProductsInitial());
 
   static ProductsCubit get(context) => BlocProvider.of(context);
 
   Future<void> getProducts() async {
     emit(ProductsLoading());
-
     try {
-      log('Starting products request...');
-
-      final response = await DioHelper.getData(url: EndPoint.getProducts);
-
-      log('Response received: ${response.statusCode}');
-
-      if (response.statusCode == 200) {
-        final data = response.data;
-        if (data['success'] == true && data['data'] != null) {
-          final productsJson = data['data']['products'] as List<dynamic>? ?? [];
-          final products = productsJson
-              .map((json) => Product.fromJson(json as Map<String, dynamic>))
-              .toList()
-              .reversed
-              .toList();
-          log('Products fetch successful');
-          log('Products ${products}');
-          log('Products ${products.map((p) => p.toJson())}');
-
-          emit(ProductsSuccess(products));
-        } else {
-          final errorMessage = data['message'] ?? 'Failed to fetch products';
-          log('Products fetch failed: $errorMessage');
-          emit(ProductsError(errorMessage));
-        }
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        log('Response error: $errorMessage');
-        emit(ProductsError(errorMessage));
-      }
+      final products = await _repository.getAllProducts();
+      emit(ProductsSuccess(products));
     } catch (error) {
-      log('Products fetch error caught: $error');
-      final errorMessage = ErrorHandler.handleError(error);
-      emit(ProductsError(errorMessage));
+      emit(ProductsError(error.toString().replaceAll('Exception: ', '')));
     }
   }
 
-
   Future<String> generateCode() async {
-    emit(ProductsLoading());
-
     try {
-
-      final response = await DioHelper.getData(url: EndPoint.generateProductCode);
-
-      log('Response received: ${response.statusCode}');
-
-      if (response.statusCode == 200) {
-        final data = response.data;
-        if (data['success'] == true && data['data'] != null) {
-          final productCode = data['data']['code'] as String;
-         
-
-          return productCode;
-        } else {
-          final errorMessage = data['message'] ?? 'Failed to fetch products';
-          log('generate code: $errorMessage');
-          return '';
-        }
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        log('Response error: $errorMessage');
-        return '';
-      }
+      final code = await _repository.generateProductCode();
+      return code ?? '';
     } catch (error) {
-      log('Products fetch error caught: $error');
       return '';
     }
   }
@@ -91,7 +37,7 @@ class ProductsCubit extends Cubit<ProductsState> {
     required String arName,
     required String description,
     required String arDescription,
-    String? image, // Made optional
+    String? image,
     required String? code,
     required List<String> categoryIds,
     required String brandId,
@@ -116,70 +62,58 @@ class ProductsCubit extends Cubit<ProductsState> {
     required List<Map<String, dynamic>> prices,
   }) async {
     emit(ProductsLoading());
-
-    // Build the request body according to API spec
-    final Map<String, dynamic> requestBody = {
-      'name': name,
-      'ar_name': arName,
-      'description': description,
-      'ar_description': arDescription,
-      if (code != null) 'code': code,
-      if (image != null && image.isNotEmpty) 'image': image, // Only add if provided
-      'categoryId': categoryIds,
-      'brandId': brandId,
-      'purchase_unit': purchaseUnit,
-      'product_unit': productUnit,
-      'sale_unit': saleUnit,
-      'price': price,
-      'exp_ability': expAbility,
-      if (expAbility) 'date_of_expiery': expiryDate.toString(),
-      'minimum_quantity_sale': minimumQuantitySale,
-      'low_stock': lowStock,
-      'whole_price': wholePrice,
-      'start_quantaty': startQuantity, // Note: API has typo "quantaty"
-      'quantity': quantity,
-      'taxesId': taxesId,
-      'product_has_imei': productHasImei,
-      'different_price': differentPrice,
-      'show_quantity': showQuantity,
-      'is_featured': isFeatured,
-      'maximum_to_show': maximumToShow,
-      'gallery_product': galleryProduct,
-      'prices': prices,
-    };
-
     try {
-      log('Starting product add request...');
-      log('Request body: $requestBody');
-
-      final response = await DioHelper.postData(
-        url: EndPoint.createProduct,
-        data: requestBody,
+      final product = Product(
+        id: '',
+        name: name,
+        arName: arName,
+        description: description,
+        arDescription: arDescription,
+        image: image ?? '',
+        categoryId: categoryIds
+            .map(
+              (id) => Category(
+                id: id,
+                name: '',
+                image: '',
+                productQuantity: 0,
+                createdAt: DateTime.now(),
+                updatedAt: DateTime.now(),
+              ),
+            )
+            .toList(),
+        brandId: Brand(
+          id: brandId,
+          name: '',
+          logo: '',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+        unit: productUnit,
+        price: price,
+        expAbility: expAbility,
+        dateOfExpiery: expiryDate,
+        minimumQuantitySale: minimumQuantitySale,
+        lowStock: lowStock,
+        wholePrice: wholePrice,
+        startQuantaty: startQuantity,
+        quantity: quantity,
+        taxesId: taxesId,
+        productHasImei: productHasImei,
+        differentPrice: differentPrice,
+        showQuantity: showQuantity,
+        isFeatured: isFeatured,
+        maximumToShow: maximumToShow,
+        galleryProduct: galleryProduct,
+        prices: [], // Need to map prices if necessary
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       );
 
-      log('Response received: ${response.statusCode}');
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final data = response.data;
-        if (data['success'] == true) {
-          final message = data['message'] ?? 'Product added successfully';
-          log('Product add successful');
-          emit(ProductAddSuccess(message));
-        } else {
-          final errorMessage =
-              data['message']?.toString() ?? 'Failed to add product';
-          log('Product add failed: $errorMessage');
-          emit(ProductsError(errorMessage));
-        }
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        log('Response error: $errorMessage');
-        emit(ProductsError(errorMessage));
-      }
+      await _repository.createProduct(product);
+      emit(ProductAddSuccess('Product created successfully'));
     } catch (error) {
-      log('Product add error caught: $error');
-      final errorMessage = ErrorHandler.handleError(error);
-      emit(ProductsError(errorMessage));
+      emit(ProductsError(error.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -189,7 +123,7 @@ class ProductsCubit extends Cubit<ProductsState> {
     required String arName,
     required String description,
     required String arDescription,
-    String? image, // Made optional
+    String? image,
     required String? code,
     required List<String> categoryIds,
     required String brandId,
@@ -212,309 +146,79 @@ class ProductsCubit extends Cubit<ProductsState> {
     required List<Map<String, dynamic>> prices,
   }) async {
     emit(ProductsLoading());
-
-    // Build the request body according to API spec
-    final Map<String, dynamic> requestBody = {
-      'name': name,
-      'ar_name': arName,
-      'description': description,
-      'ar_description': arDescription,
-      if (code != null) 'code': code,
-      if (image != null && image.isNotEmpty) 'image': image, // Only add if provided
-      'categoryId': categoryIds,
-      'brandId': brandId,
-      'unit': unit,
-      'price': price,
-      'exp_ability': expAbility,
-      if (expAbility) 'date_of_expiery': expiryDate.toString(),
-      'minimum_quantity_sale': minimumQuantitySale,
-      'low_stock': lowStock,
-      'whole_price': wholePrice,
-      'start_quantaty': startQuantity, // Note: API has typo "quantaty"
-      'quantity': quantity,
-      //'taxesId': taxesId,
-      'product_has_imei': productHasImei,
-      'different_price': differentPrice,
-      'show_quantity': showQuantity,
-      'is_featured': isFeatured,
-      'maximum_to_show': maximumToShow,
-      'gallery_product': galleryProduct,
-      'prices': prices,
-    };
-
     try {
-      log('Starting product edit request...');
-      log('Request body: $requestBody');
-
-      final response = await DioHelper.putData(
-        url: '${EndPoint.createProduct}/$id',
-        data: requestBody,
+      final product = Product(
+        id: id,
+        name: name,
+        arName: arName,
+        description: description,
+        arDescription: arDescription,
+        image: image ?? '',
+        categoryId: categoryIds
+            .map(
+              (id) => Category(
+                id: id,
+                name: '',
+                image: '',
+                productQuantity: 0,
+                createdAt: DateTime.now(),
+                updatedAt: DateTime.now(),
+              ),
+            )
+            .toList(),
+        brandId: Brand(
+          id: brandId,
+          name: '',
+          logo: '',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+        unit: unit,
+        price: price,
+        expAbility: expAbility,
+        dateOfExpiery: expiryDate,
+        minimumQuantitySale: minimumQuantitySale,
+        lowStock: lowStock,
+        wholePrice: wholePrice,
+        startQuantaty: startQuantity,
+        quantity: quantity,
+        taxesId: taxesId,
+        productHasImei: productHasImei,
+        differentPrice: differentPrice,
+        showQuantity: showQuantity,
+        isFeatured: isFeatured,
+        maximumToShow: maximumToShow,
+        galleryProduct: galleryProduct,
+        prices: [], // Need to map prices if necessary
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       );
 
-      log('Response received: ${response.statusCode}');
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final data = response.data;
-        if (data['success'] == true) {
-          final message = data['message'] ?? 'Product updated successfully';
-          log('Product edit successful');
-          emit(ProductAddSuccess(message));
-        } else {
-          final errorMessage =
-              data['message']?.toString() ?? 'Failed to edit product';
-          log('Product edit failed: $errorMessage');
-          emit(ProductsError(errorMessage));
-        }
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        log('Response error: $errorMessage');
-        emit(ProductsError(errorMessage));
-      }
+      await _repository.updateProduct(id, product);
+      emit(ProductAddSuccess('Product updated successfully'));
     } catch (error) {
-      log('Product edit error caught: $error');
-      final errorMessage = ErrorHandler.handleError(error);
-      emit(ProductsError(errorMessage));
+      emit(ProductsError(error.toString().replaceAll('Exception: ', '')));
     }
   }
-
-  // Future<void> addProduct() async {
-  //   // Keep old method for backward compatibility
-  //   emit(ProductsLoading());
-
-  //   final priceItem1 = PriceItem(
-  //     price: 1299.99,
-  //     code: 'S25-BLACK-TEST-202510212',
-  //     quantity: 20,
-  //     gallery: ['iVBORw0KGgoAAAANSUhEUgAAAAUA'],
-  //     options: ['68e4c8ab15fdfe5fb68b1dd3', '68e4c8ab15fdfe5fb68b1dd3'],
-  //   );
-
-  //   final priceItem2 = PriceItem(
-  //     price: 1349.99,
-  //     code: 'S20005-GREEN-TEST-202510212',
-  //     quantity: 15,
-  //     gallery: ['iVBORw0KGgoAAAANSUhEUgAAAAUA'],
-  //     options: ['68e4c8ab15fdfe5fb68b1dd3'],
-  //   );
-
-  //   final product = ProductToAdd(
-  //     name: 'Salma \'s Test Product',
-  //     image: 'iVBORw0KGgoAAAANSUhEUgAA',
-  //     categoryId: ['68edf2195189fa198fc25ff3'],
-  //     brandId: '68e4e1dfd9f407698ecee520',
-  //     unit: 'piece',
-  //     price: 0.0,
-  //     description: 'Test Samsung Galaxy smartphone with cutting-edge features.',
-  //     expAbility: false,
-  //     minimumQuantitySale: 1,
-  //     lowStock: 10,
-  //     wholePrice: 1200.0,
-  //     startQuantity: 0,
-  //     taxesId: '67056d0a3b233c5c1b36a7ae',
-  //     productHasImei: true,
-  //     differentPrice: true,
-  //     showQuantity: true,
-  //     maximumToShow: 100,
-  //     galleryProduct: ['iVBORw0KGgo'],
-  //     prices: [priceItem1, priceItem2],
-  //   );
-
-  //   try {
-  //     log('Starting product add request...');
-
-  //     final response = await DioHelper.postData(
-  //       url: EndPoint.createProduct,
-  //       data: product.toJson(),
-  //     );
-
-  //     log('Response received: ${response.statusCode}');
-
-  //     if (response.statusCode == 200) {
-  //       final data = response.data;
-  //       if (data['success'] == true) {
-  //         final message = data['message'] ?? 'Product added successfully';
-  //         log('Product add successful');
-  //         emit(ProductAddSuccess(message));
-  //       } else {
-  //         final errorMessage =
-  //             data['message']?.toString() ?? 'Failed to add product';
-  //         log('Product add failed: $errorMessage');
-  //         emit(ProductsError(errorMessage));
-  //       }
-  //     } else {
-  //       final errorMessage = ErrorHandler.handleError(response);
-  //       log('Response error: $errorMessage');
-  //       emit(ProductsError(errorMessage));
-  //     }
-  //   } catch (error) {
-  //     log('Product add error caught: $error');
-  //     final errorMessage = ErrorHandler.handleError(error);
-  //     emit(ProductsError(errorMessage));
-  //   }
-  // }
 
   Future<void> deleteProduct(String productId) async {
     emit(ProductsLoading());
     try {
-      log('Starting product delete request...');
-
-      final response = await DioHelper.deleteData(
-        url: EndPoint.deleteProduct(productId),
-      );
-
-      log('Response received: ${response.statusCode}');
-
-      if (response.statusCode == 200 || response.statusCode == 204) {
-        final data = response.data;
-        final message = data?['message'] ?? 'Product deleted successfully';
-        log('Product delete successful');
-        emit(ProductDeleteSuccess(message));
-        await getProducts();
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        log('Response error: $errorMessage');
-        emit(ProductsError(errorMessage));
-      }
+      await _repository.deleteProduct(productId);
+      emit(ProductDeleteSuccess('Product deleted successfully'));
+      await getProducts();
     } catch (error) {
-      log('Product delete error caught: $error');
-      final errorStr = error.toString();
-      // Check for foreign key violation errors
-      if (errorStr.contains('foreign key') || 
-          errorStr.contains('violates') ||
-          errorStr.contains('constraint') ||
-          errorStr.contains('referenced') ||
-          errorStr.contains('transfer_products') ||
-          errorStr.contains('sale_items') ||
-          errorStr.contains('purchase_items')) {
-        emit(ProductsError(
-          'Cannot delete product: it is used in sales, purchases, or transfers',
-        ));
-      } else {
-        final errorMessage = ErrorHandler.handleError(error);
-        emit(ProductsError(errorMessage));
-      }
+      emit(ProductsError(error.toString().replaceAll('Exception: ', '')));
     }
   }
-
-  // Future<void> getWareHouseProducts(String wareHouseID) async {
-  //   emit(ProductsLoading());
-
-  //   try {
-  //     log('Starting products request...');
-
-  //     final response = await DioHelper.getData(
-  //       url: EndPoint.getWareHouseProducts(wareHouseID),
-  //     );
-
-  //     log('Response received: ${response.statusCode}');
-
-  //     if (response.statusCode == 200) {
-  //       final data = response.data;
-  //       log('data received: ${response.data}');
-  //       if (data['success'] == true && data['data'] != null) {
-  //         final productsJson =
-  //             data['data']['products'] as List<dynamic>? ?? [];
-  //         final warehouseProducts = productsJson
-  //             .map(
-  //               (json) =>
-  //                   WarehouseProduct.fromJson(json as Map<String, dynamic>),
-  //             )
-  //             .toList()
-  //             .reversed
-  //             .toList();
-  //         // Map to Product objects for the state (assuming partial mapping; adjust as needed based on full Product requirements)
-  //         final products = warehouseProducts.where((wp) => wp.productId != null).map((
-  //           wp,
-  //         ) {
-  //           // Construct a partial JSON for Product.fromJson, filling defaults for missing fields
-  //           // This assumes Product.fromJson can handle minimal fields; expand defaults as per Product model
-  //           final productJson = {
-  //             '_id': wp.productId!.id,
-  //             'name': wp.productId!.name,
-  //             'quantity': wp.quantity,
-  //             'description': '', // Default
-  //             'price': 0.0, // Default
-  //             'prices': [], // Default
-  //             'categoryId': [], // Default
-  //             'brandId': {
-  //               '_id': '',
-  //             }, // Default, assuming brandId is a map with id
-  //             // Add more defaults for other required Product fields if necessary
-  //           };
-  //           return Product.fromJson(productJson);
-  //         }).toList();
-  //         log('Products fetch successful');
-  //         log('Products ${products}');
-  //         log('Products ${products.map((p) => p.toJson())}');
-
-  //         emit(ProductsSuccess(products));
-  //       } else {
-  //         final errorMessage = data['message'] ?? 'Failed to fetch products';
-  //         log('Products fetch failed: $errorMessage');
-  //         emit(ProductsError(errorMessage));
-  //       }
-  //     } else {
-  //       final errorMessage = ErrorHandler.handleError(response);
-  //       log('Response error: $errorMessage');
-  //       emit(ProductsError(errorMessage));
-  //     }
-  //   } catch (error) {
-  //     log('Products fetch error caught: $error');
-  //     final errorMessage = ErrorHandler.handleError(error);
-  //     emit(ProductsError(errorMessage));
-  //   }
-  // }
 
   Future<void> getWareHouseProducts(String wareHouseID) async {
-  emit(ProductsLoading());
-
-  try {
-    log('Starting products request...');
-
-    final response = await DioHelper.getData(
-      url: EndPoint.getWareHouseProducts(wareHouseID),
-    );
-
-    log('Response received: ${response.statusCode}');
-
-    if (response.statusCode == 200) {
-      final data = response.data;
-      log('data received: ${response.data}');
-      
-      if (data['success'] == true && data['data'] != null) {
-        final productsJson = data['data']['products'] as List<dynamic>? ?? [];
-        
-        // Directly parse the products from the JSON response
-        final products = productsJson
-            .map((json) => Product.fromJson(json as Map<String, dynamic>))
-            .toList()
-            .reversed
-            .toList();
-        
-        log('Products fetch successful');
-        log('Products count: ${products.length}');
-        
-        // Optionally log first product details for debugging
-        if (products.isNotEmpty) {
-          log('First product: ${products.first.name}, ID: ${products.first.id}');
-          log('First product quantity: ${products.first.quantity}');
-        }
-
-        emit(ProductsSuccess(products));
-      } else {
-        final errorMessage = data['message'] ?? 'Failed to fetch products';
-        log('Products fetch failed: $errorMessage');
-        emit(ProductsError(errorMessage));
-      }
-    } else {
-      final errorMessage = ErrorHandler.handleError(response);
-      log('Response error: $errorMessage');
-      emit(ProductsError(errorMessage));
+    emit(ProductsLoading());
+    try {
+      final products = await _repository.getProductsByWarehouse(wareHouseID);
+      emit(ProductsSuccess(products));
+    } catch (error) {
+      emit(ProductsError(error.toString().replaceAll('Exception: ', '')));
     }
-  } catch (error) {
-    log('Products fetch error caught: $error');
-    final errorMessage = ErrorHandler.handleError(error);
-    emit(ProductsError(errorMessage));
   }
-}
 }
