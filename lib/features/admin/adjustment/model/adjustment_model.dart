@@ -67,15 +67,17 @@ class AdjustmentModel {
 
   factory AdjustmentModel.fromJson(Map<String, dynamic> json) {
     return AdjustmentModel(
-      id: json['_id'] as String,
-      warehouseId: json['warehouse_id'] as String,
-      productId: json['productId'] as String,
-      quantity: json['quantity'] as int,
-      selectReasonId: json['select_reasonId'] as String,
-      note: json['note'] as String,
-      image: json['image'] as String?,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      version: json['__v'] as int,
+      id: (json['id'] ?? json['_id'])?.toString() ?? '',
+      warehouseId: (json['warehouse_id'] ?? json['warehouseId'] ?? '')?.toString() ?? '',
+      productId: (json['product_id'] ?? json['productId'] ?? '')?.toString() ?? '',
+      quantity: (json['quantity'] as num?)?.toInt() ?? 0,
+      selectReasonId: (json['reason_id'] ?? json['select_reasonId'] ?? '')?.toString() ?? '',
+      note: json['note']?.toString() ?? '',
+      image: json['image'] ?? json['image_url'],
+      createdAt: json['created_at'] != null 
+          ? DateTime.parse(json['created_at'] as String)
+          : (json['createdAt'] != null ? DateTime.parse(json['createdAt'] as String) : DateTime.now()),
+      version: json['version'] ?? json['__v'] ?? 0,
     );
   }
 

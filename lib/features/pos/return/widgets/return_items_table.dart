@@ -1,11 +1,11 @@
-import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/features/admin/reason/cubit/reason_cubit.dart';
-import 'package:systego/features/admin/reason/cubit/reason_state.dart';
-import 'package:systego/features/admin/reason/model/reason_model.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/features/admin/reason/cubit/reason_cubit.dart';
+import 'package:GoSystem/features/admin/reason/cubit/reason_state.dart';
+import 'package:GoSystem/features/admin/reason/model/reason_model.dart';
 import '../cubit/return_cubit.dart';
 import '../models/return_item_model.dart';
 

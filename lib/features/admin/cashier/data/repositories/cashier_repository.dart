@@ -1,11 +1,7 @@
 import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../../core/migration/migration_service.dart';
-import '../../../../../core/services/dio_helper.dart';
-import '../../../../../core/services/endpoints.dart';
 import '../../../../../core/supabase/supabase_client.dart';
 import '../../../../../core/supabase/supabase_error_handler.dart';
-import '../../../../../core/utils/error_handler.dart';
 import '../../model/cashirer_model.dart';
 
 /// Interface for cashier data operations
@@ -27,23 +23,9 @@ abstract class CashierRepositoryInterface {
   Future<void> deleteCashier(String id);
 }
 
-/// Hybrid repository that supports both Dio and Supabase for cashiers
+/// Repository implementation using Supabase for cashiers
 class CashierRepository implements CashierRepositoryInterface {
-  late final CashierRepositoryInterface _dataSource;
-
-  CashierRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('cashiers')) {
-      log('CashierRepository: Using Supabase');
-      _dataSource = _CashierSupabaseDataSource();
-    } else {
-      log('CashierRepository: Using Dio (legacy)');
-      _dataSource = _CashierDioDataSource();
-    }
-  }
+  final _CashierSupabaseDataSource _dataSource = _CashierSupabaseDataSource();
 
   @override
   Future<List<CashierModel>> getAllCashiers() => _dataSource.getAllCashiers();
@@ -55,7 +37,11 @@ class CashierRepository implements CashierRepositoryInterface {
     String? warehouseId,
     required bool status,
   }) => _dataSource.createCashier(
-        name: name, arName: arName, warehouseId: warehouseId, status: status);
+        name: name,
+        arName: arName,
+        warehouseId: warehouseId,
+        status: status,
+      );
 
   @override
   Future<void> updateCashier({
@@ -65,7 +51,12 @@ class CashierRepository implements CashierRepositoryInterface {
     String? warehouseId,
     required bool status,
   }) => _dataSource.updateCashier(
-        id: id, name: name, arName: arName, warehouseId: warehouseId, status: status);
+        id: id,
+        name: name,
+        arName: arName,
+        warehouseId: warehouseId,
+        status: status,
+      );
 
   @override
   Future<void> deleteCashier(String id) => _dataSource.deleteCashier(id);
@@ -159,85 +150,5 @@ class _CashierSupabaseDataSource implements CashierRepositoryInterface {
       users: [],
       bankAccounts: [],
     );
-  }
-}
-
-/// Dio implementation for Cashier data source (legacy)
-class _CashierDioDataSource implements CashierRepositoryInterface {
-  @override
-  Future<List<CashierModel>> getAllCashiers() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getAllCashiers);
-      if (response.statusCode == 200) {
-        final model = CashierResponse.fromJson(response.data);
-        return model.data.cashiers;
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> createCashier({
-    required String name,
-    required String arName,
-    String? warehouseId,
-    required bool status,
-  }) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.createCashier,
-        data: {
-          'name': name,
-          'ar_name': arName,
-          'warehouse_id': warehouseId,
-          'status': status,
-        },
-      );
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> updateCashier({
-    required String id,
-    required String name,
-    required String arName,
-    String? warehouseId,
-    required bool status,
-  }) async {
-    try {
-      final response = await DioHelper.putData(
-        url: EndPoint.updateCashier(id),
-        data: {
-          'name': name,
-          'ar_name': arName,
-          'warehouse_id': warehouseId,
-          'status': status,
-        },
-      );
-      if (response.statusCode != 200) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> deleteCashier(String id) async {
-    try {
-      final response = await DioHelper.deleteData(url: EndPoint.deleteCashier(id));
-      if (response.statusCode != 200) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
   }
 }

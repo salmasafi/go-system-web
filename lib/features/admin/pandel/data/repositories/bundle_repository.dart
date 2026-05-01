@@ -1,11 +1,7 @@
 import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../../core/migration/migration_service.dart';
-import '../../../../../core/services/dio_helper.dart';
-import '../../../../../core/services/endpoints.dart';
 import '../../../../../core/supabase/supabase_client.dart';
 import '../../../../../core/supabase/supabase_error_handler.dart';
-import '../../../../../core/utils/error_handler.dart';
 import '../../model/pandel_model.dart';
 
 abstract class BundleRepositoryInterface {
@@ -16,21 +12,7 @@ abstract class BundleRepositoryInterface {
 }
 
 class BundleRepository implements BundleRepositoryInterface {
-  late final BundleRepositoryInterface _dataSource;
-
-  BundleRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('bundles')) {
-      log('BundleRepository: Using Supabase');
-      _dataSource = _BundleSupabaseDataSource();
-    } else {
-      log('BundleRepository: Using Dio (legacy)');
-      _dataSource = _BundleDioDataSource();
-    }
-  }
+  final _BundleSupabaseDataSource _dataSource = _BundleSupabaseDataSource();
 
   @override
   Future<List<PandelModel>> getAllBundles() => _dataSource.getAllBundles();
@@ -43,16 +25,6 @@ class BundleRepository implements BundleRepositoryInterface {
 
   @override
   Future<bool> deleteBundle(String id) => _dataSource.deleteBundle(id);
-
-  void enableSupabase() {
-    MigrationService.enableSupabase('bundles');
-    _initializeDataSource();
-  }
-
-  void enableDio() {
-    MigrationService.enableDio('bundles');
-    _initializeDataSource();
-  }
 }
 
 class _BundleSupabaseDataSource implements BundleRepositoryInterface {
@@ -237,63 +209,5 @@ class _BundleSupabaseDataSource implements BundleRepositoryInterface {
       updatedAt: DateTime.parse(json['updated_at']),
       version: 0,
     );
-  }
-}
-
-class _BundleDioDataSource implements BundleRepositoryInterface {
-  @override
-  Future<List<PandelModel>> getAllBundles() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getAllPandels);
-      if (response.statusCode == 200) {
-        final model = PandelResponse.fromJson(response.data);
-        return model.data.pandels;
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<PandelModel> createBundle(PandelModel bundle) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.addPandel,
-        data: bundle.toJson()..remove('_id'),
-      );
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return PandelModel.fromJson(response.data['data']['pandel']);
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<PandelModel> updateBundle(PandelModel bundle) async {
-    try {
-      final response = await DioHelper.putData(
-        url: EndPoint.updatePandel(bundle.id),
-        data: bundle.toJson(),
-      );
-      if (response.statusCode == 200) {
-        return PandelModel.fromJson(response.data['data']['pandel']);
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<bool> deleteBundle(String id) async {
-    try {
-      final response = await DioHelper.deleteData(url: EndPoint.deletePandel(id));
-      return response.statusCode == 200;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
   }
 }

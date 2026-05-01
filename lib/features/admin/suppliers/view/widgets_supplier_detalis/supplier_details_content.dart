@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/admin/suppliers/model/supplier_whis_id_model.dart' as supplier_details;
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/features/admin/suppliers/model/supplier_whis_id_model.dart' as supplier_details;
 import 'supplier_profile_section.dart';
 import 'supplier_contact_section.dart';
 import 'supplier_location_section.dart';

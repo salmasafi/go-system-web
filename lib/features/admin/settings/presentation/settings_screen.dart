@@ -1,12 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/services/cache_helper.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/admin/auth/presentation/view/login_screen.dart';
-import 'package:systego/features/admin/warehouses/view/widgets/custom_delete_dialog.dart';
-import 'package:systego/generated/locale_keys.g.dart';
-import 'package:systego/main.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/services/cache_helper.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/features/admin/auth/presentation/view/login_screen.dart';
+import 'package:GoSystem/features/admin/warehouses/view/widgets/custom_delete_dialog.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
+import 'package:GoSystem/main.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});

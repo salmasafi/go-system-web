@@ -1,10 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
-import 'package:systego/core/widgets/animation/animated_element.dart';
-import 'package:systego/generated/locale_keys.g.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:GoSystem/core/widgets/animation/animated_element.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -147,7 +147,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             SizedBox(height: ResponsiveUI.spacing(context, 4)),
             Text(
-              'admin@systego.com',
+              'admin@gosystem.com',
               style: TextStyle(
                 fontSize: ResponsiveUI.fontSize(context, 14),
                 color: Colors.white.withValues(alpha: 0.8),

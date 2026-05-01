@@ -3,9 +3,9 @@ import 'dart:developer' as dev;
 import 'package:bloc/bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:meta/meta.dart';
-import 'package:systego/features/admin/admins_screen/model/admins_model.dart';
-import 'package:systego/generated/locale_keys.g.dart';
-import 'package:systego/features/admin/admins_screen/data/repositories/admin_repository.dart';
+import 'package:GoSystem/features/admin/admins_screen/model/admins_model.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
+import 'package:GoSystem/features/admin/admins_screen/data/repositories/admin_repository.dart';
 part 'admins_state.dart';
 
 class AdminsCubit extends Cubit<AdminsState> {

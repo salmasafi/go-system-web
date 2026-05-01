@@ -3,20 +3,20 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/app_bar_widgets.dart';
-import 'package:systego/core/widgets/custom_button_widget.dart';
-import 'package:systego/core/widgets/custom_drop_down_menu.dart';
-import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
-import 'package:systego/core/widgets/custom_textfield/build_text_field.dart';
-import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
-import 'package:systego/features/admin/product/cubit/get_products_cubit/product_cubit.dart';
-import 'package:systego/features/admin/product/cubit/get_products_cubit/product_state.dart';
-import 'package:systego/features/admin/product/cubit/product_filter_state.dart';
-import 'package:systego/features/admin/product/models/filter_models.dart';
-import 'package:systego/features/admin/units/cubit/units_cubit.dart';
-import 'package:systego/features/admin/units/model/unit_model.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
+import 'package:GoSystem/core/widgets/custom_button_widget.dart';
+import 'package:GoSystem/core/widgets/custom_drop_down_menu.dart';
+import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
+import 'package:GoSystem/core/widgets/custom_textfield/build_text_field.dart';
+import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:GoSystem/features/admin/product/cubit/get_products_cubit/product_cubit.dart';
+import 'package:GoSystem/features/admin/product/cubit/get_products_cubit/product_state.dart';
+import 'package:GoSystem/features/admin/product/cubit/product_filter_state.dart';
+import 'package:GoSystem/features/admin/product/models/filter_models.dart';
+import 'package:GoSystem/features/admin/units/cubit/units_cubit.dart';
+import 'package:GoSystem/features/admin/units/model/unit_model.dart';
 import '../../../../../core/utils/image_handler.dart';
 import '../../cubit/filter_product_cubit/product_filter_cubit.dart';
 import '../../models/product_to_add.dart';
@@ -63,7 +63,6 @@ class _AddProductScreenState extends State<AddProductScreen>
   // Checkboxes
   bool _hasExpiry = false;
   bool _hasIMEI = false;
-  bool _differentPrice = false;
   bool _showQuantity = false;
   bool _isFeatured = false;
 
@@ -74,7 +73,6 @@ class _AddProductScreenState extends State<AddProductScreen>
   List<VariationFilter> _variations = [];
   List<VariationFilter> _selectedVariations = [];
   Map<VariationFilter, List<FilterOption>> _selectedOptionsPerVariation = {};
-  List<PriceVariation> _priceVariations = [];
 
   @override
   void initState() {
@@ -156,73 +154,6 @@ class _AddProductScreenState extends State<AddProductScreen>
       setState(() => _expiryDate = picked);
     }
   }
-
-  List<List<String>> _generateOptionCombinations() {
-    if (_selectedVariations.isEmpty) return [];
-
-    List<List<String>> result = [[]];
-
-    for (var variation in _selectedVariations) {
-      final selectedOpts = _selectedOptionsPerVariation[variation] ?? [];
-      if (selectedOpts.isEmpty) continue; // Skip if no options selected
-
-      List<List<String>> newResult = [];
-      for (var combo in result) {
-        for (var option in selectedOpts) {
-          newResult.add([...combo, option.id]);
-        }
-      }
-      result = newResult;
-    }
-
-    return result;
-  }
-
-  // void _generateVariations() {
-  //   final combos = _generateOptionCombinations();
-  //   setState(() {
-  //     for (var variation in _priceVariations) {
-  //       variation.dispose();
-  //     }
-  //     _priceVariations = combos.map((combo) {
-  //       final code = await _generateCode();
-  //       return PriceVariation(
-  //         priceController: TextEditingController(),
-  //         codeController: TextEditingController(text: code),
-  //         quantityController: TextEditingController(text: '0'),
-  //         selectedOptions: combo,
-  //         galleryImages: [],
-  //       );
-  //     }).toList();
-  //   });
-  // }
-
-  Future<void> _generateVariations() async {
-  final combos = _generateOptionCombinations();
-
-  final variationFutures = combos.map((combo) async {
-    final code = await _generateCode(); // This await is now valid
-    
-    return PriceVariation(
-      priceController: TextEditingController(),
-      codeController: TextEditingController(text: code),
-      quantityController: TextEditingController(text: '0'),
-      selectedOptions: combo,
-      galleryImages: [],
-    );
-  });
-
-  final newVariations = await Future.wait(variationFutures);
-
-  if (!mounted) return; 
-  
-  setState(() {
-    for (var variation in _priceVariations) {
-      variation.dispose();
-    }
-    _priceVariations = newVariations;
-  });
-}
 
   Future<String> _generateCode() async {
   return await context.read<ProductsCubit>().generateCode();
@@ -527,34 +458,8 @@ class _AddProductScreenState extends State<AddProductScreen>
                         ),
                         SizedBox(height: ResponsiveUI.spacing(context, 16)),
                       ],
-                      AnimatedCheckboxTile(
-                        priceController: _priceController,
-                        quantityController: _quantityController,
-                        codeController: _codeController,
-                        value: _differentPrice,
-                        title: 'Different Prices for Variations',
-                        //   icon: Icons.price_check,
-                        onChanged: (value) {
-                          setState(() {
-                            _differentPrice = value ?? false;
-                            if (!_differentPrice) {
-                              for (var variation in _priceVariations) {
-                                variation.dispose();
-                              }
-                              _priceVariations.clear();
-                              _selectedVariations.clear();
-                              _selectedOptionsPerVariation.clear();
-                            }
-                          });
-                        },
-                      ),
                     ],
                   ),
-
-                  if (_differentPrice) ...[
-                    SizedBox(height: ResponsiveUI.spacing(context, 20)),
-                    _buildPriceVariationsSection(),
-                  ],
 
                   SizedBox(height: ResponsiveUI.spacing(context, 20)),
 
@@ -597,248 +502,6 @@ class _AddProductScreenState extends State<AddProductScreen>
           ),
         );
       },
-    );
-  }
-
-  Widget _buildPriceVariationsSection() {
-    return ProductSectionCard(
-      title: 'Price Variations',
-      icon: Icons.price_change,
-      children: [
-        Text(
-          'Select Variations',
-          style: TextStyle(
-            fontSize: ResponsiveUI.fontSize(context, 16),
-            fontWeight: FontWeight.bold,
-            color: AppColors.darkGray,
-          ),
-        ),
-        SizedBox(height: ResponsiveUI.spacing(context, 12)),
-        buildMultiSelectDropdownField<VariationFilter>(
-          context,
-          items: _variations,
-          hint: 'Select variations...',
-          onChanged: (value) {
-            setState(() {
-              _selectedVariations = value;
-              _selectedOptionsPerVariation.removeWhere(
-                (key, value) => !_selectedVariations.contains(key),
-              );
-            });
-          },
-          itemLabel: (variation) => variation.name,
-        ),
-        if (_selectedVariations.isNotEmpty) ...[
-          SizedBox(height: ResponsiveUI.spacing(context, 16)),
-          ..._selectedVariations.map((var variation) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Select Options for ${variation.name}',
-                  style: TextStyle(
-                    fontSize: ResponsiveUI.fontSize(context, 14),
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.darkGray,
-                  ),
-                ),
-                SizedBox(height: ResponsiveUI.spacing(context, 8)),
-                buildMultiSelectDropdownField<FilterOption>(
-                  context,
-                  items: variation.options,
-                  hint: 'Select options...',
-                  onChanged: (selectedOpts) {
-                    setState(() {
-                      _selectedOptionsPerVariation[variation] = selectedOpts;
-                    });
-                  },
-                  itemLabel: (option) => option.name,
-                ),
-                SizedBox(height: ResponsiveUI.spacing(context, 16)),
-              ],
-            );
-          }),
-          CustomElevatedButton(
-            onPressed:
-                _selectedVariations.every(
-                  (v) => (_selectedOptionsPerVariation[v] ?? []).isNotEmpty,
-                )
-                ? _generateVariations
-                : null,
-            text: 'Generate Combinations',
-          ),
-        ],
-        if (_priceVariations.isNotEmpty) ...[
-          SizedBox(height: ResponsiveUI.spacing(context, 20)),
-          Column(
-            children: List.generate(_priceVariations.length, (index) {
-              return Column(
-                children: [
-                  _buildPriceVariationForm(index),
-                  if (index < _priceVariations.length - 1)
-                    Divider(height: ResponsiveUI.spacing(context, 20)),
-                ],
-              );
-            }),
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildPriceVariationForm(int index) {
-    final variation = _priceVariations[index];
-    final label = variation.selectedOptions
-        .map((optionId) {
-          for (var v in _variations) {
-            final opt = v.options.firstWhere(
-              (o) => o.id == optionId,
-              orElse: () => FilterOption(
-                id: '',
-                variationId: '',
-                name: 'Unknown',
-                status: false,
-                createdAt: DateTime.now(),
-                updatedAt: DateTime.now(),
-              ),
-            );
-            if (opt.id != '') return opt.name;
-          }
-          return 'Unknown';
-        })
-        .join(' - ');
-
-    return Container(
-      padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(
-          ResponsiveUI.borderRadius(context, 12),
-        ),
-        border: Border.all(color: AppColors.lightGray),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: ResponsiveUI.fontSize(context, 16),
-              fontWeight: FontWeight.bold,
-              color: AppColors.primaryBlue,
-            ),
-          ),
-          SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          buildTextField(
-            context,
-            controller: variation.priceController,
-            label: 'Price *',
-            icon: Icons.attach_money,
-            hint: '0.00',
-            keyboardType: TextInputType.number,
-          ),
-          SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          buildTextField(
-            context,
-            controller: variation.codeController,
-            label: 'Product Code *',
-            icon: Icons.qr_code,
-            hint: 'Enter unique code',
-            readOnly: true
-          ),
-          SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          buildTextField(
-            context,
-            controller: variation.quantityController,
-            label: 'Quantity',
-            icon: Icons.inventory,
-            hint: '0',
-            keyboardType: TextInputType.number,
-          ),
-          SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          _buildVariationGallery(variation),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildVariationGallery(PriceVariation variation) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Variation Images',
-              style: TextStyle(
-                fontSize: ResponsiveUI.fontSize(context, 13),
-                fontWeight: FontWeight.w600,
-                color: AppColors.darkGray,
-              ),
-            ),
-            TextButton.icon(
-              onPressed: () async {
-                final pickedFiles = await ImagePicker().pickMultiImage();
-                if (pickedFiles.isNotEmpty) {
-                  setState(() {
-                    variation.galleryImages.addAll(
-                      pickedFiles.map((file) => File(file.path)),
-                    );
-                  });
-                }
-              },
-              icon: Icon(Icons.add_photo_alternate, size: ResponsiveUI.iconSize(context, 16)),
-              label: Text('Add', style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 12))),
-            ),
-          ],
-        ),
-        if (variation.galleryImages.isNotEmpty)
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: List.generate(variation.galleryImages.length, (imgIndex) {
-              return Stack(
-                children: [
-                  Container(
-                    width: ResponsiveUI.value(context, 60),
-                    height: ResponsiveUI.value(context, 60),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
-                      border: Border.all(color: AppColors.lightGray),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
-                      child: Image.file(
-                        variation.galleryImages[imgIndex],
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: -8,
-                    right: -8,
-                    child: IconButton(
-                      icon: Container(
-                        padding: EdgeInsets.all(ResponsiveUI.padding(context, 4)),
-                        decoration: BoxDecoration(
-                          color: AppColors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(Icons.close, size: ResponsiveUI.iconSize(context, 12), color: Colors.white),
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          variation.galleryImages.removeAt(imgIndex);
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              );
-            }),
-          ),
-      ],
     );
   }
 
@@ -970,53 +633,6 @@ class _AddProductScreenState extends State<AddProductScreen>
         ? (int.tryParse(_maxToShowController.text) ?? 100)
         : 0;
 
-    // === Build Price Variations ===
-    List<Map<String, dynamic>> pricesJson = [];
-
-    if (_differentPrice && _priceVariations.isNotEmpty) {
-      List<String> codes = [];
-      for (int i = 0; i < _priceVariations.length; i++) {
-        final v = _priceVariations[i];
-
-        if (v.priceController.text.trim().isEmpty) {
-          CustomSnackbar.showError(
-            context,
-            'Enter price for variation ${i + 1}',
-          );
-          return;
-        }
-
-        if (v.codeController.text.trim().isEmpty) {
-          CustomSnackbar.showError(
-            context,
-            'Enter product code for variation ${i + 1}',
-          );
-          return;
-        } else {
-          if (codes.contains(v.codeController.text.trim())) {
-            CustomSnackbar.showError(
-              context,
-              'Don\'t enter the same codes for price variations',
-            );
-            return;
-          } else {
-            codes.add(v.codeController.text.trim());
-          }
-        }
-
-        pricesJson.add({
-          "price": double.tryParse(v.priceController.text.trim()) ?? 0.0,
-          "code": v.codeController.text.trim(),
-          "quantity": int.tryParse(v.quantityController.text) ?? 0,
-          "gallery": v.galleryImages
-              .map((img) => ImageHelper.encodeImageToBase64(img))
-              .toList(),
-          "options": v.selectedOptions,
-        });
-      }
-      // Remove duplicates from codes list if needed (optional, but ensures no duplicates after processing)
-      //codes = codes.toSet().toList();
-    }
     // === Encode Images (optional) ===
     final String? mainImageBase64 = _mainImage != null 
         ? ImageHelper.encodeImageToBase64(_mainImage!) 
@@ -1037,7 +653,7 @@ class _AddProductScreenState extends State<AddProductScreen>
       purchaseUnit: _selectedPurchaseUnit!.id, // or .name depending on API
       saleUnit: _selectedSaleUnit!.id, // or .name depending on API
       productUnit: _selectedProductUnit!.id,
-      price: _differentPrice ? 0.0 : mainPrice, // MUST be 0 if variations used
+      price: mainPrice,
       expAbility: _hasExpiry,
       code: _codeController.text.trim(),
       minimumQuantitySale: minQtySale,
@@ -1048,12 +664,10 @@ class _AddProductScreenState extends State<AddProductScreen>
       taxesId:
           '67056d0a3b233c5c1b36a7ae', // Replace later with dynamic tax selection
       productHasImei: _hasIMEI,
-      differentPrice: _differentPrice,
       showQuantity: _showQuantity,
       isFeatured: _isFeatured,
       maximumToShow: maxToShow,
       galleryProduct: galleryBase64,
-      prices: pricesJson,
       expiryDate: _expiryDate,
     );
   }
@@ -1074,9 +688,6 @@ class _AddProductScreenState extends State<AddProductScreen>
     _purchaseUnitController.dispose();
     _saleUnitController.dispose();
     _codeController.dispose();
-    for (var variation in _priceVariations) {
-      variation.dispose();
-    }
     super.dispose();
   }
 }

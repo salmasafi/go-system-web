@@ -1,12 +1,12 @@
 import 'dart:developer';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/generated/locale_keys.g.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../../../../core/services/dio_helper.dart';
 import '../../../../core/services/endpoints.dart';
 import '../../../../core/utils/error_handler.dart';
 import '../model/currency_model.dart';
-import 'package:systego/features/admin/currency/data/repositories/currency_repository.dart';
+import 'package:GoSystem/features/admin/currency/data/repositories/currency_repository.dart';
 
 part 'currency_state.dart';
 

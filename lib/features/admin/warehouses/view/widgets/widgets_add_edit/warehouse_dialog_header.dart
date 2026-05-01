@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/generated/locale_keys.g.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 
 class WarehouseDialogHeader extends StatelessWidget {
   final bool isEditMode;

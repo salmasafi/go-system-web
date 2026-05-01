@@ -103,7 +103,7 @@ class MigrationConfig {
 class MigrationService {
   MigrationService._();
 
-  static MigrationConfig _config = const MigrationConfig();
+  static MigrationConfig _config = MigrationConfig.allSupabase;
   static final List<MigrationLogEntry> _logs = [];
 
   /// Configure the migration service with specific settings

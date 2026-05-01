@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/admin/product/cubit/get_products_cubit/product_cubit.dart';
-import 'package:systego/features/admin/product/models/product_model.dart';
-import 'package:systego/features/admin/product/presentation/screens/edit_product_screen.dart';
-import 'package:systego/features/admin/product/presentation/widgets/product_card.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/features/admin/product/cubit/get_products_cubit/product_cubit.dart';
+import 'package:GoSystem/features/admin/product/models/product_model.dart';
+import 'package:GoSystem/features/admin/product/presentation/screens/edit_product_screen.dart';
+import 'package:GoSystem/features/admin/product/presentation/widgets/product_card.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../../warehouses/view/widgets/custom_delete_dialog.dart';
 import '../screens/product_details_screen.dart';

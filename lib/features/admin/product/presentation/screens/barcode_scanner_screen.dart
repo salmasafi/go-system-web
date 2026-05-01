@@ -1,10 +1,10 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/animation/animated_element.dart';
-import 'package:systego/core/widgets/app_bar_widgets.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/animation/animated_element.dart';
+import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
 import '../widgets/instruction_card_and_item.dart';
 import '../widgets/scan_widgets.dart';
 

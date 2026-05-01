@@ -1,14 +1,9 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../../core/migration/migration_service.dart';
-import '../../../../../core/services/dio_helper.dart';
-import '../../../../../core/services/endpoints.dart';
 import '../../../../../core/supabase/supabase_client.dart';
 import '../../../../../core/supabase/storage_service.dart';
 import '../../../../../core/supabase/supabase_error_handler.dart';
-import '../../../../../core/utils/error_handler.dart';
 import '../../models/return_sale_model.dart';
 import '../../models/return_item_model.dart';
 import '../../../../admin/purchase_returns/model/purchase_return_model.dart';
@@ -42,23 +37,9 @@ abstract class ReturnRepositoryInterface {
   Future<bool> updateCustomerBalance(String customerId, double amount);
 }
 
-/// Hybrid repository that supports both Dio and Supabase for returns
+/// Repository implementation using Supabase for returns
 class ReturnRepository implements ReturnRepositoryInterface {
-  late final ReturnRepositoryInterface _dataSource;
-
-  ReturnRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('returns')) {
-      log('ReturnRepository: Using Supabase');
-      _dataSource = _ReturnSupabaseDataSource();
-    } else {
-      log('ReturnRepository: Using Dio (legacy)');
-      _dataSource = _ReturnDioDataSource();
-    }
-  }
+  final _ReturnSupabaseDataSource _dataSource = _ReturnSupabaseDataSource();
 
   @override
   Future<ReturnSaleModel?> searchSaleForReturn(String reference) =>
@@ -117,16 +98,6 @@ class ReturnRepository implements ReturnRepositoryInterface {
   @override
   Future<bool> updateCustomerBalance(String customerId, double amount) =>
       _dataSource.updateCustomerBalance(customerId, amount);
-
-  void enableSupabase() {
-    MigrationService.enableSupabase('returns');
-    _initializeDataSource();
-  }
-
-  void enableDio() {
-    MigrationService.enableDio('returns');
-    _initializeDataSource();
-  }
 }
 
 /// Supabase implementation for Return data source
@@ -407,59 +378,3 @@ class _ReturnSupabaseDataSource implements ReturnRepositoryInterface {
   }
 }
 
-/// Dio implementation for Return data source (legacy)
-class _ReturnDioDataSource implements ReturnRepositoryInterface {
-  @override
-  Future<ReturnSaleModel?> searchSaleForReturn(String reference) async {
-    throw UnimplementedError('Not supported in legacy API');
-  }
-
-  @override
-  Future<ReturnSaleModel> createSaleReturn({
-    required String saleId,
-    required List<Map<String, dynamic>> items,
-    required double totalAmount,
-    String? refundMethod,
-    String? note,
-    File? attachmentFile,
-  }) async {
-    throw UnimplementedError('Not supported in legacy API');
-  }
-
-  @override
-  Future<bool> validateReturnQuantities(String saleId, List<Map<String, dynamic>> items) async {
-    throw UnimplementedError('Not supported in legacy API');
-  }
-
-  @override
-  Future<List<PurchaseReturnModel>> getAllPurchaseReturns() async {
-    throw UnimplementedError('Not supported in legacy API');
-  }
-
-  @override
-  Future<PurchaseReturnModel?> getPurchaseReturnById(String id) async {
-    throw UnimplementedError('Not supported in legacy API');
-  }
-
-  @override
-  Future<PurchaseReturnModel> createPurchaseReturn({
-    required String purchaseId,
-    required List<Map<String, dynamic>> items,
-    required double totalAmount,
-    String? refundMethod,
-    String? note,
-    File? attachmentFile,
-  }) async {
-    throw UnimplementedError('Not supported in legacy API');
-  }
-
-  @override
-  Future<bool> restoreProductQuantities(String returnId) async {
-    throw UnimplementedError('Not supported in legacy API');
-  }
-
-  @override
-  Future<bool> updateCustomerBalance(String customerId, double amount) async {
-    throw UnimplementedError('Not supported in legacy API');
-  }
-}

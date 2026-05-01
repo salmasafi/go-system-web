@@ -47,121 +47,14 @@ abstract class WarehouseRepositoryInterface {
   });
 }
 
-/// Hybrid repository that supports both Dio and Supabase for warehouses
+/// Warehouse repository using Supabase as the primary data source.
 class WarehouseRepository implements WarehouseRepositoryInterface {
-  late final WarehouseRepositoryInterface _dataSource;
-
-  WarehouseRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('warehouses')) {
-      log('WarehouseRepository: Using Supabase');
-      _dataSource = _WarehouseSupabaseDataSource();
-    } else {
-      log('WarehouseRepository: Using Dio (legacy)');
-      _dataSource = _WarehouseDioDataSource();
-    }
-  }
-
-  @override
-  Future<List<Warehouses>> getAllWarehouses() => _dataSource.getAllWarehouses();
-
-  @override
-  Future<Warehouses?> getWarehouseById(String id) => _dataSource.getWarehouseById(id);
-
-  @override
-  Future<Warehouses> createWarehouse({
-    required String name,
-    required String address,
-    required String phone,
-    required String email,
-  }) => _dataSource.createWarehouse(
-    name: name,
-    address: address,
-    phone: phone,
-    email: email,
-  );
-
-  @override
-  Future<Warehouses> updateWarehouse({
-    required String id,
-    required String name,
-    required String address,
-    required String phone,
-    required String email,
-  }) => _dataSource.updateWarehouse(
-    id: id,
-    name: name,
-    address: address,
-    phone: phone,
-    email: email,
-  );
-
-  @override
-  Future<void> deleteWarehouse(String id) => _dataSource.deleteWarehouse(id);
-
-  @override
-  Future<List<WarehouseProduct>> getWarehouseProducts(String warehouseId) =>
-      _dataSource.getWarehouseProducts(warehouseId);
-
-  @override
-  Future<bool> addProductToWarehouse({
-    required String productId,
-    required String warehouseId,
-    required int quantity,
-    int lowStock = 0,
-  }) => _dataSource.addProductToWarehouse(
-    productId: productId,
-    warehouseId: warehouseId,
-    quantity: quantity,
-    lowStock: lowStock,
-  );
-
-  @override
-  Future<bool> updateProductQuantity({
-    required String productId,
-    required String warehouseId,
-    required int quantity,
-  }) => _dataSource.updateProductQuantity(
-    productId: productId,
-    warehouseId: warehouseId,
-    quantity: quantity,
-  );
-
-  @override
-  Future<bool> transferBetweenWarehouses({
-    required String fromWarehouseId,
-    required String toWarehouseId,
-    required String productId,
-    required int quantity,
-  }) => _dataSource.transferBetweenWarehouses(
-    fromWarehouseId: fromWarehouseId,
-    toWarehouseId: toWarehouseId,
-    productId: productId,
-    quantity: quantity,
-  );
-
-  void enableSupabase() {
-    MigrationService.enableSupabase('warehouses');
-    _initializeDataSource();
-  }
-
-  void enableDio() {
-    MigrationService.enableDio('warehouses');
-    _initializeDataSource();
-  }
-}
-
-/// Supabase implementation for Warehouse data source
-class _WarehouseSupabaseDataSource implements WarehouseRepositoryInterface {
   final SupabaseClient _client = SupabaseClientWrapper.instance;
 
   @override
   Future<List<Warehouses>> getAllWarehouses() async {
     try {
-      log('WarehouseSupabase: Fetching all warehouses');
+      log('WarehouseRepository: Fetching all warehouses');
 
       final response = await _client
           .from('warehouses')
@@ -172,10 +65,10 @@ class _WarehouseSupabaseDataSource implements WarehouseRepositoryInterface {
           .map((json) => _mapSupabaseToWarehouses(json))
           .toList();
 
-      log('WarehouseSupabase: Fetched ${warehouses.length} warehouses');
+      log('WarehouseRepository: Fetched ${warehouses.length} warehouses');
       return warehouses;
     } catch (e) {
-      log('WarehouseSupabase: Error fetching warehouses - $e');
+      log('WarehouseRepository: Error fetching warehouses - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -183,7 +76,7 @@ class _WarehouseSupabaseDataSource implements WarehouseRepositoryInterface {
   @override
   Future<Warehouses?> getWarehouseById(String id) async {
     try {
-      log('WarehouseSupabase: Fetching warehouse by id: $id');
+      log('WarehouseRepository: Fetching warehouse by id: $id');
 
       final response = await _client
           .from('warehouses')
@@ -195,7 +88,7 @@ class _WarehouseSupabaseDataSource implements WarehouseRepositoryInterface {
 
       return _mapSupabaseToWarehouses(response);
     } catch (e) {
-      log('WarehouseSupabase: Error fetching warehouse - $e');
+      log('WarehouseRepository: Error fetching warehouse - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -208,7 +101,7 @@ class _WarehouseSupabaseDataSource implements WarehouseRepositoryInterface {
     required String email,
   }) async {
     try {
-      log('WarehouseSupabase: Creating warehouse: $name');
+      log('WarehouseRepository: Creating warehouse: $name');
 
       final response = await _client
           .from('warehouses')
@@ -223,10 +116,10 @@ class _WarehouseSupabaseDataSource implements WarehouseRepositoryInterface {
           .select()
           .single();
 
-      log('WarehouseSupabase: Created warehouse successfully');
+      log('WarehouseRepository: Created warehouse successfully');
       return _mapSupabaseToWarehouses(response);
     } catch (e) {
-      log('WarehouseSupabase: Error creating warehouse - $e');
+      log('WarehouseRepository: Error creating warehouse - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -240,7 +133,7 @@ class _WarehouseSupabaseDataSource implements WarehouseRepositoryInterface {
     required String email,
   }) async {
     try {
-      log('WarehouseSupabase: Updating warehouse: $id');
+      log('WarehouseRepository: Updating warehouse: $id');
 
       final response = await _client
           .from('warehouses')
@@ -254,10 +147,10 @@ class _WarehouseSupabaseDataSource implements WarehouseRepositoryInterface {
           .select()
           .single();
 
-      log('WarehouseSupabase: Updated warehouse successfully');
+      log('WarehouseRepository: Updated warehouse successfully');
       return _mapSupabaseToWarehouses(response);
     } catch (e) {
-      log('WarehouseSupabase: Error updating warehouse - $e');
+      log('WarehouseRepository: Error updating warehouse - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -265,13 +158,13 @@ class _WarehouseSupabaseDataSource implements WarehouseRepositoryInterface {
   @override
   Future<void> deleteWarehouse(String id) async {
     try {
-      log('WarehouseSupabase: Deleting warehouse: $id');
+      log('WarehouseRepository: Deleting warehouse: $id');
 
       await _client.from('warehouses').delete().eq('id', id);
 
-      log('WarehouseSupabase: Deleted warehouse successfully');
+      log('WarehouseRepository: Deleted warehouse successfully');
     } catch (e) {
-      log('WarehouseSupabase: Error deleting warehouse - $e');
+      log('WarehouseRepository: Error deleting warehouse - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -279,7 +172,7 @@ class _WarehouseSupabaseDataSource implements WarehouseRepositoryInterface {
   @override
   Future<List<WarehouseProduct>> getWarehouseProducts(String warehouseId) async {
     try {
-      log('WarehouseSupabase: Fetching products for warehouse: $warehouseId');
+      log('WarehouseRepository: Fetching products for warehouse: $warehouseId');
 
       final response = await _client
           .from('warehouse_products')
@@ -293,10 +186,10 @@ class _WarehouseSupabaseDataSource implements WarehouseRepositoryInterface {
           .map((json) => _mapSupabaseToWarehouseProduct(json))
           .toList();
 
-      log('WarehouseSupabase: Fetched ${products.length} products');
+      log('WarehouseRepository: Fetched ${products.length} products');
       return products;
     } catch (e) {
-      log('WarehouseSupabase: Error fetching warehouse products - $e');
+      log('WarehouseRepository: Error fetching warehouse products - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -309,7 +202,7 @@ class _WarehouseSupabaseDataSource implements WarehouseRepositoryInterface {
     int lowStock = 0,
   }) async {
     try {
-      log('WarehouseSupabase: Adding product $productId to warehouse $warehouseId');
+      log('WarehouseRepository: Adding product $productId to warehouse $warehouseId');
 
       // Check if product already exists in warehouse
       final existing = await _client
@@ -341,10 +234,10 @@ class _WarehouseSupabaseDataSource implements WarehouseRepositoryInterface {
       // Update warehouse stats
       await _updateWarehouseStats(warehouseId);
 
-      log('WarehouseSupabase: Product added successfully');
+      log('WarehouseRepository: Product added successfully');
       return true;
     } catch (e) {
-      log('WarehouseSupabase: Error adding product - $e');
+      log('WarehouseRepository: Error adding product - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -356,7 +249,7 @@ class _WarehouseSupabaseDataSource implements WarehouseRepositoryInterface {
     required int quantity,
   }) async {
     try {
-      log('WarehouseSupabase: Updating quantity for product $productId in warehouse $warehouseId');
+      log('WarehouseRepository: Updating quantity for product $productId in warehouse $warehouseId');
 
       await _client
           .from('warehouse_products')
@@ -367,10 +260,10 @@ class _WarehouseSupabaseDataSource implements WarehouseRepositoryInterface {
       // Update warehouse stats
       await _updateWarehouseStats(warehouseId);
 
-      log('WarehouseSupabase: Quantity updated successfully');
+      log('WarehouseRepository: Quantity updated successfully');
       return true;
     } catch (e) {
-      log('WarehouseSupabase: Error updating quantity - $e');
+      log('WarehouseRepository: Error updating quantity - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -383,7 +276,7 @@ class _WarehouseSupabaseDataSource implements WarehouseRepositoryInterface {
     required int quantity,
   }) async {
     try {
-      log('WarehouseSupabase: Transferring $quantity of product $productId from $fromWarehouseId to $toWarehouseId');
+      log('WarehouseRepository: Transferring $quantity of product $productId from $fromWarehouseId to $toWarehouseId');
 
       // Use RPC for atomic transfer operation
       await _client.rpc('transfer_product_between_warehouses', params: {
@@ -393,10 +286,10 @@ class _WarehouseSupabaseDataSource implements WarehouseRepositoryInterface {
         'p_quantity': quantity,
       });
 
-      log('WarehouseSupabase: Transfer completed successfully');
+      log('WarehouseRepository: Transfer completed successfully');
       return true;
     } catch (e) {
-      log('WarehouseSupabase: Error transferring product - $e');
+      log('WarehouseRepository: Error transferring product - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -420,7 +313,7 @@ class _WarehouseSupabaseDataSource implements WarehouseRepositoryInterface {
         'stock_quantity': totalQuantity,
       }).eq('id', warehouseId);
     } catch (e) {
-      log('WarehouseSupabase: Error updating warehouse stats - $e');
+      log('WarehouseRepository: Error updating warehouse stats - $e');
     }
   }
 
@@ -456,214 +349,5 @@ class _WarehouseSupabaseDataSource implements WarehouseRepositoryInterface {
             )
           : null,
     );
-  }
-}
-
-/// Dio implementation for Warehouse data source (legacy)
-class _WarehouseDioDataSource implements WarehouseRepositoryInterface {
-  @override
-  Future<List<Warehouses>> getAllWarehouses() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getWarehouses);
-
-      if (response.statusCode == 200) {
-        final model = WareHouseModel.fromJson(response.data);
-        if (model.success == true && model.data?.warehouses != null) {
-          return model.data!.warehouses!;
-        }
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<Warehouses?> getWarehouseById(String id) async {
-    try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getWareHouseById(id),
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final warehouseJson = response.data['data']?['warehouse'];
-        if (warehouseJson != null) {
-          return Warehouses.fromJson(warehouseJson);
-        }
-      }
-      return null;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<Warehouses> createWarehouse({
-    required String name,
-    required String address,
-    required String phone,
-    required String email,
-  }) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.createWarehouse,
-        data: {
-          'name': name,
-          'address': address,
-          'phone': phone,
-          'email': email,
-        },
-      );
-
-      if ((response.statusCode == 200 || response.statusCode == 201) &&
-          response.data['success'] == true) {
-        final warehouseJson = response.data['data']?['warehouse'];
-        if (warehouseJson != null) {
-          return Warehouses.fromJson(warehouseJson);
-        }
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<Warehouses> updateWarehouse({
-    required String id,
-    required String name,
-    required String address,
-    required String phone,
-    required String email,
-  }) async {
-    try {
-      final response = await DioHelper.putData(
-        url: '${EndPoint.updateWarehouse}/$id',
-        data: {
-          'name': name,
-          'address': address,
-          'phone': phone,
-          'email': email,
-        },
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final warehouseJson = response.data['data']?['warehouse'];
-        if (warehouseJson != null) {
-          return Warehouses.fromJson(warehouseJson);
-        }
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> deleteWarehouse(String id) async {
-    try {
-      final response = await DioHelper.deleteData(
-        url: '${EndPoint.deleteWarehouse}/$id',
-      );
-
-      if (response.statusCode != 200 || response.data['success'] != true) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<List<WarehouseProduct>> getWarehouseProducts(String warehouseId) async {
-    try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getWareHouseProducts(warehouseId),
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final productsData = response.data['data']?['products'] as List<dynamic>?;
-        if (productsData != null) {
-          return productsData
-              .map((json) => WarehouseProduct.fromJson(json as Map<String, dynamic>))
-              .toList();
-        }
-      }
-      return [];
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<bool> addProductToWarehouse({
-    required String productId,
-    required String warehouseId,
-    required int quantity,
-    int lowStock = 0,
-  }) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.addProductToWarehouse(warehouseId),
-        data: {
-          'productId': productId,
-          'warehouseId': warehouseId,
-          'quantity': quantity,
-          'low_stock': lowStock,
-        },
-      );
-
-      return (response.statusCode == 200 || response.statusCode == 201) &&
-          response.data['success'] == true;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<bool> updateProductQuantity({
-    required String productId,
-    required String warehouseId,
-    required int quantity,
-  }) async {
-    try {
-      final response = await DioHelper.putData(
-        url: '${EndPoint.getWarehouses}/$warehouseId/products/$productId',
-        data: {
-          'product_id': productId,
-          'warehouse_id': warehouseId,
-          'quantity': quantity,
-        },
-      );
-
-      return response.statusCode == 200 && response.data['success'] == true;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<bool> transferBetweenWarehouses({
-    required String fromWarehouseId,
-    required String toWarehouseId,
-    required String productId,
-    required int quantity,
-  }) async {
-    try {
-      final response = await DioHelper.postData(
-        url: '${EndPoint.getWarehouses}/transfer',
-        data: {
-          'from_warehouse_id': fromWarehouseId,
-          'to_warehouse_id': toWarehouseId,
-          'product_id': productId,
-          'quantity': quantity,
-        },
-      );
-
-      return (response.statusCode == 200 || response.statusCode == 201) &&
-          response.data['success'] == true;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
   }
 }

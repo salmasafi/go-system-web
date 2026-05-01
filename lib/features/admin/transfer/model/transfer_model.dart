@@ -246,19 +246,19 @@ class TransferModel {
 
   factory TransferModel.fromJson(Map<String, dynamic> json) {
     return TransferModel(
-      id: json['_id'] ?? '',
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
       // Handle cases where warehouse might be null or just an ID string (safety check)
-      fromWarehouse: json['fromWarehouseId'] is Map 
-          ? WarehouseLiteModel.fromJson(json['fromWarehouseId']) 
+      fromWarehouse: (json['from_warehouse_id'] ?? json['fromWarehouseId']) is Map 
+          ? WarehouseLiteModel.fromJson(json['from_warehouse_id'] ?? json['fromWarehouseId']) 
           : null,
-      toWarehouse: json['toWarehouseId'] is Map 
-          ? WarehouseLiteModel.fromJson(json['toWarehouseId']) 
+      toWarehouse: (json['to_warehouse_id'] ?? json['toWarehouseId']) is Map 
+          ? WarehouseLiteModel.fromJson(json['to_warehouse_id'] ?? json['toWarehouseId']) 
           : null,
       products: (json['products'] as List<dynamic>?)
               ?.map((item) => TransferProductModel.fromJson(item))
               .toList() ?? [],
       status: json['status'] ?? 'unknown',
-      date: json['date'] ?? '',
+      date: (json['created_at'] ?? json['date'] ?? '').toString(),
       reference: json['reference'] ?? '',
     );
   }
@@ -272,7 +272,7 @@ class WarehouseLiteModel {
 
   factory WarehouseLiteModel.fromJson(Map<String, dynamic> json) {
     return WarehouseLiteModel(
-      id: json['_id'] ?? '',
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
       name: json['name'] ?? '',
     );
   }
@@ -295,12 +295,12 @@ class TransferProductModel {
 
   factory TransferProductModel.fromJson(Map<String, dynamic> json) {
     // Extract product name from nested object
-    final productObj = json['productId']; 
+    final productObj = json['product_id'] ?? json['productId']; 
     return TransferProductModel(
-      id: json['_id'] ?? '',
-      quantity: json['quantity'] as int? ?? 0,
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      quantity: (json['quantity'] as num?)?.toInt() ?? 0,
       productName: productObj is Map ? productObj['name'] : 'Unknown Product',
-      productId: productObj is Map ? productObj['_id'] : '',
+      productId: productObj is Map ? (productObj['id'] ?? productObj['_id'] ?? '').toString() : (productObj ?? '').toString(),
     );
   }
 }

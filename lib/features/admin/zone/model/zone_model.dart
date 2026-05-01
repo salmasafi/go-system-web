@@ -64,15 +64,15 @@ class ZoneModel {
   // Also specify Map<String, dynamic> for type safety
   factory ZoneModel.fromJson(Map<String, dynamic> json) {
     return ZoneModel(
-      id: (json['id'] ?? json['_id'])?.toString() ?? '',
-      cost: json['cost'] as num?,
-      name: json['name'] as String? ?? '',
-      arName: json['ar_name'] as String? ?? '',
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      cost: (json['cost'] ?? 0) as num?,
+      name: json['name']?.toString() ?? '',
+      arName: json['ar_name']?.toString() ?? '',
       country: CountryForZone.fromJson(
-        json['countryId'] as Map<String, dynamic>,
+        (json['country_id'] ?? json['countryId'] ?? json['country'] ?? {}) as Map<String, dynamic>,
       ),
-      city: CityForZone.fromJson(json['cityId'] as Map<String, dynamic>),
-      version: json['__v'] as int,
+      city: CityForZone.fromJson((json['city_id'] ?? json['cityId'] ?? json['city'] ?? {}) as Map<String, dynamic>),
+      version: json['version'] ?? json['__v'] ?? 0,
     );
   }
 
@@ -98,9 +98,9 @@ class CountryForZone {
 
   factory CountryForZone.fromJson(Map<String, dynamic> json) {
     return CountryForZone(
-      id: (json['id'] ?? json['_id'])?.toString() ?? '',
-      name: json['name'] as String? ?? '',
-      arName: json['ar_name'] as String? ?? '',
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      name: (json['name'] ?? json['country_name'] ?? '').toString(),
+      arName: (json['ar_name'] ?? json['ar_country_name'] ?? '').toString(),
     );
   }
 
@@ -124,10 +124,10 @@ class CityForZone {
 
   factory CityForZone.fromJson(Map<String, dynamic> json) {
     return CityForZone(
-      id: (json['id'] ?? json['_id'])?.toString() ?? '',
-      name: json['name'] as String? ?? '',
-      arName: json['ar_name'] as String? ?? '',
-      shipingCost: json['shipingCost'] as num? ?? 0,
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      name: (json['name'] ?? json['city_name'] ?? '').toString(),
+      arName: (json['ar_name'] ?? json['ar_city_name'] ?? '').toString(),
+      shipingCost: (json['shipping_cost'] ?? json['shipingCost'] ?? 0) as num,
     );
   }
 

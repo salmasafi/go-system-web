@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:systego/core/constants/app_colors.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
 import '../widgets/sales_tab.dart';
 
 class HistoryScreen extends StatelessWidget {

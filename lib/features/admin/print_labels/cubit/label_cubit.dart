@@ -1,10 +1,10 @@
 import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/core/utils/error_handler.dart';
-import 'package:systego/features/admin/print_labels/model/label_model.dart';
+import 'package:GoSystem/core/services/dio_helper.dart';
+import 'package:GoSystem/core/utils/error_handler.dart';
+import 'package:GoSystem/features/admin/print_labels/model/label_model.dart';
 
-import 'package:systego/features/admin/print_labels/data/repositories/label_repository.dart';
+import 'package:GoSystem/features/admin/print_labels/data/repositories/label_repository.dart';
 
 part 'label_state.dart';
 

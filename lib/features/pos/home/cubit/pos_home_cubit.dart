@@ -2,13 +2,15 @@
 
 import 'dart:developer';
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/features/pos/home/cubit/pos_home_state.dart';
-import 'package:systego/features/pos/home/model/pos_models.dart';
-import 'package:systego/features/admin/discount/model/discount_model.dart';
+import 'package:GoSystem/features/pos/home/cubit/pos_home_state.dart';
+import 'package:GoSystem/features/pos/home/model/pos_models.dart';
+import 'package:GoSystem/features/admin/discount/model/discount_model.dart';
 import '../../../../core/services/dio_helper.dart';
 import '../../../../core/services/endpoints.dart';
 import '../../../../core/utils/error_handler.dart';
+import '../../../../generated/locale_keys.g.dart';
 
 class PosCubit extends Cubit<PosState> {
   PosCubit() : super(PosInitial());
@@ -79,14 +81,14 @@ class PosCubit extends Cubit<PosState> {
 
   String _extractErrorMessage(dynamic errorOrResponse) {
     if (errorOrResponse is Map<String, dynamic>) {
-      return errorOrResponse['message']?.toString() ?? 'Unknown error occurred';
+      return errorOrResponse['message']?.toString() ?? LocaleKeys.unknown_error_occurred.tr();
     } else if (errorOrResponse is Response) {
       final data = errorOrResponse.data;
       if (data is Map<String, dynamic>) {
         return data['message']?.toString() ??
-            'Server error: ${errorOrResponse.statusCode}';
+            '${LocaleKeys.server_error.tr()}: ${errorOrResponse.statusCode}';
       }
-      return 'Server error: ${errorOrResponse.statusCode}';
+      return '${LocaleKeys.server_error.tr()}: ${errorOrResponse.statusCode}';
     }
     return ErrorHandler.handleError(errorOrResponse);
   }

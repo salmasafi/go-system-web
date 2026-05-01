@@ -1,12 +1,8 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../../core/migration/migration_service.dart';
-import '../../../../../core/services/dio_helper.dart';
-import '../../../../../core/services/endpoints.dart';
 import '../../../../../core/supabase/supabase_client.dart';
 import '../../../../../core/supabase/supabase_error_handler.dart';
-import '../../../../../core/utils/error_handler.dart';
 import '../../model/bank_account_model.dart';
 
 // ─────────────────────────────────────────────
@@ -121,106 +117,15 @@ abstract class BankAccountRepositoryInterface {
 // Hybrid Repository
 // ─────────────────────────────────────────────
 
+/// Bank account repository using Supabase as the primary data source.
 class BankAccountRepository implements BankAccountRepositoryInterface {
-  late final BankAccountRepositoryInterface _dataSource;
-
-  BankAccountRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('financial')) {
-      log('BankAccountRepository: Using Supabase');
-      _dataSource = _BankAccountSupabaseDataSource();
-    } else {
-      log('BankAccountRepository: Using Dio (legacy)');
-      _dataSource = _BankAccountDioDataSource();
-    }
-  }
-
-  @override
-  Future<List<SupabaseBankAccountModel>> getAllBankAccounts() =>
-      _dataSource.getAllBankAccounts();
-
-  @override
-  Future<SupabaseBankAccountModel?> getBankAccountById(String id) =>
-      _dataSource.getBankAccountById(id);
-
-  @override
-  Future<SupabaseBankAccountModel> createBankAccount({
-    required String name,
-    required double balance,
-    required bool status,
-    required bool inPos,
-    required String description,
-    required String wareHouseId,
-    String? imagePath,
-  }) =>
-      _dataSource.createBankAccount(
-        name: name,
-        balance: balance,
-        status: status,
-        inPos: inPos,
-        description: description,
-        wareHouseId: wareHouseId,
-        imagePath: imagePath,
-      );
-
-  @override
-  Future<SupabaseBankAccountModel> updateBankAccount({
-    required String id,
-    required String name,
-    required double balance,
-    required bool status,
-    required bool inPos,
-    required String description,
-    required String wareHouseId,
-    String? imagePath,
-  }) =>
-      _dataSource.updateBankAccount(
-        id: id,
-        name: name,
-        balance: balance,
-        status: status,
-        inPos: inPos,
-        description: description,
-        wareHouseId: wareHouseId,
-        imagePath: imagePath,
-      );
-
-  @override
-  Future<void> deleteBankAccount(String id) => _dataSource.deleteBankAccount(id);
-
-  @override
-  Future<void> selectBankAccount(String id) => _dataSource.selectBankAccount(id);
-
-  @override
-  Future<bool> updateBankAccountBalance(String accountId, double amount) =>
-      _dataSource.updateBankAccountBalance(accountId, amount);
-
-  void enableSupabase() {
-    MigrationService.enableSupabase('financial');
-    _initializeDataSource();
-  }
-
-  void enableDio() {
-    MigrationService.enableDio('financial');
-    _initializeDataSource();
-  }
-}
-
-// ─────────────────────────────────────────────
-// Supabase Implementation
-// ─────────────────────────────────────────────
-
-class _BankAccountSupabaseDataSource implements BankAccountRepositoryInterface {
   final SupabaseClient _client = SupabaseClientWrapper.instance;
   static const String _table = 'bank_accounts';
 
   @override
   Future<List<SupabaseBankAccountModel>> getAllBankAccounts() async {
     try {
-      log('BankAccountSupabase: Fetching all bank accounts');
+      log('BankAccountRepository: Fetching all bank accounts');
       final response = await _client
           .from(_table)
           .select()
@@ -231,7 +136,7 @@ class _BankAccountSupabaseDataSource implements BankAccountRepositoryInterface {
               SupabaseBankAccountModel.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      log('BankAccountSupabase: Error fetching bank accounts - $e');
+      log('BankAccountRepository: Error fetching bank accounts - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -239,7 +144,7 @@ class _BankAccountSupabaseDataSource implements BankAccountRepositoryInterface {
   @override
   Future<SupabaseBankAccountModel?> getBankAccountById(String id) async {
     try {
-      log('BankAccountSupabase: Fetching bank account $id');
+      log('BankAccountRepository: Fetching bank account $id');
       final response = await _client
           .from(_table)
           .select()
@@ -249,7 +154,7 @@ class _BankAccountSupabaseDataSource implements BankAccountRepositoryInterface {
       if (response == null) return null;
       return SupabaseBankAccountModel.fromJson(response);
     } catch (e) {
-      log('BankAccountSupabase: Error fetching bank account - $e');
+      log('BankAccountRepository: Error fetching bank account - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -265,7 +170,7 @@ class _BankAccountSupabaseDataSource implements BankAccountRepositoryInterface {
     String? imagePath,
   }) async {
     try {
-      log('BankAccountSupabase: Creating bank account $name');
+      log('BankAccountRepository: Creating bank account $name');
 
       String? imageUrl;
       if (imagePath != null) {
@@ -288,7 +193,7 @@ class _BankAccountSupabaseDataSource implements BankAccountRepositoryInterface {
 
       return SupabaseBankAccountModel.fromJson(response);
     } catch (e) {
-      log('BankAccountSupabase: Error creating bank account - $e');
+      log('BankAccountRepository: Error creating bank account - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -305,7 +210,7 @@ class _BankAccountSupabaseDataSource implements BankAccountRepositoryInterface {
     String? imagePath,
   }) async {
     try {
-      log('BankAccountSupabase: Updating bank account $id');
+      log('BankAccountRepository: Updating bank account $id');
 
       String? imageUrl;
       if (imagePath != null) {
@@ -337,7 +242,7 @@ class _BankAccountSupabaseDataSource implements BankAccountRepositoryInterface {
 
       return SupabaseBankAccountModel.fromJson(response);
     } catch (e) {
-      log('BankAccountSupabase: Error updating bank account - $e');
+      log('BankAccountRepository: Error updating bank account - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -345,10 +250,10 @@ class _BankAccountSupabaseDataSource implements BankAccountRepositoryInterface {
   @override
   Future<void> deleteBankAccount(String id) async {
     try {
-      log('BankAccountSupabase: Deleting bank account $id');
+      log('BankAccountRepository: Deleting bank account $id');
       await _client.from(_table).delete().eq('id', id);
     } catch (e) {
-      log('BankAccountSupabase: Error deleting bank account - $e');
+      log('BankAccountRepository: Error deleting bank account - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -356,7 +261,7 @@ class _BankAccountSupabaseDataSource implements BankAccountRepositoryInterface {
   @override
   Future<void> selectBankAccount(String id) async {
     try {
-      log('BankAccountSupabase: Setting default bank account $id');
+      log('BankAccountRepository: Setting default bank account $id');
       
       // Remove default from all others
       await _client.from(_table).update({'is_default': false});
@@ -364,7 +269,7 @@ class _BankAccountSupabaseDataSource implements BankAccountRepositoryInterface {
       // Set default for this one
       await _client.from(_table).update({'is_default': true}).eq('id', id);
     } catch (e) {
-      log('BankAccountSupabase: Error selecting default bank account - $e');
+      log('BankAccountRepository: Error selecting default bank account - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -372,7 +277,7 @@ class _BankAccountSupabaseDataSource implements BankAccountRepositoryInterface {
   @override
   Future<bool> updateBankAccountBalance(String accountId, double amount) async {
     try {
-      log('BankAccountSupabase: Updating balance for $accountId by $amount');
+      log('BankAccountRepository: Updating balance for $accountId by $amount');
       
       // Fetch current balance
       final account = await getBankAccountById(accountId);
@@ -387,142 +292,9 @@ class _BankAccountSupabaseDataSource implements BankAccountRepositoryInterface {
 
       return true;
     } catch (e) {
-      log('BankAccountSupabase: Error updating balance - $e');
+      log('BankAccountRepository: Error updating balance - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
 }
 
-// ─────────────────────────────────────────────
-// Dio (Legacy) Implementation
-// ─────────────────────────────────────────────
-
-class _BankAccountDioDataSource implements BankAccountRepositoryInterface {
-  @override
-  Future<List<SupabaseBankAccountModel>> getAllBankAccounts() async {
-    throw UnimplementedError('Not supported in legacy API');
-  }
-
-  @override
-  Future<SupabaseBankAccountModel?> getBankAccountById(String id) async {
-    return null; // Not typically implemented in legacy
-  }
-
-  @override
-  Future<SupabaseBankAccountModel> createBankAccount({
-    required String name,
-    required double balance,
-    required bool status,
-    required bool inPos,
-    required String description,
-    required String wareHouseId,
-    String? imagePath,
-  }) async {
-    try {
-      final data = {
-        'name': name,
-        'balance': balance,
-        'status': status,
-        'in_POS': inPos,
-        'description': description,
-        'warehouseId': wareHouseId,
-        // image is usually handled as base64 in legacy, but here we only have path. 
-        // For migration repository, we might skip image upload in Dio mode if not easily accessible.
-      };
-      final response = await DioHelper.postData(url: EndPoint.addBankAccount, data: data);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return SupabaseBankAccountModel(
-          id: response.data['data']['_id'] ?? '',
-          name: name,
-          accountType: inPos ? 'cash' : 'checking',
-          currency: 'SAR',
-          openingBalance: balance,
-          currentBalance: balance,
-          isActive: status,
-          isDefault: false,
-          notes: description,
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-        );
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<SupabaseBankAccountModel> updateBankAccount({
-    required String id,
-    required String name,
-    required double balance,
-    required bool status,
-    required bool inPos,
-    required String description,
-    required String wareHouseId,
-    String? imagePath,
-  }) async {
-    try {
-      final data = {
-        'name': name,
-        'balance': balance,
-        'status': status,
-        'in_POS': inPos,
-        'description': description,
-        'warehouseId': wareHouseId,
-      };
-      final response = await DioHelper.putData(url: EndPoint.updateBankAccount(id), data: data);
-      if (response.statusCode == 200) {
-        return SupabaseBankAccountModel(
-          id: id,
-          name: name,
-          accountType: inPos ? 'cash' : 'checking',
-          currency: 'SAR',
-          openingBalance: balance,
-          currentBalance: balance,
-          isActive: status,
-          isDefault: false,
-          notes: description,
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-        );
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> deleteBankAccount(String id) async {
-    try {
-      final response = await DioHelper.deleteData(url: EndPoint.deleteBankAccount(id));
-      if (response.statusCode != 200) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> selectBankAccount(String id) async {
-    try {
-      final response = await DioHelper.putData(
-        url: EndPoint.updateBankAccount(id),
-        data: {'is_default': true},
-      );
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<bool> updateBankAccountBalance(String accountId, double amount) async {
-    // In legacy, this is typically handled by backend
-    return true;
-  }
-}

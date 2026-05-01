@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/core/services/endpoints.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
-import 'package:systego/features/admin/bank_account/model/bank_account_model.dart';
-import 'package:systego/features/admin/expense_admin/cubit/expense_admin_cubit.dart';
-import 'package:systego/features/admin/expense_admin/cubit/expense_admin_state.dart';
-import 'package:systego/features/admin/expences_category/model/expences_categories_model.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/services/dio_helper.dart';
+import 'package:GoSystem/core/services/endpoints.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:GoSystem/features/admin/bank_account/model/bank_account_model.dart';
+import 'package:GoSystem/features/admin/expense_admin/cubit/expense_admin_cubit.dart';
+import 'package:GoSystem/features/admin/expense_admin/cubit/expense_admin_state.dart';
+import 'package:GoSystem/features/admin/expences_category/model/expences_categories_model.dart';
 
 class AddExpenseAdminDialog extends StatefulWidget {
   const AddExpenseAdminDialog({super.key});

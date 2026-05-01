@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/animation/animated_element.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/animation/animated_element.dart';
 import '../../cubit/redeem_points_cubit.dart';
 import '../../model/redeem_points_model.dart';
 import 'add_redeem_points_dialog.dart';

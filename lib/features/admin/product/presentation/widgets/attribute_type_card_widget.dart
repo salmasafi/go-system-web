@@ -1,6 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../models/attribute_type_model.dart';
 

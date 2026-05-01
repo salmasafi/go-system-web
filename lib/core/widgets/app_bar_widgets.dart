@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/admin/settings/presentation/view/settings_screen.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/features/admin/settings/presentation/view/settings_screen.dart';
 import '../constants/app_colors.dart';
 
 AppBar appBarWithActions(

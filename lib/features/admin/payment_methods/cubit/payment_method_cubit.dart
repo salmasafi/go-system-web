@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/generated/locale_keys.g.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../model/payment_method_model.dart';
 import 'payment_method_state.dart';
-import 'package:systego/features/admin/payment_methods/data/repositories/payment_method_repository.dart';
+import 'package:GoSystem/features/admin/payment_methods/data/repositories/payment_method_repository.dart';
 
 class PaymentMethodCubit extends Cubit<PaymentMethodState> {
   final PaymentMethodRepository _repository;

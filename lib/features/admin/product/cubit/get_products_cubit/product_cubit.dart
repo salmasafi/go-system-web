@@ -5,7 +5,7 @@ import '../../../../../generated/locale_keys.g.dart';
 import '../../models/product_model.dart';
 import 'product_state.dart';
 
-import 'package:systego/features/admin/product/data/repositories/product_repository.dart';
+import 'package:GoSystem/features/admin/product/data/repositories/product_repository.dart';
 
 class ProductsCubit extends Cubit<ProductsState> {
   final ProductRepository _repository;
@@ -54,12 +54,10 @@ class ProductsCubit extends Cubit<ProductsState> {
     required int quantity,
     required String taxesId,
     required bool productHasImei,
-    required bool differentPrice,
     required bool showQuantity,
     required bool isFeatured,
     required int maximumToShow,
     required List<String> galleryProduct,
-    required List<Map<String, dynamic>> prices,
   }) async {
     emit(ProductsLoading());
     try {
@@ -100,12 +98,10 @@ class ProductsCubit extends Cubit<ProductsState> {
         quantity: quantity,
         taxesId: taxesId,
         productHasImei: productHasImei,
-        differentPrice: differentPrice,
         showQuantity: showQuantity,
         isFeatured: isFeatured,
         maximumToShow: maximumToShow,
         galleryProduct: galleryProduct,
-        prices: [], // Need to map prices if necessary
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
@@ -138,12 +134,10 @@ class ProductsCubit extends Cubit<ProductsState> {
     required int quantity,
     required String taxesId,
     required bool productHasImei,
-    required bool differentPrice,
     required bool showQuantity,
     required bool isFeatured,
     required int maximumToShow,
     required List<String> galleryProduct,
-    required List<Map<String, dynamic>> prices,
   }) async {
     emit(ProductsLoading());
     try {
@@ -184,12 +178,10 @@ class ProductsCubit extends Cubit<ProductsState> {
         quantity: quantity,
         taxesId: taxesId,
         productHasImei: productHasImei,
-        differentPrice: differentPrice,
         showQuantity: showQuantity,
         isFeatured: isFeatured,
         maximumToShow: maximumToShow,
         galleryProduct: galleryProduct,
-        prices: [], // Need to map prices if necessary
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );

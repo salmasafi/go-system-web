@@ -6,14 +6,14 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 
-import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/core/services/endpoints.dart';
-import 'package:systego/core/utils/error_handler.dart';
-import 'package:systego/features/admin/customer/model/customer_model.dart';
-import 'package:systego/features/admin/customer_group/model/customer_group_model.dart';
-import 'package:systego/generated/locale_keys.g.dart';
+import 'package:GoSystem/core/services/dio_helper.dart';
+import 'package:GoSystem/core/services/endpoints.dart';
+import 'package:GoSystem/core/utils/error_handler.dart';
+import 'package:GoSystem/features/admin/customer/model/customer_model.dart';
+import 'package:GoSystem/features/admin/customer_group/model/customer_group_model.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 
-import 'package:systego/features/admin/customer/data/repositories/customer_repository.dart';
+import 'package:GoSystem/features/admin/customer/data/repositories/customer_repository.dart';
 
 part 'customer_state.dart';
 

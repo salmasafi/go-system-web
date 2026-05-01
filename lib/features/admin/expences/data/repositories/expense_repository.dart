@@ -89,75 +89,25 @@ abstract class ExpenseRepositoryInterface {
     required String note,
   });
   Future<void> deleteExpense(String id);
+  Future<List<ExpenseAdminModel>> getExpensesByShift(String shiftId);
 }
 
 // ─────────────────────────────────────────────
 // Hybrid Repository
 // ─────────────────────────────────────────────
 
+// ─────────────────────────────────────────────
+// Repository Implementation
+// ─────────────────────────────────────────────
+
 class ExpenseRepository implements ExpenseRepositoryInterface {
-  late final ExpenseRepositoryInterface _dataSource;
-
-  ExpenseRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('financial')) {
-      log('ExpenseRepository: Using Supabase');
-      _dataSource = _ExpenseSupabaseDataSource();
-    } else {
-      log('ExpenseRepository: Using Dio (legacy)');
-      _dataSource = _ExpenseDioDataSource();
-    }
-  }
-
-  @override
-  Future<List<ExpenseAdminModel>> getAllExpenses() =>
-      _dataSource.getAllExpenses();
-
-  @override
-  Future<void> createExpense({
-    required String name,
-    required double amount,
-    required String categoryId,
-    required String financialAccountId,
-    required String note,
-  }) =>
-      _dataSource.createExpense(
-        name: name,
-        amount: amount,
-        categoryId: categoryId,
-        financialAccountId: financialAccountId,
-        note: note,
-      );
-
-  @override
-  Future<void> deleteExpense(String id) => _dataSource.deleteExpense(id);
-
-  void enableSupabase() {
-    MigrationService.enableSupabase('financial');
-    _initializeDataSource();
-  }
-
-  void enableDio() {
-    MigrationService.enableDio('financial');
-    _initializeDataSource();
-  }
-}
-
-// ─────────────────────────────────────────────
-// Supabase Implementation
-// ─────────────────────────────────────────────
-
-class _ExpenseSupabaseDataSource implements ExpenseRepositoryInterface {
   final SupabaseClient _client = SupabaseClientWrapper.instance;
   static const String _table = 'expenses';
 
   @override
   Future<List<ExpenseAdminModel>> getAllExpenses() async {
     try {
-      log('ExpenseSupabase: Fetching all expenses');
+      log('ExpenseRepository: Fetching all expenses');
       final response = await _client
           .from(_table)
           .select('*, expense_categories(name), financial_accounts(name)')
@@ -167,7 +117,7 @@ class _ExpenseSupabaseDataSource implements ExpenseRepositoryInterface {
           .map((json) => _mapSupabaseToModel(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      log('ExpenseSupabase: Error fetching expenses - $e');
+      log('ExpenseRepository: Error fetching expenses - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -181,7 +131,7 @@ class _ExpenseSupabaseDataSource implements ExpenseRepositoryInterface {
     required String note,
   }) async {
     try {
-      log('ExpenseSupabase: Creating expense');
+      log('ExpenseRepository: Creating expense');
       await _client.from(_table).insert({
         'description': name,
         'amount': amount,
@@ -191,7 +141,7 @@ class _ExpenseSupabaseDataSource implements ExpenseRepositoryInterface {
         'date': DateTime.now().toIso8601String(),
       });
     } catch (e) {
-      log('ExpenseSupabase: Error creating expense - $e');
+      log('ExpenseRepository: Error creating expense - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -199,10 +149,29 @@ class _ExpenseSupabaseDataSource implements ExpenseRepositoryInterface {
   @override
   Future<void> deleteExpense(String id) async {
     try {
-      log('ExpenseSupabase: Deleting expense: $id');
+      log('ExpenseRepository: Deleting expense: $id');
       await _client.from(_table).delete().eq('id', id);
     } catch (e) {
-      log('ExpenseSupabase: Error deleting expense - $e');
+      log('ExpenseRepository: Error deleting expense - $e');
+      throw Exception(SupabaseErrorHandler.handleError(e));
+    }
+  }
+
+  @override
+  Future<List<ExpenseAdminModel>> getExpensesByShift(String shiftId) async {
+    try {
+      log('ExpenseRepository: Fetching expenses for shift: $shiftId');
+      final response = await _client
+          .from(_table)
+          .select('*, expense_categories(name), financial_accounts(name)')
+          .eq('shift_id', shiftId)
+          .order('created_at', ascending: false);
+
+      return (response as List)
+          .map((json) => _mapSupabaseToModel(json as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      log('ExpenseRepository: Error fetching shift expenses - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -221,64 +190,5 @@ class _ExpenseSupabaseDataSource implements ExpenseRepositoryInterface {
       categoryId: json['category_id'] ?? '',
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : DateTime.now(),
     );
-  }
-}
-
-// ─────────────────────────────────────────────
-// Dio (Legacy) Implementation
-// ─────────────────────────────────────────────
-
-class _ExpenseDioDataSource implements ExpenseRepositoryInterface {
-  @override
-  Future<List<ExpenseAdminModel>> getAllExpenses() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getAllExpenseAdmin);
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final data = ExpenseAdminResponse.fromJson(response.data);
-        return data.data.expenses;
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> createExpense({
-    required String name,
-    required double amount,
-    required String categoryId,
-    required String financialAccountId,
-    required String note,
-  }) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.addPosExpense,
-        data: {
-          'name': name,
-          'amount': amount,
-          'Category_id': categoryId,
-          'financial_accountId': financialAccountId,
-          'note': note,
-        },
-      );
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> deleteExpense(String id) async {
-    try {
-      final response = await DioHelper.deleteData(url: EndPoint.updatePosExpense(id));
-      if (response.statusCode != 200) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
   }
 }

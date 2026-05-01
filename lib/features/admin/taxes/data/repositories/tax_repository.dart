@@ -1,11 +1,7 @@
 import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../../core/migration/migration_service.dart';
-import '../../../../../core/services/dio_helper.dart';
-import '../../../../../core/services/endpoints.dart';
 import '../../../../../core/supabase/supabase_client.dart';
 import '../../../../../core/supabase/supabase_error_handler.dart';
-import '../../../../../core/utils/error_handler.dart';
 import '../../model/taxes_model.dart';
 
 abstract class TaxRepositoryInterface {
@@ -16,21 +12,7 @@ abstract class TaxRepositoryInterface {
 }
 
 class TaxRepository implements TaxRepositoryInterface {
-  late final TaxRepositoryInterface _dataSource;
-
-  TaxRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('taxes')) {
-      log('TaxRepository: Using Supabase');
-      _dataSource = _TaxSupabaseDataSource();
-    } else {
-      log('TaxRepository: Using Dio (legacy)');
-      _dataSource = _TaxDioDataSource();
-    }
-  }
+  final _TaxSupabaseDataSource _dataSource = _TaxSupabaseDataSource();
 
   @override
   Future<List<TaxModel>> getAllTaxes() => _dataSource.getAllTaxes();
@@ -43,16 +25,6 @@ class TaxRepository implements TaxRepositoryInterface {
 
   @override
   Future<bool> deleteTax(String id) => _dataSource.deleteTax(id);
-
-  void enableSupabase() {
-    MigrationService.enableSupabase('taxes');
-    _initializeDataSource();
-  }
-
-  void enableDio() {
-    MigrationService.enableDio('taxes');
-    _initializeDataSource();
-  }
 }
 
 class _TaxSupabaseDataSource implements TaxRepositoryInterface {
@@ -118,27 +90,5 @@ class _TaxSupabaseDataSource implements TaxRepositoryInterface {
       log('TaxSupabase: Error deleting tax - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
-  }
-}
-
-class _TaxDioDataSource implements TaxRepositoryInterface {
-  @override
-  Future<List<TaxModel>> getAllTaxes() async {
-    throw UnimplementedError('Not supported in legacy API');
-  }
-
-  @override
-  Future<TaxModel> createTax(TaxModel tax) async {
-    throw UnimplementedError('Not supported in legacy API');
-  }
-
-  @override
-  Future<TaxModel> updateTax(TaxModel tax) async {
-    throw UnimplementedError('Not supported in legacy API');
-  }
-
-  @override
-  Future<bool> deleteTax(String id) async {
-    throw UnimplementedError('Not supported in legacy API');
   }
 }

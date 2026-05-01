@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/animation/animated_element.dart';
-import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
-import 'package:systego/features/admin/product/cubit/filter_product_cubit/product_filter_cubit.dart';
-import 'package:systego/features/admin/product/cubit/product_filter_state.dart';
-import 'package:systego/features/admin/product/models/filter_models.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/animation/animated_element.dart';
+import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
+import 'package:GoSystem/features/admin/product/cubit/filter_product_cubit/product_filter_cubit.dart';
+import 'package:GoSystem/features/admin/product/cubit/product_filter_state.dart';
+import 'package:GoSystem/features/admin/product/models/filter_models.dart';
 
 enum FilterType {
   categories,

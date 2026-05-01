@@ -6,7 +6,7 @@ import '../../../../core/utils/error_handler.dart';
 import '../model/country_model.dart';
 import 'Country_state.dart';
 
-import 'package:systego/features/admin/country/data/repositories/country_repository.dart';
+import 'package:GoSystem/features/admin/country/data/repositories/country_repository.dart';
 
 class CountryCubit extends Cubit<CountryState> {
   final CountryRepository _repository;

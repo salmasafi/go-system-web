@@ -33,90 +33,14 @@ abstract class UnitRepositoryInterface {
 }
 
 /// Hybrid repository that supports both Dio and Supabase for units
+/// Unit repository using Supabase as the primary data source.
 class UnitRepository implements UnitRepositoryInterface {
-  late final UnitRepositoryInterface _dataSource;
-
-  UnitRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('units')) {
-      log('UnitRepository: Using Supabase');
-      _dataSource = _UnitSupabaseDataSource();
-    } else {
-      log('UnitRepository: Using Dio (legacy)');
-      _dataSource = _UnitDioDataSource();
-    }
-  }
-
-  @override
-  Future<List<UnitModel>> getAllUnits() => _dataSource.getAllUnits();
-
-  @override
-  Future<void> updateUnitStatus(String id, bool status) =>
-      _dataSource.updateUnitStatus(id, status);
-
-  @override
-  Future<void> createUnit({
-    required String name,
-    required String arName,
-    required String code,
-    String? baseUnitId,
-    String? operator,
-    double? operatorValue,
-  }) =>
-      _dataSource.createUnit(
-        name: name,
-        arName: arName,
-        code: code,
-        baseUnitId: baseUnitId,
-        operator: operator,
-        operatorValue: operatorValue,
-      );
-
-  @override
-  Future<void> updateUnit({
-    required String id,
-    required String name,
-    required String arName,
-    required String code,
-    String? baseUnitId,
-    String? operator,
-    double? operatorValue,
-  }) =>
-      _dataSource.updateUnit(
-        id: id,
-        name: name,
-        arName: arName,
-        code: code,
-        baseUnitId: baseUnitId,
-        operator: operator,
-        operatorValue: operatorValue,
-      );
-
-  @override
-  Future<void> deleteUnit(String id) => _dataSource.deleteUnit(id);
-
-  void enableSupabase() {
-    MigrationService.enableSupabase('units');
-    _initializeDataSource();
-  }
-
-  void enableDio() {
-    MigrationService.enableDio('units');
-    _initializeDataSource();
-  }
-}
-
-/// Supabase implementation for Unit data source
-class _UnitSupabaseDataSource implements UnitRepositoryInterface {
   final SupabaseClient _client = SupabaseClientWrapper.instance;
 
   @override
   Future<List<UnitModel>> getAllUnits() async {
     try {
-      log('UnitSupabase: Fetching all units');
+      log('UnitRepository: Fetching all units');
 
       final response = await _client
           .from('units')
@@ -127,10 +51,10 @@ class _UnitSupabaseDataSource implements UnitRepositoryInterface {
           .map((json) => _mapSupabaseToUnitModel(json))
           .toList();
 
-      log('UnitSupabase: Fetched ${units.length} units');
+      log('UnitRepository: Fetched ${units.length} units');
       return units;
     } catch (e) {
-      log('UnitSupabase: Error fetching units - $e');
+      log('UnitRepository: Error fetching units - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -138,10 +62,10 @@ class _UnitSupabaseDataSource implements UnitRepositoryInterface {
   @override
   Future<void> updateUnitStatus(String id, bool status) async {
     try {
-      log('UnitSupabase: Updating unit status: $id to $status');
+      log('UnitRepository: Updating unit status: $id to $status');
       await _client.from('units').update({'status': status}).eq('id', id);
     } catch (e) {
-      log('UnitSupabase: Error updating unit status - $e');
+      log('UnitRepository: Error updating unit status - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -156,7 +80,7 @@ class _UnitSupabaseDataSource implements UnitRepositoryInterface {
     double? operatorValue,
   }) async {
     try {
-      log('UnitSupabase: Creating unit: $name');
+      log('UnitRepository: Creating unit: $name');
       await _client.from('units').insert({
         'name': name,
         'ar_name': arName,
@@ -167,7 +91,7 @@ class _UnitSupabaseDataSource implements UnitRepositoryInterface {
         'status': true,
       });
     } catch (e) {
-      log('UnitSupabase: Error creating unit - $e');
+      log('UnitRepository: Error creating unit - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -183,7 +107,7 @@ class _UnitSupabaseDataSource implements UnitRepositoryInterface {
     double? operatorValue,
   }) async {
     try {
-      log('UnitSupabase: Updating unit: $id');
+      log('UnitRepository: Updating unit: $id');
       await _client.from('units').update({
         'name': name,
         'ar_name': arName,
@@ -193,7 +117,7 @@ class _UnitSupabaseDataSource implements UnitRepositoryInterface {
         'operator_value': operatorValue,
       }).eq('id', id);
     } catch (e) {
-      log('UnitSupabase: Error updating unit - $e');
+      log('UnitRepository: Error updating unit - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -201,10 +125,10 @@ class _UnitSupabaseDataSource implements UnitRepositoryInterface {
   @override
   Future<void> deleteUnit(String id) async {
     try {
-      log('UnitSupabase: Deleting unit: $id');
+      log('UnitRepository: Deleting unit: $id');
       await _client.from('units').delete().eq('id', id);
     } catch (e) {
-      log('UnitSupabase: Error deleting unit - $e');
+      log('UnitRepository: Error deleting unit - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -237,108 +161,5 @@ class _UnitSupabaseDataSource implements UnitRepositoryInterface {
           : DateTime.now(),
       version: json['version'] as int? ?? 0,
     );
-  }
-}
-
-/// Dio implementation for Unit data source (legacy)
-class _UnitDioDataSource implements UnitRepositoryInterface {
-  @override
-  Future<List<UnitModel>> getAllUnits() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getUnits);
-      if (response.statusCode == 200) {
-        final data = UnitResponse.fromJson(response.data);
-        return data.data.units;
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> updateUnitStatus(String id, bool status) async {
-    try {
-      final response = await DioHelper.putData(
-        url: EndPoint.updateUnitStatus(id),
-        data: {'status': status},
-      );
-      if (response.statusCode != 200) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> createUnit({
-    required String name,
-    required String arName,
-    required String code,
-    String? baseUnitId,
-    String? operator,
-    double? operatorValue,
-  }) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.createUnit,
-        data: {
-          'name': name,
-          'ar_name': arName,
-          'code': code,
-          'baseUnit_id': baseUnitId,
-          'operator': operator,
-          'operatorValue': operatorValue,
-        },
-      );
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> updateUnit({
-    required String id,
-    required String name,
-    required String arName,
-    required String code,
-    String? baseUnitId,
-    String? operator,
-    double? operatorValue,
-  }) async {
-    try {
-      final response = await DioHelper.putData(
-        url: EndPoint.updateUnit(id),
-        data: {
-          'name': name,
-          'ar_name': arName,
-          'code': code,
-          'baseUnit_id': baseUnitId,
-          'operator': operator,
-          'operatorValue': operatorValue,
-        },
-      );
-      if (response.statusCode != 200) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> deleteUnit(String id) async {
-    try {
-      final response = await DioHelper.deleteData(url: EndPoint.deleteUnit(id));
-      if (response.statusCode != 200) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
   }
 }

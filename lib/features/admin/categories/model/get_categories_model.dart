@@ -75,31 +75,32 @@ class CategoryItem {
 
   factory CategoryItem.fromJson(Map<String, dynamic> json) {
     return CategoryItem(
-      id: json['_id'] as String,
-      name: json['name'] as String,
-      arName: json['ar_name'] ?? '',// as String,
-      image: json['image'] ?? '',
-      productQuantity: json['product_quantity'] as int,
-      createdAt: json['createdAt'] as String,
-      updatedAt: json['updatedAt'] as String,
-      version: json['__v'] as int,
-      parentId: json['parentId'] != null
-          ? ParentCategory.fromJson(json['parentId'] as Map<String, dynamic>)
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      name: json['name']?.toString() ?? '',
+      arName: json['ar_name']?.toString() ?? '',
+      image: json['image']?.toString() ?? json['image_url']?.toString() ?? '',
+      productQuantity: (json['product_quantity'] ?? json['productQuantity'] ?? 0) as int,
+      createdAt: (json['created_at'] ?? json['createdAt'] ?? '').toString(),
+      updatedAt: (json['updated_at'] ?? json['updatedAt'] ?? '').toString(),
+      version: json['version'] ?? json['__v'] ?? 0,
+      parentId: (json['parent_id'] ?? json['parentId']) != null
+          ? ParentCategory.fromJson((json['parent_id'] ?? json['parentId']) as Map<String, dynamic>)
           : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       '_id': id,
       'name': name,
       'ar_name': arName,
       'image': image,
       'product_quantity': productQuantity,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
-      '__v': version,
-      'parentId': parentId?.toJson(),
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+      'version': version,
+      'parent_id': parentId?.toJson(),
     };
   }
 }
@@ -113,9 +114,9 @@ class ParentCategory {
 
   factory ParentCategory.fromJson(Map<String, dynamic> json) {
     return ParentCategory(
-      id: json['_id'] as String,
-      name: json['name'] as String,
-      arName: json['ar_name'] ?? '', //as String,
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      name: json['name']?.toString() ?? '',
+      arName: json['ar_name']?.toString() ?? '',
     );
   }
 

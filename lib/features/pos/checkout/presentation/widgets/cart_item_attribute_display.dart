@@ -4,10 +4,10 @@
 // Supports both regular products (selectedAttributes) and bundle products (bundleProductAttributes).
 
 import 'package:flutter/material.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/admin/product/models/selected_attribute_model.dart';
-import 'package:systego/features/pos/checkout/model/checkout_models.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/features/admin/product/models/selected_attribute_model.dart';
+import 'package:GoSystem/features/pos/checkout/model/checkout_models.dart';
 
 /// Compact chip-style attribute display.
 /// Shows "Color: Red, Size: Large" styled as colored pill badges.

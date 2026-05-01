@@ -1,20 +1,20 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/services/cache_helper.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/pos/expenses/presentation/expenses_screen.dart';
-import 'package:systego/features/pos/history/presentation/views/dues_screen.dart';
-import 'package:systego/features/pos/history/presentation/views/history_screen.dart';
-import 'package:systego/features/pos/profile/presentation/profile_screen.dart';
-import 'package:systego/features/pos/return/widgets/return_search_dialog.dart';
-import 'package:systego/features/pos/shift/cubit/pos_shift_cubit.dart';
-import 'package:systego/features/admin/auth/cubit/login_cubit.dart';
-import 'package:systego/features/admin/auth/presentation/view/login_screen.dart';
-import 'package:systego/features/admin/warehouses/view/widgets/custom_delete_dialog.dart';
-import 'package:systego/generated/locale_keys.g.dart';
-import 'package:systego/main.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/services/cache_helper.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/features/pos/expenses/presentation/expenses_screen.dart';
+import 'package:GoSystem/features/pos/history/presentation/views/dues_screen.dart';
+import 'package:GoSystem/features/pos/history/presentation/views/history_screen.dart';
+import 'package:GoSystem/features/pos/profile/presentation/profile_screen.dart';
+import 'package:GoSystem/features/pos/return/widgets/return_search_dialog.dart';
+import 'package:GoSystem/features/pos/shift/cubit/pos_shift_cubit.dart';
+import 'package:GoSystem/features/admin/auth/cubit/login_cubit.dart';
+import 'package:GoSystem/features/admin/auth/presentation/view/login_screen.dart';
+import 'package:GoSystem/features/admin/warehouses/view/widgets/custom_delete_dialog.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
+import 'package:GoSystem/main.dart';
 
 class POSDrawer extends StatelessWidget {
   final String shiftDuration;

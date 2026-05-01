@@ -7,7 +7,7 @@ import '../../../../core/utils/error_handler.dart';
 import '../model/zone_model.dart';
 import 'zone_state.dart';
 
-import 'package:systego/features/admin/zone/data/repositories/zone_repository.dart';
+import 'package:GoSystem/features/admin/zone/data/repositories/zone_repository.dart';
 
 class ZoneCubit extends Cubit<ZoneState> {
   final ZoneRepository _repository;

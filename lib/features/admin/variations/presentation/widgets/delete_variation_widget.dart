@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/generated/locale_keys.g.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 
 class DeleteVariationDialog extends StatelessWidget {
   final String variationName;

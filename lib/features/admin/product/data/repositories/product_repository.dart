@@ -24,71 +24,16 @@ abstract class ProductRepositoryInterface {
   Future<Map<String, dynamic>> getProductFilters();
 }
 
-/// Hybrid repository that supports both Dio and Supabase for products
+/// Product repository using Supabase as the primary data source.
 class ProductRepository implements ProductRepositoryInterface {
-  late final ProductRepositoryInterface _dataSource;
-
-  ProductRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('products')) {
-      log('ProductRepository: Using Supabase');
-      _dataSource = _ProductSupabaseDataSource();
-    } else {
-      log('ProductRepository: Using Dio (legacy)');
-      _dataSource = _ProductDioDataSource();
-    }
-  }
-
-  @override
-  Future<List<Product>> getAllProducts() => _dataSource.getAllProducts();
-
-  @override
-  Future<Product?> getProductById(String id) => _dataSource.getProductById(id);
-
-  @override
-  Future<List<Product>> searchProductsByCode(String code) => _dataSource.searchProductsByCode(code);
-
-  @override
-  Future<List<Product>> getProductsByWarehouse(String warehouseId) => _dataSource.getProductsByWarehouse(warehouseId);
-
-  @override
-  Future<Product> createProduct(Product product, {List<File>? images}) => _dataSource.createProduct(product, images: images);
-
-  @override
-  Future<Product> updateProduct(String id, Product product, {List<File>? images}) => _dataSource.updateProduct(id, product, images: images);
-
-  @override
-  Future<void> deleteProduct(String id) => _dataSource.deleteProduct(id);
-
-  @override
-  Future<String?> generateProductCode() => _dataSource.generateProductCode();
-
-  @override
-  Future<Map<String, dynamic>> getProductFilters() => _dataSource.getProductFilters();
-
-  void enableSupabase() {
-    MigrationService.enableSupabase('products');
-    _initializeDataSource();
-  }
-
-  void enableDio() {
-    MigrationService.enableDio('products');
-    _initializeDataSource();
-  }
-}
-
-/// Supabase implementation for Product data source
-class _ProductSupabaseDataSource implements ProductRepositoryInterface {
   final SupabaseClient _client = SupabaseClientWrapper.instance;
   final StorageService _storage = StorageService(SupabaseClientWrapper.instance);
 
   @override
   Future<Map<String, dynamic>> getProductFilters() async {
     try {
-      log('ProductSupabase: Fetching product filters');
+      log('ProductRepository: Fetching product filters');
+      // For now returning empty lists as categories/brands/units are handled via their own repositories
       return {
         'success': true,
         'data': {
@@ -99,7 +44,7 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
         }
       };
     } catch (e) {
-      log('ProductSupabase: Error fetching product filters - $e');
+      log('ProductRepository: Error fetching product filters - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -107,7 +52,7 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
   @override
   Future<List<Product>> getAllProducts() async {
     try {
-      log('ProductSupabase: Fetching all products');
+      log('ProductRepository: Fetching all products');
 
       final response = await _client
           .from('products')
@@ -123,10 +68,10 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
           .map((json) => _mapSupabaseToProduct(json))
           .toList();
 
-      log('ProductSupabase: Fetched ${products.length} products');
+      log('ProductRepository: Fetched ${products.length} products');
       return products;
     } catch (e) {
-      log('ProductSupabase: Error fetching products - $e');
+      log('ProductRepository: Error fetching products - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -134,7 +79,7 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
   @override
   Future<Product?> getProductById(String id) async {
     try {
-      log('ProductSupabase: Fetching product by id: $id');
+      log('ProductRepository: Fetching product by id: $id');
 
       final response = await _client
           .from('products')
@@ -152,7 +97,7 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
 
       return _mapSupabaseToProduct(response);
     } catch (e) {
-      log('ProductSupabase: Error fetching product - $e');
+      log('ProductRepository: Error fetching product - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -160,7 +105,7 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
   @override
   Future<List<Product>> searchProductsByCode(String code) async {
     try {
-      log('ProductSupabase: Searching products by code: $code');
+      log('ProductRepository: Searching products by code: $code');
 
       final response = await _client
           .from('products')
@@ -176,10 +121,10 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
           .map((json) => _mapSupabaseToProduct(json))
           .toList();
 
-      log('ProductSupabase: Found ${products.length} products');
+      log('ProductRepository: Found ${products.length} products');
       return products;
     } catch (e) {
-      log('ProductSupabase: Error searching products - $e');
+      log('ProductRepository: Error searching products - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -187,7 +132,7 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
   @override
   Future<List<Product>> getProductsByWarehouse(String warehouseId) async {
     try {
-      log('ProductSupabase: Fetching products for warehouse: $warehouseId');
+      log('ProductRepository: Fetching products for warehouse: $warehouseId');
 
       final response = await _client
           .from('product_warehouses')
@@ -205,10 +150,10 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
           })
           .toList();
 
-      log('ProductSupabase: Fetched ${products.length} products for warehouse');
+      log('ProductRepository: Fetched ${products.length} products for warehouse');
       return products;
     } catch (e) {
-      log('ProductSupabase: Error fetching warehouse products - $e');
+      log('ProductRepository: Error fetching warehouse products - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -216,7 +161,7 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
   @override
   Future<Product> createProduct(Product product, {List<File>? images}) async {
     try {
-      log('ProductSupabase: Creating product: ${product.name}');
+      log('ProductRepository: Creating product: ${product.name}');
 
       // Upload images if provided
       String? mainImageUrl;
@@ -265,7 +210,6 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
             'start_quantaty': product.startQuantaty,
             'taxes_id': product.taxesId,
             'product_has_imei': product.productHasImei,
-            'different_price': product.differentPrice,
             'show_quantity': product.showQuantity,
             'maximum_to_show': product.maximumToShow,
             'is_featured': product.isFeatured,
@@ -284,38 +228,10 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
         });
       }
 
-      // Insert product prices with variations
-      for (final price in product.prices) {
-        final priceResponse = await _client
-            .from('product_prices')
-            .insert({
-              'product_id': productId,
-              'price': price.price,
-              'code': price.code,
-              'gallery': price.gallery,
-              'quantity': price.quantity,
-            })
-            .select()
-            .single();
-
-        final priceId = priceResponse['id'] as String;
-
-        // Insert price variations
-        for (final variation in price.variations) {
-          for (final option in variation.options) {
-            await _client.from('product_price_variations').insert({
-              'product_price_id': priceId,
-              'variation_id': option.variationId,
-              'option_id': option.id,
-            });
-          }
-        }
-      }
-
-      log('ProductSupabase: Created product successfully');
+      log('ProductRepository: Created product successfully');
       return _mapSupabaseToProduct(productResponse);
     } catch (e) {
-      log('ProductSupabase: Error creating product - $e');
+      log('ProductRepository: Error creating product - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -323,7 +239,7 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
   @override
   Future<Product> updateProduct(String id, Product product, {List<File>? images}) async {
     try {
-      log('ProductSupabase: Updating product: $id');
+      log('ProductRepository: Updating product: $id');
 
       // Get current product to handle image updates
       final current = await getProductById(id);
@@ -339,7 +255,7 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
             final oldPath = current.image.split('/').last;
             await _storage.deleteImage('products/$oldPath');
           } catch (e) {
-            log('ProductSupabase: Failed to delete old main image - $e');
+            log('ProductRepository: Failed to delete old main image - $e');
           }
         }
 
@@ -381,7 +297,6 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
         'start_quantaty': product.startQuantaty,
         'taxes_id': product.taxesId,
         'product_has_imei': product.productHasImei,
-        'different_price': product.differentPrice,
         'show_quantity': product.showQuantity,
         'maximum_to_show': product.maximumToShow,
         'is_featured': product.isFeatured,
@@ -396,10 +311,10 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
           .select()
           .single();
 
-      log('ProductSupabase: Updated product successfully');
+      log('ProductRepository: Updated product successfully');
       return _mapSupabaseToProduct(response);
     } catch (e) {
-      log('ProductSupabase: Error updating product - $e');
+      log('ProductRepository: Error updating product - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -407,7 +322,7 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
   @override
   Future<void> deleteProduct(String id) async {
     try {
-      log('ProductSupabase: Deleting product: $id');
+      log('ProductRepository: Deleting product: $id');
 
       // Get product to delete images
       final product = await getProductById(id);
@@ -416,7 +331,7 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
           final imagePath = product.image.split('/').last;
           await _storage.deleteImage('products/$imagePath');
         } catch (e) {
-          log('ProductSupabase: Failed to delete image - $e');
+          log('ProductRepository: Failed to delete image - $e');
         }
       }
 
@@ -427,16 +342,16 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
             final imagePath = imageUrl.split('/').last;
             await _storage.deleteImage('products/$imagePath');
           } catch (e) {
-            log('ProductSupabase: Failed to delete gallery image - $e');
+            log('ProductRepository: Failed to delete gallery image - $e');
           }
         }
       }
 
       await _client.from('products').delete().eq('id', id);
 
-      log('ProductSupabase: Deleted product successfully');
+      log('ProductRepository: Deleted product successfully');
     } catch (e) {
-      log('ProductSupabase: Error deleting product - $e');
+      log('ProductRepository: Error deleting product - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -449,7 +364,7 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
       final random = (timestamp % 10000).toString().padLeft(4, '0');
       return 'PRD-$random';
     } catch (e) {
-      log('ProductSupabase: Error generating code - $e');
+      log('ProductRepository: Error generating code - $e');
       return null;
     }
   }
@@ -484,12 +399,8 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
           )
         : Brand.empty();
 
-    // Parse prices
-    final pricesData = json['prices'] as List<dynamic>? ?? [];
-    final prices = pricesData.map((p) => _mapSupabasePrice(p as Map<String, dynamic>)).toList();
-
     return Product(
-      id: json['id'] ?? json['_id'] ?? '',
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
       name: json['name'] ?? '',
       arName: json['ar_name'] ?? '',
       image: json['image'] ?? '',
@@ -510,290 +421,15 @@ class _ProductSupabaseDataSource implements ProductRepositoryInterface {
       startQuantaty: json['start_quantaty'] ?? 0,
       taxesId: json['taxes_id'],
       productHasImei: json['product_has_imei'] ?? false,
-      differentPrice: json['different_price'] ?? false,
       showQuantity: json['show_quantity'] ?? false,
       maximumToShow: json['maximum_to_show'] ?? 0,
       galleryProduct: (json['gallery_product'] as List<dynamic>?)?.cast<String>() ?? [],
       isFeatured: json['is_featured'],
       createdAt: DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
       updatedAt: DateTime.tryParse(json['updated_at'] ?? '') ?? DateTime.now(),
-      prices: prices,
     );
   }
 
-  Price _mapSupabasePrice(Map<String, dynamic> json) {
-    final variationsData = json['variations'] as List<dynamic>? ?? [];
-    final variations = <VariationDetail>[];
-
-    // Group variations by name
-    final variationMap = <String, List<Option>>{};
-    for (final v in variationsData) {
-      final varData = v['variation'] as Map<String, dynamic>?;
-      final optData = v['option'] as Map<String, dynamic>?;
-      if (varData != null && optData != null) {
-        final name = varData['name'] as String;
-        final option = Option(
-          id: optData['id'] ?? '',
-          variationId: varData['id'] ?? '',
-          name: optData['name'] ?? '',
-          status: optData['status'] ?? true,
-          createdAt: DateTime.tryParse(optData['created_at'] ?? '') ?? DateTime.now(),
-          updatedAt: DateTime.tryParse(optData['updated_at'] ?? '') ?? DateTime.now(),
-        );
-        variationMap.putIfAbsent(name, () => []).add(option);
-      }
-    }
-
-    variationMap.forEach((name, options) {
-      variations.add(VariationDetail(name: name, options: options));
-    });
-
-    return Price(
-      id: json['id'] ?? '',
-      productId: json['product_id'] ?? '',
-      price: (json['price'] as num?)?.toDouble() ?? 0.0,
-      code: json['code'] ?? '',
-      gallery: (json['gallery'] as List<dynamic>?)?.cast<String>() ?? [],
-      quantity: json['quantity'] ?? 0,
-      variations: variations,
-      createdAt: DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
-      updatedAt: DateTime.tryParse(json['updated_at'] ?? '') ?? DateTime.now(),
-    );
-  }
-}
-
-/// Dio implementation for Product data source (legacy)
-class _ProductDioDataSource implements ProductRepositoryInterface {
-  @override
-  Future<Map<String, dynamic>> getProductFilters() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.productFilter);
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        return response.data['data'] as Map<String, dynamic>;
-      }
-      return {};
-    } catch (e) {
-      log('Dio: Error getting product filters - $e');
-      return {};
-    }
-  }
-
-  @override
-  Future<List<Product>> getAllProducts() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getProducts);
-
-      if (response.statusCode == 200) {
-        final data = response.data;
-        if (data['success'] == true && data['data'] != null) {
-          final productsJson = data['data']['products'] as List<dynamic>? ?? [];
-          return productsJson
-              .map((json) => Product.fromJson(json as Map<String, dynamic>))
-              .toList()
-              .reversed
-              .toList();
-        }
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<Product?> getProductById(String id) async {
-    try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getProductById(id),
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final productJson = response.data['data']?['product'];
-        if (productJson != null) {
-          return Product.fromJson(productJson);
-        }
-      }
-      return null;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<List<Product>> searchProductsByCode(String code) async {
-    try {
-      final response = await DioHelper.getData(
-        url: EndPoint.productByCode,
-        query: {'code': code},
-      );
-
-      if (response.statusCode == 200) {
-        final data = response.data;
-        if (data['success'] == true && data['data'] != null) {
-          final productsJson = data['data']['products'] as List<dynamic>? ?? [];
-          return productsJson
-              .map((json) => Product.fromJson(json as Map<String, dynamic>))
-              .toList();
-        }
-      }
-      return [];
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<List<Product>> getProductsByWarehouse(String warehouseId) async {
-    // This might not be available in Dio API, fallback to getAllProducts
-    final allProducts = await getAllProducts();
-    return allProducts.where((p) => p.quantity > 0).toList();
-  }
-
-  @override
-  Future<Product> createProduct(Product product, {List<File>? images}) async {
-    try {
-      // Convert images to base64 if provided
-      String? base64Image;
-      List<String> base64Gallery = [];
-      
-      if (images != null && images.isNotEmpty) {
-        final bytes = await images.first.readAsBytes();
-        base64Image = base64Encode(bytes);
-
-        for (int i = 1; i < images.length; i++) {
-          final imgBytes = await images[i].readAsBytes();
-          base64Gallery.add(base64Encode(imgBytes));
-        }
-      }
-
-      final response = await DioHelper.postData(
-        url: EndPoint.createProduct,
-        data: {
-          'name': product.name,
-          'ar_name': product.arName,
-          'description': product.description,
-          'ar_description': product.arDescription,
-          'category_ids': product.categoryId.map((c) => c.id).toList(),
-          'brand_id': product.brandId.id,
-          'unit': product.unit,
-          'price': product.price,
-          'quantity': product.quantity,
-          'exp_ability': product.expAbility,
-          'date_of_expiery': product.dateOfExpiery?.toIso8601String(),
-          'minimum_quantity_sale': product.minimumQuantitySale,
-          'low_stock': product.lowStock,
-          'whole_price': product.wholePrice,
-          'start_quantaty': product.startQuantaty,
-          'taxes_id': product.taxesId,
-          'product_has_imei': product.productHasImei,
-          'different_price': product.differentPrice,
-          'show_quantity': product.showQuantity,
-          'maximum_to_show': product.maximumToShow,
-          'is_featured': product.isFeatured,
-          if (base64Image != null) 'image': base64Image,
-          if (base64Gallery.isNotEmpty) 'gallery_product': base64Gallery,
-        },
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final productJson = response.data['data']?['product'];
-        if (productJson != null) {
-          return Product.fromJson(productJson);
-        }
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<Product> updateProduct(String id, Product product, {List<File>? images}) async {
-    try {
-      // Convert images to base64 if provided
-      String? base64Image;
-      List<String> base64Gallery = [];
-      
-      if (images != null && images.isNotEmpty) {
-        final bytes = await images.first.readAsBytes();
-        base64Image = base64Encode(bytes);
-
-        for (int i = 1; i < images.length; i++) {
-          final imgBytes = await images[i].readAsBytes();
-          base64Gallery.add(base64Encode(imgBytes));
-        }
-      }
-
-      final response = await DioHelper.putData(
-        url: EndPoint.updateProduct(id),
-        data: {
-          'name': product.name,
-          'ar_name': product.arName,
-          'description': product.description,
-          'ar_description': product.arDescription,
-          'category_ids': product.categoryId.map((c) => c.id).toList(),
-          'brand_id': product.brandId.id,
-          'unit': product.unit,
-          'price': product.price,
-          'quantity': product.quantity,
-          'exp_ability': product.expAbility,
-          'date_of_expiery': product.dateOfExpiery?.toIso8601String(),
-          'minimum_quantity_sale': product.minimumQuantitySale,
-          'low_stock': product.lowStock,
-          'whole_price': product.wholePrice,
-          'start_quantaty': product.startQuantaty,
-          'taxes_id': product.taxesId,
-          'product_has_imei': product.productHasImei,
-          'different_price': product.differentPrice,
-          'show_quantity': product.showQuantity,
-          'maximum_to_show': product.maximumToShow,
-          'is_featured': product.isFeatured,
-          if (base64Image != null) 'image': base64Image,
-          if (base64Gallery.isNotEmpty) 'gallery_product': base64Gallery,
-        },
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final productJson = response.data['data']?['product'];
-        if (productJson != null) {
-          return Product.fromJson(productJson);
-        }
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> deleteProduct(String id) async {
-    try {
-      final response = await DioHelper.deleteData(
-        url: EndPoint.deleteProduct(id),
-      );
-
-      if (response.statusCode != 200 || response.data['success'] != true) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<String?> generateProductCode() async {
-    try {
-      final response = await DioHelper.getData(
-        url: EndPoint.generateProductCode,
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        return response.data['data']?['code'] as String?;
-      }
-      return null;
-    } catch (e) {
-      log('ProductDio: Error generating code - $e');
-      return null;
-    }
-  }
+  // Helper methods for enabling/disabling Supabase are no longer needed
+  // as the repository is now Supabase-only.
 }

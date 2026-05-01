@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/generated/locale_keys.g.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../model/get_categories_model.dart';
 import 'categories_states.dart';
 
-import 'package:systego/features/admin/categories/data/repositories/category_repository.dart';
+import 'package:GoSystem/features/admin/categories/data/repositories/category_repository.dart';
 
 class CategoriesCubit extends Cubit<CategoriesState> {
   final CategoryRepository _repository;

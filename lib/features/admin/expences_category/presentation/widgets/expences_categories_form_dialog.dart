@@ -1,15 +1,15 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/utils/validators.dart';
-import 'package:systego/core/widgets/custom_loading/build_overlay_loading.dart';
-import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
-import 'package:systego/core/widgets/custom_textfield/build_text_field.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/features/admin/expences_category/cubit/expences_categories_cubit.dart';
-import 'package:systego/features/admin/expences_category/model/expences_categories_model.dart';
-import 'package:systego/generated/locale_keys.g.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/utils/validators.dart';
+import 'package:GoSystem/core/widgets/custom_loading/build_overlay_loading.dart';
+import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:GoSystem/core/widgets/custom_textfield/build_text_field.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/features/admin/expences_category/cubit/expences_categories_cubit.dart';
+import 'package:GoSystem/features/admin/expences_category/model/expences_categories_model.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 
 class ExpenseCategoryFormDialog extends StatefulWidget {
   final ExpenseCategoryModel? category;

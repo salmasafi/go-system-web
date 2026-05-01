@@ -1,3 +1,6 @@
+/// [EndPoint] is deprecated and scheduled for removal in Phase 12.1 of the Supabase migration.
+/// Please use Supabase table names and repository-based data sources instead.
+@Deprecated('Use Supabase table names instead. This will be removed in Phase 12.1.')
 class EndPoint {
   /// Base Url
   static const String baseUrl = 'https://Bcknd.systego.net';

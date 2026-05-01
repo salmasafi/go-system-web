@@ -1,9 +1,9 @@
 // // lib/features/pos/home/presentation/widgets/warhouse_dialog.dart
 // import 'package:flutter/material.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
-// import 'package:systego/features/pos/home/cubit/pos_home_cubit.dart';
-// import 'package:systego/features/pos/home/cubit/pos_home_state.dart';
+// import 'package:GoSystem/core/widgets/custom_error/custom_empty_state.dart';
+// import 'package:GoSystem/features/pos/home/cubit/pos_home_cubit.dart';
+// import 'package:GoSystem/features/pos/home/cubit/pos_home_state.dart';
 // import '../../../../../core/constants/app_colors.dart';
 // import '../../../../../core/utils/responsive_ui.dart';
 // import 'selection_option.dart';

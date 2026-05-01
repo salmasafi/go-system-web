@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
-import 'package:systego/features/admin/permission/cubit/permission_cubit.dart';
-import 'package:systego/features/admin/permission/model/permission_model.dart';
-import 'package:systego/features/admin/permission/presentation/view/edit_permission_screen.dart';
-import 'package:systego/features/admin/permission/presentation/widgets/delete_permission_widget.dart';
-import 'package:systego/features/admin/permission/presentation/widgets/permission_card.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:GoSystem/features/admin/permission/cubit/permission_cubit.dart';
+import 'package:GoSystem/features/admin/permission/model/permission_model.dart';
+import 'package:GoSystem/features/admin/permission/presentation/view/edit_permission_screen.dart';
+import 'package:GoSystem/features/admin/permission/presentation/widgets/delete_permission_widget.dart';
+import 'package:GoSystem/features/admin/permission/presentation/widgets/permission_card.dart';
 
 class PermissionsList extends StatefulWidget {
   final List<PermissionModel> permissions;

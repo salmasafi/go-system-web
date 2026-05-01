@@ -1,14 +1,14 @@
 import 'dart:developer';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/features/admin/warehouses/cubit/warehouse_state.dart';
-import 'package:systego/generated/locale_keys.g.dart';
+import 'package:GoSystem/features/admin/warehouses/cubit/warehouse_state.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../../../../core/services/dio_helper.dart';
 import '../../../../core/services/endpoints.dart';
 import '../../../../core/utils/error_handler.dart';
 import '../model/ware_house_model.dart';
 
-import 'package:systego/features/admin/warehouses/data/repositories/warehouse_repository.dart';
+import 'package:GoSystem/features/admin/warehouses/data/repositories/warehouse_repository.dart';
 
 class WareHouseCubit extends Cubit<WarehousesState> {
   final WarehouseRepository _repository;

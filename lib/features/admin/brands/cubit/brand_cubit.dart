@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/features/admin/brands/model/get_brand_by_id_model.dart';
-import 'package:systego/generated/locale_keys.g.dart';
+import 'package:GoSystem/features/admin/brands/model/get_brand_by_id_model.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../model/get_brands_model.dart';
 import 'brand_states.dart';
 
-import 'package:systego/features/admin/brands/data/repositories/brand_repository.dart';
+import 'package:GoSystem/features/admin/brands/data/repositories/brand_repository.dart';
 
 class BrandsCubit extends Cubit<BrandsState> {
   final BrandRepository _repository;

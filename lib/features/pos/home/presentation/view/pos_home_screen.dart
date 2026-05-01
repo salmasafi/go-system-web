@@ -1,26 +1,26 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/error_handler.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
-import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
-import 'package:systego/features/pos/history/cubit/history_cubit.dart';
-import 'package:systego/features/pos/history/cubit/history_state.dart';
-import 'package:systego/features/pos/history/presentation/views/pending_orders_screen.dart';
-import 'package:systego/features/admin/dashboard/cubit/notifications_cubit.dart';
-import 'package:systego/features/admin/dashboard/presentation/view/notifications_screen.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/error_handler.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
+import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:GoSystem/features/pos/history/cubit/history_cubit.dart';
+import 'package:GoSystem/features/pos/history/cubit/history_state.dart';
+import 'package:GoSystem/features/pos/history/presentation/views/pending_orders_screen.dart';
+import 'package:GoSystem/features/admin/dashboard/cubit/notifications_cubit.dart';
+import 'package:GoSystem/features/admin/dashboard/presentation/view/notifications_screen.dart';
 
 // Cubits
-import 'package:systego/features/pos/checkout/cubit/checkout_cubit/checkout_cubit.dart';
-import 'package:systego/features/pos/home/cubit/pos_home_cubit.dart';
-import 'package:systego/features/pos/home/cubit/pos_home_state.dart';
-import 'package:systego/features/pos/shift/cubit/pos_shift_cubit.dart';
-import 'package:systego/features/pos/customer/cubit/pos_customer_cubit.dart';
+import 'package:GoSystem/features/pos/checkout/cubit/checkout_cubit/checkout_cubit.dart';
+import 'package:GoSystem/features/pos/home/cubit/pos_home_cubit.dart';
+import 'package:GoSystem/features/pos/home/cubit/pos_home_state.dart';
+import 'package:GoSystem/features/pos/shift/cubit/pos_shift_cubit.dart';
+import 'package:GoSystem/features/pos/customer/cubit/pos_customer_cubit.dart';
 
 // Models
-import 'package:systego/features/pos/home/model/pos_models.dart';
+import 'package:GoSystem/features/pos/home/model/pos_models.dart';
 
 // Services & Screens
 import '../../../../admin/product/presentation/screens/barcode_scanner_screen.dart';

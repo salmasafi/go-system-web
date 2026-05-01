@@ -1,4 +1,4 @@
-import 'package:systego/features/admin/warehouses/model/ware_house_model.dart';
+import 'package:GoSystem/features/admin/warehouses/model/ware_house_model.dart';
 
 abstract class WarehousesState {}
 

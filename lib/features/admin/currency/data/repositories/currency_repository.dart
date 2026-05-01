@@ -1,12 +1,8 @@
 import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../../core/migration/migration_service.dart';
-import '../../../../../core/services/dio_helper.dart';
-import '../../../../../core/services/endpoints.dart';
 import '../../../../../core/supabase/supabase_client.dart';
 import '../../../../../core/supabase/supabase_error_handler.dart';
-import '../../../../../core/utils/error_handler.dart';
-import 'package:systego/features/admin/currency/model/currency_model.dart';
+import 'package:GoSystem/features/admin/currency/model/currency_model.dart';
 
 /// Interface for currency data operations
 abstract class CurrencyRepositoryInterface {
@@ -27,23 +23,9 @@ abstract class CurrencyRepositoryInterface {
   Future<void> deleteCurrency(String currencyId);
 }
 
-/// Hybrid repository that supports both Dio and Supabase for currencies
+/// Repository implementation using Supabase for currencies
 class CurrencyRepository implements CurrencyRepositoryInterface {
-  late final CurrencyRepositoryInterface _dataSource;
-
-  CurrencyRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('financial')) {
-      log('CurrencyRepository: Using Supabase');
-      _dataSource = _CurrencySupabaseDataSource();
-    } else {
-      log('CurrencyRepository: Using Dio (legacy)');
-      _dataSource = _CurrencyDioDataSource();
-    }
-  }
+  final _CurrencySupabaseDataSource _dataSource = _CurrencySupabaseDataSource();
 
   @override
   Future<List<CurrencyModel>> getCurrencies() => _dataSource.getCurrencies();
@@ -171,85 +153,5 @@ class _CurrencySupabaseDataSource implements CurrencyRepositoryInterface {
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'].toString()) : DateTime.now(),
       updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'].toString()) : DateTime.now(),
     );
-  }
-}
-
-/// Dio implementation for Currency data source (legacy)
-class _CurrencyDioDataSource implements CurrencyRepositoryInterface {
-  @override
-  Future<List<CurrencyModel>> getCurrencies() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getCurrencies);
-      if (response.statusCode == 200) {
-        final model = CurrenciesResponse.fromJson(response.data);
-        return model.data.currencies;
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> createCurrency({
-    required String name,
-    required String arName,
-    required double amount,
-    required bool isDefault,
-  }) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.createCurrency,
-        data: {
-          'name': name,
-          'ar_name': arName,
-          'amount': amount,
-          'isdefault': isDefault,
-        },
-      );
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> updateCurrency({
-    required String currencyId,
-    required String name,
-    required String arName,
-    required double amount,
-    required bool isDefault,
-  }) async {
-    try {
-      final response = await DioHelper.putData(
-        url: EndPoint.updateCurrency(currencyId),
-        data: {
-          'name': name,
-          'ar_name': arName,
-          'amount': amount,
-          'isdefault': isDefault,
-        },
-      );
-      if (response.statusCode != 200) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> deleteCurrency(String currencyId) async {
-    try {
-      final response = await DioHelper.deleteData(url: EndPoint.deleteCurrency(currencyId));
-      if (response.statusCode != 200) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
   }
 }

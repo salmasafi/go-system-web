@@ -3,12 +3,12 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/features/admin/adjustment/model/adjustment_model.dart';
-import 'package:systego/features/admin/reason/model/reason_model.dart';
+import 'package:GoSystem/features/admin/adjustment/model/adjustment_model.dart';
+import 'package:GoSystem/features/admin/reason/model/reason_model.dart';
 import '../../../../core/services/dio_helper.dart';
 import '../../../../core/services/endpoints.dart';
 import '../../../../core/utils/error_handler.dart';
-import 'package:systego/features/admin/adjustment/data/repositories/adjustment_repository.dart';
+import 'package:GoSystem/features/admin/adjustment/data/repositories/adjustment_repository.dart';
 import 'adjustment_state.dart';
 
 class AdjustmentCubit extends Cubit<AdjustmentState> {

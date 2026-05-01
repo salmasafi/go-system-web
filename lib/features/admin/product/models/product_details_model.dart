@@ -61,15 +61,12 @@ class Product {
   final double wholePrice;
   final int startQuantaty;
   final bool productHasImei;
-  final bool differentPrice;
   final bool showQuantity;
   final int maximumToShow;
   final bool isFeatured;
   final List<String> galleryProduct;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final List<Price> prices;
-
   Product({
     required this.id,
     required this.name,
@@ -86,14 +83,12 @@ class Product {
     required this.wholePrice,
     required this.startQuantaty,
     required this.productHasImei,
-    required this.differentPrice,
     required this.showQuantity,
     required this.maximumToShow,
     required this.isFeatured,
     required this.galleryProduct,
     required this.createdAt,
     required this.updatedAt,
-    required this.prices,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -117,7 +112,6 @@ class Product {
       wholePrice: (json['whole_price'] as num?)?.toDouble() ?? 0.0,
       startQuantaty: json['start_quantaty'] ?? 0,
       productHasImei: json['product_has_imei'] ?? false,
-      differentPrice: json['different_price'] ?? false,
       showQuantity: json['show_quantity'] ?? false,
       maximumToShow: json['maximum_to_show'] ?? 0,
       isFeatured: json['is_featured'] ?? false,
@@ -127,10 +121,6 @@ class Product {
           DateTime.fromMillisecondsSinceEpoch(0),
       updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ??
           DateTime.fromMillisecondsSinceEpoch(0),
-      prices: (json['prices'] as List?)
-              ?.map((e) => Price.fromJson(e))
-              .toList() ??
-          [],
     );
   }
 
@@ -150,14 +140,12 @@ class Product {
         'whole_price': wholePrice,
         'start_quantaty': startQuantaty,
         'product_has_imei': productHasImei,
-        'different_price': differentPrice,
         'show_quantity': showQuantity,
         'maximum_to_show': maximumToShow,
         'is_featured': isFeatured,
         'gallery_product': galleryProduct,
         'createdAt': createdAt.toIso8601String(),
         'updatedAt': updatedAt.toIso8601String(),
-        'prices': prices.map((e) => e.toJson()).toList(),
       };
 }
 
@@ -239,104 +227,3 @@ class Brand {
       };
 }
 
-class Price {
-  final String id;
-  final String productId;
-  final double price;
-  final String code;
-  final List<String> gallery;
-  final int quantity;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final List<Variation> variations;
-
-  Price({
-    required this.id,
-    required this.productId,
-    required this.price,
-    required this.code,
-    required this.gallery,
-    required this.quantity,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.variations,
-  });
-
-  factory Price.fromJson(Map<String, dynamic> json) {
-    return Price(
-      id: json['_id'] ?? '',
-      productId: json['productId'] ?? '',
-      price: (json['price'] as num?)?.toDouble() ?? 0.0,
-      code: json['code'] ?? '',
-      gallery: (json['gallery'] as List?)?.cast<String>() ?? [],
-      quantity: json['quantity'] ?? 0,
-      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ??
-          DateTime.fromMillisecondsSinceEpoch(0),
-      updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ??
-          DateTime.fromMillisecondsSinceEpoch(0),
-      variations: (json['variations'] as List?)
-              ?.map((e) => Variation.fromJson(e))
-              .toList() ??
-          [],
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        '_id': id,
-        'productId': productId,
-        'price': price,
-        'code': code,
-        'gallery': gallery,
-        'quantity': quantity,
-        'createdAt': createdAt.toIso8601String(),
-        'updatedAt': updatedAt.toIso8601String(),
-        'variations': variations.map((e) => e.toJson()).toList(),
-      };
-}
-
-class Variation {
-  final String name;
-  final List<Option> options;
-
-  Variation({
-    required this.name,
-    required this.options,
-  });
-
-  factory Variation.fromJson(Map<String, dynamic> json) {
-    return Variation(
-      name: json['name'] ?? '',
-      options: (json['options'] as List?)
-              ?.map((e) => Option.fromJson(e))
-              .toList() ??
-          [],
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'name': name,
-        'options': options.map((e) => e.toJson()).toList(),
-      };
-}
-
-class Option {
-  final String id;
-  final String name;
-
-  Option({
-    required this.id,
-    required this.name,
-  });
-
-  factory Option.fromJson(Map<String, dynamic> json) {
-    return Option(
-      id: json['_id'] ?? '',
-      name: json['name'] ?? '',
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        '_id': id,
-        'name': name,
-      };
-}

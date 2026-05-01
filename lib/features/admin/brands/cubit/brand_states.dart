@@ -1,4 +1,4 @@
-import 'package:systego/features/admin/brands/model/get_brand_by_id_model.dart';
+import 'package:GoSystem/features/admin/brands/model/get_brand_by_id_model.dart';
 
 abstract class BrandsState {}
 

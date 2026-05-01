@@ -1,14 +1,9 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../../core/migration/migration_service.dart';
-import '../../../../../core/services/cache_helper.dart';
-import '../../../../../core/services/dio_helper.dart';
-import '../../../../../core/services/endpoints.dart';
 import '../../../../../core/supabase/supabase_client.dart';
 import '../../../../../core/supabase/storage_service.dart';
 import '../../../../../core/supabase/supabase_error_handler.dart';
-import '../../../../../core/utils/error_handler.dart';
 import '../../model/get_categories_model.dart';
 
 /// Interface for category data operations
@@ -31,23 +26,9 @@ abstract class CategoryRepositoryInterface {
   Future<void> deleteCategory(String id);
 }
 
-/// Hybrid repository that supports both Dio and Supabase for categories
+/// Repository implementation using Supabase for categories
 class CategoryRepository implements CategoryRepositoryInterface {
-  late final CategoryRepositoryInterface _dataSource;
-
-  CategoryRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('categories')) {
-      log('CategoryRepository: Using Supabase');
-      _dataSource = _CategorySupabaseDataSource();
-    } else {
-      log('CategoryRepository: Using Dio (legacy)');
-      _dataSource = _CategoryDioDataSource();
-    }
-  }
+  final _CategorySupabaseDataSource _dataSource = _CategorySupabaseDataSource();
 
   @override
   Future<List<CategoryItem>> getAllCategories() => _dataSource.getAllCategories();
@@ -85,16 +66,6 @@ class CategoryRepository implements CategoryRepositoryInterface {
 
   @override
   Future<void> deleteCategory(String id) => _dataSource.deleteCategory(id);
-
-  void enableSupabase() {
-    MigrationService.enableSupabase('categories');
-    _initializeDataSource();
-  }
-
-  void enableDio() {
-    MigrationService.enableDio('categories');
-    _initializeDataSource();
-  }
 }
 
 /// Supabase implementation for Category data source
@@ -287,128 +258,5 @@ class _CategorySupabaseDataSource implements CategoryRepositoryInterface {
             )
           : null,
     );
-  }
-}
-
-/// Dio implementation for Category data source (legacy)
-class _CategoryDioDataSource implements CategoryRepositoryInterface {
-  @override
-  Future<List<CategoryItem>> getAllCategories() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getCategories);
-
-      if (response.statusCode == 200) {
-        final model = CategoryResponse.fromJson(response.data);
-        if (model.success && model.data.categories.isNotEmpty) {
-          return model.data.categories;
-        }
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<CategoryItem?> getCategoryById(String id) async {
-    try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getCategoryById(id),
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final json = response.data['data']['category'];
-        return CategoryItem.fromJson(json);
-      }
-      return null;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<CategoryItem> createCategory({
-    required String name,
-    required String arName,
-    String? parentId,
-    File? imageFile,
-  }) async {
-    try {
-      // Convert image to base64 if provided
-      String? base64Image;
-      if (imageFile != null) {
-        final bytes = await imageFile.readAsBytes();
-        base64Image = 'data:image/jpeg;base64,${bytes}';
-      }
-
-      final response = await DioHelper.postData(
-        url: EndPoint.createCategory,
-        data: {
-          'name': name,
-          'ar_name': arName,
-          'parentId': parentId,
-          if (base64Image != null) 'image': base64Image,
-        },
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final json = response.data['data']['category'];
-        return CategoryItem.fromJson(json);
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<CategoryItem> updateCategory({
-    required String id,
-    required String name,
-    required String arName,
-    String? parentId,
-    File? imageFile,
-  }) async {
-    try {
-      // Convert image to base64 if provided
-      String? base64Image;
-      if (imageFile != null) {
-        final bytes = await imageFile.readAsBytes();
-        base64Image = 'data:image/jpeg;base64,${bytes}';
-      }
-
-      final response = await DioHelper.putData(
-        url: EndPoint.updateCategory(id),
-        data: {
-          'name': name,
-          'ar_name': arName,
-          'parentId': parentId,
-          if (base64Image != null) 'image': base64Image,
-        },
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final json = response.data['data']['category'];
-        return CategoryItem.fromJson(json);
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> deleteCategory(String id) async {
-    try {
-      final response = await DioHelper.deleteData(
-        url: EndPoint.deleteCategory(id),
-      );
-
-      if (response.statusCode != 200 || response.data['success'] != true) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
   }
 }

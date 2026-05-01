@@ -57,12 +57,12 @@ class ReasonModel {
 
   factory ReasonModel.fromJson(Map<String, dynamic> json) {
     return ReasonModel(
-      id: (json['_id'] as String?) ?? '',
-      reason: (json['reason'] as String?) ?? '',
-      createdAt: json['createdAt'] != null
-          ? DateTime.tryParse(json['createdAt'] as String) ?? DateTime.now()
-          : DateTime.now(),
-      version: (json['__v'] as int?) ?? 0,
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      reason: (json['reason'] ?? json['name'] ?? '').toString(),
+      createdAt: json['created_at'] != null 
+          ? DateTime.tryParse(json['created_at'] as String) ?? DateTime.now()
+          : (json['createdAt'] != null ? DateTime.tryParse(json['createdAt'] as String) ?? DateTime.now() : DateTime.now()),
+      version: json['version'] ?? json['__v'] ?? 0,
     );
   }
 

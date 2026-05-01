@@ -1,9 +1,11 @@
 import 'dart:developer';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/core/services/endpoints.dart';
-import 'package:systego/core/utils/error_handler.dart'; // تأكد من المسار
-import 'package:systego/features/admin/product/models/selected_attribute_model.dart';
+import 'package:GoSystem/core/services/dio_helper.dart';
+import 'package:GoSystem/core/services/endpoints.dart';
+import 'package:GoSystem/core/utils/error_handler.dart';
+import 'package:GoSystem/features/admin/product/models/selected_attribute_model.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../../../home/model/pos_models.dart';
 import '../../model/checkout_models.dart';
 
@@ -52,13 +54,11 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
   void addToCart(
     Product product, {
-    PriceVariation? variation,
     List<SelectedAttribute>? selectedAttributes,
   }) {
     // Create a new cart item with the provided attributes
     final newItem = CartItem(
       product: product,
-      selectedVariation: variation,
       quantity: 1,
       selectedAttributes: selectedAttributes ?? [],
     );
@@ -67,7 +67,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     final existingIndex = cartItems.indexWhere((item) => item.isSameAs(newItem));
 
     if (existingIndex >= 0) {
-      // Item with same product, variation, and attributes exists → increment quantity
+      // Item with same product and attributes exists → increment quantity
       cartItems[existingIndex].quantity++;
     } else {
       // New unique item → add to cart
@@ -123,8 +123,6 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     final productsList = cartItems.where((item) => !item.isBundle).map((item) {
       return {
         "product_id": item.product.id,
-        if (item.selectedVariation != null)
-          "product_price_id": item.selectedVariation!.id,
         "quantity": item.quantity.toString(),
         "price": item.effectivePrice.toStringAsFixed(2),
         "subtotal": item.subtotal.toStringAsFixed(2),
@@ -199,7 +197,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
         updateCartWithEmptyList();
         return true;
       } else {
-        final msg = response.data['message'] ?? 'Failed to create sale';
+        final msg = response.data['message'] ?? LocaleKeys.failed_to_create_sale.tr();
         emit(CheckoutError(msg));
         return false;
       }

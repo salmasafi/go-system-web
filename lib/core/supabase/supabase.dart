@@ -2,7 +2,7 @@
 ///
 /// Usage:
 /// ```dart
-/// import 'package:systego/core/supabase/supabase.dart';
+/// import 'package:GoSystem/core/supabase/supabase.dart';
 /// ```
 
 export 'supabase_client.dart';

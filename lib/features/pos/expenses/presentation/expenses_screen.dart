@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
-import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
-import 'package:systego/features/pos/expenses/cubit/expense_cubit.dart';
-import 'package:systego/features/pos/expenses/model/expense_model.dart';
-import 'package:systego/features/pos/expenses/presentation/add_expense_dialog.dart';
-import 'package:systego/features/admin/bank_account/cubit/bank_account_cubit.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
+import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:GoSystem/features/pos/expenses/cubit/expense_cubit.dart';
+import 'package:GoSystem/features/pos/expenses/model/expense_model.dart';
+import 'package:GoSystem/features/pos/expenses/presentation/add_expense_dialog.dart';
+import 'package:GoSystem/features/admin/bank_account/cubit/bank_account_cubit.dart';
 
 const _purple = Color(0xFF7C3AED);
 

@@ -1012,4 +1012,11 @@ abstract class  LocaleKeys {
   static const search_orders_hint = 'search_orders_hint';
   static const all_statuses = 'all_statuses';
   static const no_orders_found = 'no_orders_found';
+  static const login_failed = 'login_failed';
+  static const failed_to_load_customers = 'failed_to_load_customers';
+  static const failed_to_create_customer = 'failed_to_create_customer';
+  static const failed_to_add_expense = 'failed_to_add_expense';
+  static const failed_to_update_expense = 'failed_to_update_expense';
+  static const failed_to_create_sale = 'failed_to_create_sale';
+  static const unknown_error_occurred = 'unknown_error_occurred';
 }

@@ -2,9 +2,9 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/admin/taxes/cubit/taxes_cubit.dart';
-import 'package:systego/features/admin/taxes/model/taxes_model.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/features/admin/taxes/cubit/taxes_cubit.dart';
+import 'package:GoSystem/features/admin/taxes/model/taxes_model.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../../warehouses/view/widgets/custom_delete_dialog.dart';
 import 'animated_tax_card.dart';

@@ -1,9 +1,13 @@
 import 'dart:developer';
 import 'package:dio/dio.dart';
-import 'package:systego/core/services/endpoints.dart';
-import 'package:systego/core/services/session_helper.dart';
+import 'package:GoSystem/core/services/endpoints.dart';
+import 'package:GoSystem/core/services/session_helper.dart';
+import 'package:GoSystem/core/supabase/supabase_client.dart';
 import 'cache_helper.dart';
 
+/// [DioHelper] is deprecated and scheduled for removal in Phase 12.1 of the Supabase migration.
+/// Please use [SupabaseClientWrapper] or repository-based data sources instead.
+@Deprecated('Use Supabase-based repositories instead. This will be removed in Phase 12.1.')
 class DioHelper {
   static late Dio dio;
 
@@ -60,7 +64,9 @@ class DioHelper {
     String? lang = 'en',
     String? token,
   }) async {
-    final String? token = CacheHelper.getData(key: 'token');
+    final String? token = SupabaseClientWrapper.isAuthenticated 
+        ? SupabaseClientWrapper.currentSession?.accessToken 
+        : CacheHelper.getData(key: 'token');
 
     dio.options.headers = {
       'Content-Type': 'application/json',
@@ -81,7 +87,9 @@ class DioHelper {
     Map<String, dynamic>? query,
     String? token,
   }) async {
-    final String? token = CacheHelper.getData(key: 'token');
+    final String? token = SupabaseClientWrapper.isAuthenticated 
+        ? SupabaseClientWrapper.currentSession?.accessToken 
+        : CacheHelper.getData(key: 'token');
 
     dio.options.headers = {
       'Content-Type': data is FormData
@@ -107,7 +115,9 @@ class DioHelper {
     String lang = 'en',
     bool isFormData = false,
   }) async {
-    final String? token = CacheHelper.getData(key: 'token');
+    final String? token = SupabaseClientWrapper.isAuthenticated 
+        ? SupabaseClientWrapper.currentSession?.accessToken 
+        : CacheHelper.getData(key: 'token');
 
     dio.options.headers = {
       'Content-Type': isFormData
@@ -130,7 +140,9 @@ class DioHelper {
     Map<String, dynamic>? data,
     String? token,
   }) async {
-    final String? token = CacheHelper.getData(key: 'token');
+    final String? token = SupabaseClientWrapper.isAuthenticated 
+        ? SupabaseClientWrapper.currentSession?.accessToken 
+        : CacheHelper.getData(key: 'token');
 
     dio.options.headers = {
       'Content-Type': 'application/json',
@@ -150,7 +162,9 @@ class DioHelper {
     Map<String, dynamic>? query,
     String? token,
   }) async {
-    final String? token = CacheHelper.getData(key: 'token');
+    final String? token = SupabaseClientWrapper.isAuthenticated 
+        ? SupabaseClientWrapper.currentSession?.accessToken 
+        : CacheHelper.getData(key: 'token');
 
     dio.options.headers = {
       'Content-Type': 'application/json',

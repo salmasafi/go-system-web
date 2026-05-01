@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:systego/core/widgets/custom_drop_down_menu.dart';
-import 'package:systego/features/admin/units/cubit/units_cubit.dart';
-import 'package:systego/features/admin/units/model/unit_model.dart';
+import 'package:GoSystem/core/widgets/custom_drop_down_menu.dart';
+import 'package:GoSystem/features/admin/units/cubit/units_cubit.dart';
+import 'package:GoSystem/features/admin/units/model/unit_model.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
 import '../../../../../core/utils/validators.dart';

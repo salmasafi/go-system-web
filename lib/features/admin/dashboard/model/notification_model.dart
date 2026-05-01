@@ -23,22 +23,22 @@ class NotificationModel {
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
     // Handle productId which can be a String or a Map
     String productIdValue = '';
-    final productIdData = json['productId'];
+    final productIdData = json['product_id'] ?? json['productId'];
     if (productIdData is String) {
       productIdValue = productIdData;
     } else if (productIdData is Map<String, dynamic>) {
-      productIdValue = productIdData['_id'] ?? '';
+      productIdValue = (productIdData['id'] ?? productIdData['_id'] ?? '').toString();
     }
 
     return NotificationModel(
-      id: json['_id'] ?? json['id'] ?? '',
-      type: json['type'] ?? '',
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      type: json['type']?.toString() ?? '',
       productId: productIdValue,
       message: json['message'] ?? json['body'] ?? '',
       title: json['title'] ?? '',
-      isRead: json['isRead'] ?? json['is_read'] ?? false,
-      createdAt: DateTime.tryParse(json['createdAt'] ?? json['created_at'] ?? '') ?? DateTime.now(),
-      updatedAt: DateTime.tryParse(json['updatedAt'] ?? json['updated_at'] ?? '') ?? DateTime.now(),
+      isRead: json['is_read'] ?? json['isRead'] ?? false,
+      createdAt: DateTime.tryParse((json['created_at'] ?? json['createdAt'] ?? '').toString()) ?? DateTime.now(),
+      updatedAt: DateTime.tryParse((json['updated_at'] ?? json['updatedAt'] ?? '').toString()) ?? DateTime.now(),
     );
   }
 

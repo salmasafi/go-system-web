@@ -79,7 +79,7 @@ class Country {
       this.v,});
 
   Country.fromJson(dynamic json) {
-    id = json['_id'];
+    id = json['id'] ?? json['_id'];
     name = json['name'];
     isDefault = json['isDefault'];
     v = json['__v'];
@@ -110,7 +110,7 @@ class City {
 
   City.fromJson(dynamic json) {
     shipingCost = json['shipingCost'];
-    id = json['_id'];
+    id = json['id'] ?? json['_id'];
     name = json['name'];
     country = json['country'];
     v = json['__v'];
@@ -147,15 +147,15 @@ class Suppliers {
       this.v,});
 
   Suppliers.fromJson(dynamic json) {
-    id = json['_id'];
-    image = json['image'];
-    username = json['username'];
+    id = json['id'] ?? json['_id'];
+    image = json['image'] ?? json['image_url'];
+    username = json['username'] ?? json['name'];
     email = json['email'];
     phoneNumber = json['phone_number'];
     address = json['address'];
     companyName = json['company_name'];
-    cityId = json['cityId'] != null ? CityId.fromJson(json['cityId']) : null;
-    countryId = json['countryId'] != null ? CountryId.fromJson(json['countryId']) : null;
+    cityId = json['city_id'] != null ? CityId.fromJson(json['city_id']) : (json['cityId'] != null ? CityId.fromJson(json['cityId']) : null);
+    countryId = json['country_id'] != null ? CountryId.fromJson(json['country_id']) : (json['countryId'] != null ? CountryId.fromJson(json['countryId']) : null);
     v = json['__v'];
   }
   String? id;
@@ -198,7 +198,7 @@ class CountryId {
       this.v,});
 
   CountryId.fromJson(dynamic json) {
-    id = json['_id'];
+    id = json['id'] ?? json['_id'];
     name = json['name'];
     isDefault = json['isDefault'];
     v = json['__v'];
@@ -229,7 +229,7 @@ class CityId {
 
   CityId.fromJson(dynamic json) {
     shipingCost = json['shipingCost'];
-    id = json['_id'];
+    id = json['id'] ?? json['_id'];
     name = json['name'];
     country = json['country'];
     v = json['__v'];

@@ -2,14 +2,14 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/widgets/custom_drop_down_menu.dart';
-import 'package:systego/features/admin/admins_screen/cubit/admins_cubit.dart';
-import 'package:systego/features/admin/admins_screen/model/admins_model.dart';
-import 'package:systego/features/admin/roloes_and_permissions/cubit/roles_cubit.dart';
-import 'package:systego/features/admin/warehouses/cubit/warehouse_cubit.dart';
-import 'package:systego/features/admin/warehouses/cubit/warehouse_state.dart';
+import 'package:GoSystem/core/widgets/custom_drop_down_menu.dart';
+import 'package:GoSystem/features/admin/admins_screen/cubit/admins_cubit.dart';
+import 'package:GoSystem/features/admin/admins_screen/model/admins_model.dart';
+import 'package:GoSystem/features/admin/roloes_and_permissions/cubit/roles_cubit.dart';
+import 'package:GoSystem/features/admin/warehouses/cubit/warehouse_cubit.dart';
+import 'package:GoSystem/features/admin/warehouses/cubit/warehouse_state.dart';
 
-import 'package:systego/generated/locale_keys.g.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';

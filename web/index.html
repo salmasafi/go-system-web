@@ -31,6 +31,20 @@
 
   <title>systego</title>
   <link rel="manifest" href="manifest.json">
+
+  <!-- Scale down content for web (two degrees smaller) -->
+  <style>
+    body {
+      transform: scale(0.82);
+      transform-origin: top center;
+      width: 122%;
+      height: 122%;
+      overflow-x: hidden;
+    }
+    html {
+      overflow-x: hidden;
+    }
+  </style>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>

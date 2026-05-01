@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
+import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
 import '../../constants/app_colors.dart';
 import '../../utils/responsive_ui.dart';
 

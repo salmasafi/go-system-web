@@ -15,7 +15,7 @@ class CodegenLoader extends AssetLoader{
   }
 
   static const Map<String,dynamic> _ar = {
-  "app_name": "Systego",
+  "app_name": "GoSystem",
   "bank_accounts_title": "الحسابات البنكية",
   "bank_accounts_no_accounts": "لا يوجد حسابات بنكية",
   "bank_accounts_no_accounts_message": "لقد أنهيت كل شيء!",
@@ -1020,7 +1020,7 @@ class CodegenLoader extends AssetLoader{
   "Failed to select cashier": "حدث خطأ"
 };
 static const Map<String,dynamic> _en = {
-  "app_name": "Systego",
+  "app_name": "GoSystem",
   "bank_accounts_title": "Financial Accounts",
   "bank_accounts_no_accounts": "No financial accounts",
   "bank_accounts_no_accounts_message": "You're all caught up!",

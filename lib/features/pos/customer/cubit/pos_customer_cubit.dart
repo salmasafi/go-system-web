@@ -1,8 +1,10 @@
 import 'dart:developer';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/core/services/endpoints.dart';
-import 'package:systego/core/utils/error_handler.dart';
+import 'package:GoSystem/core/services/dio_helper.dart';
+import 'package:GoSystem/core/services/endpoints.dart';
+import 'package:GoSystem/core/utils/error_handler.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../model/pos_customer_model.dart';
 
 part 'pos_customer_state.dart';
@@ -23,7 +25,7 @@ class PosCustomerCubit extends Cubit<PosCustomerState> {
         customers = data.map((e) => PosCustomer.fromJson(e)).toList();
         emit(PosCustomerLoaded(customers: customers, selectedCustomer: selectedCustomer));
       } else {
-        final msg = response.data['message'] ?? 'Failed to load customers';
+        final msg = response.data['message'] ?? LocaleKeys.failed_to_load_customers.tr();
         emit(PosCustomerError(msg));
       }
     } catch (e) {
@@ -68,7 +70,7 @@ class PosCustomerCubit extends Cubit<PosCustomerState> {
         emit(PosCustomerLoaded(customers: customers, selectedCustomer: selectedCustomer));
         emit(PosCustomerCreateSuccess(newCustomer));
       } else {
-        final msg = response.data['message'] ?? 'Failed to create customer';
+        final msg = response.data['message'] ?? LocaleKeys.failed_to_create_customer.tr();
         emit(PosCustomerCreateError(msg));
       }
     } catch (e) {

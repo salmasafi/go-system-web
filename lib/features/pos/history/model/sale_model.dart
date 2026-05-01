@@ -19,15 +19,16 @@ class SaleItemModel {
   });
 
   factory SaleItemModel.fromJson(Map<String, dynamic> json) {
+    final customerJson = json['customer'] ?? json['customer_id'];
     return SaleItemModel(
-      id: json['_id'] ?? '',
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
       reference: json['reference'] ?? 'N/A',
-      customerName: (json['customer_id'] is Map) 
-          ? json['customer_id']['name'] ?? 'Unknown' 
+      customerName: (customerJson is Map) 
+          ? customerJson['name'] ?? 'Unknown' 
           : 'Walk-in Customer',
       grandTotal: (json['grand_total'] as num?)?.toDouble() ?? 0.0,
-      status: json['sale_status'] ?? 'completed',
-      date: json['date'] ?? json['createdAt'] ?? '',
+      status: json['sale_status'] ?? json['status'] ?? 'completed',
+      date: json['created_at'] ?? json['date'] ?? json['createdAt'] ?? '',
     );
   }
 }
@@ -56,18 +57,20 @@ class PendingSaleModel {
 
   factory PendingSaleModel.fromJson(Map<String, dynamic> json) {
     var list = json['items'] as List? ?? [];
-    final warehouse = json['warehouse_id'] is Map ? json['warehouse_id'] : {};
+    final customerJson = json['customer'] ?? json['customer_id'];
+    final warehouseJson = json['warehouse'] ?? json['warehouse_id'];
+    
     return PendingSaleModel(
-      id: json['_id'] ?? '',
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
       reference: json['reference'] ?? 'PENDING',
-      customerName: (json['customer_id'] is Map)
-          ? json['customer_id']['name'] ?? 'N/A'
+      customerName: (customerJson is Map)
+          ? customerJson['name'] ?? 'N/A'
           : 'N/A',
-      warehouseName: warehouse['name'] ?? '',
+      warehouseName: (warehouseJson is Map) ? warehouseJson['name'] ?? '' : '',
       grandTotal: (json['grand_total'] as num?)?.toDouble() ?? 0.0,
       totalItems: list.length,
-      date: json['date'] ?? json['createdAt'] ?? '',
-      status: json['sale_status'] ?? 'pending',
+      date: json['created_at'] ?? json['date'] ?? json['createdAt'] ?? '',
+      status: json['sale_status'] ?? json['status'] ?? 'pending',
     );
   }
 }
@@ -97,17 +100,18 @@ class DueSaleModel {
   });
 
   factory DueSaleModel.fromJson(Map<String, dynamic> json) {
-    final customer = json['customer_id'] is Map ? json['customer_id'] : {};
+    final customerJson = json['customer'] ?? json['customer_id'];
+    final customer = customerJson is Map ? customerJson : {};
     return DueSaleModel(
-      id: json['_id'] ?? '',
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
       reference: json['reference'] ?? 'N/A',
-      customerId: customer['_id'] ?? '',
+      customerId: (customer['id'] ?? customer['_id'] ?? '').toString(),
       customerName: customer['name'] ?? 'Unknown',
-      phone: customer['phone_number'] ?? '',
+      phone: customer['phone_number']?.toString() ?? '',
       grandTotal: (json['grand_total'] as num?)?.toDouble() ?? 0.0,
       paidAmount: (json['paid_amount'] as num?)?.toDouble() ?? 0.0,
       remainingAmount: (json['remaining_amount'] as num?)?.toDouble() ?? 0.0,
-      date: json['date'] ?? json['createdAt'] ?? '',
+      date: json['created_at'] ?? json['date'] ?? json['createdAt'] ?? '',
     );
   }
 }
@@ -155,14 +159,21 @@ class SaleDetailModel {
   });
 
   factory SaleDetailModel.fromJson(Map<String, dynamic> data) {
-    final sale = data['sale'];
-    final itemsList = data['items'] as List? ?? [];
+    final sale = data['sale'] ?? data; // Support both wrapped and direct JSON
+    final itemsList = (data['items'] ?? sale['items']) as List? ?? [];
+
+    final customerJson = sale['customer'] ?? sale['customer_id'];
+    final warehouseJson = sale['warehouse'] ?? sale['warehouse_id'];
 
     return SaleDetailModel(
-      id: sale['_id'] ?? '',
+      id: (sale['id'] ?? sale['_id'] ?? '').toString(),
       reference: sale['reference'] ?? '',
-      customerId: (sale['customer_id'] is Map) ? sale['customer_id']['_id'] : '',
-      warehouseId: (sale['warehouse_id'] is Map) ? sale['warehouse_id']['_id'] : '',
+      customerId: (customerJson is Map) 
+          ? (customerJson['id'] ?? customerJson['_id'] ?? '').toString() 
+          : (customerJson ?? '').toString(),
+      warehouseId: (warehouseJson is Map) 
+          ? (warehouseJson['id'] ?? warehouseJson['_id'] ?? '').toString() 
+          : (warehouseJson ?? '').toString(),
       grandTotal: (sale['grand_total'] as num?)?.toDouble() ?? 0.0,
       taxAmount: (sale['tax_amount'] as num?)?.toDouble() ?? 0.0,
       discount: (sale['discount'] as num?)?.toDouble() ?? 0.0,
@@ -194,22 +205,24 @@ class SaleDetailItem {
     String pId = '';
     String? pImg;
     
-    if (json['product_id'] is Map) {
-      pName = json['product_id']['name'];
-      pId = json['product_id']['_id'];
-      pImg = json['product_id']['image'];
+    final productJson = json['product'] ?? json['product_id'];
+    
+    if (productJson is Map) {
+      pName = productJson['name'] ?? '';
+      pId = productJson['id'] ?? productJson['_id'] ?? '';
+      pImg = productJson['image'] ?? productJson['image_url'];
     } else if (json['product_price_id'] is Map) {
        // fallback
        pName = json['product_price_id']['code'] ?? 'Item';
-       pId = json['product_price_id']['_id'];
+       pId = json['product_price_id']['id'] ?? json['product_price_id']['_id'] ?? '';
     }
 
     return SaleDetailItem(
       productId: pId,
       productName: pName,
-      quantity: (json['quantity'] as num).toInt(),
-      price: (json['price'] as num).toDouble(),
-      subtotal: (json['subtotal'] as num).toDouble(),
+      quantity: (json['quantity'] as num?)?.toInt() ?? 0,
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      subtotal: (json['subtotal'] as num?)?.toDouble() ?? 0.0,
       image: pImg,
     );
   }

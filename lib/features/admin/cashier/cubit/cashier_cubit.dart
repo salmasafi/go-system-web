@@ -2,9 +2,9 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:meta/meta.dart';
-import 'package:systego/generated/locale_keys.g.dart';
-import 'package:systego/features/admin/cashier/model/cashirer_model.dart';
-import 'package:systego/features/admin/cashier/data/repositories/cashier_repository.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
+import 'package:GoSystem/features/admin/cashier/model/cashirer_model.dart';
+import 'package:GoSystem/features/admin/cashier/data/repositories/cashier_repository.dart';
 
 part 'cashier_state.dart';
 

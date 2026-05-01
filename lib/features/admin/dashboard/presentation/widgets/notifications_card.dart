@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/animation/animated_element.dart';
-import 'package:systego/core/widgets/custom_gradient_divider.dart';
-import 'package:systego/core/widgets/custom_popup_menu.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/animation/animated_element.dart';
+import 'package:GoSystem/core/widgets/custom_gradient_divider.dart';
+import 'package:GoSystem/core/widgets/custom_popup_menu.dart';
 import 'package:intl/intl.dart';
-import 'package:systego/features/admin/dashboard/model/notification_model.dart';
+import 'package:GoSystem/features/admin/dashboard/model/notification_model.dart';
 
 class AnimatedNotificationCard extends StatefulWidget {
   final NotificationModel notification;

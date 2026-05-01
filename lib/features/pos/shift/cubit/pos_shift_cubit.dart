@@ -1,15 +1,15 @@
 import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/services/cache_helper.dart';
-import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/core/services/endpoints.dart';
-import 'package:systego/core/utils/error_handler.dart';
-import 'package:systego/features/pos/shift/model/cashier_model.dart'; // تأكد من المسار
-import '../model/shift_model.dart'; // تأكد من المسار
+import 'package:GoSystem/core/services/cache_helper.dart';
+import 'package:GoSystem/features/pos/shift/model/cashier_model.dart';
+import '../data/repositories/shift_repository.dart';
+import '../model/shift_model.dart';
 
 part 'pos_shift_state.dart';
 
 class PosShiftCubit extends Cubit<PosShiftState> {
+  final ShiftRepository _repository = ShiftRepository();
+
   PosShiftCubit() : super(PosShiftInitial()) {
     _restoreSession();
   }
@@ -64,84 +64,39 @@ class PosShiftCubit extends Cubit<PosShiftState> {
     await CacheHelper.removeData(key: _shiftKey);
   }
 
-  // 1. Get All Cashiers
+  // 1. Get All Cashiers - TODO: Implement with Supabase when cashier table is ready
   Future<void> getCashiers() async {
-    emit(PosGetCashiersLoading());
-    try {
-      final response = await DioHelper.getData(url: EndPoint.posCashiers);
-      
-      if (response.statusCode == 200) {
-        if (response.data['success'] == true) {
-          final model = CashierResponse.fromJson(response.data);
-          cashiersList = model.data.cashiers;
-          emit(PosGetCashiersSuccess(cashiersList));
-        } else {
-          emit(PosGetCashiersError(response.data['message'] ?? "Unknown Error"));
-        }
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(PosGetCashiersError(errorMessage));
-      }
-    } catch (e) {
-      log("Error fetching cashiers: $e");
-      emit(PosGetCashiersError(e.toString()));
-    }
+    emit(PosGetCashiersError("Not implemented yet - needs Supabase cashier table"));
   }
 
-  // 2. Select Cashier
+  // 2. Select Cashier - TODO: Implement with Supabase when cashier table is ready
   Future<void> selectCashier(CashierModel cashier) async {
-    emit(PosSelectCashierLoading());
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.selectCashier,
-        data: {"cashier_id": cashier.id},
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        if (response.data['success'] == true) {
-          selectedCashier = cashier;
-          await CacheHelper.saveModel<CashierModel>(
-            key: _cashierKey,
-            model: cashier,
-            toJson: (c) => c.toJson(),
-          );
-          emit(PosCashierSelected(cashier));
-        } else {
-          emit(PosSelectCashierError(response.data['message'] ?? "Failed to select cashier"));
-        }
-      } else {
-        final errorMessage = ErrorHandler.handleError(response);
-        emit(PosSelectCashierError(errorMessage));
-      }
-    } catch (e) {
-      log("Error selecting cashier: $e");
-      emit(PosSelectCashierError(e.toString()));
-    }
+    selectedCashier = cashier;
+    await CacheHelper.saveModel<CashierModel>(
+      key: _cashierKey,
+      model: cashier,
+      toJson: (c) => c.toJson(),
+    );
+    emit(PosCashierSelected(cashier));
   }
 
   // 3. Start Shift
   Future<void> startShift() async {
     if (selectedCashier == null) return;
     
-    emit(PosShiftActionLoading()); // استخدمنا State عام للتحميل
+    emit(PosShiftActionLoading());
 
     try {
-      final response = await DioHelper.postData(
-        url: EndPoint.startShift,
-        data: {'cashier_id': selectedCashier!.id},
+      final shift = await _repository.startShift(
+        cashierId: selectedCashier!.id,
+        openingAmount: 0.0,
       );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        currentShift = ShiftModel.fromJson(response.data['data']['shift']);
-        isShiftOpen = true;
-        await _saveSession();
-        
-        // ❌ حذفنا await loadPosData(); لأنها في الكيوبت الآخر
-        // ✅ نرسل State نجاح، والواجهة ستستجيب
-        emit(PosShiftStarted(currentShift!)); 
-      } else {
-        emit(PosShiftActionError(response.data['message'] ?? 'Failed to start shift'));
-      }
+      
+      currentShift = shift.toLegacyModel();
+      isShiftOpen = true;
+      await _saveSession();
+      
+      emit(PosShiftStarted(currentShift!)); 
     } catch (e) {
       log("Start Shift Error: $e");
       emit(PosShiftActionError(e.toString()));
@@ -150,24 +105,22 @@ class PosShiftCubit extends Cubit<PosShiftState> {
 
   // 4. End Shift
   Future<Map<String, dynamic>?> endShift() async {
+    if (currentShift == null) return null;
+    
     emit(PosShiftActionLoading());
     try {
-      final response = await DioHelper.putData(
-        url: EndPoint.endShift,
-        data: {}, // أضف cash_in_drawer هنا إذا لزم الأمر
+      await _repository.endShift(
+        shiftId: currentShift!.id,
+        actualAmount: 0.0,
       );
 
-      if (response.statusCode == 200) {
-        isShiftOpen = false;
-        currentShift = null;
-        selectedCashier = null; // إعادة تعيين الكاشير
-        await _clearSession();
+      isShiftOpen = false;
+      currentShift = null;
+      selectedCashier = null;
+      await _clearSession();
 
-        emit(PosShiftEnded());
-        return response.data; // إرجاع البيانات لاستخدامها في UI (تقرير)
-      } else {
-        emit(PosShiftActionError('Failed to end shift'));
-      }
+      emit(PosShiftEnded());
+      return {};
     } catch (e) {
       emit(PosShiftActionError(e.toString()));
     }
@@ -178,8 +131,7 @@ class PosShiftCubit extends Cubit<PosShiftState> {
   Future<void> logoutShift() async {
     emit(PosShiftActionLoading());
     try {
-      await DioHelper.postData(url: EndPoint.logoutShift, data: {});
-      // لا نمسح الكاش هنا لأن الشيفت لا يزال مفتوحاً، فقط المستخدم خرج
+      // No API call needed for logout in Supabase
       emit(PosLoggedOut());
     } catch (e) {
       emit(PosShiftActionError(e.toString()));

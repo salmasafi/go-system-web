@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/custom_gradient_divider.dart';
-import 'package:systego/features/admin/product/models/product_model.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/custom_gradient_divider.dart';
+import 'package:GoSystem/features/admin/product/models/product_model.dart';
 import '../../../../../core/widgets/custom_image_card.dart';
 import '../../../../../core/widgets/custom_popup_menu.dart';
 import '../../../warehouses/view/widgets/custom_stat_chip.dart';

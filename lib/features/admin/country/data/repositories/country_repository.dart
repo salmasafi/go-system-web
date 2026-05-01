@@ -1,12 +1,8 @@
 import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../../core/migration/migration_service.dart';
-import '../../../../../core/services/dio_helper.dart';
-import '../../../../../core/services/endpoints.dart';
 import '../../../../../core/supabase/supabase_client.dart';
 import '../../../../../core/supabase/supabase_error_handler.dart';
-import '../../../../../core/utils/error_handler.dart';
-import 'package:systego/features/admin/country/model/country_model.dart';
+import 'package:GoSystem/features/admin/country/model/country_model.dart';
 
 /// Interface for country data operations
 abstract class CountryRepositoryInterface {
@@ -24,23 +20,9 @@ abstract class CountryRepositoryInterface {
   Future<void> selectCountry(String countryId);
 }
 
-/// Hybrid repository that supports both Dio and Supabase for countries
+/// Repository implementation using Supabase for countries
 class CountryRepository implements CountryRepositoryInterface {
-  late final CountryRepositoryInterface _dataSource;
-
-  CountryRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('locations')) {
-      log('CountryRepository: Using Supabase');
-      _dataSource = _CountrySupabaseDataSource();
-    } else {
-      log('CountryRepository: Using Dio (legacy)');
-      _dataSource = _CountryDioDataSource();
-    }
-  }
+  final _CountrySupabaseDataSource _dataSource = _CountrySupabaseDataSource();
 
   @override
   Future<List<CountryModel>> getCountries() => _dataSource.getCountries();
@@ -147,86 +129,5 @@ class _CountrySupabaseDataSource implements CountryRepositoryInterface {
       isDefault: json['is_default'] ?? false,
       version: json['version'] ?? 1,
     );
-  }
-}
-
-/// Dio implementation for Country data source (legacy)
-class _CountryDioDataSource implements CountryRepositoryInterface {
-  @override
-  Future<List<CountryModel>> getCountries() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getCountries);
-      if (response.statusCode == 200) {
-        final model = CountryResponse.fromJson(response.data);
-        return model.data.countries;
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> createCountry({
-    required String name,
-    required String arName,
-  }) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.createCountry,
-        data: {'name': name, 'ar_name': arName},
-      );
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> updateCountry({
-    required String countryId,
-    required String name,
-    required String arName,
-  }) async {
-    try {
-      final response = await DioHelper.putData(
-        url: EndPoint.updateCountry(countryId),
-        data: {'name': name, 'ar_name': arName},
-      );
-      if (response.statusCode != 200) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> deleteCountry(String countryId) async {
-    try {
-      final response = await DioHelper.deleteData(url: EndPoint.deleteCountry(countryId));
-      if (response.statusCode != 200) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> selectCountry(String countryId) async {
-    try {
-      final response = await DioHelper.putData(
-        url: EndPoint.selectCountry(countryId),
-        data: {'isDefault': true},
-      );
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
   }
 }

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/custom_button_widget.dart';
-import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
-import 'package:systego/core/widgets/custom_textfield/custom_text_field_widget.dart';
-import 'package:systego/features/admin/permission/cubit/permission_cubit.dart';
-import 'package:systego/features/admin/permission/model/permission_model.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/custom_button_widget.dart';
+import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:GoSystem/core/widgets/custom_textfield/custom_text_field_widget.dart';
+import 'package:GoSystem/features/admin/permission/cubit/permission_cubit.dart';
+import 'package:GoSystem/features/admin/permission/model/permission_model.dart';
 
 class EditPermissionBottomSheet extends StatefulWidget {
   final PermissionModel permission;

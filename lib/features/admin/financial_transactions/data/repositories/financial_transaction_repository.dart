@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../../core/migration/migration_service.dart';
 import '../../../../../core/supabase/supabase_client.dart';
 import '../../../../../core/supabase/supabase_error_handler.dart';
 
@@ -79,25 +78,11 @@ abstract class FinancialTransactionRepositoryInterface {
 }
 
 // ─────────────────────────────────────────────
-// Hybrid Repository
+// Supabase Implementation
 // ─────────────────────────────────────────────
 
 class FinancialTransactionRepository implements FinancialTransactionRepositoryInterface {
-  late final FinancialTransactionRepositoryInterface _dataSource;
-
-  FinancialTransactionRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('financial')) {
-      log('FinancialTransactionRepository: Using Supabase');
-      _dataSource = _FinancialTransactionSupabaseDataSource();
-    } else {
-      log('FinancialTransactionRepository: Using Dio (legacy)');
-      _dataSource = _FinancialTransactionDioDataSource();
-    }
-  }
+  final _FinancialTransactionSupabaseDataSource _dataSource = _FinancialTransactionSupabaseDataSource();
 
   @override
   Future<List<SupabaseFinancialTransactionModel>> getAllTransactions() =>
@@ -128,16 +113,6 @@ class FinancialTransactionRepository implements FinancialTransactionRepositoryIn
         relatedType: relatedType,
         description: description,
       );
-
-  void enableSupabase() {
-    MigrationService.enableSupabase('financial');
-    _initializeDataSource();
-  }
-
-  void enableDio() {
-    MigrationService.enableDio('financial');
-    _initializeDataSource();
-  }
 }
 
 // ─────────────────────────────────────────────
@@ -222,36 +197,5 @@ class _FinancialTransactionSupabaseDataSource implements FinancialTransactionRep
       log('FinancialTxSupabase: Error creating transaction - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
-  }
-}
-
-// ─────────────────────────────────────────────
-// Dio (Legacy) Implementation
-// ─────────────────────────────────────────────
-
-class _FinancialTransactionDioDataSource implements FinancialTransactionRepositoryInterface {
-  @override
-  Future<List<SupabaseFinancialTransactionModel>> getAllTransactions() async {
-    // Legacy API doesn't have a direct equivalent
-    return [];
-  }
-
-  @override
-  Future<List<SupabaseFinancialTransactionModel>> getTransactionsByAccount(String bankAccountId) async {
-    return [];
-  }
-
-  @override
-  Future<SupabaseFinancialTransactionModel> createTransaction({
-    required String transactionType,
-    required String bankAccountId,
-    required double amount,
-    required double previousBalance,
-    required double newBalance,
-    String? relatedId,
-    String? relatedType,
-    String? description,
-  }) async {
-    throw UnimplementedError('createTransaction not supported via Dio');
   }
 }

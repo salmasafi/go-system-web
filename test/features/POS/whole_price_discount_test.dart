@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:systego/features/pos/checkout/model/checkout_models.dart';
-import 'package:systego/features/pos/home/model/pos_models.dart';
+import 'package:GoSystem/features/pos/checkout/model/checkout_models.dart';
+import 'package:GoSystem/features/pos/home/model/pos_models.dart';
 
 // Helper: بناء Product بسيط مع دعم wholePrice/startQuantity
 Product _makeProduct({

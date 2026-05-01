@@ -1,11 +1,7 @@
 import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../../core/migration/migration_service.dart';
-import '../../../../../core/services/dio_helper.dart';
-import '../../../../../core/services/endpoints.dart';
 import '../../../../../core/supabase/supabase_client.dart';
 import '../../../../../core/supabase/supabase_error_handler.dart';
-import '../../../../../core/utils/error_handler.dart';
 import '../../model/department_model.dart';
 
 /// Interface for department data operations
@@ -27,23 +23,9 @@ abstract class DepartmentRepositoryInterface {
   Future<void> deleteDepartment(String id);
 }
 
-/// Hybrid repository that supports both Dio and Supabase for departments
+/// Repository implementation using Supabase for departments
 class DepartmentRepository implements DepartmentRepositoryInterface {
-  late final DepartmentRepositoryInterface _dataSource;
-
-  DepartmentRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('departments')) {
-      log('DepartmentRepository: Using Supabase');
-      _dataSource = _DepartmentSupabaseDataSource();
-    } else {
-      log('DepartmentRepository: Using Dio (legacy)');
-      _dataSource = _DepartmentDioDataSource();
-    }
-  }
+  final _DepartmentSupabaseDataSource _dataSource = _DepartmentSupabaseDataSource();
 
   @override
   Future<List<DepartmentModel>> getAllDepartments() => _dataSource.getAllDepartments();
@@ -161,85 +143,5 @@ class _DepartmentSupabaseDataSource implements DepartmentRepositoryInterface {
       createdAt: json['created_at']?.toString() ?? DateTime.now().toIso8601String(),
       updatedAt: json['updated_at']?.toString() ?? DateTime.now().toIso8601String(),
     );
-  }
-}
-
-/// Dio implementation for Department data source (legacy)
-class _DepartmentDioDataSource implements DepartmentRepositoryInterface {
-  @override
-  Future<List<DepartmentModel>> getAllDepartments() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getAllDepartments);
-      if (response.statusCode == 200) {
-        final model = DepartmentResponse.fromJson(response.data);
-        return model.data.departments;
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> addDepartment({
-    required String name,
-    required String description,
-    required String arName,
-    required String arDescription,
-  }) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.addDepartment,
-        data: {
-          'name': name,
-          'description': description,
-          'ar_name': arName,
-          'ar_description': arDescription,
-        },
-      );
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> updateDepartment({
-    required String id,
-    required String name,
-    required String description,
-    required String arName,
-    required String arDescription,
-  }) async {
-    try {
-      final response = await DioHelper.putData(
-        url: EndPoint.updateDepartment(id),
-        data: {
-          'name': name,
-          'description': description,
-          'ar_name': arName,
-          'ar_description': arDescription,
-        },
-      );
-      if (response.statusCode != 200) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> deleteDepartment(String id) async {
-    try {
-      final response = await DioHelper.deleteData(url: EndPoint.deleteDepartment(id));
-      if (response.statusCode != 200) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
   }
 }

@@ -1,18 +1,18 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/animation/animated_element.dart';
-import 'package:systego/core/widgets/app_bar_widgets.dart';
-import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
-import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
-import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
-import 'package:systego/features/admin/customer/cubit/customer_cubit.dart';
-import 'package:systego/features/admin/customer_group/presentation/widgets/customer_group_animated_card.dart';
-import 'package:systego/features/admin/customer_group/presentation/widgets/customer_group_form_dialog.dart';
-import 'package:systego/features/admin/customer_group/presentation/widgets/customer_groups_list.dart';
-import 'package:systego/generated/locale_keys.g.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/animation/animated_element.dart';
+import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
+import 'package:GoSystem/core/widgets/custom_error/custom_empty_state.dart';
+import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
+import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:GoSystem/features/admin/customer/cubit/customer_cubit.dart';
+import 'package:GoSystem/features/admin/customer_group/presentation/widgets/customer_group_animated_card.dart';
+import 'package:GoSystem/features/admin/customer_group/presentation/widgets/customer_group_form_dialog.dart';
+import 'package:GoSystem/features/admin/customer_group/presentation/widgets/customer_groups_list.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 
 class CustomerGroupsScreen extends StatefulWidget {
   const CustomerGroupsScreen({super.key});

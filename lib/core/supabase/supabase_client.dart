@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../config/app_config.dart';
 
@@ -33,6 +34,18 @@ class SupabaseClientWrapper {
       );
     }
     return _instance!;
+  }
+
+  /// Sets a mock instance for testing
+  @visibleForTesting
+  static void setMockInstance(SupabaseClient client) {
+    _instance = client;
+  }
+
+  /// Disposes the instance (useful for testing)
+  @visibleForTesting
+  static void dispose() {
+    _instance = null;
   }
 
   /// Check if Supabase has been initialized

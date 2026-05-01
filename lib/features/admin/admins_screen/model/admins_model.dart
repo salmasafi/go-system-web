@@ -282,7 +282,7 @@ class AdminModel {
   factory AdminModel.fromJson(Map<String, dynamic> json) {
     return AdminModel(
       // Note: JSON key is "id" now, not "_id"
-      id: json['id'] as String? ?? '',
+      id: json['id'] as String? ?? json['_id'] as String? ?? '',
       username: json['username'] as String? ?? '',
       email: json['email'] as String? ?? '',
       role: json['role'] as String? ?? '',
@@ -297,8 +297,8 @@ class AdminModel {
       warehouse: json['warehouse'] != null
           ? WarehouseModel.fromJson(json['warehouse'] as Map<String, dynamic>)
           : null,
-      createdAt: json['createdAt'] as String?,
-      updatedAt: json['updatedAt'] as String?,
+      createdAt: (json['created_at'] ?? json['createdAt'])?.toString(),
+      updatedAt: (json['updated_at'] ?? json['updatedAt'])?.toString(),
     );
   }
 
@@ -331,7 +331,7 @@ class WarehouseModel {
 
   factory WarehouseModel.fromJson(Map<String, dynamic> json) {
     return WarehouseModel(
-      id: json['id'] as String? ?? '',
+      id: json['id'] as String? ?? json['_id'] as String? ?? '',
       name: json['name'] as String? ?? '',
     );
   }
@@ -356,7 +356,7 @@ class RoleData {
 
   factory RoleData.fromJson(Map<String, dynamic> json) {
     return RoleData(
-      id: json['id'] as String? ?? '',
+      id: json['id'] as String? ?? json['_id'] as String? ?? '',
       name: json['name'] as String? ?? '',
     );
   }

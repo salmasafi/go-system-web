@@ -1,11 +1,7 @@
 import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../../core/migration/migration_service.dart';
-import '../../../../../core/services/dio_helper.dart';
-import '../../../../../core/services/endpoints.dart';
 import '../../../../../core/supabase/supabase_client.dart';
 import '../../../../../core/supabase/supabase_error_handler.dart';
-import '../../../../../core/utils/error_handler.dart';
 import '../../model/shift_model.dart';
 
 // ─────────────────────────────────────────────
@@ -112,6 +108,7 @@ abstract class ShiftRepositoryInterface {
     String? note,
   });
   Future<SupabaseShiftModel?> getActiveShiftByCashier(String cashierId);
+  Future<SupabaseShiftModel?> getActiveShift();
   Future<SupabaseShiftModel?> getShiftById(String shiftId);
 }
 
@@ -119,71 +116,11 @@ abstract class ShiftRepositoryInterface {
 // Hybrid Repository
 // ─────────────────────────────────────────────
 
+// ─────────────────────────────────────────────
+// Repository Implementation
+// ─────────────────────────────────────────────
+
 class ShiftRepository implements ShiftRepositoryInterface {
-  late final ShiftRepositoryInterface _dataSource;
-
-  ShiftRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('shift')) {
-      log('ShiftRepository: Using Supabase');
-      _dataSource = _ShiftSupabaseDataSource();
-    } else {
-      log('ShiftRepository: Using Dio (legacy)');
-      _dataSource = _ShiftDioDataSource();
-    }
-  }
-
-  @override
-  Future<SupabaseShiftModel> startShift({
-    required String cashierId,
-    required double openingAmount,
-    String? note,
-  }) =>
-      _dataSource.startShift(
-        cashierId: cashierId,
-        openingAmount: openingAmount,
-        note: note,
-      );
-
-  @override
-  Future<SupabaseShiftModel> endShift({
-    required String shiftId,
-    required double actualAmount,
-    String? note,
-  }) =>
-      _dataSource.endShift(
-        shiftId: shiftId,
-        actualAmount: actualAmount,
-        note: note,
-      );
-
-  @override
-  Future<SupabaseShiftModel?> getActiveShiftByCashier(String cashierId) =>
-      _dataSource.getActiveShiftByCashier(cashierId);
-
-  @override
-  Future<SupabaseShiftModel?> getShiftById(String shiftId) =>
-      _dataSource.getShiftById(shiftId);
-
-  void enableSupabase() {
-    MigrationService.enableSupabase('shift');
-    _initializeDataSource();
-  }
-
-  void enableDio() {
-    MigrationService.enableDio('shift');
-    _initializeDataSource();
-  }
-}
-
-// ─────────────────────────────────────────────
-// Supabase Implementation
-// ─────────────────────────────────────────────
-
-class _ShiftSupabaseDataSource implements ShiftRepositoryInterface {
   final SupabaseClient _client = SupabaseClientWrapper.instance;
   static const String _table = 'shifts';
 
@@ -194,7 +131,7 @@ class _ShiftSupabaseDataSource implements ShiftRepositoryInterface {
     String? note,
   }) async {
     try {
-      log('ShiftSupabase: Starting shift for cashier $cashierId');
+      log('ShiftRepository: Starting shift for cashier $cashierId');
 
       // Check for active shift
       final active = await getActiveShiftByCashier(cashierId);
@@ -217,7 +154,7 @@ class _ShiftSupabaseDataSource implements ShiftRepositoryInterface {
 
       return SupabaseShiftModel.fromJson(response);
     } catch (e) {
-      log('ShiftSupabase: Error starting shift - $e');
+      log('ShiftRepository: Error starting shift - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -229,7 +166,7 @@ class _ShiftSupabaseDataSource implements ShiftRepositoryInterface {
     String? note,
   }) async {
     try {
-      log('ShiftSupabase: Ending shift $shiftId');
+      log('ShiftRepository: Ending shift $shiftId');
 
       final shift = await getShiftById(shiftId);
       if (shift == null) throw Exception('Shift not found');
@@ -248,7 +185,7 @@ class _ShiftSupabaseDataSource implements ShiftRepositoryInterface {
 
       return SupabaseShiftModel.fromJson(response);
     } catch (e) {
-      log('ShiftSupabase: Error ending shift - $e');
+      log('ShiftRepository: Error ending shift - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -256,7 +193,7 @@ class _ShiftSupabaseDataSource implements ShiftRepositoryInterface {
   @override
   Future<SupabaseShiftModel?> getActiveShiftByCashier(String cashierId) async {
     try {
-      log('ShiftSupabase: Fetching active shift for $cashierId');
+      log('ShiftRepository: Fetching active shift for $cashierId');
       final response = await _client
           .from(_table)
           .select()
@@ -267,15 +204,22 @@ class _ShiftSupabaseDataSource implements ShiftRepositoryInterface {
       if (response == null) return null;
       return SupabaseShiftModel.fromJson(response);
     } catch (e) {
-      log('ShiftSupabase: Error fetching active shift - $e');
+      log('ShiftRepository: Error fetching active shift - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
 
   @override
+  Future<SupabaseShiftModel?> getActiveShift() async {
+    final userId = _client.auth.currentUser?.id;
+    if (userId == null) return null;
+    return getActiveShiftByCashier(userId);
+  }
+
+  @override
   Future<SupabaseShiftModel?> getShiftById(String shiftId) async {
     try {
-      log('ShiftSupabase: Fetching shift $shiftId');
+      log('ShiftRepository: Fetching shift $shiftId');
       final response = await _client
           .from(_table)
           .select()
@@ -285,100 +229,8 @@ class _ShiftSupabaseDataSource implements ShiftRepositoryInterface {
       if (response == null) return null;
       return SupabaseShiftModel.fromJson(response);
     } catch (e) {
-      log('ShiftSupabase: Error fetching shift - $e');
+      log('ShiftRepository: Error fetching shift - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
-  }
-}
-
-// ─────────────────────────────────────────────
-// Dio (Legacy) Implementation
-// ─────────────────────────────────────────────
-
-class _ShiftDioDataSource implements ShiftRepositoryInterface {
-  @override
-  Future<SupabaseShiftModel> startShift({
-    required String cashierId,
-    required double openingAmount,
-    String? note,
-  }) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.startShift,
-        data: {
-          'cashierId': cashierId,
-        },
-      );
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final data = response.data['data']?['shift'];
-        return SupabaseShiftModel(
-          id: data?['_id'] ?? '',
-          cashierId: cashierId,
-          startTime: DateTime.now(),
-          openingAmount: openingAmount,
-          expectedAmount: openingAmount,
-          totalSales: 0,
-          totalReturns: 0,
-          totalDiscounts: 0,
-          totalExpenses: 0,
-          status: 'open',
-          createdAt: DateTime.now(),
-        );
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<SupabaseShiftModel> endShift({
-    required String shiftId,
-    required double actualAmount,
-    String? note,
-  }) async {
-    try {
-      final response = await DioHelper.putData(
-        url: EndPoint.endShift,
-        data: {
-          'actual_amount': actualAmount,
-        },
-      );
-      if (response.statusCode == 200) {
-        final data = response.data['data']?['shift'];
-        return SupabaseShiftModel(
-          id: shiftId,
-          cashierId: data?['cashier_id'] ?? '',
-          startTime: data?['start_time'] != null
-              ? DateTime.parse(data['start_time'])
-              : DateTime.now(),
-          endTime: DateTime.now(),
-          openingAmount: 0,
-          expectedAmount: 0,
-          actualAmount: actualAmount,
-          totalSales: 0,
-          totalReturns: 0,
-          totalDiscounts: 0,
-          totalExpenses: 0,
-          status: 'closed',
-          createdAt: DateTime.now(),
-        );
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<SupabaseShiftModel?> getActiveShiftByCashier(String cashierId) async {
-    // Note: Legacy API check for current shift is usually handled via local cache
-    // or a specialized endpoint not present in EndPoint. Returning null for now.
-    return null;
-  }
-
-  @override
-  Future<SupabaseShiftModel?> getShiftById(String shiftId) async {
-    return null; 
   }
 }

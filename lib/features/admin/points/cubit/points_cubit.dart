@@ -1,10 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/core/services/endpoints.dart';
+import 'package:GoSystem/core/services/dio_helper.dart';
+import 'package:GoSystem/core/services/endpoints.dart';
 import '../model/points_model.dart';
 import 'points_state.dart';
 
-import 'package:systego/features/admin/points/data/repositories/points_repository.dart';
+import 'package:GoSystem/features/admin/points/data/repositories/points_repository.dart';
 
 class PointsCubit extends Cubit<PointsState> {
   final PointsRepository _repository;

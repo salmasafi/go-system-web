@@ -62,17 +62,17 @@ class Warehouses {
       this.updatedAt, 
       this.v,});
 
- Warehouses.fromJson(dynamic json)
-    : id = json['_id'] ?? "",
+  Warehouses.fromJson(dynamic json)
+    : id = (json['id'] ?? json['_id'] ?? "").toString(),
       name = json['name'] ?? "",
       address = json['address'],
       phone = json['phone'],
       email = json['email'],
-      numberOfProducts = json['number_of_products'],
-      stockQuantity = json['stock_Quantity'],
-      createdAt = json['createdAt'],
-      updatedAt = json['updatedAt'],
-      v = json['__v'];
+      numberOfProducts = json['number_of_products'] ?? json['numberOfProducts'],
+      stockQuantity = (json['stock_quantity'] ?? json['stock_Quantity'] ?? 0).toDouble(),
+      createdAt = json['created_at'] ?? json['createdAt'],
+      updatedAt = json['updated_at'] ?? json['updatedAt'],
+      v = json['version'] ?? json['__v'];
 
   String id;
   String name;

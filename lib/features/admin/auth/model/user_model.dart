@@ -57,7 +57,7 @@ class User {
   });
 
   User.fromJson(dynamic json) {
-    id = json['id'];
+    id = json['id'] ?? json['_id'];
     username = json['username'];
     email = json['email'];
     position = json['position'];

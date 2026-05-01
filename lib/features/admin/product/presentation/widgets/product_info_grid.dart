@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/admin/product/presentation/widgets/product_info_item.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/features/admin/product/presentation/widgets/product_info_item.dart';
 
 // class ProductInfoGrid extends StatelessWidget {
 //   final List<ProductInfoItem> items;

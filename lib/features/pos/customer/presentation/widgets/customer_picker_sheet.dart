@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/pos/customer/cubit/pos_customer_cubit.dart';
-import 'package:systego/features/pos/customer/model/pos_customer_model.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/features/pos/customer/cubit/pos_customer_cubit.dart';
+import 'package:GoSystem/features/pos/customer/model/pos_customer_model.dart';
 
 /// Opens the customer picker as a modal bottom sheet.
 /// Must be called with a context that has [PosCustomerCubit] in scope.

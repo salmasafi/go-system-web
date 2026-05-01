@@ -151,76 +151,13 @@ abstract class AdjustmentRepositoryInterface {
 // Hybrid Repository
 // ─────────────────────────────────────────────
 
+/// Adjustment repository using Supabase as the primary data source.
 class AdjustmentRepository implements AdjustmentRepositoryInterface {
-  late final AdjustmentRepositoryInterface _dataSource;
-
-  AdjustmentRepository() {
-    _dataSource = _AdjustmentSupabaseDataSource();
-  }
-
-  @override
-  Future<List<SupabaseAdjustmentModel>> getAllAdjustments() =>
-      _dataSource.getAllAdjustments();
-
-  @override
-  Future<SupabaseAdjustmentModel?> getAdjustmentById(String id) =>
-      _dataSource.getAdjustmentById(id);
-
-  @override
-  Future<SupabaseAdjustmentModel> createAdjustment({
-    required String warehouseId,
-    required String type,
-    required String reason,
-    required List<Map<String, dynamic>> items,
-    String? note,
-    File? attachmentFile,
-  }) =>
-      _dataSource.createAdjustment(
-        warehouseId: warehouseId,
-        type: type,
-        reason: reason,
-        items: items,
-        note: note,
-        attachmentFile: attachmentFile,
-      );
-
-  @override
-  Future<bool> reverseAdjustment(String adjustmentId) =>
-      _dataSource.reverseAdjustment(adjustmentId);
-
-  @override
-  Future<void> updateAdjustment({
-    required String id,
-    required String warehouseId,
-    required String productId,
-    required int quantity,
-    required String reasonId,
-    required String note,
-    File? imageFile,
-  }) => _dataSource.updateAdjustment(
-    id: id,
-    warehouseId: warehouseId,
-    productId: productId,
-    quantity: quantity,
-    reasonId: reasonId,
-    note: note,
-    imageFile: imageFile,
-  );
-
-
-}
-
-// ─────────────────────────────────────────────
-// Supabase Implementation
-// ─────────────────────────────────────────────
-
-class _AdjustmentSupabaseDataSource implements AdjustmentRepositoryInterface {
   final SupabaseClient _client = SupabaseClientWrapper.instance;
   final StorageService _storage =
       StorageService(SupabaseClientWrapper.instance);
 
   static const String _table = 'adjustments';
-  static const String _itemsTable = 'adjustment_items';
   static const String _selectQuery = '''
     *,
     warehouse:warehouse_id(id, name),
@@ -233,7 +170,7 @@ class _AdjustmentSupabaseDataSource implements AdjustmentRepositoryInterface {
   @override
   Future<List<SupabaseAdjustmentModel>> getAllAdjustments() async {
     try {
-      log('AdjustmentSupabase: Fetching all adjustments');
+      log('AdjustmentRepository: Fetching all adjustments');
       final response = await _client
           .from(_table)
           .select(_selectQuery)
@@ -244,7 +181,7 @@ class _AdjustmentSupabaseDataSource implements AdjustmentRepositoryInterface {
               SupabaseAdjustmentModel.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      log('AdjustmentSupabase: Error fetching adjustments - $e');
+      log('AdjustmentRepository: Error fetching adjustments - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -252,7 +189,7 @@ class _AdjustmentSupabaseDataSource implements AdjustmentRepositoryInterface {
   @override
   Future<SupabaseAdjustmentModel?> getAdjustmentById(String id) async {
     try {
-      log('AdjustmentSupabase: Fetching adjustment by id: $id');
+      log('AdjustmentRepository: Fetching adjustment by id: $id');
       final response = await _client
           .from(_table)
           .select(_selectQuery)
@@ -262,7 +199,7 @@ class _AdjustmentSupabaseDataSource implements AdjustmentRepositoryInterface {
       if (response == null) return null;
       return SupabaseAdjustmentModel.fromJson(response as Map<String, dynamic>);
     } catch (e) {
-      log('AdjustmentSupabase: Error fetching adjustment - $e');
+      log('AdjustmentRepository: Error fetching adjustment - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -277,7 +214,7 @@ class _AdjustmentSupabaseDataSource implements AdjustmentRepositoryInterface {
     File? attachmentFile,
   }) async {
     try {
-      log('AdjustmentSupabase: Creating adjustment for warehouse: $warehouseId');
+      log('AdjustmentRepository: Creating adjustment for warehouse: $warehouseId');
 
       // Upload attachment if provided
       String? attachmentUrl;
@@ -300,12 +237,12 @@ class _AdjustmentSupabaseDataSource implements AdjustmentRepositoryInterface {
         'p_attachment_url': attachmentUrl ?? '',
       });
 
-      log('AdjustmentSupabase: Adjustment created - ${response['adjustment_id']}');
+      log('AdjustmentRepository: Adjustment created - ${response['adjustment_id']}');
       final created =
           await getAdjustmentById(response['adjustment_id'] as String);
       return created!;
     } catch (e) {
-      log('AdjustmentSupabase: Error creating adjustment - $e');
+      log('AdjustmentRepository: Error creating adjustment - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -313,13 +250,13 @@ class _AdjustmentSupabaseDataSource implements AdjustmentRepositoryInterface {
   @override
   Future<bool> reverseAdjustment(String adjustmentId) async {
     try {
-      log('AdjustmentSupabase: Reversing adjustment: $adjustmentId');
+      log('AdjustmentRepository: Reversing adjustment: $adjustmentId');
       await _client.rpc('reverse_adjustment', params: {
         'p_adjustment_id': adjustmentId,
       });
       return true;
     } catch (e) {
-      log('AdjustmentSupabase: Error reversing adjustment - $e');
+      log('AdjustmentRepository: Error reversing adjustment - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -335,7 +272,7 @@ class _AdjustmentSupabaseDataSource implements AdjustmentRepositoryInterface {
     File? imageFile,
   }) async {
     try {
-      log('AdjustmentSupabase: Updating adjustment: $id');
+      log('AdjustmentRepository: Updating adjustment: $id');
 
       // Upload attachment if provided
       String? attachmentUrl;
@@ -359,10 +296,13 @@ class _AdjustmentSupabaseDataSource implements AdjustmentRepositoryInterface {
       // Usually, adjustments are reversed and recreated.
       // For now, only update top-level fields.
     } catch (e) {
-      log('AdjustmentSupabase: Error updating adjustment - $e');
+      log('AdjustmentRepository: Error updating adjustment - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
 }
+
+// ─────────────────────────────────────────────
+// Supabase Implementation
 
 

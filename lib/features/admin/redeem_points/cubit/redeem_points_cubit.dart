@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/core/services/endpoints.dart';
-import 'package:systego/core/utils/error_handler.dart';
-import 'package:systego/features/admin/redeem_points/model/redeem_points_model.dart';
-import 'package:systego/features/admin/redeem_points/data/repositories/redeem_points_repository.dart';
+import 'package:GoSystem/core/services/dio_helper.dart';
+import 'package:GoSystem/core/services/endpoints.dart';
+import 'package:GoSystem/core/utils/error_handler.dart';
+import 'package:GoSystem/features/admin/redeem_points/model/redeem_points_model.dart';
+import 'package:GoSystem/features/admin/redeem_points/data/repositories/redeem_points_repository.dart';
 
 part 'redeem_points_state.dart';
 

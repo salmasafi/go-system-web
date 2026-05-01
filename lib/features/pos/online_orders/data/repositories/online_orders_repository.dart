@@ -1,11 +1,7 @@
 import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../../../core/migration/migration_service.dart';
-import '../../../../../../core/services/dio_helper.dart';
-import '../../../../../../core/services/endpoints.dart';
 import '../../../../../../core/supabase/supabase_client.dart';
 import '../../../../../../core/supabase/supabase_error_handler.dart';
-import '../../../../../../core/utils/error_handler.dart';
 import '../../model/online_order_model.dart';
 
 // ─────────────────────────────────────────────
@@ -128,26 +124,11 @@ abstract class OnlineOrdersRepositoryInterface {
 }
 
 // ─────────────────────────────────────────────
-// Hybrid Repository
+// Repository Implementation (Supabase-only)
 // ─────────────────────────────────────────────
 
 class OnlineOrdersRepository implements OnlineOrdersRepositoryInterface {
-  late final OnlineOrdersRepositoryInterface _dataSource;
-
-  OnlineOrdersRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    // Assuming 'online_orders' feature flag
-    if (MigrationService.isUsingSupabase('online_orders')) {
-      log('OnlineOrdersRepository: Using Supabase');
-      _dataSource = _OnlineOrdersSupabaseDataSource();
-    } else {
-      log('OnlineOrdersRepository: Using Dio (legacy)');
-      _dataSource = _OnlineOrdersDioDataSource();
-    }
-  }
+  final _OnlineOrdersSupabaseDataSource _dataSource = _OnlineOrdersSupabaseDataSource();
 
   @override
   Future<List<OnlineOrderModel>> getPendingOrders() => _dataSource.getPendingOrders();
@@ -157,16 +138,6 @@ class OnlineOrdersRepository implements OnlineOrdersRepositoryInterface {
 
   @override
   Future<bool> updateOrderStatus(String orderId, String status) => _dataSource.updateOrderStatus(orderId, status);
-
-  void enableSupabase() {
-    MigrationService.enableSupabase('online_orders');
-    _initializeDataSource();
-  }
-
-  void enableDio() {
-    MigrationService.enableDio('online_orders');
-    _initializeDataSource();
-  }
 }
 
 // ─────────────────────────────────────────────
@@ -240,23 +211,3 @@ class _OnlineOrdersSupabaseDataSource implements OnlineOrdersRepositoryInterface
   }
 }
 
-// ─────────────────────────────────────────────
-// Dio (Legacy) Implementation
-// ─────────────────────────────────────────────
-
-class _OnlineOrdersDioDataSource implements OnlineOrdersRepositoryInterface {
-  @override
-  Future<List<OnlineOrderModel>> getPendingOrders() async {
-    throw UnimplementedError('Not supported in legacy API');
-  }
-
-  @override
-  Future<List<OnlineOrderModel>> getAllOrders() async {
-    throw UnimplementedError('Not supported in legacy API');
-  }
-
-  @override
-  Future<bool> updateOrderStatus(String orderId, String status) async {
-    throw UnimplementedError('Not supported in legacy API');
-  }
-}

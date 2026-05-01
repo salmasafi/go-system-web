@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
-import 'package:systego/features/pos/checkout/cubit/checkout_cubit/checkout_cubit.dart';
-import 'package:systego/features/pos/home/model/pos_models.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/custom_error/custom_empty_state.dart';
+import 'package:GoSystem/features/pos/checkout/cubit/checkout_cubit/checkout_cubit.dart';
+import 'package:GoSystem/features/pos/home/model/pos_models.dart';
 import 'bundle_card.dart';
 import 'bundle_attribute_selection_dialog.dart';
 import 'bundle_details_dialog.dart';

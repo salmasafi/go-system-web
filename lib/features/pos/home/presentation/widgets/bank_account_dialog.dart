@@ -1,8 +1,8 @@
 // // pos_account_dialog.dart
 // import 'package:flutter/material.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:systego/features/pos/home/cubit/pos_home_cubit.dart';
-// import 'package:systego/features/pos/home/cubit/pos_home_state.dart';
+// import 'package:GoSystem/features/pos/home/cubit/pos_home_cubit.dart';
+// import 'package:GoSystem/features/pos/home/cubit/pos_home_state.dart';
 // import '../../../../../core/constants/app_colors.dart';
 
 // class POSBankAccountDialog extends StatelessWidget {

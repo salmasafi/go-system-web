@@ -1,12 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/admin/roloes_and_permissions/cubit/roles_cubit.dart';
-import 'package:systego/features/admin/roloes_and_permissions/model/role_model.dart';
-import 'package:systego/features/admin/roloes_and_permissions/presentation/view/edit_role_permissions_screen.dart';
-import 'package:systego/features/admin/roloes_and_permissions/presentation/widgets/animated_role_card.dart';
-import 'package:systego/generated/locale_keys.g.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/features/admin/roloes_and_permissions/cubit/roles_cubit.dart';
+import 'package:GoSystem/features/admin/roloes_and_permissions/model/role_model.dart';
+import 'package:GoSystem/features/admin/roloes_and_permissions/presentation/view/edit_role_permissions_screen.dart';
+import 'package:GoSystem/features/admin/roloes_and_permissions/presentation/widgets/animated_role_card.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../../warehouses/view/widgets/custom_delete_dialog.dart';
 

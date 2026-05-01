@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/utils/validators.dart';
-import 'package:systego/core/widgets/app_bar_widgets.dart';
-import 'package:systego/core/widgets/custom_button_widget.dart';
-import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
-import 'package:systego/core/widgets/custom_textfield/build_text_field.dart';
-import 'package:systego/features/admin/roloes_and_permissions/cubit/roles_cubit.dart';
-import 'package:systego/features/admin/roloes_and_permissions/model/role_model.dart';
-import 'package:systego/generated/locale_keys.g.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/utils/validators.dart';
+import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
+import 'package:GoSystem/core/widgets/custom_button_widget.dart';
+import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:GoSystem/core/widgets/custom_textfield/build_text_field.dart';
+import 'package:GoSystem/features/admin/roloes_and_permissions/cubit/roles_cubit.dart';
+import 'package:GoSystem/features/admin/roloes_and_permissions/model/role_model.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class AddRoleScreen extends StatefulWidget {

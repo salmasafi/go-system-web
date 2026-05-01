@@ -1,9 +1,9 @@
-import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:systego/core/widgets/app_bar_widgets.dart';
-import 'package:systego/core/widgets/custom_button_widget.dart';
-import 'package:systego/features/pos/checkout/model/reciept_data.dart';
+import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
+import 'package:GoSystem/core/widgets/custom_button_widget.dart';
+import 'package:GoSystem/features/pos/checkout/model/reciept_data.dart';
 import 'dart:async';
 import '../../cubit/printer_cubit/printer_cubit.dart';
 import '../widgets/printable_reciept.dart';

@@ -51,120 +51,14 @@ abstract class CustomerRepositoryInterface {
   Future<void> deleteCustomerGroup(String id);
 }
 
-/// Hybrid repository that supports both Dio and Supabase for customers
+/// Customer repository using Supabase as the primary data source.
 class CustomerRepository implements CustomerRepositoryInterface {
-  late final CustomerRepositoryInterface _dataSource;
-
-  CustomerRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('customers')) {
-      log('CustomerRepository: Using Supabase');
-      _dataSource = _CustomerSupabaseDataSource();
-    } else {
-      log('CustomerRepository: Using Dio (legacy)');
-      _dataSource = _CustomerDioDataSource();
-    }
-  }
-
-  @override
-  Future<List<CustomerModel>> getAllCustomers() => _dataSource.getAllCustomers();
-
-  @override
-  Future<CustomerModel?> getCustomerById(String id) => _dataSource.getCustomerById(id);
-
-  @override
-  Future<List<CustomerModel>> getCustomersByGroup(String groupId) => _dataSource.getCustomersByGroup(groupId);
-
-  @override
-  Future<CustomerModel> createCustomer({
-    required String name,
-    required String email,
-    required String phoneNumber,
-    required String address,
-    String? countryId,
-    String? cityId,
-    String? customerGroupId,
-  }) => _dataSource.createCustomer(
-    name: name,
-    email: email,
-    phoneNumber: phoneNumber,
-    address: address,
-    countryId: countryId,
-    cityId: cityId,
-    customerGroupId: customerGroupId,
-  );
-
-  @override
-  Future<CustomerModel> updateCustomer({
-    required String id,
-    required String name,
-    required String email,
-    required String phoneNumber,
-    required String address,
-    String? countryId,
-    String? cityId,
-    String? customerGroupId,
-  }) => _dataSource.updateCustomer(
-    id: id,
-    name: name,
-    email: email,
-    phoneNumber: phoneNumber,
-    address: address,
-    countryId: countryId,
-    cityId: cityId,
-    customerGroupId: customerGroupId,
-  );
-
-  @override
-  Future<void> deleteCustomer(String id) => _dataSource.deleteCustomer(id);
-
-  @override
-  Future<double> calculateDueAmount(String customerId) => _dataSource.calculateDueAmount(customerId);
-
-  @override
-  Future<List<CustomerGroup>> getAllCustomerGroups() => _dataSource.getAllCustomerGroups();
-
-  @override
-  Future<CustomerGroup?> getCustomerGroupById(String id) => _dataSource.getCustomerGroupById(id);
-
-  @override
-  Future<CustomerGroup> createCustomerGroup({
-    required String name,
-    required bool status,
-  }) => _dataSource.createCustomerGroup(name: name, status: status);
-
-  @override
-  Future<CustomerGroup> updateCustomerGroup({
-    required String id,
-    required String name,
-    required bool status,
-  }) => _dataSource.updateCustomerGroup(id: id, name: name, status: status);
-
-  @override
-  Future<void> deleteCustomerGroup(String id) => _dataSource.deleteCustomerGroup(id);
-
-  void enableSupabase() {
-    MigrationService.enableSupabase('customers');
-    _initializeDataSource();
-  }
-
-  void enableDio() {
-    MigrationService.enableDio('customers');
-    _initializeDataSource();
-  }
-}
-
-/// Supabase implementation for Customer data source
-class _CustomerSupabaseDataSource implements CustomerRepositoryInterface {
   final SupabaseClient _client = SupabaseClientWrapper.instance;
 
   @override
   Future<List<CustomerModel>> getAllCustomers() async {
     try {
-      log('CustomerSupabase: Fetching all customers');
+      log('CustomerRepository: Fetching all customers');
 
       final response = await _client
           .from('customers')
@@ -180,10 +74,10 @@ class _CustomerSupabaseDataSource implements CustomerRepositoryInterface {
           .map((json) => _mapSupabaseToCustomerModel(json))
           .toList();
 
-      log('CustomerSupabase: Fetched ${customers.length} customers');
+      log('CustomerRepository: Fetched ${customers.length} customers');
       return customers;
     } catch (e) {
-      log('CustomerSupabase: Error fetching customers - $e');
+      log('CustomerRepository: Error fetching customers - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -191,7 +85,7 @@ class _CustomerSupabaseDataSource implements CustomerRepositoryInterface {
   @override
   Future<CustomerModel?> getCustomerById(String id) async {
     try {
-      log('CustomerSupabase: Fetching customer by id: $id');
+      log('CustomerRepository: Fetching customer by id: $id');
 
       final response = await _client
           .from('customers')
@@ -208,7 +102,7 @@ class _CustomerSupabaseDataSource implements CustomerRepositoryInterface {
 
       return _mapSupabaseToCustomerModel(response);
     } catch (e) {
-      log('CustomerSupabase: Error fetching customer - $e');
+      log('CustomerRepository: Error fetching customer - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -216,7 +110,7 @@ class _CustomerSupabaseDataSource implements CustomerRepositoryInterface {
   @override
   Future<List<CustomerModel>> getCustomersByGroup(String groupId) async {
     try {
-      log('CustomerSupabase: Fetching customers by group: $groupId');
+      log('CustomerRepository: Fetching customers by group: $groupId');
 
       final response = await _client
           .from('customers')
@@ -233,10 +127,10 @@ class _CustomerSupabaseDataSource implements CustomerRepositoryInterface {
           .map((json) => _mapSupabaseToCustomerModel(json))
           .toList();
 
-      log('CustomerSupabase: Fetched ${customers.length} customers for group');
+      log('CustomerRepository: Fetched ${customers.length} customers for group');
       return customers;
     } catch (e) {
-      log('CustomerSupabase: Error fetching customers by group - $e');
+      log('CustomerRepository: Error fetching customers by group - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -252,7 +146,7 @@ class _CustomerSupabaseDataSource implements CustomerRepositoryInterface {
     String? customerGroupId,
   }) async {
     try {
-      log('CustomerSupabase: Creating customer: $name');
+      log('CustomerRepository: Creating customer: $name');
 
       final response = await _client
           .from('customers')
@@ -276,10 +170,10 @@ class _CustomerSupabaseDataSource implements CustomerRepositoryInterface {
           ''')
           .single();
 
-      log('CustomerSupabase: Created customer successfully');
+      log('CustomerRepository: Created customer successfully');
       return _mapSupabaseToCustomerModel(response);
     } catch (e) {
-      log('CustomerSupabase: Error creating customer - $e');
+      log('CustomerRepository: Error creating customer - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -296,7 +190,7 @@ class _CustomerSupabaseDataSource implements CustomerRepositoryInterface {
     String? customerGroupId,
   }) async {
     try {
-      log('CustomerSupabase: Updating customer: $id');
+      log('CustomerRepository: Updating customer: $id');
 
       final response = await _client
           .from('customers')
@@ -318,10 +212,10 @@ class _CustomerSupabaseDataSource implements CustomerRepositoryInterface {
           ''')
           .single();
 
-      log('CustomerSupabase: Updated customer successfully');
+      log('CustomerRepository: Updated customer successfully');
       return _mapSupabaseToCustomerModel(response);
     } catch (e) {
-      log('CustomerSupabase: Error updating customer - $e');
+      log('CustomerRepository: Error updating customer - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -329,13 +223,13 @@ class _CustomerSupabaseDataSource implements CustomerRepositoryInterface {
   @override
   Future<void> deleteCustomer(String id) async {
     try {
-      log('CustomerSupabase: Deleting customer: $id');
+      log('CustomerRepository: Deleting customer: $id');
 
       await _client.from('customers').delete().eq('id', id);
 
-      log('CustomerSupabase: Deleted customer successfully');
+      log('CustomerRepository: Deleted customer successfully');
     } catch (e) {
-      log('CustomerSupabase: Error deleting customer - $e');
+      log('CustomerRepository: Error deleting customer - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -343,7 +237,7 @@ class _CustomerSupabaseDataSource implements CustomerRepositoryInterface {
   @override
   Future<double> calculateDueAmount(String customerId) async {
     try {
-      log('CustomerSupabase: Calculating due amount for customer: $customerId');
+      log('CustomerRepository: Calculating due amount for customer: $customerId');
 
       // Get all sales with due amounts for this customer
       final response = await _client
@@ -363,10 +257,10 @@ class _CustomerSupabaseDataSource implements CustomerRepositoryInterface {
           .update({'amount_due': totalDue, 'is_due': totalDue > 0})
           .eq('id', customerId);
 
-      log('CustomerSupabase: Calculated due amount: $totalDue');
+      log('CustomerRepository: Calculated due amount: $totalDue');
       return totalDue;
     } catch (e) {
-      log('CustomerSupabase: Error calculating due amount - $e');
+      log('CustomerRepository: Error calculating due amount - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -374,11 +268,11 @@ class _CustomerSupabaseDataSource implements CustomerRepositoryInterface {
   @override
   Future<List<CustomerGroup>> getAllCustomerGroups() async {
     try {
-      log('CustomerSupabase: Fetching all customer groups');
+      log('CustomerRepository: Fetching all customer groups');
       final response = await _client.from('customer_groups').select().order('name');
       return (response as List).map((json) => _mapSupabaseToCustomerGroup(json)).toList();
     } catch (e) {
-      log('CustomerSupabase: Error fetching customer groups - $e');
+      log('CustomerRepository: Error fetching customer groups - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -386,12 +280,12 @@ class _CustomerSupabaseDataSource implements CustomerRepositoryInterface {
   @override
   Future<CustomerGroup?> getCustomerGroupById(String id) async {
     try {
-      log('CustomerSupabase: Fetching customer group by id: $id');
+      log('CustomerRepository: Fetching customer group by id: $id');
       final response = await _client.from('customer_groups').select().eq('id', id).maybeSingle();
       if (response == null) return null;
       return _mapSupabaseToCustomerGroup(response);
     } catch (e) {
-      log('CustomerSupabase: Error fetching customer group - $e');
+      log('CustomerRepository: Error fetching customer group - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -399,14 +293,14 @@ class _CustomerSupabaseDataSource implements CustomerRepositoryInterface {
   @override
   Future<CustomerGroup> createCustomerGroup({required String name, required bool status}) async {
     try {
-      log('CustomerSupabase: Creating customer group: $name');
+      log('CustomerRepository: Creating customer group: $name');
       final response = await _client.from('customer_groups').insert({
         'name': name,
         'status': status,
       }).select().single();
       return _mapSupabaseToCustomerGroup(response);
     } catch (e) {
-      log('CustomerSupabase: Error creating customer group - $e');
+      log('CustomerRepository: Error creating customer group - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -414,14 +308,14 @@ class _CustomerSupabaseDataSource implements CustomerRepositoryInterface {
   @override
   Future<CustomerGroup> updateCustomerGroup({required String id, required String name, required bool status}) async {
     try {
-      log('CustomerSupabase: Updating customer group: $id');
+      log('CustomerRepository: Updating customer group: $id');
       final response = await _client.from('customer_groups').update({
         'name': name,
         'status': status,
       }).eq('id', id).select().single();
       return _mapSupabaseToCustomerGroup(response);
     } catch (e) {
-      log('CustomerSupabase: Error updating customer group - $e');
+      log('CustomerRepository: Error updating customer group - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -429,10 +323,10 @@ class _CustomerSupabaseDataSource implements CustomerRepositoryInterface {
   @override
   Future<void> deleteCustomerGroup(String id) async {
     try {
-      log('CustomerSupabase: Deleting customer group: $id');
+      log('CustomerRepository: Deleting customer group: $id');
       await _client.from('customer_groups').delete().eq('id', id);
     } catch (e) {
-      log('CustomerSupabase: Error deleting customer group - $e');
+      log('CustomerRepository: Error deleting customer group - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -483,236 +377,5 @@ class _CustomerSupabaseDataSource implements CustomerRepositoryInterface {
       updatedAt: DateTime.tryParse(json['updated_at'] ?? '') ?? DateTime.now(),
       version: json['version'] ?? 1,
     );
-  }
-}
-
-/// Dio implementation for Customer data source (legacy)
-class _CustomerDioDataSource implements CustomerRepositoryInterface {
-  @override
-  Future<List<CustomerModel>> getAllCustomers() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getAllCustomers);
-
-      if (response.statusCode == 200) {
-        final model = CustomerResponse.fromJson(response.data);
-        if (model.success) {
-          return model.data.customers;
-        }
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<CustomerModel?> getCustomerById(String id) async {
-    try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getCustomerById(id),
-      );
-
-      if (response.statusCode == 200) {
-        final model = CustomerResponse.fromJson(response.data);
-        if (model.success && model.data.customers.isNotEmpty) {
-          return model.data.customers.first;
-        }
-      }
-      return null;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<List<CustomerModel>> getCustomersByGroup(String groupId) async {
-    try {
-      final allCustomers = await getAllCustomers();
-      return allCustomers.where((c) => c.customerGroup?.id == groupId).toList();
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<CustomerModel> createCustomer({
-    required String name,
-    required String email,
-    required String phoneNumber,
-    required String address,
-    String? countryId,
-    String? cityId,
-    String? customerGroupId,
-  }) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.addCustomer,
-        data: {
-          'name': name,
-          'email': email,
-          'phone_number': phoneNumber,
-          'address': address,
-          'country_id': countryId,
-          'city_id': cityId,
-          'customer_group_id': customerGroupId,
-        },
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final customerJson = response.data['data']?['customer'];
-        if (customerJson != null) {
-          return CustomerModel.fromJson(customerJson);
-        }
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<CustomerModel> updateCustomer({
-    required String id,
-    required String name,
-    required String email,
-    required String phoneNumber,
-    required String address,
-    String? countryId,
-    String? cityId,
-    String? customerGroupId,
-  }) async {
-    try {
-      final response = await DioHelper.putData(
-        url: EndPoint.updateCustomer(id),
-        data: {
-          'name': name,
-          'email': email,
-          'phone_number': phoneNumber,
-          'address': address,
-          'country_id': countryId,
-          'city_id': cityId,
-          'customer_group_id': customerGroupId,
-        },
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final customerJson = response.data['data']?['customer'];
-        if (customerJson != null) {
-          return CustomerModel.fromJson(customerJson);
-        }
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> deleteCustomer(String id) async {
-    try {
-      final response = await DioHelper.deleteData(
-        url: EndPoint.deleteCustomer(id),
-      );
-
-      if (response.statusCode != 200 || response.data['success'] != true) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<double> calculateDueAmount(String customerId) async {
-    try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getCustomerDue(customerId),
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        return (response.data['data']?['due_amount'] as num?)?.toDouble() ?? 0.0;
-      }
-      return 0.0;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<List<CustomerGroup>> getAllCustomerGroups() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getCustomerGroup);
-      if (response.statusCode == 200) {
-        final model = CustomerGroupResponse.fromJson(response.data);
-        if (model.success) {
-          return model.data.groups;
-        }
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<CustomerGroup?> getCustomerGroupById(String id) async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getCustomerGroupById(id));
-      if (response.statusCode == 200) {
-        final model = CustomerGroupResponse.fromJson(response.data);
-        if (model.success && model.data.groups.isNotEmpty) {
-          return model.data.groups.first;
-        }
-      }
-      return null;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<CustomerGroup> createCustomerGroup({required String name, required bool status}) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.createCustomerGroup,
-        data: {'name': name, 'status': status},
-      );
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        // Legacy API might not return the group object directly in the same way
-        // Fetch list to find it or return a dummy with the name
-        return CustomerGroup(id: '', name: name, status: status);
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<CustomerGroup> updateCustomerGroup({required String id, required String name, required bool status}) async {
-    try {
-      final response = await DioHelper.putData(
-        url: EndPoint.updateCustomerGroup(id),
-        data: {'name': name, 'status': status},
-      );
-      if (response.statusCode == 200) {
-        return CustomerGroup(id: id, name: name, status: status);
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> deleteCustomerGroup(String id) async {
-    try {
-      final response = await DioHelper.deleteData(url: EndPoint.deleteCustomerGroup(id));
-      if (response.statusCode != 200) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
   }
 }

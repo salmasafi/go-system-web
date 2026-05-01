@@ -2,14 +2,14 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/generated/locale_keys.g.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../../../../core/services/dio_helper.dart';
 import '../../../../core/services/endpoints.dart';
 import '../../../../core/utils/error_handler.dart';
 import '../model/reason_model.dart';
 import 'reason_state.dart';
 
-import 'package:systego/features/admin/reason/data/repositories/reason_repository.dart';
+import 'package:GoSystem/features/admin/reason/data/repositories/reason_repository.dart';
 
 class ReasonCubit extends Cubit<ReasonState> {
   final ReasonRepository _repository;

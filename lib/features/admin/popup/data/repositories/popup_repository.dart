@@ -1,13 +1,9 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../../core/migration/migration_service.dart';
-import '../../../../../core/services/dio_helper.dart';
-import '../../../../../core/services/endpoints.dart';
 import '../../../../../core/supabase/supabase_client.dart';
 import '../../../../../core/supabase/supabase_error_handler.dart';
-import '../../../../../core/utils/error_handler.dart';
 import '../../model/popup_model.dart';
-import 'dart:io';
 
 /// Interface for popup data operations
 abstract class PopupRepositoryInterface {
@@ -32,23 +28,9 @@ abstract class PopupRepositoryInterface {
   Future<void> deletePopup(String popupId);
 }
 
-/// Hybrid repository that supports both Dio and Supabase for popups
+/// Repository implementation using Supabase for popups
 class PopupRepository implements PopupRepositoryInterface {
-  late final PopupRepositoryInterface _dataSource;
-
-  PopupRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('marketing')) {
-      log('PopupRepository: Using Supabase');
-      _dataSource = _PopupSupabaseDataSource();
-    } else {
-      log('PopupRepository: Using Dio (legacy)');
-      _dataSource = _PopupDioDataSource();
-    }
-  }
+  final _PopupSupabaseDataSource _dataSource = _PopupSupabaseDataSource();
 
   @override
   Future<List<PopupModel>> getAllPopups() => _dataSource.getAllPopups();
@@ -62,13 +44,13 @@ class PopupRepository implements PopupRepositoryInterface {
     required String link,
     String? imagePath,
   }) => _dataSource.createPopup(
-    titleAr: titleAr,
-    titleEn: titleEn,
-    descriptionAr: descriptionAr,
-    descriptionEn: descriptionEn,
-    link: link,
-    imagePath: imagePath,
-  );
+        titleAr: titleAr,
+        titleEn: titleEn,
+        descriptionAr: descriptionAr,
+        descriptionEn: descriptionEn,
+        link: link,
+        imagePath: imagePath,
+      );
 
   @override
   Future<void> updatePopup({
@@ -80,14 +62,14 @@ class PopupRepository implements PopupRepositoryInterface {
     required String link,
     String? imagePath,
   }) => _dataSource.updatePopup(
-    popupId: popupId,
-    titleAr: titleAr,
-    titleEn: titleEn,
-    descriptionAr: descriptionAr,
-    descriptionEn: descriptionEn,
-    link: link,
-    imagePath: imagePath,
-  );
+        popupId: popupId,
+        titleAr: titleAr,
+        titleEn: titleEn,
+        descriptionAr: descriptionAr,
+        descriptionEn: descriptionEn,
+        link: link,
+        imagePath: imagePath,
+      );
 
   @override
   Future<void> deletePopup(String popupId) => _dataSource.deletePopup(popupId);
@@ -216,92 +198,4 @@ class _PopupSupabaseDataSource implements PopupRepositoryInterface {
   }
 }
 
-/// Dio implementation for Popup data source (legacy)
-class _PopupDioDataSource implements PopupRepositoryInterface {
-  @override
-  Future<List<PopupModel>> getAllPopups() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getAllPopups);
-      if (response.statusCode == 200) {
-        final model = PopupResponse.fromJson(response.data);
-        return model.data.popups;
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> createPopup({
-    required String titleAr,
-    required String titleEn,
-    required String descriptionAr,
-    required String descriptionEn,
-    required String link,
-    String? imagePath,
-  }) async {
-    try {
-      // Legacy base64 logic omitted for brevity as focus is on Supabase migration,
-      // but repository structure allows for it if needed.
-      final response = await DioHelper.postData(
-        url: EndPoint.addPopup,
-        data: {
-          "title_ar": titleAr,
-          "title_En": titleEn,
-          "description_ar": descriptionAr,
-          "description_En": descriptionEn,
-          "link": link,
-        },
-      );
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> updatePopup({
-    required String popupId,
-    required String titleAr,
-    required String titleEn,
-    required String descriptionAr,
-    required String descriptionEn,
-    required String link,
-    String? imagePath,
-  }) async {
-    try {
-      final response = await DioHelper.putData(
-        url: EndPoint.updatePopup(popupId),
-        data: {
-          "title_ar": titleAr,
-          "title_En": titleEn,
-          "description_ar": descriptionAr,
-          "description_En": descriptionEn,
-          "link": link,
-        },
-      );
-      if (response.statusCode != 200) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> deletePopup(String popupId) async {
-    try {
-      final response = await DioHelper.deleteData(
-        url: EndPoint.deletePopup(popupId),
-      );
-      if (response.statusCode != 200) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-}
+/// Dio implementation for Popup data source (legacy)}

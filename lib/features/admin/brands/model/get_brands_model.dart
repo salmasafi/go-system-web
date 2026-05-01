@@ -55,13 +55,13 @@ class Brands {
   });
 
   Brands.fromJson(dynamic json) {
-    id = json['_id'];
-    name = json['name'];
-    name = json['ar_name'];
-    logo = json['logo'];
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
-    v = json['__v'];
+    id = (json['id'] ?? json['_id'] ?? "").toString();
+    name = json['name']?.toString() ?? "";
+    arName = json['ar_name']?.toString() ?? "";
+    logo = (json['logo'] ?? json['image_url'] ?? "").toString();
+    createdAt = (json['created_at'] ?? json['createdAt'] ?? "").toString();
+    updatedAt = (json['updated_at'] ?? json['updatedAt'] ?? "").toString();
+    v = json['version'] ?? json['__v'] ?? 0;
   }
   String? id;
   String? name;

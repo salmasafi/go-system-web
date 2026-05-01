@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/app_bar_widgets.dart';
-import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
-import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
-import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
-import 'package:systego/features/admin/warehouses/cubit/warehouse_cubit.dart';
-import 'package:systego/features/admin/warehouses/model/ware_house_model.dart';
-import 'package:systego/features/admin/product/presentation/widgets/search_bar_widget.dart';
-import 'package:systego/features/admin/warehouses/view/add_product_to_warehouse_screen.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
+import 'package:GoSystem/core/widgets/custom_error/custom_empty_state.dart';
+import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
+import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:GoSystem/features/admin/warehouses/cubit/warehouse_cubit.dart';
+import 'package:GoSystem/features/admin/warehouses/model/ware_house_model.dart';
+import 'package:GoSystem/features/admin/product/presentation/widgets/search_bar_widget.dart';
+import 'package:GoSystem/features/admin/warehouses/view/add_product_to_warehouse_screen.dart';
 
 class WarehouseProductsScreen extends StatefulWidget {
   final Warehouses warehouse;

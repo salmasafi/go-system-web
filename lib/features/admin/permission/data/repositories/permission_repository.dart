@@ -1,11 +1,7 @@
 import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../../core/migration/migration_service.dart';
-import '../../../../../core/services/dio_helper.dart';
-import '../../../../../core/services/endpoints.dart';
 import '../../../../../core/supabase/supabase_client.dart';
 import '../../../../../core/supabase/supabase_error_handler.dart';
-import '../../../../../core/utils/error_handler.dart';
 import '../../model/permission_model.dart';
 
 /// Interface for permission data operations
@@ -24,23 +20,9 @@ abstract class PermissionRepositoryInterface {
   Future<PermissionModel?> getPermissionById(String id);
 }
 
-/// Hybrid repository that supports both Dio and Supabase for permissions
+/// Repository implementation using Supabase for permissions
 class PermissionRepository implements PermissionRepositoryInterface {
-  late final PermissionRepositoryInterface _dataSource;
-
-  PermissionRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('permissions')) {
-      log('PermissionRepository: Using Supabase');
-      _dataSource = _PermissionSupabaseDataSource();
-    } else {
-      log('PermissionRepository: Using Dio (legacy)');
-      _dataSource = _PermissionDioDataSource();
-    }
-  }
+  final _PermissionSupabaseDataSource _dataSource = _PermissionSupabaseDataSource();
 
   @override
   Future<List<PermissionModel>> getAllPermissions() => _dataSource.getAllPermissions();
@@ -49,14 +31,21 @@ class PermissionRepository implements PermissionRepositoryInterface {
   Future<void> createPermission({
     required String name,
     required List<RoleModel> roles,
-  }) => _dataSource.createPermission(name: name, roles: roles);
+  }) => _dataSource.createPermission(
+        name: name,
+        roles: roles,
+      );
 
   @override
   Future<void> updatePermission({
     required String id,
     required String name,
     required List<RoleModel> roles,
-  }) => _dataSource.updatePermission(id: id, name: name, roles: roles);
+  }) => _dataSource.updatePermission(
+        id: id,
+        name: name,
+        roles: roles,
+      );
 
   @override
   Future<void> deletePermission(String id) => _dataSource.deletePermission(id);
@@ -149,91 +138,5 @@ class _PermissionSupabaseDataSource implements PermissionRepositoryInterface {
       updatedAt: json['updated_at']?.toString() ?? DateTime.now().toIso8601String(),
       version: json['version'] ?? 1,
     );
-  }
-}
-
-/// Dio implementation for Permission data source (legacy)
-class _PermissionDioDataSource implements PermissionRepositoryInterface {
-  @override
-  Future<List<PermissionModel>> getAllPermissions() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getAllpermissions);
-      if (response.statusCode == 200) {
-        final model = PermissionResponse.fromJson(response.data);
-        return model.data.permisions;
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> createPermission({
-    required String name,
-    required List<RoleModel> roles,
-  }) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.addpermission,
-        data: {
-          'name': name,
-          'roles': roles.map((r) => r.toJson()).toList(),
-        },
-      );
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> updatePermission({
-    required String id,
-    required String name,
-    required List<RoleModel> roles,
-  }) async {
-    try {
-      final response = await DioHelper.putData(
-        url: EndPoint.updatepermission(id),
-        data: {
-          'name': name,
-          'roles': roles.map((r) => r.toJson()).toList(),
-        },
-      );
-      if (response.statusCode != 200) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> deletePermission(String id) async {
-    try {
-      final response = await DioHelper.deleteData(url: EndPoint.deletepermission(id));
-      if (response.statusCode != 200) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<PermissionModel?> getPermissionById(String id) async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getUserPermissions(id));
-      if (response.statusCode == 200) {
-        // final model = PermissionResponse.fromJson(response.data);
-        // return model.data.permisions.first;
-      }
-      return null;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
   }
 }

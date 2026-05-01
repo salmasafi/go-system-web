@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
 import '../../../../../../core/utils/validators.dart';
 import '../../../../../../core/widgets/custom_loading/build_overlay_loading.dart';
 import '../../../../../../core/widgets/custom_textfield/build_text_field.dart';

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
-import 'package:systego/features/admin/suppliers/cubit/supplier_cubit.dart';
-import 'package:systego/features/admin/suppliers/cubit/supplier_state.dart';
-import 'package:systego/features/admin/suppliers/view/widgets_supplier_detalis/supplier_details_content.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
+import 'package:GoSystem/features/admin/suppliers/cubit/supplier_cubit.dart';
+import 'package:GoSystem/features/admin/suppliers/cubit/supplier_state.dart';
+import 'package:GoSystem/features/admin/suppliers/view/widgets_supplier_detalis/supplier_details_content.dart';
 import '../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../../../generated/locale_keys.g.dart';
 

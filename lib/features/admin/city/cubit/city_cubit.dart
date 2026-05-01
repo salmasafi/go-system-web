@@ -1,11 +1,11 @@
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/features/admin/country/model/country_model.dart';
+import 'package:GoSystem/features/admin/country/model/country_model.dart';
 import '../model/city_model.dart';
 import 'city_state.dart';
 
-import 'package:systego/features/admin/city/data/repositories/city_repository.dart';
+import 'package:GoSystem/features/admin/city/data/repositories/city_repository.dart';
 
 class CityCubit extends Cubit<CityState> {
   final CityRepository _repository;

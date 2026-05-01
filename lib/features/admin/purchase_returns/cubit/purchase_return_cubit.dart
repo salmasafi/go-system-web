@@ -1,10 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/core/services/endpoints.dart';
-import 'package:systego/core/utils/error_handler.dart';
+import 'package:GoSystem/core/services/dio_helper.dart';
+import 'package:GoSystem/core/services/endpoints.dart';
+import 'package:GoSystem/core/utils/error_handler.dart';
 import '../model/purchase_return_model.dart';
 
-import 'package:systego/features/admin/purchase_returns/data/repositories/purchase_return_repository.dart';
+import 'package:GoSystem/features/admin/purchase_returns/data/repositories/purchase_return_repository.dart';
 
 part 'purchase_return_state.dart';
 

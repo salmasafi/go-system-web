@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/admin/purchase/model/purchase_model.dart';
-import 'package:systego/features/admin/purchase/presentation/view/edit_purchase_screen.dart';
-import 'package:systego/features/admin/purchase/presentation/widgets/purchase_card.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/features/admin/purchase/model/purchase_model.dart';
+import 'package:GoSystem/features/admin/purchase/presentation/view/edit_purchase_screen.dart';
+import 'package:GoSystem/features/admin/purchase/presentation/widgets/purchase_card.dart';
 
 
 class PurchaseList extends StatefulWidget {

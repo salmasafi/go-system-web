@@ -3,10 +3,10 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:systego/core/services/cache_helper.dart';
-import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/features/pos/customer/cubit/pos_customer_cubit.dart';
-import 'package:systego/features/pos/customer/model/pos_customer_model.dart';
+import 'package:GoSystem/core/services/cache_helper.dart';
+import 'package:GoSystem/core/services/dio_helper.dart';
+import 'package:GoSystem/features/pos/customer/cubit/pos_customer_cubit.dart';
+import 'package:GoSystem/features/pos/customer/model/pos_customer_model.dart';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

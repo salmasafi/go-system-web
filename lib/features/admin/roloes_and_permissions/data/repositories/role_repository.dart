@@ -1,11 +1,7 @@
 import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../../core/migration/migration_service.dart';
-import '../../../../../core/services/dio_helper.dart';
-import '../../../../../core/services/endpoints.dart';
 import '../../../../../core/supabase/supabase_client.dart';
 import '../../../../../core/supabase/supabase_error_handler.dart';
-import '../../../../../core/utils/error_handler.dart';
 import '../../model/role_model.dart';
 
 /// Interface for role data operations
@@ -26,23 +22,9 @@ abstract class RoleRepositoryInterface {
   Future<void> deleteRole(String id);
 }
 
-/// Hybrid repository that supports both Dio and Supabase for roles
+/// Repository implementation using Supabase for roles
 class RoleRepository implements RoleRepositoryInterface {
-  late final RoleRepositoryInterface _dataSource;
-
-  RoleRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('roles')) {
-      log('RoleRepository: Using Supabase');
-      _dataSource = _RoleSupabaseDataSource();
-    } else {
-      log('RoleRepository: Using Dio (legacy)');
-      _dataSource = _RoleDioDataSource();
-    }
-  }
+  final _RoleSupabaseDataSource _dataSource = _RoleSupabaseDataSource();
 
   @override
   Future<List<RoleModel>> getAllRoles() => _dataSource.getAllRoles();
@@ -55,7 +37,11 @@ class RoleRepository implements RoleRepositoryInterface {
     required String name,
     required String status,
     required List<Permission> permissions,
-  }) => _dataSource.createRole(name: name, status: status, permissions: permissions);
+  }) => _dataSource.createRole(
+        name: name,
+        status: status,
+        permissions: permissions,
+      );
 
   @override
   Future<void> updateRole({
@@ -63,7 +49,12 @@ class RoleRepository implements RoleRepositoryInterface {
     String? name,
     String? status,
     required List<Permission> permissions,
-  }) => _dataSource.updateRole(id: id, name: name, status: status, permissions: permissions);
+  }) => _dataSource.updateRole(
+        id: id,
+        name: name,
+        status: status,
+        permissions: permissions,
+      );
 
   @override
   Future<void> deleteRole(String id) => _dataSource.deleteRole(id);
@@ -170,102 +161,5 @@ class _RoleSupabaseDataSource implements RoleRepositoryInterface {
       permissions: permsList,
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : DateTime.now(),
     );
-  }
-}
-
-/// Dio implementation for Role data source (legacy)
-class _RoleDioDataSource implements RoleRepositoryInterface {
-  @override
-  Future<List<RoleModel>> getAllRoles() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getAllRoles);
-      if (response.statusCode == 200) {
-        final model = RoleResponse.fromJson(response.data);
-        return model.data.roles;
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<List<RoleModel>> getUserRoles(String userId) async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getUserPermissions(userId));
-      if (response.statusCode == 200) {
-        return (response.data['data'] as List)
-            .map((roleJson) => RoleModel.fromJson(roleJson))
-            .toList();
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> createRole({
-    required String name,
-    required String status,
-    required List<Permission> permissions,
-  }) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.createRolePermission,
-        data: {
-          'name': name,
-          'status': status,
-          'permissions': permissions.map((p) => {
-            'module': p.module,
-            'actions': p.actions.map((a) => a.toJson()).toList(),
-          }).toList(),
-        },
-      );
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> updateRole({
-    required String id,
-    String? name,
-    String? status,
-    required List<Permission> permissions,
-  }) async {
-    try {
-      final response = await DioHelper.putData(
-        url: EndPoint.updateRole(id),
-        data: {
-          if (name != null) 'name': name,
-          if (status != null) 'status': status,
-          'permissions': permissions.map((p) => {
-            'module': p.module,
-            'actions': p.actions.map((a) => a.toJson()).toList(),
-          }).toList(),
-        },
-      );
-      if (response.statusCode != 200) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> deleteRole(String id) async {
-    try {
-      final response = await DioHelper.deleteData(url: EndPoint.deleteRole(id));
-      if (response.statusCode != 200) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
   }
 }

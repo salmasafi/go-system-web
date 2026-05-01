@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:systego/features/admin/print_labels/presentation/widgets/product_card.dart';
+import 'package:GoSystem/features/admin/print_labels/presentation/widgets/product_card.dart';
 import '../../../product/models/product_model.dart';
 import '../../../../../core/utils/responsive_ui.dart';
 import '../../../../../core/widgets/animation/animated_element.dart';

@@ -1,13 +1,13 @@
-import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
 // lib/features/pos/home/presentation/widgets/receipt_dialog.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:intl/intl.dart';
-import 'package:systego/features/pos/checkout/cubit/checkout_cubit/checkout_cubit.dart';
-import 'package:systego/features/pos/checkout/model/reciept_data.dart';
-import 'package:systego/features/pos/checkout/presentation/view/reciept_screen.dart';
-import 'package:systego/features/pos/home/cubit/pos_home_cubit.dart';
+import 'package:GoSystem/features/pos/checkout/cubit/checkout_cubit/checkout_cubit.dart';
+import 'package:GoSystem/features/pos/checkout/model/reciept_data.dart';
+import 'package:GoSystem/features/pos/checkout/presentation/view/reciept_screen.dart';
+import 'package:GoSystem/features/pos/home/cubit/pos_home_cubit.dart';
 
 class POSReceiptDialog extends StatefulWidget {
   //final List<CartItem> cartItems;
@@ -249,7 +249,7 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
     return Column(
       children: [
         Text(
-          'SYSTEGO',
+          'GoSystem',
           style: TextStyle(
             fontSize: ResponsiveUI.fontSize(context, 28),
             fontWeight: FontWeight.bold,
@@ -714,7 +714,7 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
           ),
         ),
         Text(
-          'Powered by SYSTEGO POS',
+          'Powered by GoSystem POS',
           style: TextStyle(
             color: AppColors.shadowGray,
             fontStyle: FontStyle.italic,

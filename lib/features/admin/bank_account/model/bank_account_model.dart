@@ -82,29 +82,27 @@ class BankAccountModel {
     String warehouseId = '';
     String? warehouseName;
 
-    if (json['warehouseId'] is String) {
-      warehouseId = json['warehouseId'] as String;
-    } else if (json['warehouseId'] is Map<String, dynamic>) {
-      warehouseId = json['warehouseId']['_id'] as String? ?? '';
-      warehouseName = json['warehouseId']['name'] as String?;
-    } else if (json['warhouseId'] is String) {
-      // handle typo in some items
-      warehouseId = json['warhouseId'] as String;
+    final warehouseJson = json['warehouse_id'] ?? json['warehouseId'] ?? json['warhouseId'];
+    if (warehouseJson is String) {
+      warehouseId = warehouseJson;
+    } else if (warehouseJson is Map<String, dynamic>) {
+      warehouseId = (warehouseJson['id'] ?? warehouseJson['_id'] ?? '').toString();
+      warehouseName = warehouseJson['name'] as String?;
     }
 
     return BankAccountModel(
-      id: json['id']?.toString() ?? json['_id']?.toString() ?? '',
-      name: json['name'] as String,
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      name: json['name']?.toString() ?? '',
       wareHouseId: warehouseId,
       warehouseName: warehouseName,
-      image: json['image']?.toString() ?? "",
-      status: json['status'] as bool,
-      inPos: json['in_POS'] as bool? ?? json['in_pos'] as bool? ?? false,
+      image: json['image']?.toString() ?? json['image_url']?.toString() ?? "",
+      status: json['status'] as bool? ?? true,
+      inPos: json['in_pos'] ?? json['in_POS'] ?? false,
       description: json['description']?.toString() ?? "",
-      balance: double.tryParse(json['balance'].toString()) ?? 0.0,
-      createdAt: json['createdAt'] as String,
-      updatedAt: json['updatedAt'] as String,
-      version: json['__v'] as int,
+      balance: (json['balance'] ?? json['current_balance'] ?? 0).toDouble(),
+      createdAt: (json['created_at'] ?? json['createdAt'] ?? '').toString(),
+      updatedAt: (json['updated_at'] ?? json['updatedAt'] ?? '').toString(),
+      version: json['version'] ?? json['__v'] ?? 0,
     );
   }
 

@@ -1,4 +1,4 @@
-name: systego
+name: GoSystem
 description: "A new Flutter project."
 publish_to: 'none'
 version: 0.1.0
@@ -49,6 +49,8 @@ flutter:
   generate: true
   uses-material-design: true
   assets:
+    - .env.development
+    - .env.production
     - assets/fonts/Rubik/
     - assets/images/
     - assets/translations/
@@ -61,4 +63,4 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/systego_logo.jpeg"
+  image_path: "assets/images/gosystem_logo.jpeg"

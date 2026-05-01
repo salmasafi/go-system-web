@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/custom_loading/build_overlay_loading.dart';
-import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
-import 'package:systego/features/admin/purchase_returns/cubit/purchase_return_cubit.dart';
-import 'package:systego/features/admin/purchase_returns/model/purchase_return_model.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/custom_loading/build_overlay_loading.dart';
+import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:GoSystem/features/admin/purchase_returns/cubit/purchase_return_cubit.dart';
+import 'package:GoSystem/features/admin/purchase_returns/model/purchase_return_model.dart';
 
 class PurchaseReturnFormDialog extends StatefulWidget {
   final PurchaseReturnModel? returnModel;

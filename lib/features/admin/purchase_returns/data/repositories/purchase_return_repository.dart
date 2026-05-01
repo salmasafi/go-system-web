@@ -152,9 +152,13 @@ class _PurchaseReturnSupabaseDataSource
       final returnItems = items
           .map(
             (item) => {
-              'purchase_return_id': returnId,
+              'return_id': returnId,
               'product_id': item['product_id'],
-              'quantity': item['quantity'],
+              'purchase_item_id': item['purchase_item_id'],
+              'original_quantity': item['original_quantity'],
+              'returned_quantity': item['returned_quantity'],
+              'price': item['price'],
+              'subtotal': item['subtotal'],
               'reason': item['reason'],
             },
           )

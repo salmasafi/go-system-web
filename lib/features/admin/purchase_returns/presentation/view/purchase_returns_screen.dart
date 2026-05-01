@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/animation/animated_element.dart';
-import 'package:systego/core/widgets/app_bar_widgets.dart';
-import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
-import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
-import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
-import 'package:systego/features/admin/bank_account/cubit/bank_account_cubit.dart';
-import 'package:systego/features/admin/purchase_returns/cubit/purchase_return_cubit.dart';
-import 'package:systego/features/admin/purchase_returns/model/purchase_return_model.dart';
-import 'package:systego/features/admin/purchase_returns/presentation/widgets/add_purchase_return_dialog.dart';
-import 'package:systego/features/admin/purchase_returns/presentation/widgets/purchase_return_card.dart';
-import 'package:systego/features/admin/purchase_returns/presentation/widgets/purchase_return_form_dialog.dart';
-import 'package:systego/features/admin/warehouses/view/widgets/custom_delete_dialog.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/animation/animated_element.dart';
+import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
+import 'package:GoSystem/core/widgets/custom_error/custom_empty_state.dart';
+import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
+import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:GoSystem/features/admin/bank_account/cubit/bank_account_cubit.dart';
+import 'package:GoSystem/features/admin/purchase_returns/cubit/purchase_return_cubit.dart';
+import 'package:GoSystem/features/admin/purchase_returns/model/purchase_return_model.dart';
+import 'package:GoSystem/features/admin/purchase_returns/presentation/widgets/add_purchase_return_dialog.dart';
+import 'package:GoSystem/features/admin/purchase_returns/presentation/widgets/purchase_return_card.dart';
+import 'package:GoSystem/features/admin/purchase_returns/presentation/widgets/purchase_return_form_dialog.dart';
+import 'package:GoSystem/features/admin/warehouses/view/widgets/custom_delete_dialog.dart';
 
 class PurchaseReturnsScreen extends StatefulWidget {
   const PurchaseReturnsScreen({super.key});

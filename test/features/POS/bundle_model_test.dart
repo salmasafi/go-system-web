@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:systego/features/pos/home/model/pos_models.dart';
+import 'package:GoSystem/features/pos/home/model/pos_models.dart';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 

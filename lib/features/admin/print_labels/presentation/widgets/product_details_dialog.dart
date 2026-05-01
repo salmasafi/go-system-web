@@ -1,7 +1,7 @@
-import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
 
 import 'package:flutter/material.dart';
-import 'package:systego/features/admin/product/models/product_model.dart';
+import 'package:GoSystem/features/admin/product/models/product_model.dart';
 import '../../../../../core/constants/app_colors.dart';
 
 class ProductDetailsDialog extends StatefulWidget {

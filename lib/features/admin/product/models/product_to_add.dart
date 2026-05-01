@@ -21,11 +21,9 @@ class ProductToAdd {
   final int startQuantity; // Note: corrected spelling from 'start_quantaty'
   final String taxesId;
   final bool productHasImei;
-  final bool differentPrice;
   final bool showQuantity;
   final int maximumToShow;
   final List<String> galleryProduct;
-  final List<PriceItem> prices;
 
   ProductToAdd({
     required this.name,
@@ -42,11 +40,9 @@ class ProductToAdd {
     required this.startQuantity,
     required this.taxesId,
     required this.productHasImei,
-    required this.differentPrice,
     required this.showQuantity,
     required this.maximumToShow,
     required this.galleryProduct,
-    required this.prices,
   });
 
   factory ProductToAdd.fromJson(Map<String, dynamic> json) {
@@ -65,11 +61,9 @@ class ProductToAdd {
       startQuantity: json['start_quantaty'] ?? 0, // Note: keep original key for fromJson
       taxesId: json['taxesId'] ?? '',
       productHasImei: json['product_has_imei'] ?? false,
-      differentPrice: json['different_price'] ?? false,
       showQuantity: json['show_quantity'] ?? false,
       maximumToShow: json['maximum_to_show'] ?? 0,
       galleryProduct: (json['gallery_product'] as List<dynamic>?)?.cast<String>() ?? [],
-      prices: (json['prices'] as List<dynamic>?)?.map((e) => PriceItem.fromJson(e as Map<String, dynamic>)).toList() ?? [],
     );
   }
 
@@ -89,77 +83,10 @@ class ProductToAdd {
       'start_quantaty': startQuantity, // Note: use original snake_case for API
       'taxesId': taxesId,
       'product_has_imei': productHasImei,
-      'different_price': differentPrice,
       'show_quantity': showQuantity,
       'maximum_to_show': maximumToShow,
       'gallery_product': galleryProduct,
-      'prices': prices.map((e) => e.toJson()).toList(),
     };
   }
 }
 
-class PriceItem {
-  final double price;
-  final String code;
-  final int quantity;
-  final List<String> gallery;
-  final List<String> options;
-
-  PriceItem({
-    required this.price,
-    required this.code,
-    required this.quantity,
-    required this.gallery,
-    required this.options,
-  });
-
-  factory PriceItem.fromJson(Map<String, dynamic> json) {
-    return PriceItem(
-      price: (json['price'] as num?)?.toDouble() ?? 0.0,
-      code: json['code'] ?? '',
-      quantity: json['quantity'] ?? 0,
-      gallery: (json['gallery'] as List<dynamic>?)?.cast<String>() ?? [],
-      options: (json['options'] as List<dynamic>?)?.cast<String>() ?? [],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'price': price,
-      'code': code,
-      'quantity': quantity,
-      'gallery': gallery,
-      'options': options,
-    };
-  }
-}
-
-// Models
-class PriceVariation {
-  final TextEditingController priceController;
-  final TextEditingController codeController;
-  final TextEditingController quantityController;
-  final List<String> selectedOptions;
-  final List<File> galleryImages;
-
-  PriceVariation({
-    required this.priceController,
-    required this.codeController,
-    required this.quantityController,
-    required this.selectedOptions,
-    required this.galleryImages,
-  });
-
-  void dispose() {
-    priceController.dispose();
-    codeController.dispose();
-    quantityController.dispose();
-  }
-}
-// Assume Option class (adjust based on your actual model in filter_models.dart)
-class Option {
-  final String id;
-  final String name;
-
-  Option({required this.id, required this.name});
-}

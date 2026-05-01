@@ -1,4 +1,4 @@
-import 'package:systego/features/admin/country/model/country_model.dart';
+import 'package:GoSystem/features/admin/country/model/country_model.dart';
 
 class CityResponse {
   final bool success;

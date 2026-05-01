@@ -8,7 +8,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:image/image.dart' as img;
 import 'dart:developer' as developer;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/features/pos/checkout/model/reciept_data.dart';
+import 'package:GoSystem/features/pos/checkout/model/reciept_data.dart';
 import '../../presentation/widgets/printable_reciept.dart';
 part 'printer_state.dart';
 

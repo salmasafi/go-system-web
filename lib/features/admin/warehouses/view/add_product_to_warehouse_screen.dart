@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/app_bar_widgets.dart';
-import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
-import 'package:systego/features/admin/warehouses/cubit/warehouse_cubit.dart';
-import 'package:systego/features/admin/product/models/product_model.dart';
-import 'package:systego/features/admin/product/cubit/get_products_cubit/product_cubit.dart';
-import 'package:systego/features/admin/product/cubit/get_products_cubit/product_state.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
+import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:GoSystem/features/admin/warehouses/cubit/warehouse_cubit.dart';
+import 'package:GoSystem/features/admin/product/models/product_model.dart';
+import 'package:GoSystem/features/admin/product/cubit/get_products_cubit/product_cubit.dart';
+import 'package:GoSystem/features/admin/product/cubit/get_products_cubit/product_state.dart';
 
 class AddProductToWarehouseScreen extends StatefulWidget {
   final String warehouseId;

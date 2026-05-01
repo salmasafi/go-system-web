@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../../core/migration/migration_service.dart';
 import '../../../../../core/supabase/supabase_client.dart';
 import '../../../../../core/supabase/supabase_error_handler.dart';
 import '../../models/attribute_type_model.dart';
@@ -44,23 +43,9 @@ abstract class SaleItemAttributeRepositoryInterface {
   Future<void> deleteSaleItemAttributes(String saleItemId);
 }
 
-/// Hybrid repository for attribute types
+/// Repository implementation using Supabase for attribute types
 class AttributeTypeRepository implements AttributeTypeRepositoryInterface {
-  late final AttributeTypeRepositoryInterface _dataSource;
-
-  AttributeTypeRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('attribute_types')) {
-      log('AttributeTypeRepository: Using Supabase');
-      _dataSource = _AttributeTypeSupabaseDataSource();
-    } else {
-      log('AttributeTypeRepository: Using Dio (legacy)');
-      _dataSource = _AttributeTypeDioDataSource();
-    }
-  }
+  final _AttributeTypeSupabaseDataSource _dataSource = _AttributeTypeSupabaseDataSource();
 
   @override
   Future<List<AttributeType>> getAllAttributeTypes() => _dataSource.getAllAttributeTypes();
@@ -78,35 +63,11 @@ class AttributeTypeRepository implements AttributeTypeRepositoryInterface {
 
   @override
   Future<void> deleteAttributeType(String id) => _dataSource.deleteAttributeType(id);
-
-  void enableSupabase() {
-    MigrationService.enableSupabase('attribute_types');
-    _initializeDataSource();
-  }
-
-  void enableDio() {
-    MigrationService.enableDio('attribute_types');
-    _initializeDataSource();
-  }
 }
 
-/// Hybrid repository for attribute values
+/// Repository implementation using Supabase for attribute values
 class AttributeValueRepository implements AttributeValueRepositoryInterface {
-  late final AttributeValueRepositoryInterface _dataSource;
-
-  AttributeValueRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('attribute_values')) {
-      log('AttributeValueRepository: Using Supabase');
-      _dataSource = _AttributeValueSupabaseDataSource();
-    } else {
-      log('AttributeValueRepository: Using Dio (legacy)');
-      _dataSource = _AttributeValueDioDataSource();
-    }
-  }
+  final _AttributeValueSupabaseDataSource _dataSource = _AttributeValueSupabaseDataSource();
 
   @override
   Future<List<AttributeValue>> getValuesByType(String attributeTypeId) => 
@@ -125,35 +86,11 @@ class AttributeValueRepository implements AttributeValueRepositoryInterface {
 
   @override
   Future<void> deleteAttributeValue(String id) => _dataSource.deleteAttributeValue(id);
-
-  void enableSupabase() {
-    MigrationService.enableSupabase('attribute_values');
-    _initializeDataSource();
-  }
-
-  void enableDio() {
-    MigrationService.enableDio('attribute_values');
-    _initializeDataSource();
-  }
 }
 
-/// Hybrid repository for product attributes
+/// Repository implementation using Supabase for product attributes
 class ProductAttributeRepository implements ProductAttributeRepositoryInterface {
-  late final ProductAttributeRepositoryInterface _dataSource;
-
-  ProductAttributeRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('product_attributes')) {
-      log('ProductAttributeRepository: Using Supabase');
-      _dataSource = _ProductAttributeSupabaseDataSource();
-    } else {
-      log('ProductAttributeRepository: Using Dio (legacy)');
-      _dataSource = _ProductAttributeDioDataSource();
-    }
-  }
+  final _ProductAttributeSupabaseDataSource _dataSource = _ProductAttributeSupabaseDataSource();
 
   @override
   Future<List<ProductAttribute>> getAttributesByProduct(String productId) => 
@@ -177,35 +114,11 @@ class ProductAttributeRepository implements ProductAttributeRepositoryInterface 
   @override
   Future<void> removeAttributesByProduct(String productId) => 
       _dataSource.removeAttributesByProduct(productId);
-
-  void enableSupabase() {
-    MigrationService.enableSupabase('product_attributes');
-    _initializeDataSource();
-  }
-
-  void enableDio() {
-    MigrationService.enableDio('product_attributes');
-    _initializeDataSource();
-  }
 }
 
-/// Hybrid repository for sale item attributes
+/// Repository implementation using Supabase for sale item attributes
 class SaleItemAttributeRepository implements SaleItemAttributeRepositoryInterface {
-  late final SaleItemAttributeRepositoryInterface _dataSource;
-
-  SaleItemAttributeRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('sale_item_attributes')) {
-      log('SaleItemAttributeRepository: Using Supabase');
-      _dataSource = _SaleItemAttributeSupabaseDataSource();
-    } else {
-      log('SaleItemAttributeRepository: Using Dio (legacy)');
-      _dataSource = _SaleItemAttributeDioDataSource();
-    }
-  }
+  final _SaleItemAttributeSupabaseDataSource _dataSource = _SaleItemAttributeSupabaseDataSource();
 
   @override
   Future<void> saveSaleItemAttributes(String saleItemId, List<SelectedAttribute> attributes) => 
@@ -218,16 +131,6 @@ class SaleItemAttributeRepository implements SaleItemAttributeRepositoryInterfac
   @override
   Future<void> deleteSaleItemAttributes(String saleItemId) => 
       _dataSource.deleteSaleItemAttributes(saleItemId);
-
-  void enableSupabase() {
-    MigrationService.enableSupabase('sale_item_attributes');
-    _initializeDataSource();
-  }
-
-  void enableDio() {
-    MigrationService.enableDio('sale_item_attributes');
-    _initializeDataSource();
-  }
 }
 
 // ============================================
@@ -614,128 +517,3 @@ class _SaleItemAttributeSupabaseDataSource implements SaleItemAttributeRepositor
   }
 }
 
-// ============================================
-// Dio Data Sources (Legacy - Placeholder)
-// ============================================
-
-class _AttributeTypeDioDataSource implements AttributeTypeRepositoryInterface {
-  @override
-  Future<List<AttributeType>> getAllAttributeTypes() async {
-    // TODO: Implement Dio API call
-    throw UnimplementedError('Dio implementation not yet available');
-  }
-
-  @override
-  Future<AttributeType?> getAttributeTypeById(String id) async {
-    // TODO: Implement Dio API call
-    throw UnimplementedError('Dio implementation not yet available');
-  }
-
-  @override
-  Future<AttributeType> createAttributeType(AttributeType attributeType) async {
-    // TODO: Implement Dio API call
-    throw UnimplementedError('Dio implementation not yet available');
-  }
-
-  @override
-  Future<AttributeType> updateAttributeType(String id, AttributeType attributeType) async {
-    // TODO: Implement Dio API call
-    throw UnimplementedError('Dio implementation not yet available');
-  }
-
-  @override
-  Future<void> deleteAttributeType(String id) async {
-    // TODO: Implement Dio API call
-    throw UnimplementedError('Dio implementation not yet available');
-  }
-}
-
-class _AttributeValueDioDataSource implements AttributeValueRepositoryInterface {
-  @override
-  Future<List<AttributeValue>> getValuesByType(String attributeTypeId) async {
-    // TODO: Implement Dio API call
-    throw UnimplementedError('Dio implementation not yet available');
-  }
-
-  @override
-  Future<AttributeValue?> getAttributeValueById(String id) async {
-    // TODO: Implement Dio API call
-    throw UnimplementedError('Dio implementation not yet available');
-  }
-
-  @override
-  Future<AttributeValue> createAttributeValue(AttributeValue attributeValue) async {
-    // TODO: Implement Dio API call
-    throw UnimplementedError('Dio implementation not yet available');
-  }
-
-  @override
-  Future<AttributeValue> updateAttributeValue(String id, AttributeValue attributeValue) async {
-    // TODO: Implement Dio API call
-    throw UnimplementedError('Dio implementation not yet available');
-  }
-
-  @override
-  Future<void> deleteAttributeValue(String id) async {
-    // TODO: Implement Dio API call
-    throw UnimplementedError('Dio implementation not yet available');
-  }
-}
-
-class _ProductAttributeDioDataSource implements ProductAttributeRepositoryInterface {
-  @override
-  Future<List<ProductAttribute>> getAttributesByProduct(String productId) async {
-    // TODO: Implement Dio API call
-    throw UnimplementedError('Dio implementation not yet available');
-  }
-
-  @override
-  Future<ProductAttribute?> getProductAttribute(String productId, String attributeTypeId) async {
-    // TODO: Implement Dio API call
-    throw UnimplementedError('Dio implementation not yet available');
-  }
-
-  @override
-  Future<ProductAttribute> assignAttributeToProduct(ProductAttribute productAttribute) async {
-    // TODO: Implement Dio API call
-    throw UnimplementedError('Dio implementation not yet available');
-  }
-
-  @override
-  Future<ProductAttribute> updateProductAttribute(String id, ProductAttribute productAttribute) async {
-    // TODO: Implement Dio API call
-    throw UnimplementedError('Dio implementation not yet available');
-  }
-
-  @override
-  Future<void> removeProductAttribute(String id) async {
-    // TODO: Implement Dio API call
-    throw UnimplementedError('Dio implementation not yet available');
-  }
-
-  @override
-  Future<void> removeAttributesByProduct(String productId) async {
-    // TODO: Implement Dio API call
-    throw UnimplementedError('Dio implementation not yet available');
-  }
-}
-
-class _SaleItemAttributeDioDataSource implements SaleItemAttributeRepositoryInterface {
-  @override
-  Future<void> saveSaleItemAttributes(String saleItemId, List<SelectedAttribute> attributes) async {
-    // TODO: Implement Dio API call
-    throw UnimplementedError('Dio implementation not yet available');
-  }
-
-  @override
-  Future<List<SaleItemAttribute>> getAttributesBySaleItem(String saleItemId) async {
-    // TODO: Implement Dio API call
-    throw UnimplementedError('Dio implementation not yet available');
-  }
-
-  @override
-  Future<void> deleteSaleItemAttributes(String saleItemId) async {
-    // TODO: Implement Dio API call
-    throw UnimplementedError('Dio implementation not yet available');
-  }
-}

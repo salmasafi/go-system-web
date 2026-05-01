@@ -1,9 +1,11 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/core/services/endpoints.dart';
-import 'package:systego/core/utils/error_handler.dart';
-import 'package:systego/features/pos/expenses/model/expense_model.dart';
-import 'package:systego/features/admin/expences_category/model/expences_categories_model.dart';
+import 'package:GoSystem/core/services/dio_helper.dart';
+import 'package:GoSystem/core/services/endpoints.dart';
+import 'package:GoSystem/core/utils/error_handler.dart';
+import 'package:GoSystem/features/pos/expenses/model/expense_model.dart';
+import 'package:GoSystem/features/admin/expences_category/model/expences_categories_model.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 
 part 'expense_state.dart';
 
@@ -73,7 +75,7 @@ class ExpenseCubit extends Cubit<ExpenseState> {
         await getExpenses();
       } else {
         emit(ExpenseError(
-            response.data['message']?.toString() ?? 'Failed to add expense'));
+            response.data['message']?.toString() ?? LocaleKeys.failed_to_add_expense.tr()));
       }
     } catch (e) {
       emit(ExpenseError(ErrorHandler.handleError(e)));
@@ -105,7 +107,7 @@ class ExpenseCubit extends Cubit<ExpenseState> {
         await getExpenses();
       } else {
         emit(ExpenseError(
-            response.data['message']?.toString() ?? 'Failed to update expense'));
+            response.data['message']?.toString() ?? LocaleKeys.failed_to_update_expense.tr()));
       }
     } catch (e) {
       emit(ExpenseError(ErrorHandler.handleError(e)));

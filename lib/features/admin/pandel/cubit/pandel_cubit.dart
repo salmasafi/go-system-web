@@ -7,9 +7,9 @@ import 'package:bloc/bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:meta/meta.dart';
 
-import 'package:systego/features/admin/pandel/model/pandel_model.dart';
-import 'package:systego/generated/locale_keys.g.dart';
-import 'package:systego/features/admin/pandel/data/repositories/bundle_repository.dart';
+import 'package:GoSystem/features/admin/pandel/model/pandel_model.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
+import 'package:GoSystem/features/admin/pandel/data/repositories/bundle_repository.dart';
 
 part 'pandel_state.dart';
 

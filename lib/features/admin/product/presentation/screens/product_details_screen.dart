@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/app_bar_widgets.dart';
-import 'package:systego/core/widgets/custom_error/custom_empty_state.dart';
-import 'package:systego/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
-import 'package:systego/features/admin/product/presentation/widgets/product_image_card.dart';
-import 'package:systego/features/admin/product/presentation/widgets/product_info_grid.dart';
-import 'package:systego/features/admin/product/presentation/widgets/product_info_item.dart';
-import 'package:systego/features/admin/product/presentation/widgets/product_title.dart';
-import 'package:systego/features/admin/product/presentation/widgets/product_attribute_assignment_widget.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
+import 'package:GoSystem/core/widgets/custom_error/custom_empty_state.dart';
+import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
+import 'package:GoSystem/features/admin/product/presentation/widgets/product_image_card.dart';
+import 'package:GoSystem/features/admin/product/presentation/widgets/product_info_grid.dart';
+import 'package:GoSystem/features/admin/product/presentation/widgets/product_info_item.dart';
+import 'package:GoSystem/features/admin/product/presentation/widgets/product_title.dart';
+import 'package:GoSystem/features/admin/product/presentation/widgets/product_attribute_assignment_widget.dart';
 import '../../cubit/product_details_cubit/product_details_cubit.dart';
 import '../../cubit/product_details_cubit/product_details_state.dart';
 

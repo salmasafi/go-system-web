@@ -109,7 +109,7 @@ abstract class RevenueRepositoryInterface {
 // ─────────────────────────────────────────────
 
 class RevenueRepository implements RevenueRepositoryInterface {
-  late final RevenueRepositoryInterface _dataSource;
+  late RevenueRepositoryInterface _dataSource;
 
   RevenueRepository() {
     _initializeDataSource();

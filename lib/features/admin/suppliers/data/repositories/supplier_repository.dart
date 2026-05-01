@@ -39,97 +39,15 @@ abstract class SupplierRepositoryInterface {
   Future<void> deleteSupplier(String id);
 }
 
-/// Hybrid repository that supports both Dio and Supabase for suppliers
+/// Supplier repository using Supabase as the primary data source.
 class SupplierRepository implements SupplierRepositoryInterface {
-  late final SupplierRepositoryInterface _dataSource;
-
-  SupplierRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('suppliers')) {
-      log('SupplierRepository: Using Supabase');
-      _dataSource = _SupplierSupabaseDataSource();
-    } else {
-      log('SupplierRepository: Using Dio (legacy)');
-      _dataSource = _SupplierDioDataSource();
-    }
-  }
-
-  @override
-  Future<List<Suppliers>> getAllSuppliers() => _dataSource.getAllSuppliers();
-
-  @override
-  Future<Suppliers?> getSupplierById(String id) => _dataSource.getSupplierById(id);
-
-  @override
-  Future<Suppliers> createSupplier({
-    required String username,
-    required String email,
-    required String phoneNumber,
-    required String address,
-    required String companyName,
-    String? countryId,
-    String? cityId,
-    File? imageFile,
-  }) => _dataSource.createSupplier(
-    username: username,
-    email: email,
-    phoneNumber: phoneNumber,
-    address: address,
-    companyName: companyName,
-    countryId: countryId,
-    cityId: cityId,
-    imageFile: imageFile,
-  );
-
-  @override
-  Future<Suppliers> updateSupplier({
-    required String id,
-    required String username,
-    required String email,
-    required String phoneNumber,
-    required String address,
-    required String companyName,
-    String? countryId,
-    String? cityId,
-    File? imageFile,
-  }) => _dataSource.updateSupplier(
-    id: id,
-    username: username,
-    email: email,
-    phoneNumber: phoneNumber,
-    address: address,
-    companyName: companyName,
-    countryId: countryId,
-    cityId: cityId,
-    imageFile: imageFile,
-  );
-
-  @override
-  Future<void> deleteSupplier(String id) => _dataSource.deleteSupplier(id);
-
-  void enableSupabase() {
-    MigrationService.enableSupabase('suppliers');
-    _initializeDataSource();
-  }
-
-  void enableDio() {
-    MigrationService.enableDio('suppliers');
-    _initializeDataSource();
-  }
-}
-
-/// Supabase implementation for Supplier data source
-class _SupplierSupabaseDataSource implements SupplierRepositoryInterface {
   final SupabaseClient _client = SupabaseClientWrapper.instance;
   final StorageService _storage = StorageService(SupabaseClientWrapper.instance);
 
   @override
   Future<List<Suppliers>> getAllSuppliers() async {
     try {
-      log('SupplierSupabase: Fetching all suppliers');
+      log('SupplierRepository: Fetching all suppliers');
 
       final response = await _client
           .from('suppliers')
@@ -144,10 +62,10 @@ class _SupplierSupabaseDataSource implements SupplierRepositoryInterface {
           .map((json) => _mapSupabaseToSuppliers(json))
           .toList();
 
-      log('SupplierSupabase: Fetched ${suppliers.length} suppliers');
+      log('SupplierRepository: Fetched ${suppliers.length} suppliers');
       return suppliers;
     } catch (e) {
-      log('SupplierSupabase: Error fetching suppliers - $e');
+      log('SupplierRepository: Error fetching suppliers - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -155,7 +73,7 @@ class _SupplierSupabaseDataSource implements SupplierRepositoryInterface {
   @override
   Future<Suppliers?> getSupplierById(String id) async {
     try {
-      log('SupplierSupabase: Fetching supplier by id: $id');
+      log('SupplierRepository: Fetching supplier by id: $id');
 
       final response = await _client
           .from('suppliers')
@@ -171,7 +89,7 @@ class _SupplierSupabaseDataSource implements SupplierRepositoryInterface {
 
       return _mapSupabaseToSuppliers(response);
     } catch (e) {
-      log('SupplierSupabase: Error fetching supplier - $e');
+      log('SupplierRepository: Error fetching supplier - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -188,7 +106,7 @@ class _SupplierSupabaseDataSource implements SupplierRepositoryInterface {
     File? imageFile,
   }) async {
     try {
-      log('SupplierSupabase: Creating supplier: $username');
+      log('SupplierRepository: Creating supplier: $username');
 
       // Upload image if provided
       String? imageUrl;
@@ -220,10 +138,10 @@ class _SupplierSupabaseDataSource implements SupplierRepositoryInterface {
           ''')
           .single();
 
-      log('SupplierSupabase: Created supplier successfully');
+      log('SupplierRepository: Created supplier successfully');
       return _mapSupabaseToSuppliers(response);
     } catch (e) {
-      log('SupplierSupabase: Error creating supplier - $e');
+      log('SupplierRepository: Error creating supplier - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -241,7 +159,7 @@ class _SupplierSupabaseDataSource implements SupplierRepositoryInterface {
     File? imageFile,
   }) async {
     try {
-      log('SupplierSupabase: Updating supplier: $id');
+      log('SupplierRepository: Updating supplier: $id');
 
       // Get current supplier to check for image update
       final current = await getSupplierById(id);
@@ -255,7 +173,7 @@ class _SupplierSupabaseDataSource implements SupplierRepositoryInterface {
             final oldPath = current.image!.split('/').last;
             await _storage.deleteImage('suppliers/$oldPath');
           } catch (e) {
-            log('SupplierSupabase: Failed to delete old image - $e');
+            log('SupplierRepository: Failed to delete old image - $e');
           }
         }
 
@@ -289,10 +207,10 @@ class _SupplierSupabaseDataSource implements SupplierRepositoryInterface {
           ''')
           .single();
 
-      log('SupplierSupabase: Updated supplier successfully');
+      log('SupplierRepository: Updated supplier successfully');
       return _mapSupabaseToSuppliers(response);
     } catch (e) {
-      log('SupplierSupabase: Error updating supplier - $e');
+      log('SupplierRepository: Error updating supplier - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -300,7 +218,7 @@ class _SupplierSupabaseDataSource implements SupplierRepositoryInterface {
   @override
   Future<void> deleteSupplier(String id) async {
     try {
-      log('SupplierSupabase: Deleting supplier: $id');
+      log('SupplierRepository: Deleting supplier: $id');
 
       // Get supplier to delete image if exists
       final supplier = await getSupplierById(id);
@@ -309,15 +227,15 @@ class _SupplierSupabaseDataSource implements SupplierRepositoryInterface {
           final imagePath = supplier.image!.split('/').last;
           await _storage.deleteImage('suppliers/$imagePath');
         } catch (e) {
-          log('SupplierSupabase: Failed to delete image - $e');
+          log('SupplierRepository: Failed to delete image - $e');
         }
       }
 
       await _client.from('suppliers').delete().eq('id', id);
 
-      log('SupplierSupabase: Deleted supplier successfully');
+      log('SupplierRepository: Deleted supplier successfully');
     } catch (e) {
-      log('SupplierSupabase: Error deleting supplier - $e');
+      log('SupplierRepository: Error deleting supplier - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -357,148 +275,3 @@ class _SupplierSupabaseDataSource implements SupplierRepositoryInterface {
   }
 }
 
-/// Dio implementation for Supplier data source (legacy)
-class _SupplierDioDataSource implements SupplierRepositoryInterface {
-  @override
-  Future<List<Suppliers>> getAllSuppliers() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getSuppliers);
-
-      if (response.statusCode == 200) {
-        final model = SupplierModel.fromJson(response.data);
-        if (model.success == true && model.data?.suppliers != null) {
-          return model.data!.suppliers!;
-        }
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<Suppliers?> getSupplierById(String id) async {
-    try {
-      final response = await DioHelper.getData(
-        url: EndPoint.getSupplierById(id),
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final supplierJson = response.data['data']?['supplier'];
-        if (supplierJson != null) {
-          return Suppliers.fromJson(supplierJson);
-        }
-      }
-      return null;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<Suppliers> createSupplier({
-    required String username,
-    required String email,
-    required String phoneNumber,
-    required String address,
-    required String companyName,
-    String? countryId,
-    String? cityId,
-    File? imageFile,
-  }) async {
-    try {
-      // Convert image to base64 if provided
-      String? base64Image;
-      if (imageFile != null) {
-        final bytes = await imageFile.readAsBytes();
-        base64Image = base64Encode(bytes);
-      }
-
-      final response = await DioHelper.postData(
-        url: EndPoint.createSupplier,
-        data: {
-          'username': username,
-          'email': email,
-          'phone_number': phoneNumber,
-          'address': address,
-          'company_name': companyName,
-          'country_id': countryId,
-          'city_id': cityId,
-          if (base64Image != null) 'image': base64Image,
-        },
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final supplierJson = response.data['data']?['supplier'];
-        if (supplierJson != null) {
-          return Suppliers.fromJson(supplierJson);
-        }
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<Suppliers> updateSupplier({
-    required String id,
-    required String username,
-    required String email,
-    required String phoneNumber,
-    required String address,
-    required String companyName,
-    String? countryId,
-    String? cityId,
-    File? imageFile,
-  }) async {
-    try {
-      // Convert image to base64 if provided
-      String? base64Image;
-      if (imageFile != null) {
-        final bytes = await imageFile.readAsBytes();
-        base64Image = base64Encode(bytes);
-      }
-
-      final response = await DioHelper.putData(
-        url: EndPoint.updateSupplier,
-        data: {
-          'username': username,
-          'email': email,
-          'phone_number': phoneNumber,
-          'address': address,
-          'company_name': companyName,
-          'country_id': countryId,
-          'city_id': cityId,
-          if (base64Image != null) 'image': base64Image,
-        },
-      );
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final supplierJson = response.data['data']?['supplier'];
-        if (supplierJson != null) {
-          return Suppliers.fromJson(supplierJson);
-        }
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> deleteSupplier(String id) async {
-    try {
-      final response = await DioHelper.deleteData(
-        url: EndPoint.deleteSupplier,
-        query: {'id': id},
-      );
-
-      if (response.statusCode != 200 || response.data['success'] != true) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-}

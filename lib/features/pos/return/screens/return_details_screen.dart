@@ -1,15 +1,15 @@
-import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
-import 'package:systego/features/pos/home/cubit/pos_home_cubit.dart';
-import 'package:systego/features/pos/return/cubit/return_cubit.dart';
-import 'package:systego/features/pos/return/widgets/return_items_table.dart';
-import 'package:systego/features/admin/reason/cubit/reason_cubit.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:GoSystem/features/pos/home/cubit/pos_home_cubit.dart';
+import 'package:GoSystem/features/pos/return/cubit/return_cubit.dart';
+import 'package:GoSystem/features/pos/return/widgets/return_items_table.dart';
+import 'package:GoSystem/features/admin/reason/cubit/reason_cubit.dart';
 
 class ReturnDetailsScreen extends StatefulWidget {
   const ReturnDetailsScreen({super.key});

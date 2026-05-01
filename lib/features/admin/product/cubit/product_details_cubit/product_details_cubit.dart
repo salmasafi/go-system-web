@@ -6,7 +6,7 @@ import '../../../../../core/services/endpoints.dart';
 import '../../models/product_details_model.dart';
 import 'product_details_state.dart';
 
-import 'package:systego/features/admin/product/data/repositories/product_repository.dart';
+import 'package:GoSystem/features/admin/product/data/repositories/product_repository.dart';
 
 class ProductDetailsCubit extends Cubit<ProductDetailsState> {
   final ProductRepository _repository;

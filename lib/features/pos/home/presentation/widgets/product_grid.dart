@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/features/pos/home/cubit/pos_home_cubit.dart';
-import 'package:systego/features/pos/home/model/pos_models.dart';
+import 'package:GoSystem/features/pos/home/cubit/pos_home_cubit.dart';
+import 'package:GoSystem/features/pos/home/model/pos_models.dart';
 import '../../../../../core/utils/responsive_ui.dart';
 import '../../../../../core/widgets/animation/animated_element.dart';
 import '../../../../../core/widgets/custom_error/custom_empty_state.dart';

@@ -1,7 +1,7 @@
-import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
-import 'package:systego/core/widgets/custom_image_card.dart';
+import 'package:GoSystem/core/widgets/custom_image_card.dart';
 import '../../features/admin/warehouses/model/ware_house_model.dart';
 import '../../features/admin/warehouses/view/widgets/custom_detail_tile.dart';
 import '../constants/app_colors.dart';

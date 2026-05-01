@@ -1,6 +1,6 @@
 // lib/features/pos/checkout/presentation/widgets/cart_item_details_dialog.dart
 import 'package:flutter/material.dart';
-import 'package:systego/core/constants/app_colors.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
 import '../../model/checkout_models.dart';
 
 class CartItemDetailsDialog extends StatelessWidget {

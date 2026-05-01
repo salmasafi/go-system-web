@@ -1,7 +1,7 @@
-import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:systego/features/pos/checkout/model/reciept_data.dart';
+import 'package:GoSystem/features/pos/checkout/model/reciept_data.dart';
 
 class PrintableReceipt extends StatelessWidget {
   final RecieptData recieptData;
@@ -86,7 +86,7 @@ class PrintableReceipt extends StatelessWidget {
   Widget _header() {
     return Column(
       children: [
-        Text("SYSTEGO", style: _headerTitleStyle),
+        Text("GoSystem", style: _headerTitleStyle),
         SizedBox(height: 8),
         Text("Point of Sale System", style: _headerSubStyle),
       ],
@@ -306,8 +306,8 @@ class PrintableReceipt extends StatelessWidget {
           style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
         ),
         SizedBox(height: 2),
-        Text("Powered by SYSTEGO POS", style: TextStyle(fontSize: 9)),
-        Text("www.systego.com", style: TextStyle(fontSize: 8)),
+        Text("Powered by GoSystem POS", style: TextStyle(fontSize: 9)),
+        Text("www.gosystem.com", style: TextStyle(fontSize: 8)),
       ],
     );
   }

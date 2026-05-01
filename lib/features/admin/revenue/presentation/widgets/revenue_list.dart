@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/admin/revenue/model/revenue_model.dart';
-import 'package:systego/features/admin/revenue/presentation/widgets/animated_revenue_card.dart';
-import 'package:systego/features/admin/revenue/presentation/widgets/revenue_form_dialof.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/features/admin/revenue/model/revenue_model.dart';
+import 'package:GoSystem/features/admin/revenue/presentation/widgets/animated_revenue_card.dart';
+import 'package:GoSystem/features/admin/revenue/presentation/widgets/revenue_form_dialof.dart';
 
 
 class RevenuesList extends StatelessWidget {

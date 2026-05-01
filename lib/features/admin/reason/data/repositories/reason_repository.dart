@@ -1,11 +1,7 @@
 import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../../core/migration/migration_service.dart';
-import '../../../../../core/services/dio_helper.dart';
-import '../../../../../core/services/endpoints.dart';
 import '../../../../../core/supabase/supabase_client.dart';
 import '../../../../../core/supabase/supabase_error_handler.dart';
-import '../../../../../core/utils/error_handler.dart';
 import '../../model/reason_model.dart';
 
 /// Interface for reason data operations
@@ -16,23 +12,9 @@ abstract class ReasonRepositoryInterface {
   Future<void> deleteReason(String id);
 }
 
-/// Hybrid repository that supports both Dio and Supabase for reasons
+/// Repository implementation using Supabase for reasons
 class ReasonRepository implements ReasonRepositoryInterface {
-  late final ReasonRepositoryInterface _dataSource;
-
-  ReasonRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('reasons')) {
-      log('ReasonRepository: Using Supabase');
-      _dataSource = _ReasonSupabaseDataSource();
-    } else {
-      log('ReasonRepository: Using Dio (legacy)');
-      _dataSource = _ReasonDioDataSource();
-    }
-  }
+  final _ReasonSupabaseDataSource _dataSource = _ReasonSupabaseDataSource();
 
   @override
   Future<List<ReasonModel>> getAllReasons() => _dataSource.getAllReasons();
@@ -112,66 +94,5 @@ class _ReasonSupabaseDataSource implements ReasonRepositoryInterface {
       //     : DateTime.now(),
       version: json['version'] ?? 1,
     );
-  }
-}
-
-/// Dio implementation for Reason data source (legacy)
-class _ReasonDioDataSource implements ReasonRepositoryInterface {
-  @override
-  Future<List<ReasonModel>> getAllReasons() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getAllreasons);
-      if (response.statusCode == 200) {
-        final model = ReasonResponse.fromJson(response.data);
-        return model.data.reasons;
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> createReason(String reason) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.addreason,
-        data: {'reason': reason},
-      );
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> updateReason(String id, String reason) async {
-    try {
-      final response = await DioHelper.putData(
-        url: EndPoint.updatereason(id),
-        data: {'reason': reason},
-      );
-      if (response.statusCode != 200) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<void> deleteReason(String id) async {
-    try {
-      final response = await DioHelper.deleteData(
-        url: EndPoint.deletereason(id),
-      );
-      if (response.statusCode != 200) {
-        throw Exception(ErrorHandler.handleError(response));
-      }
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
   }
 }

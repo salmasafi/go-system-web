@@ -2,16 +2,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/app_bar_widgets.dart';
-import 'package:systego/core/widgets/custom_button_widget.dart';
-import 'package:systego/core/widgets/custom_error/custom_error_state.dart';
-import 'package:systego/core/widgets/custom_snack_bar/custom_snackbar.dart';
-import 'package:systego/core/widgets/custom_textfield/custom_text_field_widget.dart';
-import 'package:systego/features/admin/popup/cubit/popup_cubit.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
+import 'package:GoSystem/core/widgets/custom_button_widget.dart';
+import 'package:GoSystem/core/widgets/custom_error/custom_error_state.dart';
+import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:GoSystem/core/widgets/custom_textfield/custom_text_field_widget.dart';
+import 'package:GoSystem/features/admin/popup/cubit/popup_cubit.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:systego/generated/locale_keys.g.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 
 class CreatePopupScreen extends StatefulWidget {
   const CreatePopupScreen({super.key});

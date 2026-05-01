@@ -210,6 +210,24 @@ CREATE TABLE public.countries (
   updated_at timestamp with time zone DEFAULT now(),
   CONSTRAINT countries_pkey PRIMARY KEY (id)
 );
+CREATE TABLE public.coupon_categories (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  coupon_id uuid NOT NULL,
+  category_id uuid NOT NULL,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT coupon_categories_pkey PRIMARY KEY (id),
+  CONSTRAINT coupon_categories_coupon_id_fkey FOREIGN KEY (coupon_id) REFERENCES public.coupons(id),
+  CONSTRAINT coupon_categories_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.categories(id)
+);
+CREATE TABLE public.coupon_products (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  coupon_id uuid NOT NULL,
+  product_id uuid NOT NULL,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT coupon_products_pkey PRIMARY KEY (id),
+  CONSTRAINT coupon_products_coupon_id_fkey FOREIGN KEY (coupon_id) REFERENCES public.coupons(id),
+  CONSTRAINT coupon_products_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id)
+);
 CREATE TABLE public.coupons (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   code text NOT NULL UNIQUE,
@@ -281,6 +299,24 @@ CREATE TABLE public.departments (
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   CONSTRAINT departments_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.discount_categories (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  discount_id uuid NOT NULL,
+  category_id uuid NOT NULL,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT discount_categories_pkey PRIMARY KEY (id),
+  CONSTRAINT discount_categories_discount_id_fkey FOREIGN KEY (discount_id) REFERENCES public.discounts(id),
+  CONSTRAINT discount_categories_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.categories(id)
+);
+CREATE TABLE public.discount_products (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  discount_id uuid NOT NULL,
+  product_id uuid NOT NULL,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT discount_products_pkey PRIMARY KEY (id),
+  CONSTRAINT discount_products_discount_id_fkey FOREIGN KEY (discount_id) REFERENCES public.discounts(id),
+  CONSTRAINT discount_products_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id)
 );
 CREATE TABLE public.discounts (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
@@ -460,6 +496,26 @@ CREATE TABLE public.permissions (
   CONSTRAINT permissions_pkey PRIMARY KEY (id),
   CONSTRAINT permissions_role_id_fkey FOREIGN KEY (role_id) REFERENCES public.roles(id)
 );
+CREATE TABLE public.points_rules (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  amount numeric NOT NULL,
+  points integer NOT NULL,
+  status boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT points_rules_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.points_transactions (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  customer_id uuid,
+  type character varying CHECK (type::text = ANY (ARRAY['earned'::character varying, 'redeemed'::character varying]::text[])),
+  points integer NOT NULL,
+  reference_type character varying,
+  reference_id uuid,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT points_transactions_pkey PRIMARY KEY (id),
+  CONSTRAINT points_transactions_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.customers(id)
+);
 CREATE TABLE public.product_attributes (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   product_id uuid NOT NULL,
@@ -614,26 +670,37 @@ CREATE TABLE public.purchase_items (
 );
 CREATE TABLE public.purchase_return_items (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
-  purchase_return_id uuid NOT NULL,
-  purchase_item_id uuid NOT NULL,
-  quantity integer NOT NULL,
+  return_id uuid NOT NULL,
+  product_id uuid NOT NULL,
+  purchase_item_id uuid,
+  original_quantity integer NOT NULL,
+  returned_quantity integer NOT NULL,
+  price numeric NOT NULL,
+  subtotal numeric NOT NULL,
   reason text,
+  created_at timestamp with time zone DEFAULT now(),
   CONSTRAINT purchase_return_items_pkey PRIMARY KEY (id),
-  CONSTRAINT purchase_return_items_purchase_return_id_fkey FOREIGN KEY (purchase_return_id) REFERENCES public.purchase_returns(id),
+  CONSTRAINT purchase_return_items_return_id_fkey FOREIGN KEY (return_id) REFERENCES public.purchase_returns(id),
+  CONSTRAINT purchase_return_items_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id),
   CONSTRAINT purchase_return_items_purchase_item_id_fkey FOREIGN KEY (purchase_item_id) REFERENCES public.purchase_items(id)
 );
 CREATE TABLE public.purchase_returns (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   purchase_id uuid NOT NULL,
   reference text NOT NULL UNIQUE,
-  date date NOT NULL,
-  status text DEFAULT 'pending'::text,
+  supplier_id uuid,
+  warehouse_id uuid,
+  total_amount numeric NOT NULL,
+  refund_method text DEFAULT 'cash'::text,
+  status text DEFAULT 'completed'::text CHECK (status = ANY (ARRAY['pending'::text, 'completed'::text, 'cancelled'::text])),
   note text,
   created_by uuid,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   CONSTRAINT purchase_returns_pkey PRIMARY KEY (id),
   CONSTRAINT purchase_returns_purchase_id_fkey FOREIGN KEY (purchase_id) REFERENCES public.purchases(id),
+  CONSTRAINT purchase_returns_supplier_id_fkey FOREIGN KEY (supplier_id) REFERENCES public.suppliers(id),
+  CONSTRAINT purchase_returns_warehouse_id_fkey FOREIGN KEY (warehouse_id) REFERENCES public.warehouses(id),
   CONSTRAINT purchase_returns_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.admins(id)
 );
 CREATE TABLE public.purchases (
@@ -768,35 +835,37 @@ CREATE TABLE public.sale_payments (
 );
 CREATE TABLE public.sale_return_items (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
-  sale_return_id uuid NOT NULL,
-  sale_item_id uuid NOT NULL,
+  return_id uuid NOT NULL,
   product_id uuid NOT NULL,
-  product_price_id uuid,
-  quantity integer NOT NULL,
-  return_quantity integer NOT NULL,
-  reason text,
+  sale_item_id uuid,
+  original_quantity integer NOT NULL,
+  returned_quantity integer NOT NULL,
   price numeric NOT NULL,
   subtotal numeric NOT NULL,
+  reason text,
+  created_at timestamp with time zone DEFAULT now(),
   CONSTRAINT sale_return_items_pkey PRIMARY KEY (id),
-  CONSTRAINT sale_return_items_sale_return_id_fkey FOREIGN KEY (sale_return_id) REFERENCES public.sale_returns(id),
+  CONSTRAINT sale_return_items_return_id_fkey FOREIGN KEY (return_id) REFERENCES public.sale_returns(id),
   CONSTRAINT sale_return_items_sale_item_id_fkey FOREIGN KEY (sale_item_id) REFERENCES public.sale_items(id),
-  CONSTRAINT sale_return_items_product_price_id_fkey FOREIGN KEY (product_price_id) REFERENCES public.product_prices(id),
   CONSTRAINT sale_return_items_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id)
 );
 CREATE TABLE public.sale_returns (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   sale_id uuid NOT NULL,
   reference text NOT NULL UNIQUE,
-  date date NOT NULL,
-  total_amount numeric DEFAULT 0,
+  customer_id uuid,
+  warehouse_id uuid,
+  total_amount numeric NOT NULL,
+  refund_method text DEFAULT 'cash'::text,
   note text,
-  attachment text,
-  status text DEFAULT 'completed'::text,
+  status text DEFAULT 'completed'::text CHECK (status = ANY (ARRAY['pending'::text, 'completed'::text, 'cancelled'::text])),
   created_by uuid,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   CONSTRAINT sale_returns_pkey PRIMARY KEY (id),
   CONSTRAINT sale_returns_sale_id_fkey FOREIGN KEY (sale_id) REFERENCES public.sales(id),
+  CONSTRAINT sale_returns_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.customers(id),
+  CONSTRAINT sale_returns_warehouse_id_fkey FOREIGN KEY (warehouse_id) REFERENCES public.warehouses(id),
   CONSTRAINT sale_returns_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.admins(id)
 );
 CREATE TABLE public.sales (

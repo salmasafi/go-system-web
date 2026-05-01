@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:systego/features/pos/customer/model/pos_customer_model.dart';
+import 'package:GoSystem/features/pos/customer/model/pos_customer_model.dart';
 
 void main() {
   // ── 12.1 fromJson maps all fields correctly ──────────────────────────────

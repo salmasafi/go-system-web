@@ -1,11 +1,11 @@
-import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
-import 'package:systego/features/pos/checkout/model/reciept_data.dart';
-import 'package:systego/features/pos/checkout/presentation/view/reciept_screen.dart';
-import 'package:systego/features/pos/home/model/pos_models.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
+import 'package:GoSystem/features/pos/checkout/model/reciept_data.dart';
+import 'package:GoSystem/features/pos/checkout/presentation/view/reciept_screen.dart';
+import 'package:GoSystem/features/pos/home/model/pos_models.dart';
 import '../../../checkout/model/checkout_models.dart';
 import '../../cubit/history_cubit.dart';
 import '../../cubit/history_state.dart';

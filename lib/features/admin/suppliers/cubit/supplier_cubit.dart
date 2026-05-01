@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/services/endpoints.dart';
-import 'package:systego/features/admin/suppliers/cubit/supplier_state.dart';
+import 'package:GoSystem/core/services/endpoints.dart';
+import 'package:GoSystem/features/admin/suppliers/cubit/supplier_state.dart';
 import 'dart:developer';
 import '../../../../core/services/cache_helper.dart';
 import '../../../../core/services/dio_helper.dart';
@@ -12,7 +12,7 @@ import '../model/supplier_whis_id_model.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'dart:io';
-import 'package:systego/features/admin/suppliers/data/repositories/supplier_repository.dart';
+import 'package:GoSystem/features/admin/suppliers/data/repositories/supplier_repository.dart';
 
 class SupplierCubit extends Cubit<SupplierStates> {
   final SupplierRepository _repository;

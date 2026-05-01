@@ -2,16 +2,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/core/widgets/animation/animated_element.dart';
-import 'package:systego/core/widgets/custom_loading/custom_loading_state.dart';
-import 'package:systego/core/widgets/custom_error/custom_error_state.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/animation/animated_element.dart';
+import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
+import 'package:GoSystem/core/widgets/custom_error/custom_error_state.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:systego/generated/locale_keys.g.dart';
-import 'package:systego/features/pos/home/cubit/pos_home_cubit.dart';
-import 'package:systego/features/pos/home/cubit/pos_home_state.dart';
-import 'package:systego/features/pos/home/model/pos_models.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
+import 'package:GoSystem/features/pos/home/cubit/pos_home_cubit.dart';
+import 'package:GoSystem/features/pos/home/cubit/pos_home_state.dart';
+import 'package:GoSystem/features/pos/home/model/pos_models.dart';
 
 enum FilterType { categories, brands }
 

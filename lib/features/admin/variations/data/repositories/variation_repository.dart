@@ -1,11 +1,7 @@
 import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../../core/migration/migration_service.dart';
-import '../../../../../core/services/dio_helper.dart';
-import '../../../../../core/services/endpoints.dart';
 import '../../../../../core/supabase/supabase_client.dart';
 import '../../../../../core/supabase/supabase_error_handler.dart';
-import '../../../../../core/utils/error_handler.dart';
 import '../../model/variation_model.dart';
 
 abstract class VariationRepositoryInterface {
@@ -16,21 +12,7 @@ abstract class VariationRepositoryInterface {
 }
 
 class VariationRepository implements VariationRepositoryInterface {
-  late final VariationRepositoryInterface _dataSource;
-
-  VariationRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('variations')) {
-      log('VariationRepository: Using Supabase');
-      _dataSource = _VariationSupabaseDataSource();
-    } else {
-      log('VariationRepository: Using Dio (legacy)');
-      _dataSource = _VariationDioDataSource();
-    }
-  }
+  final _VariationSupabaseDataSource _dataSource = _VariationSupabaseDataSource();
 
   @override
   Future<List<VariationModel>> getAllVariations() => _dataSource.getAllVariations();
@@ -43,16 +25,6 @@ class VariationRepository implements VariationRepositoryInterface {
 
   @override
   Future<bool> deleteVariation(String id) => _dataSource.deleteVariation(id);
-
-  void enableSupabase() {
-    MigrationService.enableSupabase('variations');
-    _initializeDataSource();
-  }
-
-  void enableDio() {
-    MigrationService.enableDio('variations');
-    _initializeDataSource();
-  }
 }
 
 class _VariationSupabaseDataSource implements VariationRepositoryInterface {
@@ -151,63 +123,5 @@ class _VariationSupabaseDataSource implements VariationRepositoryInterface {
         version: 0,
       )).toList(),
     );
-  }
-}
-
-class _VariationDioDataSource implements VariationRepositoryInterface {
-  @override
-  Future<List<VariationModel>> getAllVariations() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getAllVariations);
-      if (response.statusCode == 200) {
-        final model = VariationResponse.fromJson(response.data);
-        return model.data.variations;
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<VariationModel> createVariation(VariationModel variation) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.addVariation,
-        data: variation.toJson()..remove('_id'),
-      );
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return VariationModel.fromJson(response.data['data']['variation']);
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<VariationModel> updateVariation(VariationModel variation) async {
-    try {
-      final response = await DioHelper.putData(
-        url: EndPoint.updateVariation(variation.id),
-        data: variation.toJson(),
-      );
-      if (response.statusCode == 200) {
-        return VariationModel.fromJson(response.data['data']['variation']);
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<bool> deleteVariation(String id) async {
-    try {
-      final response = await DioHelper.deleteData(url: EndPoint.deleteVariation(id));
-      return response.statusCode == 200;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
   }
 }

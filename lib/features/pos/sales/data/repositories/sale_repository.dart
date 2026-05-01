@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../../core/migration/migration_service.dart';
 import '../../../../../core/supabase/supabase_client.dart';
 import '../../../../../core/supabase/supabase_error_handler.dart';
 import '../../../history/model/sale_model.dart';
@@ -28,82 +27,17 @@ abstract class SaleRepositoryInterface {
   Future<bool> cancelSale(String saleId);
   Future<bool> applyCoupon(String saleId, String couponCode);
   Future<List<SaleItemModel>> searchSalesByReference(String query);
+  Future<bool> payDue(String saleId, String customerId, double amount, List<Map<String, dynamic>> financials);
 }
 
-/// Hybrid repository that supports both Dio and Supabase for sales
+/// Sale repository using Supabase as the primary data source.
 class SaleRepository implements SaleRepositoryInterface {
-  late final SaleRepositoryInterface _dataSource;
-
-  SaleRepository() {
-    _dataSource = _SaleSupabaseDataSource();
-  }
-
-  @override
-  Future<List<SaleItemModel>> getAllSales({int? page, int? limit}) =>
-      _dataSource.getAllSales(page: page, limit: limit);
-
-  @override
-  Future<SaleDetailModel?> getSaleById(String id) => _dataSource.getSaleById(id);
-
-  @override
-  Future<List<PendingSaleModel>> getPendingSales() => _dataSource.getPendingSales();
-
-  @override
-  Future<PendingSaleDetailsModel?> getPendingSaleDetails(String id) =>
-      _dataSource.getPendingSaleDetails(id);
-
-  @override
-  Future<List<DueSaleModel>> getDueSales() => _dataSource.getDueSales();
-
-  @override
-  Future<SaleDetailModel> createSale({
-    required String customerId,
-    required String warehouseId,
-    required List<Map<String, dynamic>> items,
-    required double grandTotal,
-    double? taxAmount,
-    double? discount,
-    String? note,
-    String? couponCode,
-    List<Map<String, dynamic>>? payments,
-  }) => _dataSource.createSale(
-    customerId: customerId,
-    warehouseId: warehouseId,
-    items: items,
-    grandTotal: grandTotal,
-    taxAmount: taxAmount,
-    discount: discount,
-    note: note,
-    couponCode: couponCode,
-    payments: payments,
-  );
-
-  @override
-  Future<bool> completePendingSale(String saleId) =>
-      _dataSource.completePendingSale(saleId);
-
-  @override
-  Future<bool> cancelSale(String saleId) => _dataSource.cancelSale(saleId);
-
-  @override
-  Future<bool> applyCoupon(String saleId, String couponCode) =>
-      _dataSource.applyCoupon(saleId, couponCode);
-
-  @override
-  Future<List<SaleItemModel>> searchSalesByReference(String query) =>
-      _dataSource.searchSalesByReference(query);
-
-
-}
-
-/// Supabase implementation for Sale data source
-class _SaleSupabaseDataSource implements SaleRepositoryInterface {
   final SupabaseClient _client = SupabaseClientWrapper.instance;
 
   @override
   Future<List<SaleItemModel>> getAllSales({int? page, int? limit}) async {
     try {
-      log('SaleSupabase: Fetching sales, page: $page, limit: $limit');
+      log('SaleRepository: Fetching sales, page: $page, limit: $limit');
 
       var query = _client
           .from('sales')
@@ -120,14 +54,11 @@ class _SaleSupabaseDataSource implements SaleRepositoryInterface {
 
       final response = await query;
 
-      final sales = (response as List)
+      return (response as List)
           .map((json) => _mapSupabaseToSaleItemModel(json))
           .toList();
-
-      log('SaleSupabase: Fetched ${sales.length} sales');
-      return sales;
     } catch (e) {
-      log('SaleSupabase: Error fetching sales - $e');
+      log('SaleRepository: Error fetching sales - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -135,9 +66,8 @@ class _SaleSupabaseDataSource implements SaleRepositoryInterface {
   @override
   Future<SaleDetailModel?> getSaleById(String id) async {
     try {
-      log('SaleSupabase: Fetching sale by id: $id');
+      log('SaleRepository: Fetching sale by id: $id');
 
-      // Fetch sale with items and payments
       final saleResponse = await _client
           .from('sales')
           .select('''
@@ -154,7 +84,7 @@ class _SaleSupabaseDataSource implements SaleRepositoryInterface {
 
       return _mapSupabaseToSaleDetailModel(saleResponse);
     } catch (e) {
-      log('SaleSupabase: Error fetching sale - $e');
+      log('SaleRepository: Error fetching sale - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -162,7 +92,7 @@ class _SaleSupabaseDataSource implements SaleRepositoryInterface {
   @override
   Future<List<PendingSaleModel>> getPendingSales() async {
     try {
-      log('SaleSupabase: Fetching pending sales');
+      log('SaleRepository: Fetching pending sales');
 
       final response = await _client
           .from('sales')
@@ -174,14 +104,11 @@ class _SaleSupabaseDataSource implements SaleRepositoryInterface {
           .eq('sale_status', 'pending')
           .order('created_at', ascending: false);
 
-      final sales = (response as List)
+      return (response as List)
           .map((json) => _mapSupabaseToPendingSaleModel(json))
           .toList();
-
-      log('SaleSupabase: Fetched ${sales.length} pending sales');
-      return sales;
     } catch (e) {
-      log('SaleSupabase: Error fetching pending sales - $e');
+      log('SaleRepository: Error fetching pending sales - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -189,7 +116,7 @@ class _SaleSupabaseDataSource implements SaleRepositoryInterface {
   @override
   Future<PendingSaleDetailsModel?> getPendingSaleDetails(String id) async {
     try {
-      log('SaleSupabase: Fetching pending sale details: $id');
+      log('SaleRepository: Fetching pending sale details: $id');
 
       final response = await _client
           .from('sales')
@@ -207,7 +134,7 @@ class _SaleSupabaseDataSource implements SaleRepositoryInterface {
 
       return _mapSupabaseToPendingSaleDetailsModel(response);
     } catch (e) {
-      log('SaleSupabase: Error fetching pending sale details - $e');
+      log('SaleRepository: Error fetching pending sale details - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -215,7 +142,7 @@ class _SaleSupabaseDataSource implements SaleRepositoryInterface {
   @override
   Future<List<DueSaleModel>> getDueSales() async {
     try {
-      log('SaleSupabase: Fetching due sales');
+      log('SaleRepository: Fetching due sales');
 
       final response = await _client
           .from('sales')
@@ -226,14 +153,11 @@ class _SaleSupabaseDataSource implements SaleRepositoryInterface {
           .gt('remaining_amount', 0)
           .order('created_at', ascending: false);
 
-      final sales = (response as List)
+      return (response as List)
           .map((json) => _mapSupabaseToDueSaleModel(json))
           .toList();
-
-      log('SaleSupabase: Fetched ${sales.length} due sales');
-      return sales;
     } catch (e) {
-      log('SaleSupabase: Error fetching due sales - $e');
+      log('SaleRepository: Error fetching due sales - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -251,9 +175,8 @@ class _SaleSupabaseDataSource implements SaleRepositoryInterface {
     List<Map<String, dynamic>>? payments,
   }) async {
     try {
-      log('SaleSupabase: Creating sale for customer: $customerId');
+      log('SaleRepository: Creating sale for customer: $customerId');
 
-      // Use RPC for atomic transaction
       final response = await _client.rpc('create_sale_with_items', params: {
         'p_customer_id': customerId,
         'p_warehouse_id': warehouseId,
@@ -266,10 +189,12 @@ class _SaleSupabaseDataSource implements SaleRepositoryInterface {
         'p_payments': payments ?? [],
       });
 
-      log('SaleSupabase: Sale created successfully');
-      return await getSaleById(response['sale_id']) as SaleDetailModel;
+      log('SaleRepository: Sale created successfully');
+      final sale = await getSaleById(response['sale_id']);
+      if (sale == null) throw Exception('Failed to retrieve created sale');
+      return sale;
     } catch (e) {
-      log('SaleSupabase: Error creating sale - $e');
+      log('SaleRepository: Error creating sale - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -277,17 +202,11 @@ class _SaleSupabaseDataSource implements SaleRepositoryInterface {
   @override
   Future<bool> completePendingSale(String saleId) async {
     try {
-      log('SaleSupabase: Completing pending sale: $saleId');
-
-      await _client
-          .from('sales')
-          .update({'sale_status': 'completed'})
-          .eq('id', saleId);
-
-      log('SaleSupabase: Pending sale completed');
+      log('SaleRepository: Completing pending sale: $saleId');
+      await _client.from('sales').update({'sale_status': 'completed'}).eq('id', saleId);
       return true;
     } catch (e) {
-      log('SaleSupabase: Error completing sale - $e');
+      log('SaleRepository: Error completing sale - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -295,17 +214,11 @@ class _SaleSupabaseDataSource implements SaleRepositoryInterface {
   @override
   Future<bool> cancelSale(String saleId) async {
     try {
-      log('SaleSupabase: Cancelling sale: $saleId');
-
-      // Use RPC to handle inventory restoration
-      await _client.rpc('cancel_sale', params: {
-        'p_sale_id': saleId,
-      });
-
-      log('SaleSupabase: Sale cancelled and inventory restored');
+      log('SaleRepository: Cancelling sale: $saleId');
+      await _client.rpc('cancel_sale', params: {'p_sale_id': saleId});
       return true;
     } catch (e) {
-      log('SaleSupabase: Error cancelling sale - $e');
+      log('SaleRepository: Error cancelling sale - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -313,17 +226,14 @@ class _SaleSupabaseDataSource implements SaleRepositoryInterface {
   @override
   Future<bool> applyCoupon(String saleId, String couponCode) async {
     try {
-      log('SaleSupabase: Applying coupon $couponCode to sale $saleId');
-
-      // Validate and apply coupon
+      log('SaleRepository: Applying coupon $couponCode to sale $saleId');
       final result = await _client.rpc('apply_sale_coupon', params: {
         'p_sale_id': saleId,
         'p_coupon_code': couponCode,
       });
-
       return result['success'] == true;
     } catch (e) {
-      log('SaleSupabase: Error applying coupon - $e');
+      log('SaleRepository: Error applying coupon - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -331,8 +241,7 @@ class _SaleSupabaseDataSource implements SaleRepositoryInterface {
   @override
   Future<List<SaleItemModel>> searchSalesByReference(String query) async {
     try {
-      log('SaleSupabase: Searching sales by reference: $query');
-
+      log('SaleRepository: Searching sales by reference: $query');
       final response = await _client
           .from('sales')
           .select('*, customer:customer_id(id, name)')
@@ -340,14 +249,26 @@ class _SaleSupabaseDataSource implements SaleRepositoryInterface {
           .order('created_at', ascending: false)
           .limit(20);
 
-      final sales = (response as List)
-          .map((json) => _mapSupabaseToSaleItemModel(json))
-          .toList();
-
-      log('SaleSupabase: Found ${sales.length} sales');
-      return sales;
+      return (response as List).map((json) => _mapSupabaseToSaleItemModel(json)).toList();
     } catch (e) {
-      log('SaleSupabase: Error searching sales - $e');
+      log('SaleRepository: Error searching sales - $e');
+      throw Exception(SupabaseErrorHandler.handleError(e));
+    }
+  }
+
+  @override
+  Future<bool> payDue(String saleId, String customerId, double amount, List<Map<String, dynamic>> financials) async {
+    try {
+      log('SaleRepository: Processing due payment for sale: $saleId');
+      await _client.rpc('pay_sale_due', params: {
+        'p_sale_id': saleId,
+        'p_customer_id': customerId,
+        'p_amount': amount,
+        'p_financials': financials,
+      });
+      return true;
+    } catch (e) {
+      log('SaleRepository: Error processing due payment - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -459,5 +380,3 @@ class _SaleSupabaseDataSource implements SaleRepositoryInterface {
     );
   }
 }
-
-

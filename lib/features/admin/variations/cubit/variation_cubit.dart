@@ -3,12 +3,12 @@ import 'package:bloc/bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:meta/meta.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/core/services/endpoints.dart';
-import 'package:systego/core/utils/error_handler.dart';
-import 'package:systego/features/admin/variations/model/variation_model.dart';
-import 'package:systego/generated/locale_keys.g.dart';
-import 'package:systego/features/admin/variations/data/repositories/variation_repository.dart';
+import 'package:GoSystem/core/services/dio_helper.dart';
+import 'package:GoSystem/core/services/endpoints.dart';
+import 'package:GoSystem/core/utils/error_handler.dart';
+import 'package:GoSystem/features/admin/variations/model/variation_model.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
+import 'package:GoSystem/features/admin/variations/data/repositories/variation_repository.dart';
 
 part 'variation_state.dart';
 

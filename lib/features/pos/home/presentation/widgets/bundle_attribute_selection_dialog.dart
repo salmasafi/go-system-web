@@ -4,15 +4,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/admin/product/cubit/attribute_value_cubit/attribute_value_cubit.dart';
-import 'package:systego/features/admin/product/cubit/attribute_value_cubit/attribute_value_state.dart';
-import 'package:systego/features/admin/product/models/attribute_type_model.dart';
-import 'package:systego/features/admin/product/models/attribute_value_model.dart';
-import 'package:systego/features/admin/product/models/product_attribute_model.dart';
-import 'package:systego/features/admin/product/models/selected_attribute_model.dart';
-import 'package:systego/features/pos/home/model/pos_models.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/features/admin/product/cubit/attribute_value_cubit/attribute_value_cubit.dart';
+import 'package:GoSystem/features/admin/product/cubit/attribute_value_cubit/attribute_value_state.dart';
+import 'package:GoSystem/features/admin/product/models/attribute_type_model.dart';
+import 'package:GoSystem/features/admin/product/models/attribute_value_model.dart';
+import 'package:GoSystem/features/admin/product/models/product_attribute_model.dart';
+import 'package:GoSystem/features/admin/product/models/selected_attribute_model.dart';
+import 'package:GoSystem/features/pos/home/model/pos_models.dart';
 
 /// Represents the attribute selection state for a single bundle product
 class _BundleProductAttributeState {

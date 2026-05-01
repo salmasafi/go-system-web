@@ -384,10 +384,10 @@
 //
 // }
 
-// import 'package:systego/features/admin/admins_screen/model/admins_model.dart';
-// import 'package:systego/features/admin/product/models/product_model.dart';
-// import 'package:systego/features/admin/revenue/model/revenue_model.dart';
-// import 'package:systego/features/admin/taxes/model/taxes_model.dart';
+// import 'package:GoSystem/features/admin/admins_screen/model/admins_model.dart';
+// import 'package:GoSystem/features/admin/product/models/product_model.dart';
+// import 'package:GoSystem/features/admin/revenue/model/revenue_model.dart';
+// import 'package:GoSystem/features/admin/taxes/model/taxes_model.dart';
 
 // class PurchaseResponse {
 //   final bool success;
@@ -1007,7 +1007,7 @@ class Purchase {
 
   factory Purchase.fromJson(Map<String, dynamic> json) {
     return Purchase(
-      id: json['_id'] ?? json['id'] ?? '',
+      id: json['id'] ?? json['_id'] ?? '',
       date: json['date'] != null
           ? DateTime.parse(json['date'])
           : DateTime.now(),
@@ -1024,11 +1024,11 @@ class Purchase {
       grandTotal: (json['grand_total'] ?? 0).toDouble(),
       note: json['note'],
       reference: json['reference'] ?? '',
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
+      createdAt: (json['created_at'] ?? json['createdAt']) != null
+          ? DateTime.parse(json['created_at'] ?? json['createdAt'])
           : DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
+      updatedAt: (json['updated_at'] ?? json['updatedAt']) != null
+          ? DateTime.parse(json['updated_at'] ?? json['updatedAt'])
           : DateTime.now(),
       version: json['__v'] ?? 0,
       items: List<PurchaseItem>.from(
@@ -1075,21 +1075,21 @@ class Warehouse {
 
   factory Warehouse.fromJson(Map<String, dynamic> json) {
     return Warehouse(
-      id: json['_id'] ?? '',
+      id: json['id'] ?? json['_id'] ?? '',
       name: json['name'] ?? '',
       address: json['address'] ?? '',
       phone: json['phone'] ?? '',
       email: json['email'] ?? '',
       numberOfProducts: json['number_of_products'] ?? 0,
       stockQuantity: json['stock_Quantity'] ?? 0,
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
+      createdAt: (json['created_at'] ?? json['createdAt']) != null
+          ? DateTime.parse(json['created_at'] ?? json['createdAt'])
           : DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
+      updatedAt: (json['updated_at'] ?? json['updatedAt']) != null
+          ? DateTime.parse(json['updated_at'] ?? json['updatedAt'])
           : DateTime.now(),
       version: json['__v'] ?? 0,
-      isOnline: json['Is_Online'] ?? false,
+      isOnline: json['Is_Online'] ?? json['is_online'] ?? false,
     );
   }
 }
@@ -1122,15 +1122,15 @@ class Supplier {
 
   factory Supplier.fromJson(Map<String, dynamic> json) {
     return Supplier(
-      id: json['_id'] ?? '',
-      image: json['image'] ?? '',
+      id: json['id'] ?? json['_id'] ?? '',
+      image: json['image'] ?? json['image_url'] ?? '',
       username: json['username'] ?? '',
       email: json['email'] ?? '',
       phoneNumber: json['phone_number'] ?? '',
       address: json['address'] ?? '',
       companyName: json['company_name'] ?? '',
-      cityId: json['cityId'] ?? '',
-      countryId: json['countryId'] ?? '',
+      cityId: json['cityId'] ?? json['city_id'] ?? '',
+      countryId: json['countryId'] ?? json['country_id'] ?? '',
       version: json['__v'] ?? 0,
     );
   }
@@ -1160,16 +1160,16 @@ class Tax {
 
   factory Tax.fromJson(Map<String, dynamic> json) {
     return Tax(
-      id: json['_id'] ?? '',
+      id: json['id'] ?? json['_id'] ?? '',
       name: json['name'] ?? '',
       status: json['status'] ?? false,
       amount: (json['amount'] ?? 0).toDouble(),
       type: json['type'] ?? '',
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
+      createdAt: (json['created_at'] ?? json['createdAt']) != null
+          ? DateTime.parse(json['created_at'] ?? json['createdAt'])
           : DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
+      updatedAt: (json['updated_at'] ?? json['updatedAt']) != null
+          ? DateTime.parse(json['updated_at'] ?? json['updatedAt'])
           : DateTime.now(),
       version: json['__v'] ?? 0,
     );
@@ -1222,7 +1222,7 @@ class PurchaseItem {
 
   factory PurchaseItem.fromJson(Map<String, dynamic> json) {
     return PurchaseItem(
-      id: json['_id'] ?? json['id'] ?? '',
+      id: json['id'] ?? json['_id'] ?? '',
       date: json['date'] != null
           ? DateTime.parse(json['date'])
           : DateTime.now(),
@@ -1232,24 +1232,24 @@ class PurchaseItem {
       category: json['category_id'] != null
           ? Category.fromJson(json['category_id'])
           : null,
-      dateOfExpiry: json['date_of_expiery'] != null
-          ? DateTime.parse(json['date_of_expiery'])
+      dateOfExpiry: (json['date_of_expiery'] ?? json['date_of_expiry']) != null
+          ? DateTime.parse(json['date_of_expiery'] ?? json['date_of_expiry'])
           : null,
       purchaseId: json['purchase_id'] ?? '',
       warehouseId: json['warehouse_id'] ?? '',
       patchNumber: json['patch_number'],
-      quantity: json['quantity'] ?? 0,
+      quantity: (json['quantity'] ?? 0).toInt(),
       unitCost: (json['unit_cost'] ?? 0).toDouble(),
       subtotal: (json['subtotal'] ?? 0).toDouble(),
       discountShare: (json['discount_share'] ?? 0).toDouble(),
       unitCostAfterDiscount: (json['unit_cost_after_discount'] ?? 0).toDouble(),
       tax: (json['tax'] ?? 0).toDouble(),
       itemType: json['item_type'] ?? '',
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
+      createdAt: (json['created_at'] ?? json['createdAt']) != null
+          ? DateTime.parse(json['created_at'] ?? json['createdAt'])
           : DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
+      updatedAt: (json['updated_at'] ?? json['updatedAt']) != null
+          ? DateTime.parse(json['updated_at'] ?? json['updatedAt'])
           : DateTime.now(),
       version: json['__v'] ?? 0,
       options: List<Option>.from(
@@ -1324,40 +1324,40 @@ class Product {
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: json['_id'] ?? '',
+      id: json['id'] ?? json['_id'] ?? '',
       name: json['name'] ?? '',
       arName: json['ar_name'],
       arDescription: json['ar_description'],
-      image: json['image'] ?? '',
-      categoryId: List<String>.from(json['categoryId'] ?? []),
-      brandId: json['brandId'] ?? '',
+      image: json['image'] ?? json['image_url'] ?? '',
+      categoryId: List<String>.from(json['categoryId'] ?? json['category_id'] ?? []),
+      brandId: json['brandId'] ?? json['brand_id'] ?? '',
       unit: json['unit'] ?? '',
       price: (json['price'] ?? 0).toDouble(),
-      quantity: json['quantity'] ?? 0,
+      quantity: (json['quantity'] ?? 0).toInt(),
       description: json['description'] ?? '',
       expAbility: json['exp_ability'] ?? false,
-      dateOfExpiry: json['date_of_expiery'] != null
-          ? DateTime.parse(json['date_of_expiery'])
+      dateOfExpiry: (json['date_of_expiery'] ?? json['date_of_expiry']) != null
+          ? DateTime.parse(json['date_of_expiery'] ?? json['date_of_expiry'])
           : null,
-      minimumQuantitySale: json['minimum_quantity_sale'] ?? 0,
+      minimumQuantitySale: (json['minimum_quantity_sale'] ?? 0).toInt(),
       wholePrice: (json['whole_price'] ?? 0).toDouble(),
-      startQuantity: json['start_quantaty'] ?? 0,
-      taxesId: json['taxesId'],
+      startQuantity: (json['start_quantaty'] ?? json['start_quantity'] ?? 0).toInt(),
+      taxesId: json['taxesId'] ?? json['tax_id'],
       productHasImei: json['product_has_imei'] ?? false,
       differentPrice: json['different_price'] ?? false,
       showQuantity: json['show_quantity'] ?? true,
-      maximumToShow: json['maximum_to_show'] ?? 0,
+      maximumToShow: (json['maximum_to_show'] ?? 0).toInt(),
       galleryProduct: List<String>.from(json['gallery_product'] ?? []),
       isFeatured: json['is_featured'] ?? false,
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
+      createdAt: (json['created_at'] ?? json['createdAt']) != null
+          ? DateTime.parse(json['created_at'] ?? json['createdAt'])
           : DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
+      updatedAt: (json['updated_at'] ?? json['updatedAt']) != null
+          ? DateTime.parse(json['updated_at'] ?? json['updatedAt'])
           : DateTime.now(),
       version: json['__v'] ?? 0,
       cost: (json['cost'] ?? 0).toDouble(),
-      lowStock: json['low_stock'] ?? 0,
+      lowStock: (json['low_stock'] ?? 0).toInt(),
     );
   }
 }
@@ -1386,16 +1386,16 @@ class Category {
 
   factory Category.fromJson(Map<String, dynamic> json) {
     return Category(
-      id: json['_id'] ?? '',
+      id: json['id'] ?? json['_id'] ?? '',
       name: json['name'] ?? '',
       arName: json['ar_name'],
-      image: json['image'] ?? '',
+      image: json['image'] ?? json['image_url'] ?? '',
       productQuantity: json['product_quantity'] ?? 0,
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
+      createdAt: (json['created_at'] ?? json['createdAt']) != null
+          ? DateTime.parse(json['created_at'] ?? json['createdAt'])
           : DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
+      updatedAt: (json['updated_at'] ?? json['updatedAt']) != null
+          ? DateTime.parse(json['updated_at'] ?? json['updatedAt'])
           : DateTime.now(),
       version: json['__v'] ?? 0,
     );
@@ -1428,7 +1428,7 @@ class Option {
 
   factory Option.fromJson(Map<String, dynamic> json) {
     return Option(
-      id: json['_id'] ?? '',
+      id: json['id'] ?? json['_id'] ?? '',
       purchaseItemId: json['purchase_item_id'] ?? '',
       productPrice: json['product_price_id'] != null
           ? ProductPrice.fromJson(json['product_price_id'])
@@ -1436,15 +1436,15 @@ class Option {
       option: json['option_id'] != null
           ? OptionDetails.fromJson(json['option_id'])
           : null,
-      quantity: json['quantity'] ?? 0,
+      quantity: (json['quantity'] ?? 0).toInt(),
       date: json['date'] != null
           ? DateTime.parse(json['date'])
           : DateTime.now(),
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
+      createdAt: (json['created_at'] ?? json['createdAt']) != null
+          ? DateTime.parse(json['created_at'] ?? json['createdAt'])
           : DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
+      updatedAt: (json['updated_at'] ?? json['updatedAt']) != null
+          ? DateTime.parse(json['updated_at'] ?? json['updatedAt'])
           : DateTime.now(),
       version: json['__v'] ?? 0,
     );
@@ -1481,20 +1481,20 @@ class ProductPrice {
 
   factory ProductPrice.fromJson(Map<String, dynamic> json) {
     return ProductPrice(
-      id: json['_id'] ?? '',
-      productId: json['productId'] ?? '',
+      id: json['id'] ?? json['_id'] ?? '',
+      productId: json['productId'] ?? json['product_id'] ?? '',
       price: (json['price'] ?? 0).toDouble(),
       code: json['code'] ?? '',
       gallery: List<String>.from(json['gallery'] ?? []),
-      quantity: json['quantity'] ?? 0,
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
+      quantity: (json['quantity'] ?? 0).toInt(),
+      createdAt: (json['created_at'] ?? json['createdAt']) != null
+          ? DateTime.parse(json['created_at'] ?? json['createdAt'])
           : DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
+      updatedAt: (json['updated_at'] ?? json['updatedAt']) != null
+          ? DateTime.parse(json['updated_at'] ?? json['updatedAt'])
           : DateTime.now(),
       version: json['__v'] ?? 0,
-      startQuantity: json['strat_quantaty'] ?? 0,
+      startQuantity: (json['strat_quantaty'] ?? json['start_quantity'] ?? 0).toInt(),
       cost: (json['cost'] ?? 0).toDouble(),
     );
   }
@@ -1522,15 +1522,15 @@ class OptionDetails {
 
   factory OptionDetails.fromJson(Map<String, dynamic> json) {
     return OptionDetails(
-      id: json['_id'] ?? '',
-      variationId: json['variationId'] ?? '',
+      id: json['id'] ?? json['_id'] ?? '',
+      variationId: json['variationId'] ?? json['variation_id'] ?? '',
       name: json['name'] ?? '',
       status: json['status'] ?? false,
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
+      createdAt: (json['created_at'] ?? json['createdAt']) != null
+          ? DateTime.parse(json['created_at'] ?? json['createdAt'])
           : DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
+      updatedAt: (json['updated_at'] ?? json['updatedAt']) != null
+          ? DateTime.parse(json['updated_at'] ?? json['updatedAt'])
           : DateTime.now(),
       version: json['__v'] ?? 0,
     );
@@ -1561,18 +1561,18 @@ class Invoice {
 
   factory Invoice.fromJson(Map<String, dynamic> json) {
     return Invoice(
-      id: json['_id'] ?? '',
+      id: json['id'] ?? json['_id'] ?? '',
       purchaseId: List<String>.from(json['purchase_id'] ?? []),
       financialId: List<String>.from(json['financial_id'] ?? []),
       amount: (json['amount'] ?? 0).toDouble(),
       date: json['date'] != null
           ? DateTime.parse(json['date'])
           : DateTime.now(),
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
+      createdAt: (json['created_at'] ?? json['createdAt']) != null
+          ? DateTime.parse(json['created_at'] ?? json['createdAt'])
           : DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
+      updatedAt: (json['updated_at'] ?? json['updatedAt']) != null
+          ? DateTime.parse(json['updated_at'] ?? json['updatedAt'])
           : DateTime.now(),
       version: json['__v'] ?? 0,
     );
@@ -1601,17 +1601,17 @@ class DuePayment {
 
   factory DuePayment.fromJson(Map<String, dynamic> json) {
     return DuePayment(
-      id: json['_id'] ?? '',
+      id: json['id'] ?? json['_id'] ?? '',
       purchaseId: List<String>.from(json['purchase_id'] ?? []),
       amount: (json['amount'] ?? 0).toDouble(),
       date: json['date'] != null
           ? DateTime.parse(json['date'])
           : DateTime.now(),
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
+      createdAt: (json['created_at'] ?? json['createdAt']) != null
+          ? DateTime.parse(json['created_at'] ?? json['createdAt'])
           : DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
+      updatedAt: (json['updated_at'] ?? json['updatedAt']) != null
+          ? DateTime.parse(json['updated_at'] ?? json['updatedAt'])
           : DateTime.now(),
       version: json['__v'] ?? 0,
     );

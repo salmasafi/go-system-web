@@ -14,6 +14,7 @@ class SupabaseAuthService implements AuthServiceInterface {
 
   /// Login with email and password
   /// Returns UserModel to match existing API structure
+  @override
   Future<model.UserModel> login({
     required String email,
     required String password,
@@ -69,6 +70,7 @@ class SupabaseAuthService implements AuthServiceInterface {
   }
 
   /// Logout user
+  @override
   Future<void> logout() async {
     try {
       log('SupabaseAuth: Logging out');
@@ -77,7 +79,6 @@ class SupabaseAuthService implements AuthServiceInterface {
       await _client.auth.signOut();
 
       // Clear cache
-      await CacheHelper.removeData(key: 'token');
       await CacheHelper.removeData(key: 'user');
 
       log('SupabaseAuth: Logout successful');
@@ -88,16 +89,19 @@ class SupabaseAuthService implements AuthServiceInterface {
   }
 
   /// Check if user is currently logged in
+  @override
   bool isLoggedIn() {
     return _client.auth.currentSession != null;
   }
 
   /// Get current session token
+  @override
   String? getCurrentToken() {
     return _client.auth.currentSession?.accessToken;
   }
 
   /// Get current user
+  @override
   model.User? getCurrentUser() {
     final supabaseUser = _client.auth.currentUser;
     if (supabaseUser == null) return null;
@@ -156,7 +160,7 @@ class SupabaseAuthService implements AuthServiceInterface {
 
   /// Save authentication data to cache
   Future<void> _saveToCache(String token, model.User user) async {
-    await CacheHelper.saveData(key: 'token', value: token);
+    // Only save the user model, Supabase handles the token/session automatically
     await CacheHelper.saveModel<model.User>(
       key: 'user',
       model: user,
@@ -165,6 +169,7 @@ class SupabaseAuthService implements AuthServiceInterface {
   }
 
   /// Restore session from cache (for app startup)
+  @override
  Future<bool> restoreSession() async {
     try {
       // Check if we have a stored session in Supabase

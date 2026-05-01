@@ -1,5 +1,5 @@
 // cubit/product_filters_state.dart
-import 'package:systego/features/admin/product/models/filter_models.dart';
+import 'package:GoSystem/features/admin/product/models/filter_models.dart';
 
 abstract class ProductFiltersState {}
 

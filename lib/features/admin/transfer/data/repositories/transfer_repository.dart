@@ -1,8 +1,8 @@
 import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:systego/core/migration/migration_service.dart';
-import 'package:systego/core/supabase/supabase_client.dart';
-import 'package:systego/core/supabase/supabase_error_handler.dart';
+import 'package:GoSystem/core/migration/migration_service.dart';
+import 'package:GoSystem/core/supabase/supabase_client.dart';
+import 'package:GoSystem/core/supabase/supabase_error_handler.dart';
 import '../../model/transfer_model.dart';
 
 // ─────────────────────────────────────────────
@@ -150,7 +150,7 @@ abstract class TransferRepositoryInterface {
 // ─────────────────────────────────────────────
 
 class TransferRepository implements TransferRepositoryInterface {
-  late final TransferRepositoryInterface _dataSource;
+  late TransferRepositoryInterface _dataSource;
 
   TransferRepository() {
     _dataSource = _TransferSupabaseDataSource();

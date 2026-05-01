@@ -83,76 +83,18 @@ abstract class NotificationRepositoryInterface {
 // Hybrid Repository
 // ─────────────────────────────────────────────
 
+// ─────────────────────────────────────────────
+// Repository Implementation
+// ─────────────────────────────────────────────
+
 class NotificationRepository implements NotificationRepositoryInterface {
-  late final NotificationRepositoryInterface _dataSource;
-
-  NotificationRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('notifications')) {
-      log('NotificationRepository: Using Supabase');
-      _dataSource = _NotificationSupabaseDataSource();
-    } else {
-      log('NotificationRepository: Using Dio (legacy)');
-      _dataSource = _NotificationDioDataSource();
-    }
-  }
-
-  @override
-  Future<List<NotificationModel>> getUnreadNotifications() =>
-      _dataSource.getUnreadNotifications();
-
-  @override
-  Future<List<NotificationModel>> getAllNotifications() =>
-      _dataSource.getAllNotifications();
-
-  @override
-  Future<int> getUnreadCount() => _dataSource.getUnreadCount();
-
-  @override
-  Future<bool> markAsRead(String id) => _dataSource.markAsRead(id);
-
-  @override
-  Future<bool> markAllAsRead() => _dataSource.markAllAsRead();
-
-  @override
-  void subscribeToNotifications({
-    required Function(NotificationModel notification) onNewNotification,
-    String? userId,
-  }) =>
-      _dataSource.subscribeToNotifications(
-        onNewNotification: onNewNotification,
-        userId: userId,
-      );
-
-  @override
-  void unsubscribeFromNotifications() => _dataSource.unsubscribeFromNotifications();
-
-  void enableSupabase() {
-    MigrationService.enableSupabase('notifications');
-    _initializeDataSource();
-  }
-
-  void enableDio() {
-    MigrationService.enableDio('notifications');
-    _initializeDataSource();
-  }
-}
-
-// ─────────────────────────────────────────────
-// Supabase Implementation
-// ─────────────────────────────────────────────
-
-class _NotificationSupabaseDataSource implements NotificationRepositoryInterface {
   final SupabaseClient _client = SupabaseClientWrapper.instance;
   static const String _table = 'notifications';
 
   @override
   Future<List<NotificationModel>> getUnreadNotifications() async {
     try {
-      log('NotificationSupabase: Fetching unread notifications');
+      log('NotificationRepository: Fetching unread notifications');
       final response = await _client
           .from(_table)
           .select()
@@ -164,7 +106,7 @@ class _NotificationSupabaseDataSource implements NotificationRepositoryInterface
         return model.toLegacyModel();
       }).toList();
     } catch (e) {
-      log('NotificationSupabase: Error fetching unread notifications - $e');
+      log('NotificationRepository: Error fetching unread notifications - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -179,7 +121,7 @@ class _NotificationSupabaseDataSource implements NotificationRepositoryInterface
       
       return response.length;
     } catch (e) {
-      log('NotificationSupabase: Error getting unread count - $e');
+      log('NotificationRepository: Error getting unread count - $e');
       return 0;
     }
   }
@@ -187,7 +129,7 @@ class _NotificationSupabaseDataSource implements NotificationRepositoryInterface
   @override
   Future<List<NotificationModel>> getAllNotifications() async {
     try {
-      log('NotificationSupabase: Fetching all notifications');
+      log('NotificationRepository: Fetching all notifications');
       final response = await _client
           .from(_table)
           .select()
@@ -198,7 +140,7 @@ class _NotificationSupabaseDataSource implements NotificationRepositoryInterface
         return model.toLegacyModel();
       }).toList();
     } catch (e) {
-      log('NotificationSupabase: Error fetching notifications - $e');
+      log('NotificationRepository: Error fetching notifications - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -256,7 +198,7 @@ class _NotificationSupabaseDataSource implements NotificationRepositoryInterface
                 )
               : null,
           callback: (payload) {
-            log('NotificationSupabase: Real-time notification received');
+            log('NotificationRepository: Real-time notification received');
             if (payload.newRecord != null) {
               final model = SupabaseNotificationModel.fromJson(payload.newRecord!);
               onNewNotification(model.toLegacyModel());
@@ -269,49 +211,5 @@ class _NotificationSupabaseDataSource implements NotificationRepositoryInterface
   @override
   void unsubscribeFromNotifications() {
     _client.channel('notifications_realtime').unsubscribe();
-  }
-}
-
-// ─────────────────────────────────────────────
-// Dio (Legacy) Implementation
-// ─────────────────────────────────────────────
-
-class _NotificationDioDataSource implements NotificationRepositoryInterface {
-  @override
-  Future<List<NotificationModel>> getUnreadNotifications() async {
-    throw UnimplementedError('Not supported in legacy API');
-  }
-
-  @override
-  Future<List<NotificationModel>> getAllNotifications() async {
-    throw UnimplementedError('Not supported in legacy API');
-  }
-
-  @override
-  Future<int> getUnreadCount() async {
-    throw UnimplementedError('Not supported in legacy API');
-  }
-
-  @override
-  Future<bool> markAsRead(String id) async {
-    throw UnimplementedError('Not supported in legacy API');
-  }
-
-  @override
-  Future<bool> markAllAsRead() async {
-    throw UnimplementedError('markAllAsRead not supported via legacy API');
-  }
-
-  @override
-  void subscribeToNotifications({
-    required Function(NotificationModel notification) onNewNotification,
-    String? userId,
-  }) {
-    // No-op for legacy
-  }
-
-  @override
-  void unsubscribeFromNotifications() {
-    // No-op for legacy
   }
 }

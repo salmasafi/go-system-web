@@ -1,12 +1,12 @@
 import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/core/services/endpoints.dart';
-import 'package:systego/core/utils/error_handler.dart';
+import 'package:GoSystem/core/services/dio_helper.dart';
+import 'package:GoSystem/core/services/endpoints.dart';
+import 'package:GoSystem/core/utils/error_handler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/features/admin/department/model/department_model.dart';
-import 'package:systego/features/admin/department/data/repositories/department_repository.dart';
+import 'package:GoSystem/features/admin/department/model/department_model.dart';
+import 'package:GoSystem/features/admin/department/data/repositories/department_repository.dart';
 part 'department_state.dart';
 
 class DepartmentCubit extends Cubit<DepartmentState> {

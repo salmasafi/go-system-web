@@ -1,10 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/core/services/endpoints.dart';
+import 'package:GoSystem/core/services/dio_helper.dart';
+import 'package:GoSystem/core/services/endpoints.dart';
 import '../model/expense_admin_model.dart';
 import 'expense_admin_state.dart';
 
-import 'package:systego/features/admin/expences/data/repositories/expense_repository.dart';
+import 'package:GoSystem/features/admin/expences/data/repositories/expense_repository.dart';
 
 class ExpenseAdminCubit extends Cubit<ExpenseAdminState> {
   final ExpenseRepository _repository;

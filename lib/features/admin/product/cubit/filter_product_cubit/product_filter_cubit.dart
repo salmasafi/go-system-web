@@ -1,13 +1,13 @@
 // cubit/product_filters_cubit.dart
 import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/services/endpoints.dart';
+import 'package:GoSystem/core/services/endpoints.dart';
 import '../../../../../../core/services/dio_helper.dart';
 import '../../../../../../core/utils/error_handler.dart';
 import '../../models/filter_models.dart';
 import '../product_filter_state.dart';
 
-import 'package:systego/features/admin/product/data/repositories/product_repository.dart';
+import 'package:GoSystem/features/admin/product/data/repositories/product_repository.dart';
 
 class ProductFiltersCubit extends Cubit<ProductFiltersState> {
   final ProductRepository _repository;

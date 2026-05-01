@@ -1,12 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/admin/discount/cubit/discount_cubit.dart';
-import 'package:systego/features/admin/discount/model/discount_model.dart';
-import 'package:systego/features/admin/discount/presentation/widgets/animated_discount_card.dart';
-import 'package:systego/features/admin/discount/presentation/widgets/discounts_form_dialog.dart';
-import 'package:systego/generated/locale_keys.g.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/features/admin/discount/cubit/discount_cubit.dart';
+import 'package:GoSystem/features/admin/discount/model/discount_model.dart';
+import 'package:GoSystem/features/admin/discount/presentation/widgets/animated_discount_card.dart';
+import 'package:GoSystem/features/admin/discount/presentation/widgets/discounts_form_dialog.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../../warehouses/view/widgets/custom_delete_dialog.dart';
 

@@ -3,7 +3,6 @@ import '../../../admin/product/models/selected_attribute_model.dart';
 
 class CartItem {
   final Product product;
-  PriceVariation? selectedVariation; // الـ variation المختار إذا كان differentPrice true
   int quantity;
   final BundleModel? bundle; // non-null when this item is a bundle
   
@@ -23,41 +22,31 @@ class CartItem {
 
   CartItem({
     required this.product,
-    this.selectedVariation,
     this.quantity = 1,
     this.bundle,
-    this.selectedAttributes = const [], // NEW
-    this.bundleProductAttributes, // NEW
+    this.selectedAttributes = const [],
+    this.bundleProductAttributes,
   });
 
-  // السعر الأساسي من variation أو product
-  double get basePrice => selectedVariation?.price ?? product.price;
+  double get basePrice => product.price;
 
-  // سعر الجملة من variation أو product
-  double? get wholePrice => selectedVariation?.wholePrice ?? product.wholePrice;
+  double? get wholePrice => product.wholePrice;
 
-  // الحد الأدنى للكمية
-  int? get startQuantity => selectedVariation?.startQuantity ?? product.startQuantity;
+  int? get startQuantity => product.startQuantity;
 
-  // هل خصم الجملة مفعّل؟
   bool get isWholePriceActive =>
       wholePrice != null &&
       startQuantity != null &&
       quantity >= startQuantity!;
 
-  // السعر الفعلي المُطبَّق
   double get effectivePrice => isWholePriceActive ? wholePrice! : basePrice;
 
-  // Subtotal بناءً على السعر الفعلي
   double get subtotal => effectivePrice * quantity;
   
   // NEW: Compare if two cart items are the same (for quantity increment logic)
   bool isSameAs(CartItem other) {
     // Different products
     if (product.id != other.product.id) return false;
-    
-    // Different variations
-    if (selectedVariation?.id != other.selectedVariation?.id) return false;
     
     // Different bundles
     if (bundle?.id != other.bundle?.id) return false;
@@ -106,7 +95,6 @@ class CartItem {
   // NEW: Create with parsed attributes (factory helper for restoring from storage)
   factory CartItem.withAttributes({
     required Product product,
-    PriceVariation? selectedVariation,
     int quantity = 1,
     BundleModel? bundle,
     required List<dynamic> attributesJson,
@@ -114,7 +102,6 @@ class CartItem {
   }) {
     return CartItem(
       product: product,
-      selectedVariation: selectedVariation,
       quantity: quantity,
       bundle: bundle,
       selectedAttributes: attributesJson

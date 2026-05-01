@@ -1,8 +1,8 @@
 // lib/features/admin/product/presentation/widgets/add_product_widgets.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
 
 import '../../../../../core/widgets/custom_textfield/build_text_field.dart';
 

@@ -1,11 +1,7 @@
 import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../../core/migration/migration_service.dart';
-import '../../../../../core/services/dio_helper.dart';
-import '../../../../../core/services/endpoints.dart';
 import '../../../../../core/supabase/supabase_client.dart';
 import '../../../../../core/supabase/supabase_error_handler.dart';
-import '../../../../../core/utils/error_handler.dart';
 import '../../model/points_model.dart';
 
 abstract class PointsRepositoryInterface {
@@ -17,21 +13,7 @@ abstract class PointsRepositoryInterface {
 }
 
 class PointsRepository implements PointsRepositoryInterface {
-  late final PointsRepositoryInterface _dataSource;
-
-  PointsRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('points')) {
-      log('PointsRepository: Using Supabase');
-      _dataSource = _PointsSupabaseDataSource();
-    } else {
-      log('PointsRepository: Using Dio (legacy)');
-      _dataSource = _PointsDioDataSource();
-    }
-  }
+  final _PointsSupabaseDataSource _dataSource = _PointsSupabaseDataSource();
 
   @override
   Future<List<PointsModel>> getPointsRules() => _dataSource.getPointsRules();
@@ -47,16 +29,6 @@ class PointsRepository implements PointsRepositoryInterface {
 
   @override
   Future<int> calculateEarnedPoints(double amount) => _dataSource.calculateEarnedPoints(amount);
-
-  void enableSupabase() {
-    MigrationService.enableSupabase('points');
-    _initializeDataSource();
-  }
-
-  void enableDio() {
-    MigrationService.enableDio('points');
-    _initializeDataSource();
-  }
 }
 
 class _PointsSupabaseDataSource implements PointsRepositoryInterface {
@@ -136,75 +108,5 @@ class _PointsSupabaseDataSource implements PointsRepositoryInterface {
       log('PointsSupabase: Error calculating points - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
-  }
-}
-
-class _PointsDioDataSource implements PointsRepositoryInterface {
-  @override
-  Future<List<PointsModel>> getPointsRules() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getPoints);
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final data = PointsResponse.fromJson(response.data);
-        return data.data.points;
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<PointsModel> createPointsRule(PointsModel rule) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.addPoint,
-        data: {
-          'amount': rule.amount,
-          'points': rule.points,
-        },
-      );
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return PointsModel.fromJson(response.data['data']);
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<PointsModel> updatePointsRule(PointsModel rule) async {
-    try {
-      final response = await DioHelper.putData(
-        url: '${EndPoint.updatePoint}/${rule.id}',
-        data: {
-          'amount': rule.amount,
-          'points': rule.points,
-        },
-      );
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return PointsModel.fromJson(response.data['data']);
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<bool> deletePointsRule(String id) async {
-    try {
-      final response = await DioHelper.deleteData(url: '${EndPoint.deletePoint}/$id');
-      return response.statusCode == 200 || response.statusCode == 201;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<int> calculateEarnedPoints(double amount) async {
-    // Legacy API might not have this as a separate call, or it might be client-side
-    return 0;
   }
 }

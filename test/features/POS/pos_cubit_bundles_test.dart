@@ -6,9 +6,9 @@
 
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:systego/features/pos/home/cubit/pos_home_cubit.dart';
-import 'package:systego/features/pos/home/cubit/pos_home_state.dart';
-import 'package:systego/features/pos/home/model/pos_models.dart';
+import 'package:GoSystem/features/pos/home/cubit/pos_home_cubit.dart';
+import 'package:GoSystem/features/pos/home/cubit/pos_home_state.dart';
+import 'package:GoSystem/features/pos/home/model/pos_models.dart';
 
 // ─── Fake Cubits ─────────────────────────────────────────────────────────────
 // نستخدم subclass لتجاوز getBundles مباشرة بدون Dio/HTTP

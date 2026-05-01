@@ -1,13 +1,13 @@
 import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:systego/core/services/dio_helper.dart';
-import 'package:systego/core/services/endpoints.dart';
-import 'package:systego/core/utils/error_handler.dart';
-import 'package:systego/features/admin/discount/model/discount_model.dart';
-import 'package:systego/generated/locale_keys.g.dart';
+import 'package:GoSystem/core/services/dio_helper.dart';
+import 'package:GoSystem/core/services/endpoints.dart';
+import 'package:GoSystem/core/utils/error_handler.dart';
+import 'package:GoSystem/features/admin/discount/model/discount_model.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 
-import 'package:systego/features/admin/discount/data/repositories/discount_repository.dart';
+import 'package:GoSystem/features/admin/discount/data/repositories/discount_repository.dart';
 
 part 'discount_state.dart';
 

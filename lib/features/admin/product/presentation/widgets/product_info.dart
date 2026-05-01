@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:systego/core/constants/app_colors.dart';
-import 'package:systego/core/utils/responsive_ui.dart';
-import 'package:systego/features/admin/product/models/product_model.dart';
-import 'package:systego/features/admin/product/presentation/widgets/info_label.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/features/admin/product/models/product_model.dart';
+import 'package:GoSystem/features/admin/product/presentation/widgets/info_label.dart';
 
 class ProductInfo extends StatelessWidget {
   final Product product;

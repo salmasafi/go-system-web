@@ -16,60 +16,18 @@ abstract class CouponRepositoryInterface {
   Future<CouponModel?> validateCoupon(String code);
 }
 
+/// Coupon repository using Supabase as the primary data source.
 class CouponRepository implements CouponRepositoryInterface {
-  late final CouponRepositoryInterface _dataSource;
-
-  CouponRepository() {
-    _initializeDataSource();
-  }
-
-  void _initializeDataSource() {
-    if (MigrationService.isUsingSupabase('coupons')) {
-      log('CouponRepository: Using Supabase');
-      _dataSource = _CouponSupabaseDataSource();
-    } else {
-      log('CouponRepository: Using Dio (legacy)');
-      _dataSource = _CouponDioDataSource();
-    }
-  }
-
-  @override
-  Future<List<CouponModel>> getAllCoupons() => _dataSource.getAllCoupons();
-
-  @override
-  Future<CouponModel> createCoupon(CouponModel coupon) => _dataSource.createCoupon(coupon);
-
-  @override
-  Future<CouponModel> updateCoupon(CouponModel coupon) => _dataSource.updateCoupon(coupon);
-
-  @override
-  Future<bool> deleteCoupon(String id) => _dataSource.deleteCoupon(id);
-
-  @override
-  Future<CouponModel?> validateCoupon(String code) => _dataSource.validateCoupon(code);
-
-  void enableSupabase() {
-    MigrationService.enableSupabase('coupons');
-    _initializeDataSource();
-  }
-
-  void enableDio() {
-    MigrationService.enableDio('coupons');
-    _initializeDataSource();
-  }
-}
-
-class _CouponSupabaseDataSource implements CouponRepositoryInterface {
   final SupabaseClient _client = SupabaseClientWrapper.instance;
 
   @override
   Future<List<CouponModel>> getAllCoupons() async {
     try {
-      log('CouponSupabase: Fetching all coupons');
+      log('CouponRepository: Fetching all coupons');
       final response = await _client.from('coupons').select().order('created_at', ascending: false);
       return (response as List).map((json) => _mapSupabaseToCouponModel(json)).toList();
     } catch (e) {
-      log('CouponSupabase: Error fetching coupons - $e');
+      log('CouponRepository: Error fetching coupons - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -77,7 +35,7 @@ class _CouponSupabaseDataSource implements CouponRepositoryInterface {
   @override
   Future<CouponModel> createCoupon(CouponModel coupon) async {
     try {
-      log('CouponSupabase: Creating coupon');
+      log('CouponRepository: Creating coupon');
       final data = {
         'code': coupon.couponCode,
         'name': coupon.couponCode, // Using code as name as it's not in the model but in schema
@@ -93,7 +51,7 @@ class _CouponSupabaseDataSource implements CouponRepositoryInterface {
       final response = await _client.from('coupons').insert(data).select().single();
       return _mapSupabaseToCouponModel(response);
     } catch (e) {
-      log('CouponSupabase: Error creating coupon - $e');
+      log('CouponRepository: Error creating coupon - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -101,7 +59,7 @@ class _CouponSupabaseDataSource implements CouponRepositoryInterface {
   @override
   Future<CouponModel> updateCoupon(CouponModel coupon) async {
     try {
-      log('CouponSupabase: Updating coupon');
+      log('CouponRepository: Updating coupon');
       final data = {
         'code': coupon.couponCode,
         'discount_type': coupon.type,
@@ -113,7 +71,7 @@ class _CouponSupabaseDataSource implements CouponRepositoryInterface {
       final response = await _client.from('coupons').update(data).eq('id', coupon.id).select().single();
       return _mapSupabaseToCouponModel(response);
     } catch (e) {
-      log('CouponSupabase: Error updating coupon - $e');
+      log('CouponRepository: Error updating coupon - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -121,11 +79,11 @@ class _CouponSupabaseDataSource implements CouponRepositoryInterface {
   @override
   Future<bool> deleteCoupon(String id) async {
     try {
-      log('CouponSupabase: Deleting coupon');
+      log('CouponRepository: Deleting coupon');
       await _client.from('coupons').delete().eq('id', id);
       return true;
     } catch (e) {
-      log('CouponSupabase: Error deleting coupon - $e');
+      log('CouponRepository: Error deleting coupon - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -133,7 +91,7 @@ class _CouponSupabaseDataSource implements CouponRepositoryInterface {
   @override
   Future<CouponModel?> validateCoupon(String code) async {
     try {
-      log('CouponSupabase: Validating coupon $code');
+      log('CouponRepository: Validating coupon $code');
       final response = await _client
           .from('coupons')
           .select()
@@ -150,7 +108,7 @@ class _CouponSupabaseDataSource implements CouponRepositoryInterface {
       }
       return null;
     } catch (e) {
-      log('CouponSupabase: Error validating coupon - $e');
+      log('CouponRepository: Error validating coupon - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -173,80 +131,6 @@ class _CouponSupabaseDataSource implements CouponRepositoryInterface {
       updatedAt: json['updated_at'],
       version: 0,
     );
-  }
-}
-
-class _CouponDioDataSource implements CouponRepositoryInterface {
-  @override
-  Future<List<CouponModel>> getAllCoupons() async {
-    try {
-      final response = await DioHelper.getData(url: EndPoint.getAllCoupons);
-      if (response.statusCode == 200) {
-        final model = CouponResponse.fromJson(response.data);
-        return model.data.coupons;
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<CouponModel> createCoupon(CouponModel coupon) async {
-    try {
-      final response = await DioHelper.postData(
-        url: EndPoint.addCoupon,
-        data: coupon.toJson()..remove('_id'),
-      );
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return CouponModel.fromJson(response.data['data']['coupon']);
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<CouponModel> updateCoupon(CouponModel coupon) async {
-    try {
-      final response = await DioHelper.putData(
-        url: EndPoint.updateCoupon(coupon.id),
-        data: coupon.toJson(),
-      );
-      if (response.statusCode == 200) {
-        return CouponModel.fromJson(response.data['data']['coupon']);
-      }
-      throw Exception(ErrorHandler.handleError(response));
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<bool> deleteCoupon(String id) async {
-    try {
-      final response = await DioHelper.deleteData(url: EndPoint.deleteCoupon(id));
-      return response.statusCode == 200;
-    } catch (e) {
-      throw Exception(ErrorHandler.handleError(e));
-    }
-  }
-
-  @override
-  Future<CouponModel?> validateCoupon(String code) async {
-    try {
-      final response = await DioHelper.postData(
-        url: '/api/admin/coupon/apply',
-        data: {'code': code},
-      );
-      if (response.statusCode == 200) {
-        return CouponModel.fromJson(response.data['data']['coupon']);
-      }
-      return null;
-    } catch (e) {
-      return null;
-    }
   }
 }
 

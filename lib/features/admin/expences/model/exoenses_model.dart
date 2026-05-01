@@ -65,14 +65,18 @@ class ExpenseModel {
   factory ExpenseModel.fromJson(Map<String, dynamic> json) {
     return ExpenseModel(
       id: (json['id'] ?? json['_id'])?.toString() ?? '',
-      name: json['name'] as String,
-      amount: (json['amount'] as num).toDouble(),
-      categoryId: json['Category_id'] as String,
+      name: json['name']?.toString() ?? '',
+      amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
+      categoryId: (json['category_id'] ?? json['Category_id'] ?? '')?.toString() ?? '',
       note: json['note'] as String?,
-      financialAccountId: json['financial_accountId'] as String,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
-      version: json['__v'] as int,
+      financialAccountId: (json['financial_account_id'] ?? json['financial_accountId'] ?? json['financial_account_id'] ?? '')?.toString() ?? '',
+      createdAt: json['created_at'] != null 
+          ? DateTime.parse(json['created_at'] as String)
+          : (json['createdAt'] != null ? DateTime.parse(json['createdAt'] as String) : DateTime.now()),
+      updatedAt: json['updated_at'] != null 
+          ? DateTime.parse(json['updated_at'] as String)
+          : (json['updatedAt'] != null ? DateTime.parse(json['updatedAt'] as String) : DateTime.now()),
+      version: json['version'] ?? json['__v'] ?? 0,
     );
   }
 

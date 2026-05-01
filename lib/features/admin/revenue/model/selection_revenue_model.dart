@@ -72,13 +72,13 @@ class CategorySelection {
 
   factory CategorySelection.fromJson(Map<String, dynamic> json) {
     return CategorySelection(
-      id: (json['id'] ?? json['_id'])?.toString() ?? '',
-      name: json['name'] as String? ?? '',
-      arName: json['ar_name'] as String? ?? '',
-      status: json['status'] as bool? ?? false,
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt'] as String) : DateTime.now(),
-      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt'] as String) : DateTime.now(),
-      version: json['__v'] as int? ?? 0,
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      name: json['name']?.toString() ?? '',
+      arName: json['ar_name']?.toString() ?? '',
+      status: json['status'] as bool? ?? true,
+      createdAt: DateTime.tryParse((json['created_at'] ?? json['createdAt'] ?? '').toString()) ?? DateTime.now(),
+      updatedAt: DateTime.tryParse((json['updated_at'] ?? json['updatedAt'] ?? '').toString()) ?? DateTime.now(),
+      version: json['version'] ?? json['__v'] ?? 0,
     );
   }
 
@@ -123,43 +123,20 @@ class AccountSelection {
   });
 
   factory AccountSelection.fromJson(Map<String, dynamic> json) {
-    // return AccountSelection(
-    //   id: json['_id'] as String,
-    //   name: json['name'] as String,
-    //   warehouseId: (json['warehouseId'] as List<dynamic>)
-    //       .map((item) => item as String)
-    //       .toList(),
-    //   image: json['image'] as String?,
-    //   balance: (json['balance'] as num).toDouble(),
-    //   description: json['description'] as String,
-    //   status: json['status'] as bool,
-    //   inPOS: json['in_POS'] as bool,
-    //   createdAt: DateTime.parse(json['createdAt'] as String),
-    //   updatedAt: DateTime.parse(json['updatedAt'] as String),
-    //   version: json['__v'] as int,
-    // );
-
     return AccountSelection(
-      id: (json['id'] ?? json['_id'])?.toString() ?? '', 
-      
-      name: json['name'] as String? ?? '',
-
-      warehouseId: (json['warehouseId'] as List<dynamic>?)
-              ?.map((item) => item.toString())
-              .toList() ?? [],
-
-      image: json['image'] as String?,
-
-      balance: (json['balance'] as num?)?.toDouble() ?? 0.0,
-
-      description: json['description'] as String? ?? '', 
-
-      status: json['status'] as bool? ?? false,
-      inPOS: json['in_POS'] as bool? ?? false,
-      
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
-      version: json['__v'] as int,
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      name: json['name']?.toString() ?? '',
+      warehouseId: (json['warehouse_id'] ?? json['warehouseId'] ?? []) is List
+          ? List<String>.from((json['warehouse_id'] ?? json['warehouseId'] ?? []).map((x) => x.toString()))
+          : [],
+      image: (json['image'] ?? json['image_url'])?.toString(),
+      balance: (json['balance'] ?? json['current_balance'] ?? 0).toDouble(),
+      description: json['description']?.toString() ?? '',
+      status: json['status'] as bool? ?? true,
+      inPOS: json['in_pos'] ?? json['in_POS'] ?? false,
+      createdAt: DateTime.tryParse((json['created_at'] ?? json['createdAt'] ?? '').toString()) ?? DateTime.now(),
+      updatedAt: DateTime.tryParse((json['updated_at'] ?? json['updatedAt'] ?? '').toString()) ?? DateTime.now(),
+      version: json['version'] ?? json['__v'] ?? 0,
     );
   }
 
@@ -201,13 +178,13 @@ class CategoryModel {
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
     return CategoryModel(
-      id: (json['id'] ?? json['_id'])?.toString() ?? '',
-      name: json['name'] as String? ?? '',
-      arName: json['ar_name'] as String? ?? '',
-      status: json['status'] as bool? ?? false,
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt'] as String) : DateTime.now(),
-      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt'] as String) : DateTime.now(),
-      version: json['__v'] as int? ?? 0,
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      name: json['name']?.toString() ?? '',
+      arName: json['ar_name']?.toString() ?? '',
+      status: json['status'] as bool? ?? true,
+      createdAt: DateTime.tryParse((json['created_at'] ?? json['createdAt'] ?? '').toString()) ?? DateTime.now(),
+      updatedAt: DateTime.tryParse((json['updated_at'] ?? json['updatedAt'] ?? '').toString()) ?? DateTime.now(),
+      version: json['version'] ?? json['__v'] ?? 0,
     );
   }
 
@@ -253,19 +230,19 @@ class FinancialAccountModel {
 
   factory FinancialAccountModel.fromJson(Map<String, dynamic> json) {
     return FinancialAccountModel(
-      id: (json['id'] ?? json['_id'])?.toString() ?? '',
-      name: json['name'] as String? ?? '',
-      warehouseId: (json['warehouseId'] as List<dynamic>?)
-          ?.map((item) => item.toString())
-          .toList() ?? [],
-      image: json['image'] as String?,
-      balance: (json['balance'] as num?)?.toDouble() ?? 0.0,
-      description: json['description'] as String? ?? '',
-      status: json['status'] as bool? ?? false,
-      inPOS: json['in_POS'] as bool? ?? false,
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt'] as String) : DateTime.now(),
-      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt'] as String) : DateTime.now(),
-      version: json['__v'] as int? ?? 0,
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      name: json['name']?.toString() ?? '',
+      warehouseId: (json['warehouse_id'] ?? json['warehouseId'] ?? []) is List
+          ? List<String>.from((json['warehouse_id'] ?? json['warehouseId'] ?? []).map((x) => x.toString()))
+          : [],
+      image: (json['image'] ?? json['image_url'])?.toString(),
+      balance: (json['balance'] ?? json['current_balance'] ?? 0).toDouble(),
+      description: json['description']?.toString() ?? '',
+      status: json['status'] as bool? ?? true,
+      inPOS: json['in_pos'] ?? json['in_POS'] ?? false,
+      createdAt: DateTime.tryParse((json['created_at'] ?? json['createdAt'] ?? '').toString()) ?? DateTime.now(),
+      updatedAt: DateTime.tryParse((json['updated_at'] ?? json['updatedAt'] ?? '').toString()) ?? DateTime.now(),
+      version: json['version'] ?? json['__v'] ?? 0,
     );
   }
 

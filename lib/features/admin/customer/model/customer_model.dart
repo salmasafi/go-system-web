@@ -1,5 +1,5 @@
 // Ensure you import the files where you defined Country, City, and CustomerGroup
-import 'package:systego/features/admin/suppliers/model/supplier_model.dart';
+import 'package:GoSystem/features/admin/suppliers/model/supplier_model.dart';
 
 import '../../customer_group/model/customer_group_model.dart'; 
 
@@ -14,8 +14,8 @@ class Country {
 
   factory Country.fromJson(Map<String, dynamic> json) {
     return Country(
-      id: json['_id'] ?? json['id'] ?? '',
-      name: json['name'] ?? '',
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      name: (json['name'] ?? json['country_name'] ?? '').toString(),
     );
   }
 
@@ -38,8 +38,8 @@ class City {
 
   factory City.fromJson(Map<String, dynamic> json) {
     return City(
-      id: json['_id'] ?? '',
-      name: json['name'] ?? '',
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      name: (json['name'] ?? json['city_name'] ?? '').toString(),
     );
   }
 
@@ -64,7 +64,7 @@ class SimpleCustomerGroup {
 
   factory SimpleCustomerGroup.fromJson(Map<String, dynamic> json) {
     return SimpleCustomerGroup(
-      id: json['_id'] ?? '',
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
       name: json['name'] ?? '',
       status: json['status'] ?? false,
     );
@@ -150,48 +150,43 @@ class CustomerModel {
   });
 
   factory CustomerModel.fromJson(Map<String, dynamic> json) {
-    final dynamic groupJson = json['customer_group_id'];
-    SimpleCustomerGroup? group;
-    if (groupJson is String && groupJson.isNotEmpty) {
-      group = SimpleCustomerGroup(id: groupJson, name: '', status: false);
-    } else if (groupJson is Map<String, dynamic>) {
-      group = SimpleCustomerGroup.fromJson(groupJson);
-    }
-
-    final dynamic countryJson = json['country'];
+    final dynamic countryJson = json['country_id'] ?? json['country'];
     Country? countryObj;
     if (countryJson is Map<String, dynamic>) {
       countryObj = Country.fromJson(countryJson);
-    } // If string, ignore or handle if needed, but currently set to null
+    } else if (countryJson != null) {
+       countryObj = Country(id: countryJson.toString(), name: '');
+    }
 
-    final dynamic cityJson = json['city'];
+    final dynamic cityJson = json['city_id'] ?? json['city'];
     City? cityObj;
     if (cityJson is Map<String, dynamic>) {
       cityObj = City.fromJson(cityJson);
-    } // If string, set to null
+    } else if (cityJson != null) {
+       cityObj = City(id: cityJson.toString(), name: '');
+    }
+
+    final dynamic groupJson = json['customer_group_id'] ?? json['group'];
+    CustomerGroup? groupObj;
+    if (groupJson is Map<String, dynamic>) {
+      groupObj = CustomerGroup.fromJson(groupJson);
+    }
 
     return CustomerModel(
-      id: json['_id'] ?? '',
-      name: json['name'] ?? '',
-      email: json['email'] ?? '',
-      // FIX: Handle number-to-string conversion safely
-      phoneNumber: json['phone_number']?.toString() ?? '',
-      address: json['address'] ?? '',
-
-      // Integrating the Country/City classes from your Supplier file
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      name: json['name']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      phoneNumber: (json['phone_number'] ?? json['phone'] ?? '').toString(),
+      address: json['address']?.toString() ?? '',
       country: countryObj,
       city: cityObj,
-
-      customerGroup: json['customer_group_id'] != null
-          ? CustomerGroup.fromJson(json['customer_group_id'])
-          : null,
-      isDue: json['is_Due'] ?? false,
-      amountDue: (json['amount_Due'] as num?)?.toDouble() ?? 0.0,
-      totalPointsEarned: (json['total_points_earned'] as num?)?.toInt() ?? 0,
-
-      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
-      updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
-      version: json['__v'] ?? 0,
+      customerGroup: groupObj,
+      isDue: json['is_due'] ?? json['is_Due'] ?? false,
+      amountDue: (json['amount_due'] ?? json['amount_Due'] ?? 0).toDouble(),
+      totalPointsEarned: (json['total_points_earned'] ?? 0).toInt(),
+      createdAt: DateTime.tryParse((json['created_at'] ?? json['createdAt'] ?? '').toString()) ?? DateTime.now(),
+      updatedAt: DateTime.tryParse((json['updated_at'] ?? json['updatedAt'] ?? '').toString()) ?? DateTime.now(),
+      version: json['version'] ?? json['__v'] ?? 0,
     );
   }
 
