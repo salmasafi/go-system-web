@@ -34,13 +34,9 @@ class _ProductDetailsDialogState extends State<ProductDetailsDialog> {
 
   @override
   Widget build(BuildContext context) {
-    // Basic logic for stock check (simplified based on provided code)
-    final variation = widget.product.prices.isNotEmpty 
-        ? widget.product.prices.first 
-        : null;
-    final availableQty = variation?.quantity ?? 0;
-    // Assuming if no variations/prices, check generic stock or default to true for example
-    final isInStock = availableQty > 0 || widget.product.prices.isEmpty; 
+    // Note: prices removed in migration 014, using product quantity directly
+    final availableQty = widget.product.quantity;
+    final isInStock = availableQty > 0;
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20))),

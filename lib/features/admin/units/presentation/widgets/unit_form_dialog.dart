@@ -32,8 +32,6 @@ class _UnitFormDialogState extends State<UnitFormDialog>
   late Animation<double> _scaleAnimation;
 
   String? selectedOperator;
-  String? selectedBaseUnit;
-  bool isBaseUnit = true;
   bool status = true;
 
   bool get isEditMode => widget.unit != null;
@@ -46,19 +44,17 @@ class _UnitFormDialogState extends State<UnitFormDialog>
   }
 
   String? validateOperatorValue(String? value) {
-    if (!isBaseUnit && (value == null || value.trim().isEmpty)) {
+    if (value == null || value.trim().isEmpty) {
       return LocaleKeys.please_enter_operator_value.tr();
     }
 
-    if (!isBaseUnit && value != null && value.trim().isNotEmpty) {
-      final number = double.tryParse(value);
-      if (number == null) {
-        return LocaleKeys.value_must_be_valid_number.tr();
-      }
+    final number = double.tryParse(value);
+    if (number == null) {
+      return LocaleKeys.value_must_be_valid_number.tr();
+    }
 
-      if (number <= 0) {
-        return LocaleKeys.value_must_be_greater_than_zero.tr();
-      }
+    if (number <= 0) {
+      return LocaleKeys.value_must_be_greater_than_zero.tr();
     }
 
     return null;
@@ -66,14 +62,12 @@ class _UnitFormDialogState extends State<UnitFormDialog>
 
   void _initializeControllers() {
     if (isEditMode) {
-      _nameController.text = widget.unit!.name;
-      _arNameController.text = widget.unit!.arName;
-      _codeController.text = widget.unit!.code;
+      _nameController.text = widget.unit!.name ?? '';
+      _arNameController.text = widget.unit!.arName ?? '';
+      _codeController.text = widget.unit!.code ?? '';
       selectedOperator = widget.unit!.operator;
       _operatorValueController.text = widget.unit!.operatorValue.toString();
-      isBaseUnit = widget.unit!.baseUnit == null;
-      status = widget.unit!.status;
-      selectedBaseUnit = widget.unit!.baseUnit?.id;
+      status = widget.unit!.status ?? true;
     }
   }
 
@@ -186,80 +180,41 @@ class _UnitFormDialogState extends State<UnitFormDialog>
                                 SizedBox(
                                   height: ResponsiveUI.spacing(context, 12),
                                 ),
-                                CheckboxListTile(
-                                  title: Text(LocaleKeys.is_base_unit.tr()),
-                                  value: isBaseUnit,
+                                SizedBox(
+                                  height: ResponsiveUI.spacing(context, 12),
+                                ),
+                                buildDropdownField<String>(
+                                  context,
+                                  value: selectedOperator,
+                                  items: ['*', '/'],
+                                  label: LocaleKeys.operator.tr(),
+                                  icon: Icons.calculate_rounded,
+                                  hint: LocaleKeys.select_operator.tr(),
                                   onChanged: (value) {
                                     setState(() {
-                                      isBaseUnit = value ?? false;
-                                      if (isBaseUnit) {
-                                        selectedBaseUnit = null;
-                                        _operatorValueController.clear();
-                                      }
+                                      selectedOperator = value;
                                     });
                                   },
-                                  activeColor: AppColors.primaryBlue,
+                                  itemLabel: (operator) => operator,
+                                  validator: (value) {
+                                    if (value == null) {
+                                      return LocaleKeys.please_select_operator.tr();
+                                    }
+                                    return null;
+                                  },
                                 ),
-                                if (!isBaseUnit) ...[
-                                  SizedBox(
-                                    height: ResponsiveUI.spacing(context, 12),
-                                  ),
-                                  buildDropdownField<String>(
-                                    context,
-                                    value: selectedBaseUnit,
-                                    items: ['Base Unit 1', 'Base Unit 2'], // TODO: Fetch from API
-                                    label: LocaleKeys.base_unit.tr(),
-                                    icon: Icons.straighten_rounded,
-                                    hint: LocaleKeys.select_base_unit.tr(),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        selectedBaseUnit = value;
-                                      });
-                                    },
-                                    itemLabel: (unit) => unit,
-                                    validator: (value) {
-                                      if (!isBaseUnit && value == null) {
-                                        return LocaleKeys.please_select_base_unit.tr();
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: ResponsiveUI.spacing(context, 12),
-                                  ),
-                                  buildDropdownField<String>(
-                                    context,
-                                    value: selectedOperator,
-                                    items: ['*', '/'],
-                                    label: LocaleKeys.operator.tr(),
-                                    icon: Icons.calculate_rounded,
-                                    hint: LocaleKeys.select_operator.tr(),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        selectedOperator = value;
-                                      });
-                                    },
-                                    itemLabel: (operator) => operator,
-                                    validator: (value) {
-                                      if (!isBaseUnit && value == null) {
-                                        return LocaleKeys.please_select_operator.tr();
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: ResponsiveUI.spacing(context, 12),
-                                  ),
-                                  buildTextField(
-                                    context,
-                                    controller: _operatorValueController,
-                                    keyboardType: TextInputType.number,
-                                    label: LocaleKeys.operator_value.tr(),
-                                    icon: Icons.exposure_rounded,
-                                    hint: LocaleKeys.enter_operator_value.tr(),
-                                    validator: (v) => validateOperatorValue(v),
-                                  ),
-                                ],
+                                SizedBox(
+                                  height: ResponsiveUI.spacing(context, 12),
+                                ),
+                                buildTextField(
+                                  context,
+                                  controller: _operatorValueController,
+                                  keyboardType: TextInputType.number,
+                                  label: LocaleKeys.operator_value.tr(),
+                                  icon: Icons.exposure_rounded,
+                                  hint: LocaleKeys.enter_operator_value.tr(),
+                                  validator: (v) => validateOperatorValue(v),
+                                ),
                                 SizedBox(
                                   height: ResponsiveUI.spacing(context, 12),
                                 ),
@@ -330,13 +285,12 @@ class _UnitFormDialogState extends State<UnitFormDialog>
 
       if (isEditMode) {
         cubit.updateUnit(
-          unitId: widget.unit!.id,
+          unitId: widget.unit!.id ?? '',
           name: _nameController.text.trim(),
           arName: _arNameController.text.trim(),
           code: _codeController.text.trim(),
-          baseUnit: selectedBaseUnit,
           operator: selectedOperator ?? '*',
-          operatorValue: isBaseUnit ? 1.0 : double.parse(_operatorValueController.text.trim()),
+          operatorValue: double.parse(_operatorValueController.text.trim()),
           status: status,
         );
       } else {
@@ -344,9 +298,8 @@ class _UnitFormDialogState extends State<UnitFormDialog>
           name: _nameController.text.trim(),
           arName: _arNameController.text.trim(),
           code: _codeController.text.trim(),
-          baseUnit: selectedBaseUnit,
           operator: selectedOperator ?? '*',
-          operatorValue: isBaseUnit ? 1.0 : double.parse(_operatorValueController.text.trim()),
+          operatorValue: double.parse(_operatorValueController.text.trim()),
           status: status,
         );
       }

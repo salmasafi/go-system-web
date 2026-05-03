@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
@@ -98,15 +99,19 @@ class _VariationScreenState extends State<VariationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    Widget screenContent = Scaffold(
+      backgroundColor: const Color.fromARGB(255, 243, 249, 254),
       appBar: appBarWithActions(
         context,
         title: LocaleKeys.variations_title.tr(),
         showActions: true,
+        actionIcon: Icons.add,
         onPressed: () async {
           final result = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const CreateVariationScreen()),
+            MaterialPageRoute(
+              builder: (context) => const CreateVariationScreen(),
+            ),
           );
           if (result == true && mounted) {
             variationsInit();
@@ -125,5 +130,17 @@ class _VariationScreenState extends State<VariationScreen> {
         ),
       ),
     );
+
+    // Scale down for web
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+
+    return screenContent;
   }
 }

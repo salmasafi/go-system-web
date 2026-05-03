@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/features/admin/settings/presentation/view/settings_screen.dart';
 import '../constants/app_colors.dart';
@@ -45,7 +46,7 @@ AppBar appBarWithActions(
               icon: Icon(
                 Icons.arrow_back_ios_new,
                 color: AppColors.mediumBlue700[700],
-                size: ResponsiveUI.fontSize(context, 20),
+                size: kIsWeb ? 16 : ResponsiveUI.fontSize(context, 20),
               ),
               padding: EdgeInsets.zero,
             ),
@@ -71,7 +72,7 @@ AppBar appBarWithActions(
               icon: Icon(
                 Icons.settings,
                 color: AppColors.mediumBlue700[700],
-                size: ResponsiveUI.iconSize(context, 25),
+                size: kIsWeb ? 20 : ResponsiveUI.iconSize(context, 25),
               ),
               padding: EdgeInsets.zero,
             ),
@@ -99,7 +100,7 @@ AppBar appBarWithActions(
                       icon: Icon(
                         actionIcon ?? Icons.add,
                         color: AppColors.mediumBlue700[700],
-                        size: ResponsiveUI.iconSize(context, 25),
+                        size: kIsWeb ? 20 : ResponsiveUI.iconSize(context, 25),
                       ),
                       padding: EdgeInsets.zero,
                     ),
@@ -204,7 +205,7 @@ AppBar appBarWithActionsWidget(
               icon: Icon(
                 Icons.arrow_back_ios_new,
                 color: AppColors.mediumBlue700[700],
-                size: ResponsiveUI.fontSize(context, 20),
+                size: kIsWeb ? 16 : ResponsiveUI.fontSize(context, 20),
               ),
               padding: EdgeInsets.zero,
             ),

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
@@ -38,21 +39,10 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
   Widget build(BuildContext context) {
     final width = ResponsiveUI.screenWidth(context);
     //final height = ResponsiveUI.screenHeight(context);
-
-    return BlocConsumer<BrandsCubit, BrandsState>(
+    // Scale down for web
+    Widget screenContent = BlocConsumer<BrandsCubit, BrandsState>(
       listener: (context, state) {
         if (state is CreateBrandSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.green,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
-              ),
-              margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
-            ),
-          );
           Navigator.pop(context, true);
         } else if (state is CreateBrandError) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -312,6 +302,15 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
         );
       },
     );
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 
   @override

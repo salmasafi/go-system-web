@@ -1,5 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/services/cache_helper.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
@@ -13,44 +17,35 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.shadowGray[50],
-      appBar: AppBar(
-        title: Text(
-          LocaleKeys.settings.tr(),
-          style: TextStyle(fontWeight: FontWeight.w700, fontSize: ResponsiveUI.fontSize(context, 18)),
-        ),
-        backgroundColor: AppColors.white,
-        foregroundColor: AppColors.darkGray,
-        elevation: 0,
-        surfaceTintColor: Colors.transparent,
-        automaticallyImplyLeading: false,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(height: ResponsiveUI.value(context, 1), color: AppColors.lightGray),
-        ),
+    // Scale down for web
+    Widget screenContent = Scaffold(
+      backgroundColor: Colors.white,
+      appBar: appBarWithActions(
+        context,
+        title: LocaleKeys.settings.tr(),
+        showBackButton: true,
       ),
-      body: ListView(
-        padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-        children: [
-          _SettingsCard(
-            icon: Icons.translate_rounded,
-            label: LocaleKeys.select_language.tr(),
-            accentColor: AppColors.primaryBlue,
-            onTap: () => _showLanguageDialog(context),
+      body: SafeArea(
+        child: Center(
+          child: Text(
+            'Settings Screen - Under Development',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          _SettingsCard(
-            icon: Icons.logout_rounded,
-            label: LocaleKeys.exit.tr(),
-            accentColor: AppColors.red,
-            isDestructive: true,
-            onTap: () => _showLogoutDialog(context),
-          ),
-          SizedBox(height: ResponsiveUI.spacing(context, 24)),
-        ],
+        ),
       ),
     );
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 
   void _showLanguageDialog(BuildContext context) {

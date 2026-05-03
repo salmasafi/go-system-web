@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
@@ -236,7 +237,6 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
     return BlocConsumer<CustomerCubit, CustomerState>(
       listener: (context, state) {
         if (state is CreateCustomerSuccess) {
-          CustomSnackbar.showSuccess(context, state.message);
           Navigator.pop(context, true);
         } else if (state is UpdateCustomerSuccess) {
           CustomSnackbar.showSuccess(context, state.message);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
@@ -158,29 +159,17 @@ void _validateAndSubmit() {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<PermissionCubit, PermissionState>(
+    // Scale down for web
+    Widget screenContent = BlocConsumer<PermissionCubit, PermissionState>(
       listener: (context, state) {
         if (state is CreatePermissionSuccess) {
-          CustomSnackbar.showSuccess(context, state.message);
           Navigator.pop(context, true);
         } else if (state is CreatePermissionError) {
           CustomSnackbar.showError(context, state.error);
         }
       },
       builder: (context, state) {
-        if (state is CreatePermissionSuccess) {
-          return Scaffold(
-            backgroundColor: AppColors.lightBlueBackground,
-            appBar: appBarWithActions(context, title: "New Permission"),
-            body: CustomErrorState(
-              message: state.message,
-              onRetry: _validateAndSubmit,
-            ),
-          );
-        }
-
         final isLoading = state is CreatePermissionLoading;
-
         return Scaffold(
           backgroundColor: const Color.fromARGB(255, 243, 249, 254),
           appBar: appBarWithActions(context, title: "New Permission"),
@@ -219,6 +208,15 @@ void _validateAndSubmit() {
         );
       },
     );
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 }
 

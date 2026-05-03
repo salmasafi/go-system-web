@@ -3,7 +3,6 @@
 // Shows per-product attribute selection for bundles, validates all products before adding.
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/features/admin/product/cubit/attribute_value_cubit/attribute_value_cubit.dart';
@@ -61,7 +60,7 @@ class _BundleProductAttributeState {
 
 /// Dialog that lets the cashier select attributes for each product in a bundle.
 /// Products without attributes are skipped (no selection needed).
-/// Returns a map of productId → List<SelectedAttribute> via [onAttributesSelected].
+/// Returns a map from product id to selected attributes via [onAttributesSelected].
 class BundleAttributeSelectionDialog extends StatefulWidget {
   final BundleModel bundle;
   final ValueChanged<Map<String, List<SelectedAttribute>>> onAttributesSelected;
@@ -116,6 +115,7 @@ class _BundleAttributeSelectionDialogState
             // Load values for this attribute type
             await AttributeValueCubit.get(context)
                 .loadAttributeValues(productAttr.attributeTypeId);
+            if (!mounted) return;
 
             final valueState = AttributeValueCubit.get(context).state;
             if (valueState is AttributeValueLoaded) {

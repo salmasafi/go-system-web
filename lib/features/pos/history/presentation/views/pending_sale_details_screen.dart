@@ -1,19 +1,15 @@
 import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/features/pos/checkout/presentation/widgets/checkout_dialog.dart';
+import 'package:GoSystem/features/pos/history/cubit/history_cubit.dart';
+import 'package:GoSystem/features/pos/history/cubit/history_state.dart';
+import 'package:GoSystem/features/pos/history/model/pending_sale_details_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
-
-// Cubits
-import '../../../checkout/presentation/widgets/checkout_dialog.dart';
-import '../../cubit/history_cubit.dart';
-import '../../cubit/history_state.dart';
 import 'package:GoSystem/features/pos/checkout/cubit/checkout_cubit/checkout_cubit.dart';
 import 'package:GoSystem/features/pos/home/cubit/pos_home_cubit.dart';
-
-// Models
-import '../../model/pending_sale_details_model.dart';
 import 'package:GoSystem/features/pos/home/model/pos_models.dart'; // For Product & PriceVariation models
 
 class PendingSaleDetailsScreen extends StatelessWidget {
@@ -187,26 +183,11 @@ class PendingSaleDetailsScreen extends StatelessWidget {
         description: '',
         price: item.price, // Use price from sale record
         image: item.productImage,
-        differentPrice: item.productPriceId != null, // If it has a specific price ID, assume variation logic
       );
-
-      // Create PriceVariation if needed (dummy wrapper to pass ID)
-      PriceVariation? variation;
-      if (item.productPriceId != null) {
-          variation = PriceVariation(
-            id: item.productPriceId!, 
-            productId: item.productId, 
-            price: item.price, 
-            code: '', 
-            gallery: [], 
-            quantity: 0, 
-            variations: []
-          );
-      }
 
       // Add to cart with specific quantity
       // Since addToCart increments by 1, we add once and then update quantity if needed
-      checkoutCubit.addToCart(product, variation: variation);
+      checkoutCubit.addToCart(product);
       
       // Correct the quantity
       if (item.quantity > 1) {

@@ -7,8 +7,7 @@ import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:GoSystem/features/pos/checkout/cubit/checkout_cubit/checkout_cubit.dart';
 import 'package:GoSystem/features/pos/customer/cubit/pos_customer_cubit.dart';
 import 'package:GoSystem/features/pos/home/cubit/pos_home_cubit.dart';
-import 'package:GoSystem/features/pos/customer/presentation/widgets/customer_picker_sheet.dart';
-import '../../model/checkout_models.dart';
+import 'package:GoSystem/features/pos/checkout/model/checkout_models.dart';
 import 'action_botton.dart';
 import 'cart_item_tile.dart';
 import 'checkout_dialog.dart';
@@ -150,7 +149,7 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
                 final item = cartItems[index];
                 return Dismissible(
                   key: ValueKey(
-                    '${item.product.id}_${item.selectedVariation?.code ?? 'no_var'}_$index',
+                    '${item.product.id}_${item.getAttributesDisplay()}_$index',
                   ),
                   direction: DismissDirection.endToStart,
                   background: Container(
@@ -196,7 +195,7 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
                   },
                   child: CartItemTile(
                     key: ValueKey(
-                      '${item.product.id}_${item.selectedVariation?.id ?? ''}_${item.quantity}',
+                      '${item.product.id}_${item.getAttributesDisplay()}_${item.quantity}',
                     ),
                     item: item,
                     onIncrement: () {

@@ -112,13 +112,12 @@ class _EditRolesBottomSheetState extends State<EditRolesBottomSheet> {
     final maxWidth = ResponsiveUI.contentMaxWidth(context);
     final isDesktop = maxWidth > 600;
 
-    // Switched to RolesCubit
     return BlocConsumer<RolesCubit, RolesState>(
       listener: (context, state) {
-        if (state is RolesUpdateSuccess) { // Assuming you have this state
-          CustomSnackbar.showSuccess(context, LocaleKeys.role_updated.tr());
+        if (state is RolesUpdateSuccess) {
+          CustomSnackbar.showSuccess(context, state.message);
           Navigator.pop(context);
-        } else if (state is RolesError) {
+        } else if (state is RolesUpdateError) {
           CustomSnackbar.showError(context, state.error);
         }
       },

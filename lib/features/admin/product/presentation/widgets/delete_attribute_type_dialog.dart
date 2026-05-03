@@ -16,20 +16,20 @@ class DeleteAttributeTypeDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Delete Attribute Type'),
+      title: const Text('حذف نوع الخاصية'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Are you sure you want to delete this attribute type?'),
+          const Text('هل أنت متأكد أنك تريد حذف نوع الخاصية هذا؟'),
           const SizedBox(height: 8),
           Text(
-            'Name: $attributeTypeName',
+            'الاسم: $attributeTypeName',
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           const Text(
-            'Warning: This will also delete all associated attribute values and remove them from products.',
+            'تحذير: سيؤدي هذا أيضاً إلى حذف جميع قيم الخصائص المرتبطة وإزالتها من المنتجات.',
             style: TextStyle(color: Colors.orange, fontSize: 12),
           ),
         ],
@@ -37,7 +37,7 @@ class DeleteAttributeTypeDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: const Text('إلغاء'),
         ),
         BlocBuilder<AttributeTypeCubit, AttributeTypeState>(
           builder: (context, state) {
@@ -54,7 +54,7 @@ class DeleteAttributeTypeDialog extends StatelessWidget {
                         color: Colors.white,
                       ),
                     )
-                  : const Text('Delete'),
+                  : const Text('حذف'),
             );
           },
         ),

@@ -1,4 +1,4 @@
-import '../../home/model/pos_models.dart';
+import 'package:GoSystem/features/pos/home/model/pos_models.dart';
 import '../../../admin/product/models/selected_attribute_model.dart';
 
 class CartItem {

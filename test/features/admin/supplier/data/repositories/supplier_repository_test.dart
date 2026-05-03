@@ -30,7 +30,6 @@ void main() {
 
     SupabaseClientWrapper.setMockInstance(mockClient);
     repository = SupplierRepository();
-    repository.enableSupabase();
   });
 
   tearDown(() {

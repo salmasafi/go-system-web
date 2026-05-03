@@ -14,7 +14,7 @@ class Product {
   final String description;
   final String arDescription;
   final bool expAbility;
-  final DateTime? dateOfExpiery;
+  final DateTime? dateOfExpiry;
   final int minimumQuantitySale;
   final int lowStock;
   final double wholePrice;
@@ -42,7 +42,7 @@ class Product {
     required this.description,
     required this.arDescription,
     required this.expAbility,
-    this.dateOfExpiery,
+    this.dateOfExpiry,
     required this.minimumQuantitySale,
     required this.lowStock,
     required this.wholePrice,
@@ -88,7 +88,7 @@ class Product {
       arDescription: json['ar_description'] ?? '',
       description: json['description'] ?? '',
       expAbility: json['exp_ability'] ?? false,
-      dateOfExpiery: json['date_of_expiry'] != null
+      dateOfExpiry: json['date_of_expiry'] != null
           ? DateTime.tryParse(json['date_of_expiry'])
           : null,
       minimumQuantitySale: (json['minimum_quantity_sale'] as num?)?.toInt() ?? 0,
@@ -122,7 +122,7 @@ class Product {
       'quantity': quantity,
       'description': description,
       'exp_ability': expAbility,
-      'date_of_expiery': dateOfExpiery?.toIso8601String(),
+      'date_of_expiry': dateOfExpiry?.toIso8601String(),
       'minimum_quantity_sale': minimumQuantitySale,
       'low_stock': lowStock,
       'whole_price': wholePrice,

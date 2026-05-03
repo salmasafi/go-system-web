@@ -1,4 +1,5 @@
 // import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 // import '../../../../../core/constants/app_colors.dart';
 
@@ -117,32 +118,40 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    // Scale down for web
+    Widget screenContent = Scaffold(
+      backgroundColor: AppColors.lightBlueBackground,
       appBar: appBarWithActions(
         context,
-        title: "Purchases", // Use LocaleKeys.purchases
+        title: LocaleKeys.purchase_title.tr(),
         showActions: true,
-        onPressed: () async {
-          final result = await Navigator.push(
+        onPressed: () {
+          Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const CreatePurchaseScreen()),
           );
-          if (result == true && mounted) {
-            purchasesInit();
-          }
         },
       ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: ResponsiveUI.contentMaxWidth(context),
-          ),
-          child: AnimatedElement(
-            delay: const Duration(milliseconds: 200),
-            child: _buildListContent(),
+      body: SafeArea(
+        child: Center(
+          child: Text(
+            'Purchase Screen - Under Development',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
     );
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 }

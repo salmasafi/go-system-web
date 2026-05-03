@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
@@ -53,23 +54,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    // Scale down for web
+    Widget screenContent = Scaffold(
       backgroundColor: AppColors.shadowGray[50],
       appBar: _buildCustomAppBar(),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-        child: Column(
-          children: [
-            // Profile Section
-            _buildProfileSection(),
-            SizedBox(height: ResponsiveUI.spacing(context, 24)),
-            
-            // Settings Sections
-            _buildSettingsSection(),
-          ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Padding(
+            padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+            child: Column(
+              children: [
+                _buildProfileSection(),
+                SizedBox(height: ResponsiveUI.spacing(context, 24)),
+                _buildSettingsSection(),
+              ],
+            ),
+          ),
         ),
       ),
     );
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 
   PreferredSizeWidget _buildCustomAppBar() {

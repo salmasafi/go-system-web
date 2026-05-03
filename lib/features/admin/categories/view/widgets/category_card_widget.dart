@@ -50,12 +50,12 @@ class _AnimatedCategoryCardState extends State<AnimatedCategoryCard>
 
     _scaleAnimation = Tween<double>(
       begin: 0.8,
-      end: ResponsiveUI.padding(context, 1.0),
+      end: 1.0,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
     _fadeAnimation = Tween<double>(
       begin: 0.0,
-      end: ResponsiveUI.padding(context, 1.0),
+      end: 1.0,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     _slideAnimation = Tween<Offset>(

@@ -89,7 +89,7 @@ class ReturnCubit extends Cubit<ReturnState> {
       final itemsPayload = items
           .where((i) => i.returnQuantity > 0)
           .map((i) => {
-                'product_price_id': i.productPriceId,
+                'sale_item_id': i.id,
                 'quantity': i.returnQuantity,
                 'reason': i.reason,
               })

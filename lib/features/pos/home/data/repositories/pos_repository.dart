@@ -2,28 +2,27 @@ import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../../core/supabase/supabase_client.dart';
 import '../../../../../core/supabase/supabase_error_handler.dart';
-import '../../../../admin/product/models/product_model.dart';
-import '../../model/pos_models.dart';
+import '../../../../admin/product/models/product_model.dart' as admin_product;
 
 /// Interface for POS-specific data operations
 abstract class POSRepositoryInterface {
   /// Quick product lookup by barcode for POS scanning
-  Future<ProductModel?> getProductByBarcode(String barcode);
+  Future<admin_product.Product?> getProductByBarcode(String barcode);
 
   /// Quick product lookup by code
-  Future<ProductModel?> getProductByCode(String code);
+  Future<admin_product.Product?> getProductByCode(String code);
 
   /// Search products for POS (fast, limited results)
-  Future<List<ProductModel>> searchProductsForPOS(String query, {int limit = 20});
+  Future<List<admin_product.Product>> searchProductsForPOS(String query, {int limit = 20});
 
   /// Get products by category for POS
-  Future<List<ProductModel>> getProductsByCategoryForPOS(String categoryId, {int limit = 50});
+  Future<List<admin_product.Product>> getProductsByCategoryForPOS(String categoryId, {int limit = 50});
 
   /// Get popular products for POS homepage
-  Future<List<ProductModel>> getPopularProducts({int limit = 20});
+  Future<List<admin_product.Product>> getPopularProducts({int limit = 20});
 
   /// Get products with low stock warning
-  Future<List<ProductModel>> getLowStockProducts({int limit = 20});
+  Future<List<admin_product.Product>> getLowStockProducts({int limit = 20});
 
   /// Sync offline sales to server
   Future<bool> syncOfflineSales(List<Map<String, dynamic>> offlineSales);
@@ -49,27 +48,27 @@ class POSRepository implements POSRepositoryInterface {
   final _POSSupabaseDataSource _dataSource = _POSSupabaseDataSource();
 
   @override
-  Future<ProductModel?> getProductByBarcode(String barcode) =>
+  Future<admin_product.Product?> getProductByBarcode(String barcode) =>
       _dataSource.getProductByBarcode(barcode);
 
   @override
-  Future<ProductModel?> getProductByCode(String code) =>
+  Future<admin_product.Product?> getProductByCode(String code) =>
       _dataSource.getProductByCode(code);
 
   @override
-  Future<List<ProductModel>> searchProductsForPOS(String query, {int limit = 20}) =>
+  Future<List<admin_product.Product>> searchProductsForPOS(String query, {int limit = 20}) =>
       _dataSource.searchProductsForPOS(query, limit: limit);
 
   @override
-  Future<List<ProductModel>> getProductsByCategoryForPOS(String categoryId, {int limit = 50}) =>
+  Future<List<admin_product.Product>> getProductsByCategoryForPOS(String categoryId, {int limit = 50}) =>
       _dataSource.getProductsByCategoryForPOS(categoryId, limit: limit);
 
   @override
-  Future<List<ProductModel>> getPopularProducts({int limit = 20}) =>
+  Future<List<admin_product.Product>> getPopularProducts({int limit = 20}) =>
       _dataSource.getPopularProducts(limit: limit);
 
   @override
-  Future<List<ProductModel>> getLowStockProducts({int limit = 20}) =>
+  Future<List<admin_product.Product>> getLowStockProducts({int limit = 20}) =>
       _dataSource.getLowStockProducts(limit: limit);
 
   @override
@@ -104,7 +103,7 @@ class _POSSupabaseDataSource implements POSRepositoryInterface {
   static const String _draftCartsTable = 'pos_draft_carts';
 
   @override
-  Future<ProductModel?> getProductByBarcode(String barcode) async {
+  Future<admin_product.Product?> getProductByBarcode(String barcode) async {
     try {
       log('POSSupabase: Looking up product by barcode: $barcode');
 
@@ -124,7 +123,7 @@ class _POSSupabaseDataSource implements POSRepositoryInterface {
         return null;
       }
 
-      return ProductModel.fromJson(response);
+      return admin_product.Product.fromJson(response);
     } catch (e) {
       log('POSSupabase: Error looking up product by barcode - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
@@ -132,7 +131,7 @@ class _POSSupabaseDataSource implements POSRepositoryInterface {
   }
 
   @override
-  Future<ProductModel?> getProductByCode(String code) async {
+  Future<admin_product.Product?> getProductByCode(String code) async {
     try {
       log('POSSupabase: Looking up product by code: $code');
 
@@ -152,7 +151,7 @@ class _POSSupabaseDataSource implements POSRepositoryInterface {
         return null;
       }
 
-      return ProductModel.fromJson(response);
+      return admin_product.Product.fromJson(response);
     } catch (e) {
       log('POSSupabase: Error looking up product by code - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
@@ -160,7 +159,7 @@ class _POSSupabaseDataSource implements POSRepositoryInterface {
   }
 
   @override
-  Future<List<ProductModel>> searchProductsForPOS(String query, {int limit = 20}) async {
+  Future<List<admin_product.Product>> searchProductsForPOS(String query, {int limit = 20}) async {
     try {
       log('POSSupabase: Searching products for POS: $query');
 
@@ -178,7 +177,7 @@ class _POSSupabaseDataSource implements POSRepositoryInterface {
           .order('name');
 
       return (response as List)
-          .map((json) => ProductModel.fromJson(json))
+          .map((json) => admin_product.Product.fromJson(json))
           .toList();
     } catch (e) {
       log('POSSupabase: Error searching products - $e');
@@ -187,7 +186,7 @@ class _POSSupabaseDataSource implements POSRepositoryInterface {
   }
 
   @override
-  Future<List<ProductModel>> getProductsByCategoryForPOS(String categoryId, {int limit = 50}) async {
+  Future<List<admin_product.Product>> getProductsByCategoryForPOS(String categoryId, {int limit = 50}) async {
     try {
       log('POSSupabase: Getting products for category: $categoryId');
 
@@ -205,7 +204,7 @@ class _POSSupabaseDataSource implements POSRepositoryInterface {
           .order('name');
 
       return (response as List)
-          .map((json) => ProductModel.fromJson(json))
+          .map((json) => admin_product.Product.fromJson(json))
           .toList();
     } catch (e) {
       log('POSSupabase: Error getting products by category - $e');
@@ -214,7 +213,7 @@ class _POSSupabaseDataSource implements POSRepositoryInterface {
   }
 
   @override
-  Future<List<ProductModel>> getPopularProducts({int limit = 20}) async {
+  Future<List<admin_product.Product>> getPopularProducts({int limit = 20}) async {
     try {
       log('POSSupabase: Getting popular products');
 
@@ -232,7 +231,7 @@ class _POSSupabaseDataSource implements POSRepositoryInterface {
           .limit(limit);
 
       return (response as List)
-          .map((json) => ProductModel.fromJson(json))
+          .map((json) => admin_product.Product.fromJson(json))
           .toList();
     } catch (e) {
       log('POSSupabase: Error getting popular products - $e');
@@ -241,7 +240,7 @@ class _POSSupabaseDataSource implements POSRepositoryInterface {
   }
 
   @override
-  Future<List<ProductModel>> getLowStockProducts({int limit = 20}) async {
+  Future<List<admin_product.Product>> getLowStockProducts({int limit = 20}) async {
     try {
       log('POSSupabase: Getting low stock products');
 
@@ -259,7 +258,7 @@ class _POSSupabaseDataSource implements POSRepositoryInterface {
           .order('quantity');
 
       return (response as List)
-          .map((json) => ProductModel.fromJson(json))
+          .map((json) => admin_product.Product.fromJson(json))
           .toList();
     } catch (e) {
       log('POSSupabase: Error getting low stock products - $e');

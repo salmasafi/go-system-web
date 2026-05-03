@@ -3,38 +3,40 @@ import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:GoSystem/core/supabase/supabase_client.dart';
 import 'package:GoSystem/features/admin/dashboard/data/repositories/notification_repository.dart';
-import 'package:GoSystem/features/admin/dashboard/model/notification_model.dart';
 
 class MockSupabaseClient extends Mock implements SupabaseClient {}
-class MockPostgrestQueryBuilder extends Mock implements PostgrestQueryBuilder<List<Map<String, dynamic>>> {}
-class MockPostgrestFilterBuilder extends Mock implements PostgrestFilterBuilder<List<Map<String, dynamic>>> {}
-class MockPostgrestTransformBuilder extends Mock implements PostgrestTransformBuilder<List<Map<String, dynamic>>> {}
+class MockSupabaseQueryBuilder extends Mock implements SupabaseQueryBuilder {}
+class MockPostgrestFilterBuilder extends Mock
+    implements PostgrestFilterBuilder<List<Map<String, dynamic>>> {}
 class MockGoTrueClient extends Mock implements GoTrueClient {}
 class MockUser extends Mock implements User {}
 
 void main() {
   late NotificationRepository repository;
   late MockSupabaseClient mockClient;
-  late MockPostgrestQueryBuilder mockQueryBuilder;
+  late MockSupabaseQueryBuilder mockQueryBuilder;
   late MockPostgrestFilterBuilder mockFilterBuilder;
   late MockGoTrueClient mockAuth;
   late MockUser mockUser;
 
   setUp(() {
     mockClient = MockSupabaseClient();
-    mockQueryBuilder = MockPostgrestQueryBuilder();
+    mockQueryBuilder = MockSupabaseQueryBuilder();
     mockFilterBuilder = MockPostgrestFilterBuilder();
     mockAuth = MockGoTrueClient();
     mockUser = MockUser();
 
     SupabaseClientWrapper.setMockInstance(mockClient);
-    
+
     when(() => mockClient.auth).thenReturn(mockAuth);
     when(() => mockAuth.currentUser).thenReturn(mockUser);
     when(() => mockUser.id).thenReturn('user-123');
 
     repository = NotificationRepository();
-    repository.enableSupabase();
+  });
+
+  tearDown(() {
+    SupabaseClientWrapper.dispose();
   });
 
   group('NotificationRepository Supabase Tests', () {
@@ -54,7 +56,13 @@ void main() {
       when(() => mockClient.from('notifications')).thenReturn(mockQueryBuilder);
       when(() => mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.order('created_at', ascending: false))
-          .thenAnswer((_) async => mockData);
+          .thenReturn(mockFilterBuilder);
+
+      when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
+        final callback = invocation.positionalArguments[0]
+            as dynamic Function(List<Map<String, dynamic>>);
+        return callback(mockData);
+      });
 
       final result = await repository.getAllNotifications();
 
@@ -64,11 +72,20 @@ void main() {
     });
 
     test('getUnreadCount returns correct count', () async {
-      final mockData = [{'id': '1'}, {'id': '2'}];
+      final mockData = [
+        {'id': '1'},
+        {'id': '2'},
+      ];
 
       when(() => mockClient.from('notifications')).thenReturn(mockQueryBuilder);
       when(() => mockQueryBuilder.select('id')).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq('is_read', false)).thenAnswer((_) async => mockData);
+      when(() => mockFilterBuilder.eq('is_read', false)).thenReturn(mockFilterBuilder);
+
+      when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
+        final callback = invocation.positionalArguments[0]
+            as dynamic Function(List<Map<String, dynamic>>);
+        return callback(mockData);
+      });
 
       final result = await repository.getUnreadCount();
 
@@ -77,8 +94,12 @@ void main() {
 
     test('markAsRead updates notification', () async {
       when(() => mockClient.from('notifications')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.update({'is_read': true})).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq('id', '1')).thenAnswer((_) async => []);
+      when(() => mockQueryBuilder.update({'is_read': true}))
+          .thenReturn(mockFilterBuilder);
+      when(() => mockFilterBuilder.eq('id', '1')).thenReturn(mockFilterBuilder);
+
+      when(() => mockFilterBuilder.then(any()))
+          .thenAnswer((_) async => <dynamic>[]);
 
       final result = await repository.markAsRead('1');
 

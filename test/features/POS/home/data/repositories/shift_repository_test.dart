@@ -2,8 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:GoSystem/core/supabase/supabase_client.dart';
-import 'package:GoSystem/features/pos/home/data/repositories/shift_repository.dart';
-import 'package:GoSystem/features/pos/home/model/shift_model.dart';
 import 'package:GoSystem/features/pos/shift/data/repositories/shift_repository.dart';
 
 class MockSupabaseClient extends Mock implements SupabaseClient {}
@@ -14,7 +12,7 @@ class MockPostgrestFilterBuilder extends Mock
     implements PostgrestFilterBuilder<List<Map<String, dynamic>>> {}
 
 class MockPostgrestTransformBuilder extends Mock
-    implements PostgrestTransformBuilder<Map<String, dynamic>?> {}
+    implements PostgrestTransformBuilder<PostgrestMap> {}
 
 void main() {
   late ShiftRepository repository;

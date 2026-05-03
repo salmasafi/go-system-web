@@ -110,7 +110,6 @@ class PendingSaleProductItem {
   final double price; // Unit price from sales record
   final int quantity;
   final double subtotal;
-  final String? productPriceId; // Specific variation ID if exists
 
   PendingSaleProductItem({
     required this.id,
@@ -120,7 +119,6 @@ class PendingSaleProductItem {
     required this.price,
     required this.quantity,
     required this.subtotal,
-    this.productPriceId,
   });
 
   factory PendingSaleProductItem.fromJson(Map<String, dynamic> json) {
@@ -134,12 +132,6 @@ class PendingSaleProductItem {
       pId = json['product']['_id'] ?? '';
       pImg = json['product']['image'] ?? '';
     }
-    
-    // Determine Variation ID if present (product_price)
-    String? ppId;
-    if (json['product_price'] is Map) {
-       ppId = json['product_price']['_id'];
-    }
 
     return PendingSaleProductItem(
       id: json['_id'] ?? '',
@@ -149,7 +141,6 @@ class PendingSaleProductItem {
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       quantity: (json['quantity'] as num?)?.toInt() ?? 0,
       subtotal: (json['subtotal'] as num?)?.toDouble() ?? 0.0,
-      productPriceId: ppId,
     );
   }
 }

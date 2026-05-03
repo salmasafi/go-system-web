@@ -7,9 +7,9 @@ import 'package:GoSystem/features/pos/checkout/model/reciept_data.dart';
 import 'package:GoSystem/features/pos/home/cubit/pos_home_cubit.dart';
 import 'package:GoSystem/features/pos/home/model/pos_models.dart';
 import 'package:GoSystem/features/admin/discount/model/discount_model.dart';
-import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
-import '../../cubit/checkout_cubit/checkout_cubit.dart';
-import '../../model/checkout_models.dart';
+import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:GoSystem/features/pos/checkout/cubit/checkout_cubit/checkout_cubit.dart';
+import 'package:GoSystem/features/pos/checkout/model/checkout_models.dart';
 import 'receipt_dialog.dart';
 
 // --------------------------------------------------------------
@@ -334,6 +334,8 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      _paymentMethodDisplay(),
+                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
                       _dynamicFields(),
                       SizedBox(height: ResponsiveUI.spacing(context, 16)),
                       _taxDropdown(),

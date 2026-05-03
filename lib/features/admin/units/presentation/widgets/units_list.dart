@@ -39,7 +39,7 @@ class UnitsList extends StatelessWidget {
 
   void _changeStatus(BuildContext context, UnitModel unit, bool status) {
     log("updating unit status");
-    context.read<UnitsCubit>().changeUnitStatus(unit.id, unit.name, status);
+    context.read<UnitsCubit>().changeUnitStatus(unit.id ?? '', unit.name ?? 'Unknown', status);
   }
 
   void _showEditDialog(BuildContext context, UnitModel unit) {
@@ -50,7 +50,7 @@ class UnitsList extends StatelessWidget {
   }
 
   void _showDeleteDialog(BuildContext context, UnitModel unit) {
-    if (unit.id.isEmpty) {
+    if (unit.id?.isEmpty ?? true) {
       CustomSnackbar.showError(context, LocaleKeys.invalid_unit_id.tr());
       return;
     }
@@ -60,10 +60,10 @@ class UnitsList extends StatelessWidget {
       barrierDismissible: false,
       builder: (dialogContext) => CustomDeleteDialog(
         title: LocaleKeys.delete_unit.tr(),
-        message: '${LocaleKeys.delete_unit_message.tr()}\n"${unit.name}"',
+        message: '${LocaleKeys.delete_unit_message.tr()}\n"${unit.name ?? 'Unknown'}"',
         onDelete: () {
           Navigator.pop(dialogContext);
-          context.read<UnitsCubit>().deleteUnit(unit.id);
+          context.read<UnitsCubit>().deleteUnit(unit.id ?? '');
         },
       ),
     );

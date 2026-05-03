@@ -1,5 +1,6 @@
 // import 'dart:io';
 // import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 // import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:image_picker/image_picker.dart';
 // import 'package:GoSystem/core/constants/app_colors.dart';
@@ -620,7 +621,8 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
   final _discountController = TextEditingController(text: '0');
   final _exchangeRateController = TextEditingController(text: '1');
   final _partialAmountController = TextEditingController();
-  final _duePaymentDateController = TextEditingController();  final _duePaymentAmountController = TextEditingController();
+  final _duePaymentDateController = TextEditingController();
+  final _duePaymentAmountController = TextEditingController();
 
   final _dateController = TextEditingController(
     text: DateTime.now().toIso8601String().split('T')[0],
@@ -749,12 +751,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
 
   void _showProductDetailsDialog(Product product) {
     Navigator.pop(context); // Close product list dialog
-
-    if (product.differentPrice && product.prices?.isNotEmpty == true) {
-      _showVariationSelectionDialog(product);
-    } else {
-      _showSimpleProductDialog(product);
-    }
+    _showSimpleProductDialog(product);
   }
 
   void _showSimpleProductDialog(Product product) {
@@ -895,16 +892,13 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
 
                             final item = purchase_model.PurchaseItemModel(
                               productId: product.id,
-                              productCode: product.prices?.isNotEmpty == true
-                                  ? product.prices!.first.code
-                                  : 'PROD-${product.id.substring(0, 8)}',
+                              productCode: 'PROD-${product.id.substring(0, 8)}',
                               quantity: quantity,
                               dateOfExpiery: selectedExpirationDate,
                               unitCost: unitCost,
                               discount: discount,
                               tax: tax,
                               subtotal: subtotal,
-                              variations: [],
                               product: product,
                             );
 
@@ -927,242 +921,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
     );
   }
 
-  void _showVariationSelectionDialog(Product product) {
-    final List<VariationSelection> selectedVariations = [];
-
-    showDialog(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) {
-          return Dialog(
-            child: Padding(
-              padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Select Variations for ${product.name}',
-                    style: TextStyle(
-                      fontSize: ResponsiveUI.fontSize(context, 18),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: ResponsiveUI.value(context, 20)),
-
-                  // List of prices/variations
-                 ...(product.prices ?? []).map((price) {
-                    final quantityController = TextEditingController(text: '0');
-                    DateTime? selectedExpirationDate;
-
-                    return Card(
-                      margin: EdgeInsets.only(bottom: ResponsiveUI.padding(context, 10)),
-                      child: Padding(
-                        padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Price: \$${price.price}',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text('Code: ${price.code}'),
-                            Text('Stock: ${price.quantity}'),
-
-                            // Show variation details
-                            if (price.variations.isNotEmpty)
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(height: ResponsiveUI.value(context, 8)),
-                                  const Text('Variations:'),
-                                  ...price.variations.map((variation) {
-                                    return Padding(
-                                      padding: EdgeInsets.only(left: ResponsiveUI.padding(context, 8)),
-                                      child: Text(
-                                        '${variation.name}: ${variation.options.map((o) => o.name).join(', ')}',
-                                      ),
-                                    );
-                                  }),
-                                ],
-                              ),
-
-                            SizedBox(height: ResponsiveUI.value(context, 12)),
-
-                            // Quantity input
-                            TextField(
-                              controller: quantityController,
-                              keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(
-                                labelText: 'Quantity',
-                                border: OutlineInputBorder(),
-                              ),
-                              onChanged: (value) {
-                                final qty = int.tryParse(value) ?? 0;
-                                final index = selectedVariations.indexWhere(
-                                  (v) => v.priceId == price.id,
-                                );
-
-                                if (qty > 0 && index == -1) {
-                                  selectedVariations.add(
-                                    VariationSelection(
-                                      priceId: price.id,
-                                      quantity: qty,
-                                      expirationDate: selectedExpirationDate,
-                                    ),
-                                  );
-                                } else if (qty > 0 && index != -1) {
-                                  selectedVariations[index] =
-                                      selectedVariations[index].copyWith(
-                                        quantity: qty,
-                                      );
-                                } else if (qty == 0 && index != -1) {
-                                  selectedVariations.removeAt(index);
-                                }
-                              },
-                            ),
-
-                            // Expiration date
-                            if (product.expAbility)
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(height: ResponsiveUI.value(context, 12)),
-                                  const Text('Expiration Date'),
-                                  GestureDetector(
-                                    onTap: () async {
-                                      final date = await showDatePicker(
-                                        context: context,
-                                        initialDate: DateTime.now(),
-                                        firstDate: DateTime.now(),
-                                        lastDate: DateTime.now().add(
-                                          const Duration(days: 365 * 10),
-                                        ),
-                                      );
-                                      if (date != null) {
-                                        setState(() {
-                                          selectedExpirationDate = date;
-                                        });
-
-                                        final index = selectedVariations
-                                            .indexWhere(
-                                              (v) => v.priceId == price.id,
-                                            );
-                                        if (index != -1) {
-                                          selectedVariations[index] =
-                                              selectedVariations[index]
-                                                  .copyWith(
-                                                    expirationDate: date,
-                                                  );
-                                        }
-                                      }
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(color: Colors.grey),
-                                        borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 4)),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.calendar_today,
-                                            size: ResponsiveUI.iconSize(context, 20),
-                                          ),
-                                          SizedBox(width: ResponsiveUI.value(context, 10)),
-                                          Text(
-                                            selectedExpirationDate != null
-                                                ? selectedExpirationDate!
-                                                      .toIso8601String()
-                                                      .split('T')[0]
-                                                : 'Select expiration date',
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }).toList(),
-
-                  SizedBox(height: ResponsiveUI.value(context, 20)),
-
-                  // Buttons
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () => Navigator.pop(context),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey[300],
-                          ),
-                          child: const Text('Cancel'),
-                        ),
-                      ),
-                      SizedBox(width: ResponsiveUI.value(context, 10)),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: selectedVariations.isEmpty
-                              ? null
-                              : () {
-                                  // Create purchase item with variations
-                                  final variations = selectedVariations
-                                      .where((v) => v.quantity > 0)
-                                      .map(
-                                        (selection) => purchase_model.VariationModel(
-                                          productPriceId: selection.priceId,
-                                          quantity: selection.quantity,
-                                          dateOfExpiery:
-                                              selection.expirationDate,
-                                        ),
-                                      )
-                                      .toList();
-
-                                  final totalQuantity = variations.fold(
-                                    0,
-                                    (sum, variation) =>
-                                        sum + variation.quantity,
-                                  );
-
-                                  final item = purchase_model.PurchaseItemModel(
-                                    productId: product.id,
-                                    productCode: product.prices?.isNotEmpty == true
-    ? product.prices!.first.code
-    : 'PROD-${product.id.substring(0, 8)}',
-
-                                    quantity: totalQuantity,
-                                    unitCost: product.price,
-                                    discount: 0,
-                                    tax: 0,
-                                    subtotal: product.price * totalQuantity,
-                                    variations: variations,
-                                    product: product,
-                                  );
-
-                                  setState(() {
-                                    purchaseItems.add(item);
-                                  });
-                                  Navigator.pop(context);
-                                },
-                          child: const Text('Add to Purchase'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
+  // Note: _showVariationSelectionDialog removed - variations no longer exist after migration 014
 
   void _removePurchaseItem(int index) {
     setState(() {
@@ -1607,21 +1366,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                                       Text(
                                         'Subtotal: \$${item.subtotal.toStringAsFixed(2)}',
                                       ),
-                                      if (item.variations.isNotEmpty)
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: item.variations.map((
-                                            variation,
-                                          ) {
-                                            return Text(
-                                              '  - Variation: ${variation.quantity} units',
-                                              style: TextStyle(
-                                                fontSize: ResponsiveUI.fontSize(context, 12),
-                                              ),
-                                            );
-                                          }).toList(),
-                                        ),
+                                      // Note: variations removed in migration 014
                                     ],
                                   ),
                                   trailing: IconButton(
@@ -1953,23 +1698,5 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
   }
 }
 
-// Helper class for variation selection
-class VariationSelection {
-  final String priceId;
-  int quantity;
-  DateTime? expirationDate;
 
-  VariationSelection({
-    required this.priceId,
-    required this.quantity,
-    this.expirationDate,
-  });
 
-  VariationSelection copyWith({int? quantity, DateTime? expirationDate}) {
-    return VariationSelection(
-      priceId: priceId,
-      quantity: quantity ?? this.quantity,
-      expirationDate: expirationDate ?? this.expirationDate,
-    );
-  }
-}

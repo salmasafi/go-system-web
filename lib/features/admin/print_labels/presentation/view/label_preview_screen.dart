@@ -1,6 +1,7 @@
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
@@ -20,27 +21,17 @@ class LabelPreviewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) {
-        final cubit = LabelCubit(LabelRepository());
-        // Convert the generic selection items to the specific LabelProductItems for the API
-        final labelItems = selectedItems.map((item) {
-          return LabelProductItem(
-            // Use variation ID if available, otherwise product ID
-            productId: item.variation?.id ?? item.product.id, 
-            name: item.product.name,
-            variationName: item.variation?.code,
-            price: item.variation?.price ?? item.product.price,
-            image: item.product.image,
-            quantity: item.quantity,
-          );
-        }).toList();
-        
-        cubit.initProducts(labelItems);
-        return cubit;
-      },
-      child: const _LabelPreviewContent(),
-    );
+    // Scale down for web
+    Widget screenContent = _LabelPreviewContent();
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 }
 

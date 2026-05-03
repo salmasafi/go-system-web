@@ -38,17 +38,50 @@ void main() {
           'id': 'pur-123',
           'reference': 'PUR-001',
           'grand_total': 500.0,
+          'payment_status': 'full',
           'status': 'received',
+          'date': '2024-05-01T10:00:00Z',
           'created_at': '2024-05-01T10:00:00Z',
-          'supplier': {'id': 'sup-1', 'name': 'Test Supplier'},
-          'warehouse': {'id': 'wh-1', 'name': 'Main WH'}
+          'updated_at': '2024-05-01T10:00:00Z',
+          'total': 500.0,
+          'discount': 0.0,
+          'shipping_cost': 0.0,
+          'exchange_rate': 1.0,
+          'receipt_img': '',
+          'note': null,
+          'version': 1,
+          'supplier': {
+            'id': 'sup-1',
+            'company_name': 'Test Supplier',
+            'username': '',
+            'email': '',
+            'phone_number': '',
+            'address': '',
+            'image': '',
+            'city_id': '',
+            'country_id': '',
+            'version': 1,
+          },
+          'warehouse': {
+            'id': 'wh-1',
+            'name': 'Main WH',
+            'address': '',
+            'phone': '',
+            'email': '',
+            'number_of_products': 0,
+            'stock_quantity': 0,
+            'created_at': '2024-05-01T10:00:00Z',
+            'updated_at': '2024-05-01T10:00:00Z',
+            'version': 1,
+            'is_online': false,
+          },
         }
       ];
 
       when(() => mockClient.from('purchases')).thenReturn(mockQueryBuilder);
       when(() => mockQueryBuilder.select(any())).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.order(any(), ascending: any(named: 'ascending'))).thenReturn(mockFilterBuilder);
-      
+
       when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(List<Map<String, dynamic>>);
         return callback(mockData);
@@ -56,8 +89,9 @@ void main() {
 
       final result = await repository.getAllPurchases();
 
-      expect(result.first.id, 'pur-123');
-      expect(result.first.supplierName, 'Test Supplier');
+      expect(result.purchases.full.length, 1);
+      expect(result.purchases.full.first.id, 'pur-123');
+      expect(result.purchases.full.first.supplier.companyName, 'Test Supplier');
     });
   });
 }

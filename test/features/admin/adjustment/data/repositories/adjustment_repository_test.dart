@@ -8,17 +8,20 @@ class MockSupabaseClient extends Mock implements SupabaseClient {}
 class MockSupabaseQueryBuilder extends Mock implements SupabaseQueryBuilder {}
 class MockPostgrestFilterBuilder extends Mock implements PostgrestFilterBuilder<List<Map<String, dynamic>>> {}
 class MockPostgrestTransformBuilder extends Mock implements PostgrestTransformBuilder<Map<String, dynamic>?> {}
+class MockPostgrestFilterBuilderAny extends Mock implements PostgrestFilterBuilder<dynamic> {}
 
 void main() {
   late AdjustmentRepository repository;
   late MockSupabaseClient mockClient;
   late MockSupabaseQueryBuilder mockQueryBuilder;
   late MockPostgrestFilterBuilder mockFilterBuilder;
+  late MockPostgrestFilterBuilderAny mockRpcBuilder;
 
   setUp(() {
     mockClient = MockSupabaseClient();
     mockQueryBuilder = MockSupabaseQueryBuilder();
     mockFilterBuilder = MockPostgrestFilterBuilder();
+    mockRpcBuilder = MockPostgrestFilterBuilderAny();
 
     SupabaseClientWrapper.setMockInstance(mockClient);
     repository = AdjustmentRepository();
@@ -62,7 +65,13 @@ void main() {
     });
 
     test('reverseAdjustment should return true on success', () async {
-      when(() => mockClient.rpc(any(), params: any(named: 'params'))).thenAnswer((_) async => {});
+      when(() => mockClient.rpc(any(), params: any(named: 'params')))
+          .thenReturn(mockRpcBuilder);
+      when(() => mockRpcBuilder.then(any())).thenAnswer((invocation) async {
+        final callback =
+            invocation.positionalArguments[0] as dynamic Function(dynamic);
+        return callback(<String, dynamic>{});
+      });
 
       final result = await repository.reverseAdjustment('adj-1');
 

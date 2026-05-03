@@ -1,7 +1,7 @@
 // lib/features/pos/checkout/presentation/widgets/cart_item_details_dialog.dart
 import 'package:flutter/material.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
-import '../../model/checkout_models.dart';
+import 'package:GoSystem/features/pos/checkout/model/checkout_models.dart';
 
 class CartItemDetailsDialog extends StatelessWidget {
   final CartItem item;
@@ -13,8 +13,9 @@ class CartItemDetailsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasVariation = item.selectedVariation != null;
-    final availableQty = item.selectedVariation?.quantity ?? 0;
+    // Note: quantity tracking is now at product level, not variation level
+    final availableQty = item.product.quantity;
+    final hasVariation = item.hasSelectedAttributes;
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -280,14 +281,6 @@ class CartItemDetailsDialog extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             
-            // Product Code
-            _buildDetailRow(
-              icon: Icons.qr_code,
-              label: 'Code',
-              value: item.selectedVariation!.code,
-            ),
-            const SizedBox(height: 10),
-            
             // Available Stock
             _buildDetailRow(
               icon: availableQty > 0 
@@ -302,11 +295,11 @@ class CartItemDetailsDialog extends StatelessWidget {
                   : AppColors.red,
             ),
             
-            // Specifications
-            if (item.selectedVariation!.variations.isNotEmpty) ...[
+            // Selected Attributes (if any)
+            if (item.hasSelectedAttributes) ...[
               const SizedBox(height: 16),
               const Text(
-                'Specifications',
+                'Selected Attributes',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -317,50 +310,28 @@ class CartItemDetailsDialog extends StatelessWidget {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: item.selectedVariation!.variations.expand((v) {
-                  return v.options.map((opt) {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
+                children: item.selectedAttributes.map((attr) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.lightBlueBackground,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: AppColors.primaryBlue.withValues(alpha: 0.3),
                       ),
-                      decoration: BoxDecoration(
-                        color: AppColors.lightBlueBackground,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: AppColors.primaryBlue.withValues(alpha: 0.3),
-                        ),
+                    ),
+                    child: Text(
+                      attr.getDisplayString(),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.primaryBlue,
+                        fontWeight: FontWeight.w500,
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            v.name,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.darkGray,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const Text(
-                            ': ',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.darkGray,
-                            ),
-                          ),
-                          Text(
-                            opt.name,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.primaryBlue,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  });
+                    ),
+                  );
                 }).toList(),
               ),
             ],

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
@@ -99,12 +100,10 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
             errorBuilder: (_, __, ___) => const CustomImagePlaceholder(),
           )
         : const CustomImagePlaceholder();
-
-    return BlocListener<BrandsCubit, BrandsState>(
+    // Scale down for web
+    return BlocConsumer<BrandsCubit, BrandsState>(
       listener: (context, state) {
-        if (state is GetBrandByIdLoading) {
-          setState(() => _isLoading = true);
-        } else if (state is GetBrandByIdSuccess) {
+        if (state is GetBrandByIdSuccess) {
           setState(() {
             _brand = state.brand;
             _nameController.text = _brand?.name ?? '';
@@ -156,48 +155,49 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
           );
         }
       },
-      child: Container(
-        constraints: BoxConstraints(maxWidth: maxWidth),
-        margin: EdgeInsets.symmetric(
-          horizontal: isDesktop ? ResponsiveUI.padding(context, 20) : 0,
-        ),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(ResponsiveUI.borderRadius(context, 24)),
+      builder: (context, state) {
+        Widget screenContent = Container(
+          constraints: BoxConstraints(maxWidth: maxWidth),
+          margin: EdgeInsets.symmetric(
+            horizontal: isDesktop ? ResponsiveUI.padding(context, 20) : 0,
           ),
-        ),
-        child: SafeArea(
-          child:
-              _isLoading ||
-                  _brand ==
-                      null // Show loading if _isLoading or _brand is null
-              ? Container(
-                  height: ResponsiveUI.value(context, 300),
-                  padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-                  child: Center(child: CustomLoadingState(size: ResponsiveUI.iconSize(context, 60))),
-                )
-              : SingleChildScrollView(
-                  padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Center(
-                        child: Container(
-                          width: ResponsiveUI.value(context, 40),
-                          height: ResponsiveUI.value(context, 4),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(
-                                ResponsiveUI.borderRadius(context, 2),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(ResponsiveUI.borderRadius(context, 24)),
+            ),
+          ),
+          child: SafeArea(
+            child:
+                _isLoading ||
+                    _brand ==
+                        null // Show loading if _isLoading or _brand is null
+                ? Container(
+                    height: ResponsiveUI.value(context, 300),
+                    padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+                    child: Center(child: CustomLoadingState(size: ResponsiveUI.iconSize(context, 60))),
+                  )
+                : SingleChildScrollView(
+                    padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Center(
+                          child: Container(
+                            width: ResponsiveUI.value(context, 40),
+                            height: ResponsiveUI.value(context, 4),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(
+                                  ResponsiveUI.borderRadius(context, 2),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                        SizedBox(height: ResponsiveUI.spacing(context, 12)),
                       Text(
                         LocaleKeys.edit_brand.tr(),
                         style: TextStyle(
@@ -353,8 +353,18 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
                     ],
                   ),
                 ),
-        ),
-      ),
+          ),
+        );
+        if (kIsWeb) {
+          screenContent = MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: const TextScaler.linear(0.55),
+            ),
+            child: screenContent,
+          );
+        }
+        return screenContent;
+      },
     );
   }
 }

@@ -37,7 +37,6 @@ import '../widgets/pos_drawer.dart';
 import '../widgets/product_details_dialog.dart';
 import '../widgets/product_grid.dart';
 import '../widgets/tab_bar.dart';
-import '../widgets/variation_selector_dialog.dart';
 import '../widgets/bundles_grid.dart';
 
 class POSHomeScreen extends StatefulWidget {
@@ -111,13 +110,18 @@ class _POSHomeScreenState extends State<POSHomeScreen>
     final checkoutCubit = context.read<CheckoutCubit>();
     final posCubit = context.read<PosCubit>();
 
-    if (product.differentPrice && product.prices.isNotEmpty) {
+    // Note: differentPrice and prices removed in migration 014
+    // Products now have attributes for selection, not price variations
+    if (product.hasAttributes) {
+      // Show product details dialog for attribute selection
+      // TODO: Implement AttributeSelectionDialog widget
       showDialog(
         context: context,
-        builder: (_) => VariationSelectorDialog(
+        builder: (_) => ProductDetailsDialog(
           product: product,
-          onVariationSelected: (variation) {
-            checkoutCubit.addToCart(product, variation: variation);
+          onAddToCart: () {
+            // For now, add without attributes - needs proper implementation
+            checkoutCubit.addToCart(product);
             posCubit.selectTab(tab: posCubit.selectedTab, noFliterRefresh: true);
           },
         ),
@@ -177,10 +181,7 @@ class _POSHomeScreenState extends State<POSHomeScreen>
     return products.where((product) {
       return _searchQuery.isEmpty ||
           product.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          product.price.toString().contains(_searchQuery.toLowerCase()) ||
-          product.prices.any(
-            (v) => v.code.toLowerCase().contains(_searchQuery.toLowerCase()),
-          );
+          product.price.toString().contains(_searchQuery.toLowerCase());
     }).toList();
   }
 

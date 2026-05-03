@@ -1,6 +1,7 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/core/widgets/animation/animated_element.dart';
@@ -144,21 +145,19 @@ class _BrandsScreenState extends State<BrandsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    // Scale down for web
+    Widget screenContent = Scaffold(
       backgroundColor: AppColors.lightBlueBackground,
       appBar: appBarWithActions(
         context,
         title: LocaleKeys.brands_title.tr(),
-        onPressed: () async {
-          final result = await Navigator.push(
+        showActions: true,
+        onPressed: () {
+          Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const AddBrandScreen()),
           );
-          if (result == true && mounted) {
-            BrandsCubit.get(context).getBrands();
-          }
         },
-        showActions: true,
       ),
       body: BlocConsumer<BrandsCubit, BrandsState>(
         listener: (context, state) {
@@ -204,6 +203,15 @@ class _BrandsScreenState extends State<BrandsScreen> {
         },
       ),
     );
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 
   void _showSuccessSnackbar(BuildContext context, String message) {

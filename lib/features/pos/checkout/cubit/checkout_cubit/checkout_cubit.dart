@@ -6,8 +6,8 @@ import 'package:GoSystem/core/services/endpoints.dart';
 import 'package:GoSystem/core/utils/error_handler.dart';
 import 'package:GoSystem/features/admin/product/models/selected_attribute_model.dart';
 import 'package:GoSystem/generated/locale_keys.g.dart';
-import '../../../home/model/pos_models.dart';
-import '../../model/checkout_models.dart';
+import 'package:GoSystem/features/pos/home/model/pos_models.dart';
+import 'package:GoSystem/features/pos/checkout/model/checkout_models.dart';
 
 part 'checkout_state.dart';
 

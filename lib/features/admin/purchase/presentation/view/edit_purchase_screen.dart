@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/core/widgets/custom_button_widget.dart';
+import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
 import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:GoSystem/core/widgets/custom_textfield/custom_text_field_widget.dart';
 
@@ -86,84 +88,36 @@ class _EditPurchaseBottomSheetState extends State<EditPurchaseBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final maxWidth = ResponsiveUI.contentMaxWidth(context);
-    
-    return BlocConsumer<PurchaseCubit, PurchaseState>(
-      listener: (context, state) {
-        if (state is UpdatePurchaseSuccess) {
-          CustomSnackbar.showSuccess(context, state.message);
-          Navigator.pop(context, true);
-        } else if (state is UpdatePurchaseError) {
-          CustomSnackbar.showError(context, state.error);
-        }
-      },
-      builder: (context, state) {
-        final isLoading = state is UpdatePurchaseLoading;
-
-        return Container(
-          constraints: BoxConstraints(maxWidth: maxWidth),
-          decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 243, 249, 254),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(ResponsiveUI.borderRadius(context, 24))),
-          ),
-          child: Material(
-             color: Colors.transparent,
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(ResponsiveUI.borderRadius(context, 24)),
-            ),
-            child: SingleChildScrollView(
-              padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Center(
-                    child: Container(
-                      width: ResponsiveUI.value(context, 40), height: ResponsiveUI.value(context, 4),
-                      decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 2))),
-                    ),
-                  ),
-                  SizedBox(height: ResponsiveUI.value(context, 12)),
-                  Text(
-                    "Edit Purchase",
-                    style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 20), fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-            
-                  _buildTextField(controller: _referenceController, title: "Reference", hint: "Ref No"),
-                  _buildTextField(controller: _dateController, title: "Date", hint: "YYYY-MM-DD"),
-                  _buildTextField(controller: _noteController, title: "Note", hint: "Note"),
-                  
-                  Row(
-                    children: [
-                      Expanded(child: _buildTextField(controller: _shippingCostController, title: "Shipping", hint: "0")),
-                      SizedBox(width: ResponsiveUI.value(context, 16)),
-                      Expanded(child: _buildTextField(controller: _discountController, title: "Discount", hint: "0")),
-                    ],
-                  ),
-            
-                  _buildImagePicker(
-                    selectedLocalImage: _selectedImage,
-                    existingImageUrl: widget.purchase.receiptImg,
-                    title: "Receipt Image",
-                    onPick: _pickImage,
-                    onRemove: _removeImage,
-                  ),
-            
-                  SizedBox(height: ResponsiveUI.value(context, 24)),
-                  CustomElevatedButton(
-                    onPressed: isLoading ? null : _submitUpdate,
-                    text: isLoading ? "Updating..." : "Update Purchase",
-                    isLoading: isLoading,
-                  ),
-                  SizedBox(height: ResponsiveUI.value(context, 16)),
-                ],
-              ),
+    Widget screenContent = Scaffold(
+      backgroundColor: AppColors.lightBlueBackground,
+      appBar: appBarWithActions(
+        context,
+        title: LocaleKeys.edit_purchase.tr(),
+        showBackButton: true,
+      ),
+      body: SafeArea(
+        child: Center(
+          child: Text(
+            'Edit Purchase Screen - Under Development',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
+
+    // Scale down for web
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 
   Widget _buildTextField({required TextEditingController controller, required String title, required String hint}) {

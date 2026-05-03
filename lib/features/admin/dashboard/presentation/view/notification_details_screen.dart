@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
@@ -7,6 +8,8 @@ import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
 import 'package:GoSystem/core/widgets/custom_button_widget.dart';
 import 'package:GoSystem/core/widgets/custom_gradient_divider.dart';
 import 'package:intl/intl.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../../../product/presentation/screens/product_details_screen.dart';
 import '../../cubit/notifications_cubit.dart';
 import '../../model/notification_model.dart';
@@ -36,33 +39,188 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
     final formattedUpdateDate = DateFormat(
       'MMM d, yyyy – hh:mm a',
     ).format(widget.notification.updatedAt);
-
-    return Scaffold(
-      appBar: appBarWithActions(context, title: 'Notification Details'),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: ResponsiveUI.contentMaxWidth(context),
-          ),
-          child: AnimatedElement(
-            delay: const Duration(milliseconds: 200),
-            child: SingleChildScrollView(
-              padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeaderCard(context, formattedDate),
-                  SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                  _buildMessageCard(context),
-                  SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                  _buildDetailsCard(context, formattedUpdateDate),
-                ],
+    // Scale down for web
+    Widget screenContent = Scaffold(
+      backgroundColor: AppColors.lightBlueBackground,
+      appBar: appBarWithActions(
+        context,
+        title: LocaleKeys.update_account_details.tr(),
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Notification Title
+            AnimatedElement(
+              delay: Duration.zero,
+              child: Text(
+                widget.notification.title,
+                style: TextStyle(
+                  fontSize: ResponsiveUI.fontSize(context, 20),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.darkGray,
+                ),
               ),
             ),
-          ),
+            SizedBox(height: ResponsiveUI.spacing(context, 8)),
+            
+            // Notification Date
+            AnimatedElement(
+              delay: const Duration(milliseconds: 100),
+              child: Text(
+                formattedDate,
+                style: TextStyle(
+                  fontSize: ResponsiveUI.fontSize(context, 12),
+                  color: AppColors.darkGray.withValues(alpha: 0.7),
+                ),
+              ),
+            ),
+            SizedBox(height: ResponsiveUI.spacing(context, 16)),
+            
+            // Notification Content
+            AnimatedElement(
+              delay: const Duration(milliseconds: 200),
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.circular(
+                    ResponsiveUI.borderRadius(context, 12),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  widget.notification.message,
+                  style: TextStyle(
+                    fontSize: ResponsiveUI.fontSize(context, 16),
+                    color: AppColors.darkGray,
+                    height: 1.5,
+                  ),
+                ),
+              ),
+            ),
+            
+            // Product Reference (if exists)
+            if (widget.notification.productId != null) ...[
+              SizedBox(height: ResponsiveUI.spacing(context, 24)),
+              AnimatedElement(
+                delay: const Duration(milliseconds: 300),
+                child: Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(
+                      ResponsiveUI.borderRadius(context, 12),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        LocaleKeys.products.tr(),
+                        style: TextStyle(
+                          fontSize: ResponsiveUI.fontSize(context, 14),
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primaryBlue,
+                        ),
+                      ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 8)),
+                      Text(
+                        '${LocaleKeys.product_id.tr()}: ${widget.notification.productId}',
+                        style: TextStyle(
+                          fontSize: ResponsiveUI.fontSize(context, 14),
+                          color: AppColors.darkGray,
+                        ),
+                      ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                      SizedBox(
+                        width: double.infinity,
+                        height: ResponsiveUI.value(context, 40),
+                        child: CustomElevatedButton(
+                          onPressed: () {
+                            // Navigate to product details
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProductDetailsScreen(
+                                  productId: widget.notification.productId!,
+                                ),
+                              ),
+                            );
+                          },
+                          text: LocaleKeys.location_details.tr(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+            
+            SizedBox(height: ResponsiveUI.spacing(context, 32)),
+            
+            // Update Date (if different from creation date)
+            if (widget.notification.createdAt != widget.notification.updatedAt) ...[
+              AnimatedElement(
+                delay: const Duration(milliseconds: 400),
+                child: Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
+                  decoration: BoxDecoration(
+                    color: AppColors.shadowGray[50],
+                    borderRadius: BorderRadius.circular(
+                      ResponsiveUI.borderRadius(context, 8),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.update,
+                        size: ResponsiveUI.iconSize(context, 16),
+                        color: AppColors.darkGray.withValues(alpha: 0.7),
+                      ),
+                      SizedBox(width: ResponsiveUI.spacing(context, 8)),
+                      Text(
+                        '${LocaleKeys.last_updated.tr()}: $formattedUpdateDate',
+                        style: TextStyle(
+                          fontSize: ResponsiveUI.fontSize(context, 12),
+                          color: AppColors.darkGray.withValues(alpha: 0.7),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 
   Widget _buildHeaderCard(BuildContext context, String formattedDate) {
@@ -271,17 +429,49 @@ class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
           const CustomGradientDivider(),
           SizedBox(height: ResponsiveUI.spacing(context, 16)),
 
-          CustomElevatedButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ProductDetailsScreen(
-                  productId: widget.notification.productId,
+          if (widget.notification.productId.isNotEmpty)
+            CustomElevatedButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProductDetailsScreen(
+                    productId: widget.notification.productId,
+                  ),
                 ),
               ),
+              text: 'View Product Details',
+            )
+          else
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: ResponsiveUI.padding(context, 16),
+                vertical: ResponsiveUI.padding(context, 12),
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.darkGray.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(
+                  ResponsiveUI.borderRadius(context, 12),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    color: AppColors.darkGray.withValues(alpha: 0.6),
+                    size: ResponsiveUI.fontSize(context, 18),
+                  ),
+                  SizedBox(width: ResponsiveUI.spacing(context, 8)),
+                  Text(
+                    'No product linked to this notification',
+                    style: TextStyle(
+                      fontSize: ResponsiveUI.fontSize(context, 14),
+                      color: AppColors.darkGray.withValues(alpha: 0.6),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            text: 'View Product Details',
-          ),
         ],
       ),
     );

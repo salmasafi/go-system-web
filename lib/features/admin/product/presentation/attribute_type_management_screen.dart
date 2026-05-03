@@ -1,6 +1,7 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/core/widgets/animation/animated_element.dart';
@@ -135,21 +136,12 @@ class _AttributeTypeManagementScreenState extends State<AttributeTypeManagementS
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    // Scale down for web
+    Widget screenContent = Scaffold(
       backgroundColor: AppColors.lightBlueBackground,
       appBar: appBarWithActions(
         context,
         title: 'Attribute Types',
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (dialogContext) => const CreateAttributeTypeDialog(),
-          ).then((result) {
-            if (result == true && mounted) {
-              AttributeTypeCubit.get(context).loadAttributeTypes();
-            }
-          });
-        },
         showActions: true,
       ),
       body: BlocConsumer<AttributeTypeCubit, AttributeTypeState>(
@@ -161,58 +153,57 @@ class _AttributeTypeManagementScreenState extends State<AttributeTypeManagementS
           } else if (state is AttributeTypeDeleted) {
             _showSuccessSnackbar(context, state.message);
           } else if (state is AttributeTypeError) {
-            CustomSnackbar.showError(context, state.message);
+            _showErrorSnackbar(context, state.message);
           }
         },
         builder: (context, state) {
-          return Center(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: ResponsiveUI.contentMaxWidth(context),
-              ),
+          if (state is AttributeTypeLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is AttributeTypeError) {
+            return Center(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  AnimatedElement(
-                    delay: Duration.zero,
-                    child: SearchBarWidget(
-                      onChanged: (String query) {
-                        setState(() {
-                          _searchQuery = query.toLowerCase().trim();
-                        });
-                      },
-                      controller: controller,
-                      text: 'Attribute Types',
-                    ),
-                  ),
-                  Expanded(
-                    child: AnimatedElement(
-                      delay: const Duration(milliseconds: 200),
-                      child: _buildListContent(state),
-                    ),
+                  Text('Error: ${state.message}'),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => _loadAttributeTypes(),
+                    child: const Text('Retry'),
                   ),
                 ],
               ),
-            ),
-          );
+            );
+          } else if (state is AttributeTypeLoaded) {
+            return _buildAttributeTypeList(state.attributeTypes);
+          }
+          return const Center(child: Text('No attribute types found'));
         },
       ),
     );
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 
   void _showSuccessSnackbar(BuildContext context, String message) {
-    final snackBar = SnackBar(
-      elevation: 0,
-      behavior: SnackBarBehavior.floating,
-      backgroundColor: Colors.transparent,
-      content: AwesomeSnackbarContent(
-        title: 'Success',
-        message: message,
-        contentType: ContentType.success,
-      ),
-    );
+    CustomSnackbar.showSuccess(context, message);
+  }
 
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(snackBar);
+  void _showErrorSnackbar(BuildContext context, String message) {
+    CustomSnackbar.showError(context, message);
+  }
+
+  void _loadAttributeTypes() {
+    AttributeTypeCubit.get(context).loadAttributeTypes();
+  }
+
+  Widget _buildAttributeTypeList(List<AttributeType> attributeTypes) {
+    return _buildListContent(AttributeTypeLoaded(attributeTypes));
   }
 }

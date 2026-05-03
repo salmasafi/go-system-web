@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dropdown_search/dropdown_search.dart';
@@ -46,25 +47,10 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Scale down for web
     return BlocConsumer<CategoriesCubit, CategoriesState>(
       listener: (context, state) {
         if (state is CreateCategorySuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                state.message,
-                style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14)),
-              ),
-              backgroundColor: AppColors.successGreen,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(
-                  ResponsiveUI.borderRadius(context, 8),
-                ),
-              ),
-              margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
-            ),
-          );
           Navigator.pop(context, true);
         } else if (state is CreateCategoryError) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -88,7 +74,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
       builder: (context, state) {
         final cubit = CategoriesCubit.get(context);
 
-        return Scaffold(
+        Widget screenContent = Scaffold(
           backgroundColor: AppColors.white,
           appBar: appBarWithActions(context, title: LocaleKeys.new_category.tr()),
           body: SafeArea(
@@ -598,6 +584,15 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
             ),
           ),
         );
+        if (kIsWeb) {
+          screenContent = MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: const TextScaler.linear(0.55),
+            ),
+            child: screenContent,
+          );
+        }
+        return screenContent;
       },
     );
   }

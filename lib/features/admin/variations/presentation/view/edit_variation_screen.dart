@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
@@ -26,7 +27,7 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
   late final TextEditingController _nameArController;
 
   List<VariationOption> _options = [];
-  List<String> _optionsToDelete = [];
+  final List<String> _optionsToDelete = [];
 
   @override
   void initState() {
@@ -159,11 +160,11 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
   Widget build(BuildContext context) {
     final maxWidth = ResponsiveUI.contentMaxWidth(context);
     final isDesktop = maxWidth > 600;
-
+    
     return BlocConsumer<VariationCubit, VariationState>(
       listener: (context, state) {
         if (state is UpdateVariationSuccess) {
-          CustomSnackbar.showSuccess(context, state.message);
+          CustomSnackbar.showSuccess(context, LocaleKeys.variation_updated_success.tr());
           Navigator.pop(context, true);
         } else if (state is UpdateVariationError) {
           CustomSnackbar.showError(context, state.error);
@@ -172,7 +173,7 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
       builder: (context, state) {
         final isLoading = state is UpdateVariationLoading || state is DeleteOptionLoading;
 
-        return Container(
+        Widget screenContent = Container(
           constraints: BoxConstraints(maxWidth: maxWidth),
           margin: EdgeInsets.symmetric(
             horizontal: isDesktop ? ResponsiveUI.padding(context, 20) : 0,
@@ -344,6 +345,18 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
             ),
           ),
         );
+
+        // Scale down for web
+        if (kIsWeb) {
+          screenContent = MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: const TextScaler.linear(0.55),
+            ),
+            child: screenContent,
+          );
+        }
+
+        return screenContent;
       },
     );
   }

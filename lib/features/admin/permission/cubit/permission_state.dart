@@ -22,8 +22,8 @@ final class GetPermissionsError extends PermissionState {
 final class GetPermissionByIdLoading extends PermissionState {}
 
 final class GetPermissionByIdSuccess extends PermissionState {
-  final PermissionModel permision;
-  GetPermissionByIdSuccess(this.permision);
+  final PermissionModel permission;
+  GetPermissionByIdSuccess(this.permission);
 }
 
 final class GetPermissionByIdError extends PermissionState {

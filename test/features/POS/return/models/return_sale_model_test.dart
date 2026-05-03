@@ -94,36 +94,23 @@ void main() {
     });
   });
 
-  // 10.2 Unit test: ReturnItemModel.fromJson with product_price = null uses product._id
+  // Note: productPriceId tests removed after migration 014
+  // Products no longer have separate price IDs - they reference product directly
   group('ReturnItemModel.fromJson', () {
-    test('uses product._id as productPriceId when product_price is null', () {
+    test('parses product information correctly', () {
       final json = {
         '_id': 'item1',
         'sale_id': 'sale1',
-        'product': {'_id': 'prod_id_fallback', 'name': 'Widget', 'code': 'W001'},
-        'product_price': null,
+        'product': {'_id': 'prod_id', 'name': 'Widget', 'code': 'W001'},
         'quantity': 3,
         'already_returned': 0,
         'available_to_return': 3,
       };
 
       final item = ReturnItemModel.fromJson(json);
-      expect(item.productPriceId, 'prod_id_fallback');
-    });
-
-    test('uses product_price._id when product_price is present', () {
-      final json = {
-        '_id': 'item2',
-        'sale_id': 'sale1',
-        'product': {'_id': 'prod1', 'name': 'Widget', 'code': 'W001'},
-        'product_price': {'_id': 'price_id_123'},
-        'quantity': 2,
-        'already_returned': 0,
-        'available_to_return': 2,
-      };
-
-      final item = ReturnItemModel.fromJson(json);
-      expect(item.productPriceId, 'price_id_123');
+      expect(item.id, 'item1');
+      expect(item.productName, 'Widget');
+      expect(item.productCode, 'W001');
     });
 
     test('returnQuantity defaults to 0', () {
@@ -131,7 +118,6 @@ void main() {
         '_id': 'item3',
         'sale_id': 'sale1',
         'product': {'_id': 'p1', 'name': 'X', 'code': 'X1'},
-        'product_price': null,
         'quantity': 5,
         'already_returned': 1,
         'available_to_return': 4,

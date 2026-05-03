@@ -121,11 +121,9 @@ CREATE TABLE public.bundle_products (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   bundle_id uuid NOT NULL,
   product_id uuid NOT NULL,
-  product_price_id uuid,
   quantity integer NOT NULL DEFAULT 1,
   CONSTRAINT bundle_products_pkey PRIMARY KEY (id),
   CONSTRAINT bundle_products_bundle_id_fkey FOREIGN KEY (bundle_id) REFERENCES public.bundles(id),
-  CONSTRAINT bundle_products_product_price_id_fkey FOREIGN KEY (product_price_id) REFERENCES public.product_prices(id),
   CONSTRAINT bundle_products_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id)
 );
 CREATE TABLE public.bundle_warehouses (
@@ -445,14 +443,12 @@ CREATE TABLE public.online_order_items (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   online_order_id uuid NOT NULL,
   product_id uuid NOT NULL,
-  product_price_id uuid,
   quantity integer NOT NULL,
   price numeric NOT NULL,
   whole_price numeric,
   subtotal numeric NOT NULL,
   CONSTRAINT online_order_items_pkey PRIMARY KEY (id),
   CONSTRAINT online_order_items_online_order_id_fkey FOREIGN KEY (online_order_id) REFERENCES public.online_orders(id),
-  CONSTRAINT online_order_items_product_price_id_fkey FOREIGN KEY (product_price_id) REFERENCES public.product_prices(id),
   CONSTRAINT online_order_items_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id)
 );
 CREATE TABLE public.online_orders (
@@ -534,31 +530,6 @@ CREATE TABLE public.product_categories (
   CONSTRAINT product_categories_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id),
   CONSTRAINT product_categories_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.categories(id)
 );
-CREATE TABLE public.product_price_options (
-  id uuid NOT NULL DEFAULT uuid_generate_v4(),
-  product_price_id uuid NOT NULL,
-  variation_option_id uuid NOT NULL,
-  CONSTRAINT product_price_options_pkey PRIMARY KEY (id),
-  CONSTRAINT product_price_options_product_price_id_fkey FOREIGN KEY (product_price_id) REFERENCES public.product_prices(id),
-  CONSTRAINT product_price_options_variation_option_id_fkey FOREIGN KEY (variation_option_id) REFERENCES public.variation_options(id)
-);
-CREATE TABLE public.product_prices (
-  id uuid NOT NULL DEFAULT uuid_generate_v4(),
-  product_id uuid NOT NULL,
-  code text NOT NULL,
-  price numeric NOT NULL DEFAULT 0,
-  whole_price numeric DEFAULT 0,
-  start_quantity integer DEFAULT 0,
-  cost numeric DEFAULT 0,
-  quantity integer DEFAULT 0,
-  gallery ARRAY DEFAULT '{}'::text[],
-  created_at timestamp with time zone DEFAULT now(),
-  updated_at timestamp with time zone DEFAULT now(),
-  currency_id uuid,
-  CONSTRAINT product_prices_pkey PRIMARY KEY (id),
-  CONSTRAINT product_prices_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id),
-  CONSTRAINT product_prices_currency_id_fkey FOREIGN KEY (currency_id) REFERENCES public.currencies(id)
-);
 CREATE TABLE public.product_warehouses (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   product_id uuid NOT NULL,
@@ -637,12 +608,10 @@ CREATE TABLE public.purchase_invoices (
 CREATE TABLE public.purchase_item_options (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   purchase_item_id uuid NOT NULL,
-  product_price_id uuid,
   option_id uuid,
   quantity integer NOT NULL,
   CONSTRAINT purchase_item_options_pkey PRIMARY KEY (id),
   CONSTRAINT purchase_item_options_purchase_item_id_fkey FOREIGN KEY (purchase_item_id) REFERENCES public.purchase_items(id),
-  CONSTRAINT purchase_item_options_product_price_id_fkey FOREIGN KEY (product_price_id) REFERENCES public.product_prices(id),
   CONSTRAINT purchase_item_options_option_id_fkey FOREIGN KEY (option_id) REFERENCES public.variation_options(id)
 );
 CREATE TABLE public.purchase_items (
@@ -804,7 +773,6 @@ CREATE TABLE public.sale_items (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   sale_id uuid NOT NULL,
   product_id uuid NOT NULL,
-  product_price_id uuid,
   quantity integer NOT NULL,
   price numeric NOT NULL,
   whole_price numeric,
@@ -813,7 +781,6 @@ CREATE TABLE public.sale_items (
   bundle_id uuid,
   CONSTRAINT sale_items_pkey PRIMARY KEY (id),
   CONSTRAINT sale_items_sale_id_fkey FOREIGN KEY (sale_id) REFERENCES public.sales(id),
-  CONSTRAINT sale_items_product_price_id_fkey FOREIGN KEY (product_price_id) REFERENCES public.product_prices(id),
   CONSTRAINT sale_items_bundle_id_fkey FOREIGN KEY (bundle_id) REFERENCES public.bundles(id),
   CONSTRAINT sale_items_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id)
 );

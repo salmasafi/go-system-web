@@ -981,6 +981,9 @@ abstract class  LocaleKeys {
   static const barcode_title = 'barcode_title';
   static const transfers_title = 'transfers_title';
   static const purchase_title = 'purchase_title';
+  static const notifications_screen_title = 'notifications_screen_title';
+  static const edit_purchase = 'edit_purchase';
+  static const purchase_list = 'purchase_list';
   static const returns_title = 'returns_title';
   static const print_labels_title = 'print_labels_title';
   static const cashier_shifts_title = 'cashier_shifts_title';

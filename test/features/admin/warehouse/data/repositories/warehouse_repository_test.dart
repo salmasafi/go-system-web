@@ -2,8 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:GoSystem/core/supabase/supabase_client.dart';
-import 'package:GoSystem/features/admin/warehouse/data/repositories/warehouse_repository.dart';
-import 'package:GoSystem/features/admin/warehouse/model/warehouse_model.dart';
 import 'package:GoSystem/features/admin/warehouses/data/repositories/warehouse_repository.dart';
 
 class MockSupabaseClient extends Mock implements SupabaseClient {}

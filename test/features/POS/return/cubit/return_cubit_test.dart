@@ -35,7 +35,6 @@ ReturnItemModel _item({
       saleId: 'sale1',
       productName: 'Product',
       productCode: 'P001',
-      productPriceId: 'pp1',
       quantity: quantity,
       alreadyReturned: alreadyReturned,
       availableToReturn: availableToReturn,
@@ -72,7 +71,6 @@ Map<String, dynamic> _saleApiResponse({List<dynamic>? items}) => {
                 '_id': 'i1',
                 'sale_id': 'sale1',
                 'product': {'_id': 'p1', 'name': 'Product', 'code': 'P001'},
-                'product_price': {'_id': 'pp1'},
                 'quantity': 5,
                 'already_returned': 0,
                 'available_to_return': 5,
@@ -214,6 +212,7 @@ void main() {
 
   // ── Property 7: Request Body Contains Only Non-Zero Items ─────────────────
   // Feature: pos-return-sale, Property 7: Request Body Contains Only Non-Zero Items
+  // Note: After migration 014, product_price_id field removed - items reference product directly
   group('[PBT] Property 7: request body contains only items with returnQuantity > 0', () {
     test('only non-zero items are included in POST body', () async {
       Map<String, dynamic>? capturedBody;
@@ -244,12 +243,11 @@ void main() {
 
       for (final bodyItem in bodyItems) {
         expect(bodyItem['quantity'], greaterThan(0));
-        expect(bodyItem.containsKey('product_price_id'), isTrue);
         expect(bodyItem.containsKey('quantity'), isTrue);
       }
     });
 
-    test('all non-zero items have correct product_price_id and quantity fields', () async {
+    test('all non-zero items have correct quantity field', () async {
       Map<String, dynamic>? capturedBody;
 
       when(() => mockDio.post(
@@ -267,7 +265,6 @@ void main() {
         saleId: 'sale1',
         productName: 'P',
         productCode: 'C',
-        productPriceId: 'pp_specific',
         quantity: 5,
         alreadyReturned: 0,
         availableToReturn: 5,
@@ -279,7 +276,6 @@ void main() {
       await cubit.submitReturn(refundAccountId: 'acc1', note: '');
 
       final bodyItems = capturedBody!['items'] as List;
-      expect(bodyItems.first['product_price_id'], 'pp_specific');
       expect(bodyItems.first['quantity'], 4);
     });
   });

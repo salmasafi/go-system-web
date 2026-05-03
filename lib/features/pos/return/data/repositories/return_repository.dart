@@ -324,7 +324,6 @@ class _ReturnSupabaseDataSource implements ReturnRepositoryInterface {
             saleId: json['id'] ?? '',
             productName: product?['name'] ?? 'Unknown',
             productCode: product?['code'] ?? '',
-            productPriceId: item['id'] ?? '',
             quantity: (item['quantity'] as num?)?.toInt() ?? 0,
             alreadyReturned: 0,
             availableToReturn: (item['quantity'] as num?)?.toInt() ?? 0,

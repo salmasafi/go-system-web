@@ -20,12 +20,16 @@ class UnitsCubit extends Cubit<UnitsState> {
   List<UnitModel> allUnits = [];
 
   Future<void> getUnits() async {
+    log('UnitsCubit: Starting getUnits');
     emit(GetUnitsLoading());
     try {
       final units = await _repository.getAllUnits();
       allUnits = units;
+      log('UnitsCubit: getUnits success - ${units.length} units');
       emit(GetUnitsSuccess(units));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      log('UnitsCubit: getUnits error - $e');
+      log('UnitsCubit: stackTrace - $stackTrace');
       emit(GetUnitsError(e.toString().replaceAll('Exception: ', '')));
     }
   }
@@ -49,7 +53,6 @@ class UnitsCubit extends Cubit<UnitsState> {
     required String name,
     required String arName,
     required String code,
-    String? baseUnit,
     required String operator,
     required double operatorValue,
     required bool status,
@@ -60,7 +63,6 @@ class UnitsCubit extends Cubit<UnitsState> {
         name: name,
         arName: arName,
         code: code,
-        baseUnitId: baseUnit,
         operator: operator,
         operatorValue: operatorValue,
       );
@@ -76,7 +78,6 @@ class UnitsCubit extends Cubit<UnitsState> {
     required String name,
     required String arName,
     required String code,
-    String? baseUnit,
     required String operator,
     required double operatorValue,
     required bool status,
@@ -88,7 +89,6 @@ class UnitsCubit extends Cubit<UnitsState> {
         name: name,
         arName: arName,
         code: code,
-        baseUnitId: baseUnit,
         operator: operator,
         operatorValue: operatorValue,
       );

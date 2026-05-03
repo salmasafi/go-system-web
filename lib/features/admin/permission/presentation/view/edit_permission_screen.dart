@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
@@ -141,11 +142,10 @@ class _EditPermissionBottomSheetState extends State<EditPermissionBottomSheet> {
   Widget build(BuildContext context) {
     final maxWidth = ResponsiveUI.contentMaxWidth(context);
     final isDesktop = maxWidth > 600;
-
+    
     return BlocConsumer<PermissionCubit, PermissionState>(
       listener: (context, state) {
         if (state is UpdatePermissionSuccess) {
-          CustomSnackbar.showSuccess(context, state.message);
           Navigator.pop(context, true);
         } else if (state is UpdatePermissionError) {
           CustomSnackbar.showError(context, state.error);
@@ -154,7 +154,7 @@ class _EditPermissionBottomSheetState extends State<EditPermissionBottomSheet> {
       builder: (context, state) {
         final isLoading = state is UpdatePermissionLoading;
 
-        return Container(
+        Widget screenContent = Container(
           constraints: BoxConstraints(maxWidth: maxWidth),
           margin: EdgeInsets.symmetric(
             horizontal: isDesktop ? ResponsiveUI.padding(context, 20) : 0,
@@ -226,6 +226,16 @@ class _EditPermissionBottomSheetState extends State<EditPermissionBottomSheet> {
             ),
           ),
         );
+
+        if (kIsWeb) {
+          screenContent = MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: const TextScaler.linear(0.55),
+            ),
+            child: screenContent,
+          );
+        }
+        return screenContent;
       },
     );
   }

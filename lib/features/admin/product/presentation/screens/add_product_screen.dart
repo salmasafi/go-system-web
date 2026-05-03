@@ -1,6 +1,7 @@
 // lib/features/admin/product/presentation/screens/add_product_screen.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
@@ -161,7 +162,7 @@ class _AddProductScreenState extends State<AddProductScreen>
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<ProductsCubit, ProductsState>(
+    Widget screenContent = BlocConsumer<ProductsCubit, ProductsState>(
       listener: (context, state) {
         if (state is ProductAddSuccess) {
           CustomSnackbar.showSuccess(context, state.message);
@@ -176,7 +177,7 @@ class _AddProductScreenState extends State<AddProductScreen>
       builder: (context, state) {
         return Scaffold(
           backgroundColor: AppColors.lightBlueBackground,
-          appBar: appBarWithActions(context, title: "Add Product"),
+          appBar: appBarWithActions(context, title: "إضافة منتج"),
           body: SafeArea(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(
@@ -188,21 +189,21 @@ class _AddProductScreenState extends State<AddProductScreen>
                 children: [
                   // Product Information Section
                   ProductSectionCard(
-                    title: 'Product Information',
+                    title: 'معلومات المنتج',
                     icon: Icons.inventory_2,
                     children: [
                       buildTextField(
                         context,
                         controller: _nameController,
-                        label: 'Product Name (EN) *',
+                        label: 'اسم المنتج (EN) *',
                         icon: Icons.label,
-                        hint: 'Enter product name in English',
+                        hint: 'أدخل اسم المنتج بالإنجليزية',
                       ),
                       SizedBox(height: ResponsiveUI.spacing(context, 12)),
                       buildTextField(
                         context,
                         controller: _arNameController,
-                        label: 'Product Name (AR) *',
+                        label: 'اسم المنتج (AR) *',
                         icon: Icons.label,
                         hint: 'أدخل اسم المنتج بالعربية',
                       ),
@@ -210,18 +211,18 @@ class _AddProductScreenState extends State<AddProductScreen>
                       buildTextField(
                         context,
                         controller: _descriptionController,
-                        label: 'Description (EN) *',
+                        label: 'الوصف (EN) *',
                         icon: Icons.description,
-                        hint: 'Enter product description',
+                        hint: 'أدخل وصف المنتج بالإنجليزية',
                         maxLines: 3,
                       ),
                       SizedBox(height: ResponsiveUI.spacing(context, 12)),
                       buildTextField(
                         context,
                         controller: _arDescriptionController,
-                        label: 'Description (AR) *',
+                        label: 'الوصف (AR) *',
                         icon: Icons.description,
-                        hint: 'أدخل وصف المنتج',
+                        hint: 'أدخل وصف المنتج بالعربية',
                         maxLines: 3,
                       ),
                     ],
@@ -231,14 +232,14 @@ class _AddProductScreenState extends State<AddProductScreen>
 
                   // Category & Brand Section
                   ProductSectionCard(
-                    title: 'Category & Brand',
+                    title: 'الفئة والعلامة التجارية',
                     icon: Icons.category,
                     children: [
                       BlocBuilder<ProductFiltersCubit, ProductFiltersState>(
                         builder: (context, filtersState) {
                           if (filtersState is ProductFiltersLoading) {
                             return _buildLoadingDropdown(
-                              'Loading categories...',
+                              'جاري تحميل الفئات...',
                             );
                           }
                           if (filtersState is ProductFiltersSuccess) {
@@ -247,7 +248,7 @@ class _AddProductScreenState extends State<AddProductScreen>
                             );
                           }
                           return EmptyStateWidget(
-                            message: 'No categories available',
+                            message: 'لا توجد فئات متاحة',
                             icon: Icons.category,
                             color: AppColors.warningOrange,
                           );
@@ -257,7 +258,7 @@ class _AddProductScreenState extends State<AddProductScreen>
                       BlocBuilder<ProductFiltersCubit, ProductFiltersState>(
                         builder: (context, filtersState) {
                           if (filtersState is ProductFiltersLoading) {
-                            return _buildLoadingDropdown('Loading brands...');
+                            return _buildLoadingDropdown('جاري تحميل العلامات التجارية...');
                           }
                           if (filtersState is ProductFiltersSuccess) {
                             return _buildBrandDropdown(
@@ -265,7 +266,7 @@ class _AddProductScreenState extends State<AddProductScreen>
                             );
                           }
                           return EmptyStateWidget(
-                            message: 'No categories available',
+                            message: 'لا توجد علامات تجارية متاحة',
                             icon: Icons.category,
                             color: AppColors.warningOrange,
                           );
@@ -279,7 +280,7 @@ class _AddProductScreenState extends State<AddProductScreen>
 
                   // Pricing & Stock Section
                   ProductSectionCard(
-                    title: 'Pricing & Stock',
+                    title: 'التسعير والمخزون',
                     icon: Icons.attach_money,
                     children: [
                       // Row(
@@ -312,7 +313,7 @@ class _AddProductScreenState extends State<AddProductScreen>
                        BlocBuilder<UnitsCubit, UnitsState>(
                         builder: (context, unitState) {
                           if (unitState is GetUnitsLoading) {
-                            return _buildLoadingDropdown('Loading units...');
+                            return _buildLoadingDropdown('جاري تحميل الوحدات...');
                           }
                           if (unitState is GetUnitsSuccess) {
                             return Column(
@@ -329,7 +330,7 @@ class _AddProductScreenState extends State<AddProductScreen>
                             );
                           }
                           return EmptyStateWidget(
-                            message: 'No units available',
+                            message: 'لا توجد وحدات متاحة',
                             icon: Icons.category,
                             color: AppColors.warningOrange,
                           );
@@ -347,7 +348,7 @@ class _AddProductScreenState extends State<AddProductScreen>
                             child: buildTextField(
                               context,
                               controller: _minQuantityController,
-                              label: 'Min. Wholesale Qty *',
+                              label: 'الحد الأدنى لكمية الجملة *',
                               icon: Icons.shopping_cart,
                               hint: '1',
                               keyboardType: TextInputType.number,
@@ -358,7 +359,7 @@ class _AddProductScreenState extends State<AddProductScreen>
                             child: buildTextField(
                               context,
                               controller: _wholePriceController,
-                              label: 'Wholesale Price',
+                              label: 'سعر الجملة',
                               icon: Icons.money_off,
                               hint: '0.00',
                               keyboardType: TextInputType.number,
@@ -373,7 +374,7 @@ class _AddProductScreenState extends State<AddProductScreen>
                             child: buildTextField(
                               context,
                               controller: _startQuantityController,
-                              label: 'Start Quantity',
+                              label: 'الكمية الابتدائية',
                               icon: Icons.inventory,
                               hint: '0',
                               keyboardType: TextInputType.number,
@@ -384,7 +385,7 @@ class _AddProductScreenState extends State<AddProductScreen>
                             child: buildTextField(
                               context,
                               controller: _lowStockController,
-                              label: 'Low Stock Alert',
+                              label: 'تنبيه المخزون المنخفض',
                               icon: Icons.warning,
                               hint: '10',
                               keyboardType: TextInputType.number,
@@ -400,12 +401,12 @@ class _AddProductScreenState extends State<AddProductScreen>
 
                   // Product Settings Section
                   ProductSectionCard(
-                    title: 'Product Settings',
+                    title: 'إعدادات المنتج',
                     icon: Icons.settings,
                     children: [
                       AnimatedCheckboxTile(
                         value: _isFeatured,
-                        title: 'Is Featured',
+                        title: 'منتج مميز',
                         //   icon: Icons.calendar_today,
                         onChanged: (value) {
                           setState(() {
@@ -415,7 +416,7 @@ class _AddProductScreenState extends State<AddProductScreen>
                       ),
                       AnimatedCheckboxTile(
                         value: _hasExpiry,
-                        title: 'Has Expiry Date',
+                        title: 'له تاريخ انتهاء صلاحية',
                         //   icon: Icons.calendar_today,
                         onChanged: (value) {
                           setState(() {
@@ -429,19 +430,19 @@ class _AddProductScreenState extends State<AddProductScreen>
                         DatePickerCard(
                           selectedDate: _expiryDate,
                           onTap: _selectExpiryDate,
-                          label: 'Expiry Date',
+                          label: 'تاريخ انتهاء الصلاحية',
                         ),
                       ],
                       AnimatedCheckboxTile(
                         value: _hasIMEI,
-                        title: 'Product has IMEI/Serial Number',
+                        title: 'المنتج له رقم IMEI/تسلسلي',
                         // icon: Icons.qr_code,
                         onChanged: (value) =>
                             setState(() => _hasIMEI = value ?? false),
                       ),
                       AnimatedCheckboxTile(
                         value: _showQuantity,
-                        title: 'Show Quantity',
+                        title: 'إظهار الكمية',
                         //  icon: Icons.visibility,
                         onChanged: (value) =>
                             setState(() => _showQuantity = value ?? true),
@@ -451,7 +452,7 @@ class _AddProductScreenState extends State<AddProductScreen>
                         buildTextField(
                           context,
                           controller: _maxToShowController,
-                          label: 'Maximum to Show',
+                          label: 'الحد الأقصى للعرض',
                           icon: Icons.visibility,
                           hint: '100',
                           keyboardType: TextInputType.number,
@@ -465,7 +466,7 @@ class _AddProductScreenState extends State<AddProductScreen>
 
                   // Product Images Section
                   ProductSectionCard(
-                    title: 'Product Images',
+                    title: 'صور المنتج',
                     icon: Icons.image,
                     children: [
                       MainImagePicker(
@@ -491,8 +492,8 @@ class _AddProductScreenState extends State<AddProductScreen>
                     child: CustomElevatedButton(
                       onPressed: state is ProductsLoading ? null : _saveProduct,
                       text: state is ProductsLoading
-                          ? 'Saving Product...'
-                          : 'Save Product',
+                          ? 'جاري حفظ المنتج...'
+                          : 'حفظ المنتج',
                     ),
                   ),
                   SizedBox(height: ResponsiveUI.spacing(context, 20)),
@@ -503,6 +504,17 @@ class _AddProductScreenState extends State<AddProductScreen>
         );
       },
     );
+
+    // Scale down for web
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 
   Widget _buildLoadingDropdown(String message) {
@@ -520,7 +532,7 @@ class _AddProductScreenState extends State<AddProductScreen>
     return buildMultiSelectDropdownField<CategoryFilter>(
       context,
       items: categories,
-      hint: 'Search categories...',
+      hint: 'ابحث عن الفئات...',
       onChanged: (value) {
         setState(() {
           _selectedCategories = value;
@@ -537,13 +549,13 @@ class _AddProductScreenState extends State<AddProductScreen>
     return buildDropdownField<BrandFilter>(
       context,
       items: brands,
-      hint: 'Search brands...',
+      hint: 'ابحث عن العلامات التجارية...',
       onChanged: (value) {
         setState(() {
           _selectedBrand = value;
         });
       },
-      itemLabel: (brand) => brand.name,
+      itemLabel: (unit) => unit.name ?? '',
       value: null,
       label: '',
       //icon: Icons.keyboard_arrow_down_rounded,
@@ -554,15 +566,15 @@ class _AddProductScreenState extends State<AddProductScreen>
     return buildDropdownField<UnitModel>(
       context,
       items: units,
-      hint: 'Select Product Unit',
+      hint: 'اختر وحدة المنتج',
       onChanged: (value) {
         setState(() {
           _selectedProductUnit = value;
         });
       },
-      itemLabel: (brand) => brand.name,
+      itemLabel: (unit) => unit.name ?? '',
       value: _selectedProductUnit,
-      label: 'Product Unit',
+      label: 'وحدة المنتج',
     );
   }
 
@@ -570,15 +582,15 @@ class _AddProductScreenState extends State<AddProductScreen>
     return buildDropdownField<UnitModel>(
       context,
       items: units,
-      hint: 'Select Purchase Unit',
+      hint: 'اختر وحدة الشراء',
       onChanged: (value) {
         setState(() {
           _selectedPurchaseUnit = value;
         });
       },
-      itemLabel: (brand) => brand.name,
+      itemLabel: (unit) => unit.name ?? '',
       value: _selectedPurchaseUnit,
-      label: 'Purchase Unit',
+      label: 'وحدة الشراء',
     );
   }
 
@@ -586,15 +598,15 @@ class _AddProductScreenState extends State<AddProductScreen>
     return buildDropdownField<UnitModel>(
       context,
       items: units,
-      hint: 'Select Sale Unit',
+      hint: 'اختر وحدة البيع',
       onChanged: (value) {
         setState(() {
           _selectedSaleUnit = value;
         });
       },
-      itemLabel: (brand) => brand.name,
+      itemLabel: (unit) => unit.name ?? '',
       value: _selectedSaleUnit,
-      label: 'Sale Unit',
+      label: 'وحدة البيع',
     );
   }
 
@@ -603,20 +615,20 @@ class _AddProductScreenState extends State<AddProductScreen>
   void _saveProduct() async {
     // === Validation ===
     if (_nameController.text.trim().isEmpty) {
-      CustomSnackbar.showError(context, 'Please enter product name (EN)');
+      CustomSnackbar.showError(context, 'الرجاء إدخال اسم المنتج (EN)');
       return;
     }
     if (_arNameController.text.trim().isEmpty) {
-      CustomSnackbar.showError(context, 'Please enter product name (AR)');
+      CustomSnackbar.showError(context, 'الرجاء إدخال اسم المنتج (AR)');
       return;
     }
     // Image is now optional - removed validation
     if (_selectedCategories == null || _selectedCategories!.isEmpty) {
-      CustomSnackbar.showError(context, 'Please select at least one category');
+      CustomSnackbar.showError(context, 'الرجاء اختيار فئة واحدة على الأقل');
       return;
     }
     if (_selectedBrand == null) {
-      CustomSnackbar.showError(context, 'Please select a brand');
+      CustomSnackbar.showError(context, 'الرجاء اختيار علامة تجارية');
       return;
     }
     
@@ -650,9 +662,9 @@ class _AddProductScreenState extends State<AddProductScreen>
       image: mainImageBase64,
       categoryIds: _selectedCategories!.map((c) => c.id).toList(),
       brandId: _selectedBrand!.id,
-      purchaseUnit: _selectedPurchaseUnit!.id, // or .name depending on API
-      saleUnit: _selectedSaleUnit!.id, // or .name depending on API
-      productUnit: _selectedProductUnit!.id,
+      purchaseUnit: _selectedPurchaseUnit?.id ?? '', // or .name depending on API
+      saleUnit: _selectedSaleUnit?.id ?? '', // or .name depending on API
+      productUnit: _selectedProductUnit?.id ?? '',
       price: mainPrice,
       expAbility: _hasExpiry,
       code: _codeController.text.trim(),

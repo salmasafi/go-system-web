@@ -1,8 +1,11 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
-import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
 import 'package:GoSystem/core/widgets/custom_error/custom_empty_state.dart';
 import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
 import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
@@ -81,23 +84,33 @@ class _WarehouseProductsScreenState extends State<WarehouseProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    // Scale down for web
+    Widget screenContent = Scaffold(
+      backgroundColor: AppColors.lightBlueBackground,
       appBar: appBarWithActions(
         context,
-        title: '${widget.warehouse.name} Products',
+        title: LocaleKeys.warehouse_products.tr(),
         showBackButton: true,
       ),
-      backgroundColor: AppColors.shadowGray[50],
-      body: Column(
-        children: [
-          _buildWarehouseInfo(),
-          _buildInventoryHeader(),
-          Expanded(
-            child: _buildProductsList(),
-          ),
-        ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildWarehouseInfo(),
+            _buildInventoryHeader(),
+            Expanded(child: _buildProductsList()),
+          ],
+        ),
       ),
     );
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 
   Widget _buildWarehouseInfo() {

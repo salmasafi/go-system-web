@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/animation/animated_element.dart';
+import 'package:GoSystem/core/widgets/custom_error/custom_empty_state.dart';
+import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
+import 'package:GoSystem/features/pos/checkout/cubit/checkout_cubit/checkout_cubit.dart';
 import 'package:GoSystem/features/pos/home/cubit/pos_home_cubit.dart';
+import 'package:GoSystem/features/pos/home/cubit/pos_home_state.dart';
 import 'package:GoSystem/features/pos/home/model/pos_models.dart';
-import '../../../../../core/utils/responsive_ui.dart';
-import '../../../../../core/widgets/animation/animated_element.dart';
-import '../../../../../core/widgets/custom_error/custom_empty_state.dart';
-import '../../../../../core/widgets/custom_loading/custom_loading_state.dart';
-import '../../../checkout/cubit/checkout_cubit/checkout_cubit.dart';
-import '../../cubit/pos_home_state.dart';
 import 'product_card.dart';
-import 'variation_selector_dialog.dart';
 import 'attribute_selection_dialog.dart';
 
 class POSProductGrid extends StatefulWidget {
@@ -29,7 +28,8 @@ class _POSProductGridState extends State<POSProductGrid> {
     final checkoutCubit = context.read<CheckoutCubit>();
     final posCubit = context.read<PosCubit>();
 
-    // Check if product has attributes
+    // Note: differentPrice and prices removed in migration 014
+    // Products now have attributes for selection, not price variations
     if (product.attributes.isNotEmpty) {
       // Product has attributes → show attribute selection dialog
       showDialog(
@@ -38,21 +38,6 @@ class _POSProductGridState extends State<POSProductGrid> {
           product: product,
           onAttributesSelected: (selectedAttributes) {
             checkoutCubit.addToCart(product, selectedAttributes: selectedAttributes);
-            posCubit.selectTab(
-              tab: posCubit.selectedTab,
-              noFliterRefresh: true,
-            );
-          },
-        ),
-      );
-    } else if (product.differentPrice && product.prices.isNotEmpty) {
-      // Product has price variations → show variation selector
-      showDialog(
-        context: context,
-        builder: (_) => VariationSelectorDialog(
-          product: product,
-          onVariationSelected: (variation) {
-            checkoutCubit.addToCart(product, variation: variation);
             posCubit.selectTab(
               tab: posCubit.selectedTab,
               noFliterRefresh: true,

@@ -8,7 +8,7 @@ import 'package:GoSystem/features/admin/taxes/model/taxes_model.dart';
 class MockSupabaseClient extends Mock implements SupabaseClient {}
 class MockSupabaseQueryBuilder extends Mock implements SupabaseQueryBuilder {}
 class MockPostgrestFilterBuilder extends Mock implements PostgrestFilterBuilder<List<Map<String, dynamic>>> {}
-class MockPostgrestTransformBuilder extends Mock implements PostgrestTransformBuilder<Map<String, dynamic>?> {}
+class MockPostgrestTransformBuilder extends Mock implements PostgrestTransformBuilder<PostgrestMap> {}
 
 void main() {
   late TaxRepository repository;
@@ -150,7 +150,7 @@ void main() {
       when(() => mockQueryBuilder.delete()).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockFilterBuilder);
 
-      when(() => mockFilterBuilder.then(any())).thenAnswer((_) async {});
+      when(() => mockFilterBuilder.then(any())).thenAnswer((_) async => true);
 
       final result = await repository.deleteTax('tax-1');
 

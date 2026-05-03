@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
@@ -57,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
           final cubit = context.read<LoginCubit>();
           final isLoading = state is LoginLoading;
       
-          return Form(
+          Widget loginContent = Form(
             key: _formKey,
             child: Center(
               child: ConstrainedBox(
@@ -132,6 +133,20 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           );
+
+          // Scale down for web with OverflowBox to prevent cut-off
+          if (kIsWeb) {
+            loginContent = OverflowBox(
+              maxHeight: double.infinity,
+              child: Transform.scale(
+                scale: 0.65,
+                alignment: Alignment.center,
+                child: loginContent,
+              ),
+            );
+          }
+
+          return loginContent;
         },
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
@@ -116,27 +117,40 @@ class _ReasonsScreenState extends State<ReasonsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    // Scale down for web
+    Widget screenContent = Scaffold(
+      backgroundColor: Colors.white,
       appBar: appBarWithActions(
         context,
         title: LocaleKeys.reasons.tr(),
         showActions: true,
-        onPressed: () => showDialog(
-          context: context,
-          builder: (context) => const ReasonFormDialog(),
-        ),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => const ReasonFormDialog(),
+          );
+        },
       ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: ResponsiveUI.contentMaxWidth(context),
-          ),
-          child: AnimatedElement(
-            delay: const Duration(milliseconds: 200),
-            child: _buildListContent(),
+      body: SafeArea(
+        child: Center(
+          child: Text(
+            'Reasons Screen - Under Development',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
     );
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 }

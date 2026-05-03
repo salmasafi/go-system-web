@@ -61,7 +61,7 @@ class CustomGridCard extends StatelessWidget {
                 label,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: ResponsiveUI.fontSize(context, 16),
+                  fontSize: ResponsiveUI.fontSize(context, 18),
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
                   letterSpacing: 0.5,

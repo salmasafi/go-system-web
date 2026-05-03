@@ -28,7 +28,7 @@ class PopupData {
   factory PopupData.fromJson(Map<String, dynamic> json) {
     return PopupData(
       message: json['message'] as String,
-      popups: (json['popup'] as List<dynamic>)
+      popups: (json['popups'] as List<dynamic>)
           .map((item) => PopupModel.fromJson(item as Map<String, dynamic>))
           .toList(),
       
@@ -38,7 +38,7 @@ class PopupData {
   Map<String, dynamic> toJson() {
     return {
       'message': message,
-      'popup': popups.map((item) => item.toJson()).toList(),
+      'popups': popups.map((item) => item.toJson()).toList(),
     };
   }
 }

@@ -1,7 +1,7 @@
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
-import '../../../../../core/constants/app_colors.dart';
-import '../../model/checkout_models.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/features/pos/checkout/model/checkout_models.dart';
 import 'cart_item_attribute_display.dart';
 import 'cart_item_details_dialog.dart';
 
@@ -28,7 +28,7 @@ class CartItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasVariation = item.selectedVariation != null;
+    final hasAttributes = item.hasSelectedAttributes;
 
     return InkWell(
       onTap: () => _showItemDetails(context),
@@ -46,10 +46,10 @@ class CartItemTile extends StatelessWidget {
             ResponsiveUI.borderRadius(context, 16),
           ),
           border: Border.all(
-            color: hasVariation
+            color: hasAttributes
                 ? AppColors.primaryBlue.withValues(alpha: 0.3)
                 : AppColors.lightGray.withValues(alpha: 0.5),
-            width: hasVariation ? 1.5 : 1,
+            width: hasAttributes ? 1.5 : 1,
           ),
           boxShadow: [
             BoxShadow(
@@ -102,100 +102,6 @@ class CartItemTile extends StatelessWidget {
                   // Attribute display (Color: Red, Size: M, etc.)
                   if (item.hasSelectedAttributes || item.hasBundleAttributes)
                     CartItemAttributeDisplay(item: item),
-
-                  // Variation Code (if exists)
-                  SizedBox(height: ResponsiveUI.value(context, 4)),
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: ResponsiveUI.padding(context, 8),
-                      vertical: ResponsiveUI.padding(context, 3),
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.lightBlueBackground,
-                      borderRadius: BorderRadius.circular(
-                        ResponsiveUI.borderRadius(context, 6),
-                      ),
-                      border: Border.all(
-                        color: AppColors.primaryBlue.withValues(alpha: 0.3),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.qr_code,
-                          size: ResponsiveUI.iconSize(context, 12),
-                          color: AppColors.primaryBlue,
-                        ),
-                        SizedBox(width: ResponsiveUI.value(context, 4)),
-                        Text(
-                          hasVariation
-                              ? item.selectedVariation!.code
-                              : item.product.code,
-                          style: TextStyle(
-                            fontSize: ResponsiveUI.fontSize(context, 11),
-                            color: AppColors.darkGray,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Variation Options (if exists)
-                  if (hasVariation &&
-                      item.selectedVariation!.variations.isNotEmpty) ...[
-                    SizedBox(height: ResponsiveUI.value(context, 6)),
-                    Wrap(
-                      spacing: 4,
-                      runSpacing: 4,
-                      children: item.selectedVariation!.variations
-                          .take(2)
-                          .expand((v) {
-                            return v.options.map((opt) {
-                              return Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: ResponsiveUI.padding(context, 6),
-                                  vertical: ResponsiveUI.padding(context, 2),
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.primaryBlue.withValues(
-                                    alpha: 0.08,
-                                  ),
-                                  borderRadius: BorderRadius.circular(
-                                    ResponsiveUI.borderRadius(context, 4),
-                                  ),
-                                ),
-                                child: Text(
-                                  '${v.name}: ${opt.name}',
-                                  style: TextStyle(
-                                    fontSize: ResponsiveUI.fontSize(
-                                      context,
-                                      10,
-                                    ),
-                                    color: AppColors.darkGray,
-                                  ),
-                                ),
-                              );
-                            });
-                          })
-                          .toList(),
-                    ),
-                    if (item.selectedVariation!.variations.length > 2)
-                      Padding(
-                        padding: EdgeInsets.only(
-                          top: ResponsiveUI.padding(context, 6),
-                        ),
-                        child: Text(
-                          '+${item.selectedVariation!.variations.length - 2} more',
-                          style: TextStyle(
-                            fontSize: ResponsiveUI.fontSize(context, 10),
-                            color: AppColors.primaryBlue.withValues(alpha: 0.7),
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ),
-                  ],
 
                   SizedBox(height: ResponsiveUI.value(context, 8)),
 

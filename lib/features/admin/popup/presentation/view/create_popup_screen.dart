@@ -1,12 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
-import 'package:GoSystem/core/widgets/custom_button_widget.dart';
-import 'package:GoSystem/core/widgets/custom_error/custom_error_state.dart';
 import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:GoSystem/core/widgets/custom_textfield/custom_text_field_widget.dart';
 import 'package:GoSystem/features/admin/popup/cubit/popup_cubit.dart';
@@ -225,39 +224,23 @@ class _CreatePopupScreenState extends State<CreatePopupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<PopupCubit, PopupState>(
+    // Scale down for web
+    Widget screenContent = BlocConsumer<PopupCubit, PopupState>(
       listener: (context, state) {
         if (state is CreatePopupSuccess) {
-          CustomSnackbar.showSuccess(context, state.message);
           Navigator.pop(context, true);
         } else if (state is CreatePopupError) {
           CustomSnackbar.showError(context, state.error);
         }
       },
       builder: (context, state) {
-        if (state is CreatePopupSuccess) {
-          return Scaffold(
-            backgroundColor: AppColors.lightBlueBackground,
-            appBar:
-                appBarWithActions(context, title: LocaleKeys.new_popup.tr()),
-            body: CustomErrorState(
-              message: state.message,
-              onRetry: _validateAndSubmit,
-            ),
-          );
-        }
-
         final isLoading = state is CreatePopupLoading;
-
         return Scaffold(
           backgroundColor: const Color.fromARGB(255, 243, 249, 254),
-          appBar:
-              appBarWithActions(context, title: LocaleKeys.new_popup.tr()),
+          appBar: appBarWithActions(context, title: LocaleKeys.new_popup.tr()),
           body: SafeArea(
             child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                horizontal: ResponsiveUI.padding(context, 16),
-              ),
+              padding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 16)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -266,54 +249,37 @@ class _CreatePopupScreenState extends State<CreatePopupScreen> {
                     title: LocaleKeys.popup_title_en.tr(),
                     hint: LocaleKeys.enter_popup_title_en.tr(),
                   ),
-                  _buildTextField(
-                    controller: _titleArController,
-                    title: LocaleKeys.popup_title_ar.tr(),
-                    hint: LocaleKeys.enter_popup_title_ar.tr(),
-                  ),
-                  _buildTextField(
-                    controller: _descriptionEnController,
-                    title: LocaleKeys.popup_description_en.tr(),
-                    hint: LocaleKeys.enter_popup_description_en.tr(),
-                  ),
-                  _buildTextField(
-                    controller: _descriptionArController,
-                    title: LocaleKeys.popup_description_ar.tr(),
-                    hint: LocaleKeys.enter_popup_description_ar.tr(),
-                  ),
-                  _buildTextField(
-                    controller: _linkController,
-                    title: LocaleKeys.popup_link.tr(),
-                    hint: LocaleKeys.enter_popup_link.tr(),
-                  ),
-
-                  _buildImagePicker(
-                    selectedImage: _selectedEnImage,
-                    title: LocaleKeys.popup_english_image.tr(),
-                    onPick: () => _pickImage(true),
-                    onRemove: () => _removeImage(true),
-                  ),
-
-                  // _buildImagePicker(
-                  //   selectedImage: _selectedArImage,
-                  //   title: LocaleKeys.popup_arabic_image.tr(),
-                  //   onPick: () => _pickImage(false),
-                  //   onRemove: () => _removeImage(false),
-                  // ),
-
-                  SizedBox(height: ResponsiveUI.spacing(context, 24)),
+                  SizedBox(height: ResponsiveUI.spacing(context, 32)),
                   SizedBox(
                     width: double.infinity,
                     height: ResponsiveUI.value(context, 48),
-                    child: CustomElevatedButton(
+                    child: ElevatedButton(
                       onPressed: isLoading ? null : _validateAndSubmit,
-                      text: isLoading
-                          ? LocaleKeys.saving_popup.tr()
-                          : LocaleKeys.save_popup.tr(),
-                      isLoading: isLoading,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryBlue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+                        ),
+                      ),
+                      child: isLoading
+                          ? SizedBox(
+                              height: ResponsiveUI.iconSize(context, 20),
+                              width: ResponsiveUI.iconSize(context, 20),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                              ),
+                            )
+                          : Text(
+                              LocaleKeys.save_popup.tr(),
+                              style: TextStyle(
+                                fontSize: ResponsiveUI.fontSize(context, 16),
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.white,
+                              ),
+                            ),
                     ),
                   ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 16)),
                 ],
               ),
             ),
@@ -321,6 +287,15 @@ class _CreatePopupScreenState extends State<CreatePopupScreen> {
         );
       },
     );
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 
   @override

@@ -1,6 +1,7 @@
 // lib/features/admin/product/presentation/screens/edit_product_screen.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
@@ -115,18 +116,18 @@ class _EditProductScreenState extends State<EditProductScreen>
     _maxToShowController.text = widget.product.maximumToShow.toString();
     _unitController.text = widget.product.unit;
     _hasExpiry = widget.product.expAbility;
-    _expiryDate = widget.product.dateOfExpiery;
+    _expiryDate = widget.product.dateOfExpiry;
     _hasIMEI = widget.product.productHasImei;
-    _differentPrice = widget.product.differentPrice;
+    // Note: differentPrice removed in migration 014
+    _differentPrice = false; // Always false now
     _showQuantity = widget.product.showQuantity;
     _isFeatured = widget.product.isFeatured ?? false;
     mainImageUrl = widget.product.image;
     galleryImageUrls = widget.product.galleryProduct;
 
-    if (!widget.product.differentPrice) {
-      _priceController.text = widget.product.price.toString();
-      _codeController.text = ''; // Assume no main code, or fetch if available
-    }
+    // Always use single price now
+    _priceController.text = widget.product.price.toString();
+    _codeController.text = ''; // Assume no main code, or fetch if available
   }
 
 
@@ -212,9 +213,9 @@ class _EditProductScreenState extends State<EditProductScreen>
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<ProductsCubit, ProductsState>(
+    Widget screenContent = BlocConsumer<ProductsCubit, ProductsState>(
       listener: (context, state) {
-        if (state is ProductAddSuccess) { // Assuming same state for update, or adjust if different
+        if (state is ProductAddSuccess) {
           CustomSnackbar.showSuccess(context, state.message);
           Navigator.pop(context, true);
         } else if (state is ProductsError) {
@@ -233,7 +234,7 @@ class _EditProductScreenState extends State<EditProductScreen>
           },
           child: Scaffold(
             backgroundColor: AppColors.lightBlueBackground,
-            appBar: appBarWithActions(context, title: "Edit Product"),
+            appBar: appBarWithActions(context, title: "تعديل منتج"),
             body: SafeArea(
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(
@@ -245,21 +246,21 @@ class _EditProductScreenState extends State<EditProductScreen>
                   children: [
                     // Product Information Section
                     ProductSectionCard(
-                      title: 'Product Information',
+                      title: 'معلومات المنتج',
                       icon: Icons.inventory_2,
                       children: [
                         buildTextField(
                           context,
                           controller: _nameController,
-                          label: 'Product Name (EN) *',
+                          label: 'اسم المنتج (EN) *',
                           icon: Icons.label,
-                          hint: 'Enter product name in English',
+                          hint: 'أدخل اسم المنتج بالإنجليزية',
                         ),
                         SizedBox(height: ResponsiveUI.spacing(context, 12)),
                         buildTextField(
                           context,
                           controller: _arNameController,
-                          label: 'Product Name (AR) *',
+                          label: 'اسم المنتج (AR) *',
                           icon: Icons.label,
                           hint: 'أدخل اسم المنتج بالعربية',
                         ),
@@ -267,18 +268,18 @@ class _EditProductScreenState extends State<EditProductScreen>
                         buildTextField(
                           context,
                           controller: _descriptionController,
-                          label: 'Description (EN) *',
+                          label: 'الوصف (EN) *',
                           icon: Icons.description,
-                          hint: 'Enter product description',
+                          hint: 'أدخل وصف المنتج بالإنجليزية',
                           maxLines: 3,
                         ),
                         SizedBox(height: ResponsiveUI.spacing(context, 12)),
                         buildTextField(
                           context,
                           controller: _arDescriptionController,
-                          label: 'Description (AR) *',
+                          label: 'الوصف (AR) *',
                           icon: Icons.description,
-                          hint: 'أدخل وصف المنتج',
+                          hint: 'أدخل وصف المنتج بالعربية',
                           maxLines: 3,
                         ),
                       ],
@@ -288,14 +289,14 @@ class _EditProductScreenState extends State<EditProductScreen>
 
                     // Category & Brand Section
                     ProductSectionCard(
-                      title: 'Category & Brand',
+                      title: 'الفئة والعلامة التجارية',
                       icon: Icons.category,
                       children: [
                         BlocBuilder<ProductFiltersCubit, ProductFiltersState>(
                           builder: (context, filtersState) {
                             if (filtersState is ProductFiltersLoading) {
                               return _buildLoadingDropdown(
-                                'Loading categories...',
+                                'جاري تحميل الفئات...',
                               );
                             }
                             if (filtersState is ProductFiltersSuccess) {
@@ -304,7 +305,7 @@ class _EditProductScreenState extends State<EditProductScreen>
                               );
                             }
                             return EmptyStateWidget(
-                              message: 'No categories available',
+                              message: 'لا توجد فئات متاحة',
                               icon: Icons.category,
                               color: AppColors.warningOrange,
                             );
@@ -313,7 +314,7 @@ class _EditProductScreenState extends State<EditProductScreen>
                         BlocBuilder<ProductFiltersCubit, ProductFiltersState>(
                           builder: (context, filtersState) {
                             if (filtersState is ProductFiltersLoading) {
-                              return _buildLoadingDropdown('Loading brands...');
+                              return _buildLoadingDropdown('جاري تحميل العلامات التجارية...');
                             }
                             if (filtersState is ProductFiltersSuccess) {
                               return _buildBrandDropdown(
@@ -321,7 +322,7 @@ class _EditProductScreenState extends State<EditProductScreen>
                               );
                             }
                             return EmptyStateWidget(
-                              message: 'No brands available',
+                              message: 'لا توجد علامات تجارية متاحة',
                               icon: Icons.category,
                               color: AppColors.warningOrange,
                             );
@@ -334,15 +335,15 @@ class _EditProductScreenState extends State<EditProductScreen>
 
                     // Pricing & Stock Section
                     ProductSectionCard(
-                      title: 'Pricing & Stock',
+                      title: 'التسعير والمخزون',
                       icon: Icons.attach_money,
                       children: [
                         buildTextField(
                           context,
                           controller: _unitController,
-                          label: 'Unit *',
+                          label: 'الوحدة *',
                           icon: Icons.scale,
-                          hint: 'piece, kg, etc.',
+                          hint: 'قطعة، كجم، إلخ.',
                         ),
                         SizedBox(height: ResponsiveUI.spacing(context, 12)),
                         Row(
@@ -351,7 +352,7 @@ class _EditProductScreenState extends State<EditProductScreen>
                               child: buildTextField(
                                 context,
                                 controller: _minQuantityController,
-                                label: 'Min. Wholesale Qty *',
+                                label: 'الحد الأدنى لكمية الجملة *',
                                 icon: Icons.shopping_cart,
                                 hint: '1',
                                 keyboardType: TextInputType.number,
@@ -362,7 +363,7 @@ class _EditProductScreenState extends State<EditProductScreen>
                               child: buildTextField(
                                 context,
                                 controller: _wholePriceController,
-                                label: 'Wholesale Price',
+                                label: 'سعر الجملة',
                                 icon: Icons.money_off,
                                 hint: '0.00',
                                 keyboardType: TextInputType.number,
@@ -377,7 +378,7 @@ class _EditProductScreenState extends State<EditProductScreen>
                               child: buildTextField(
                                 context,
                                 controller: _startQuantityController,
-                                label: 'Start Quantity',
+                                label: 'الكمية الابتدائية',
                                 icon: Icons.inventory,
                                 hint: '0',
                                 keyboardType: TextInputType.number,
@@ -388,7 +389,7 @@ class _EditProductScreenState extends State<EditProductScreen>
                               child: buildTextField(
                                 context,
                                 controller: _lowStockController,
-                                label: 'Low Stock Alert',
+                                label: 'تنبيه المخزون المنخفض',
                                 icon: Icons.warning,
                                 hint: '10',
                                 keyboardType: TextInputType.number,
@@ -404,12 +405,12 @@ class _EditProductScreenState extends State<EditProductScreen>
 
                     // Product Settings Section
                     ProductSectionCard(
-                      title: 'Product Settings',
+                      title: 'إعدادات المنتج',
                       icon: Icons.settings,
                       children: [
                         AnimatedCheckboxTile(
                           value: _isFeatured,
-                          title: 'Is Featured',
+                          title: 'منتج مميز',
                           onChanged: (value) {
                             setState(() {
                               _isFeatured = value ?? false;
@@ -418,7 +419,7 @@ class _EditProductScreenState extends State<EditProductScreen>
                         ),
                         AnimatedCheckboxTile(
                           value: _hasExpiry,
-                          title: 'Has Expiry Date',
+                          title: 'له تاريخ انتهاء صلاحية',
                           onChanged: (value) {
                             setState(() {
                               _hasExpiry = value ?? false;
@@ -430,18 +431,18 @@ class _EditProductScreenState extends State<EditProductScreen>
                           DatePickerCard(
                             selectedDate: _expiryDate,
                             onTap: _selectExpiryDate,
-                            label: 'Expiry Date',
+                            label: 'تاريخ انتهاء الصلاحية',
                           ),
                         ],
                         AnimatedCheckboxTile(
                           value: _hasIMEI,
-                          title: 'Product has IMEI/Serial Number',
+                          title: 'المنتج له رقم IMEI/تسلسلي',
                           onChanged: (value) =>
                               setState(() => _hasIMEI = value ?? false),
                         ),
                         AnimatedCheckboxTile(
                           value: _showQuantity,
-                          title: 'Show Quantity',
+                          title: 'إظهار الكمية',
                           onChanged: (value) =>
                               setState(() => _showQuantity = value ?? true),
                         ),
@@ -450,7 +451,7 @@ class _EditProductScreenState extends State<EditProductScreen>
                           buildTextField(
                             context,
                             controller: _maxToShowController,
-                            label: 'Maximum to Show',
+                            label: 'الحد الأقصى للعرض',
                             icon: Icons.visibility,
                             hint: '100',
                             keyboardType: TextInputType.number,
@@ -462,7 +463,7 @@ class _EditProductScreenState extends State<EditProductScreen>
                           quantityController: _quantityController,
                           codeController: _codeController,
                           value: _differentPrice,
-                          title: 'Different Prices for Variations',
+                          title: 'أسعار مختلفة للتنويعات',
                           onChanged: (value) {
                             setState(() {
                               _differentPrice = value ?? false;
@@ -489,7 +490,7 @@ class _EditProductScreenState extends State<EditProductScreen>
 
                     // Product Images Section
                     ProductSectionCard(
-                      title: 'Product Images',
+                      title: 'صور المنتج',
                       icon: Icons.image,
                       children: [
                         MainImagePicker(
@@ -517,8 +518,8 @@ class _EditProductScreenState extends State<EditProductScreen>
                       child: CustomElevatedButton(
                         onPressed: state is ProductsLoading ? null : _saveProduct,
                         text: state is ProductsLoading
-                            ? 'Updating Product...'
-                            : 'Update Product',
+                            ? 'جاري تحديث المنتج...'
+                            : 'تحديث المنتج',
                       ),
                     ),
                     SizedBox(height: ResponsiveUI.spacing(context, 20)),
@@ -530,15 +531,26 @@ class _EditProductScreenState extends State<EditProductScreen>
         );
       },
     );
+
+    // Scale down for web
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 
   Widget _buildPriceVariationsSection() {
     return ProductSectionCard(
-      title: 'Price Variations',
+      title: 'تنويعات الأسعار',
       icon: Icons.price_change,
       children: [
         Text(
-          'Select Variations',
+          'اختر التنويعات',
           style: TextStyle(
             fontSize: ResponsiveUI.fontSize(context, 16),
             fontWeight: FontWeight.bold,
@@ -549,7 +561,7 @@ class _EditProductScreenState extends State<EditProductScreen>
         buildMultiSelectDropdownField<VariationFilter>(
           context,
           items: _variations,
-          hint: 'Select variations...',
+          hint: 'اختر التنويعات...',
           onChanged: (value) {
             setState(() {
               _selectedVariations = value;
@@ -567,7 +579,7 @@ class _EditProductScreenState extends State<EditProductScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Select Options for ${variation.name}',
+                  'اختر الخيارات لـ ${variation.name}',
                   style: TextStyle(
                     fontSize: ResponsiveUI.fontSize(context, 14),
                     fontWeight: FontWeight.w600,
@@ -578,7 +590,7 @@ class _EditProductScreenState extends State<EditProductScreen>
                 buildMultiSelectDropdownField<FilterOption>(
                   context,
                   items: variation.options,
-                  hint: 'Select options...',
+                  hint: 'اختر الخيارات...',
                   onChanged: (selectedOpts) {
                     setState(() {
                       _selectedOptionsPerVariation[variation] = selectedOpts;
@@ -597,7 +609,7 @@ class _EditProductScreenState extends State<EditProductScreen>
                 )
                 ? _generateVariations
                 : null,
-            text: 'Generate Combinations',
+            text: 'إنشاء التركيبات',
           ),
         ],
         if (_priceVariations.isNotEmpty) ...[
@@ -664,7 +676,7 @@ class _EditProductScreenState extends State<EditProductScreen>
           buildTextField(
             context,
             controller: variation.priceController,
-            label: 'Price *',
+            label: 'السعر *',
             icon: Icons.attach_money,
             hint: '0.00',
             keyboardType: TextInputType.number,
@@ -673,15 +685,15 @@ class _EditProductScreenState extends State<EditProductScreen>
           buildTextField(
             context,
             controller: variation.codeController,
-            label: 'Product Code *',
+            label: 'كود المنتج *',
             icon: Icons.qr_code,
-            hint: 'Enter unique code',
+            hint: 'أدخل كود فريد',
           ),
           SizedBox(height: ResponsiveUI.spacing(context, 12)),
           buildTextField(
             context,
             controller: variation.quantityController,
-            label: 'Quantity',
+            label: 'الكمية',
             icon: Icons.inventory,
             hint: '0',
             keyboardType: TextInputType.number,
@@ -702,7 +714,7 @@ class _EditProductScreenState extends State<EditProductScreen>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Variation Images',
+              'صور التنويع',
               style: TextStyle(
                 fontSize: ResponsiveUI.fontSize(context, 13),
                 fontWeight: FontWeight.w600,
@@ -721,7 +733,7 @@ class _EditProductScreenState extends State<EditProductScreen>
                 }
               },
               icon: Icon(Icons.add_photo_alternate, size: ResponsiveUI.iconSize(context, 16)),
-              label: Text('Add', style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 12))),
+              label: Text('إضافة', style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 12))),
             ),
           ],
         ),
@@ -795,7 +807,7 @@ class _EditProductScreenState extends State<EditProductScreen>
     return buildMultiSelectDropdownField<CategoryFilter>(
       context,
       items: categories,
-      hint: 'Search categories...',
+      hint: 'ابحث عن الفئات...',
       onChanged: (value) {
         setState(() {
           _selectedCategories = value;
@@ -809,7 +821,7 @@ class _EditProductScreenState extends State<EditProductScreen>
     return buildDropdownField<BrandFilter>(
       context,
       items: brands,
-      hint: 'Search brands...',
+      hint: 'ابحث عن العلامات التجارية...',
       onChanged: (value) {
         setState(() {
           _selectedBrand = value;
@@ -824,24 +836,24 @@ class _EditProductScreenState extends State<EditProductScreen>
   void _saveProduct() async {
     // === Validation ===
     if (_nameController.text.trim().isEmpty) {
-      CustomSnackbar.showError(context, 'Please enter product name (EN)');
+      CustomSnackbar.showError(context, 'الرجاء إدخال اسم المنتج (EN)');
       return;
     }
     if (_arNameController.text.trim().isEmpty) {
-      CustomSnackbar.showError(context, 'Please enter product name (AR)');
+      CustomSnackbar.showError(context, 'الرجاء إدخال اسم المنتج (AR)');
       return;
     }
     // Image is now optional - removed validation
     if (_selectedCategories == null || _selectedCategories!.isEmpty) {
-      CustomSnackbar.showError(context, 'Please select at least one category');
+      CustomSnackbar.showError(context, 'الرجاء اختيار فئة واحدة على الأقل');
       return;
     }
     if (_selectedBrand == null) {
-      CustomSnackbar.showError(context, 'Please select a brand');
+      CustomSnackbar.showError(context, 'الرجاء اختيار علامة تجارية');
       return;
     }
     if (_unitController.text.trim().isEmpty) {
-      CustomSnackbar.showError(context, 'Please enter unit (e.g. piece)');
+      CustomSnackbar.showError(context, 'الرجاء إدخال الوحدة (مثل: قطعة)');
       return;
     }
 
@@ -868,7 +880,7 @@ class _EditProductScreenState extends State<EditProductScreen>
         if (v.priceController.text.trim().isEmpty) {
           CustomSnackbar.showError(
             context,
-            'Enter price for variation ${i + 1}',
+            'أدخل السعر للتنويع ${i + 1}',
           );
           return;
         }
@@ -876,7 +888,7 @@ class _EditProductScreenState extends State<EditProductScreen>
         if (v.codeController.text.trim().isEmpty) {
           CustomSnackbar.showError(
             context,
-            'Enter product code for variation ${i + 1}',
+            'أدخل كود المنتج للتنويع ${i + 1}',
           );
           return;
         } else {
@@ -884,7 +896,7 @@ class _EditProductScreenState extends State<EditProductScreen>
           if (codes.contains(code)) {
             CustomSnackbar.showError(
               context,
-              'Don\'t enter the same codes for price variations',
+              'لا تدخل نفس الأكواد لتنويعات الأسعار',
             );
             return;
           } else {
@@ -920,7 +932,7 @@ class _EditProductScreenState extends State<EditProductScreen>
       categoryIds: _selectedCategories!.map((c) => c.id).toList(),
       brandId: _selectedBrand!.id,
       unit: _unitController.text.trim(),
-      price: _differentPrice ? 0.0 : mainPrice,
+      price: mainPrice, // Always use single price now
       expAbility: _hasExpiry,
       code: _codeController.text.trim(),
       minimumQuantitySale: minQtySale,
@@ -930,12 +942,11 @@ class _EditProductScreenState extends State<EditProductScreen>
       quantity: quantity,
       taxesId: '67056d0a3b233c5c1b36a7ae',
       productHasImei: _hasIMEI,
-      differentPrice: _differentPrice,
+      // Note: differentPrice and prices removed in migration 014
       showQuantity: _showQuantity,
       isFeatured: _isFeatured,
       maximumToShow: maxToShow,
       galleryProduct: galleryBase64,
-      prices: pricesJson,
       expiryDate: _expiryDate,
     );
   }

@@ -149,11 +149,11 @@ class _OnlineOrdersSupabaseDataSource implements OnlineOrdersRepositoryInterface
   static const String _table = 'online_orders';
   static const String _selectQuery = '''
     *,
-    customer:customers!customer_id(id, name),
-    branch:warehouses!branch_id(id, name),
+    customer:customers(id, name),
+    branch:warehouses(id, name),
     items:online_order_items(
       *,
-      product:products!product_id(id, name)
+      product:products(id, name)
     )
   ''';
 

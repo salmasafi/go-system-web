@@ -24,17 +24,17 @@ class PermissionResponse {
 
 class PermissionData {
   final String message;
-  final List<PermissionModel> permisions;
+  final List<PermissionModel> permissions;
 
   PermissionData({
     required this.message,
-    required this.permisions,
+    required this.permissions,
   });
 
   factory PermissionData.fromJson(Map<String, dynamic> json) {
     return PermissionData(
       message: json['message'] as String,
-      permisions: (json['positions'] as List<dynamic>)
+      permissions: (json['permissions'] as List<dynamic>)
           .map((item) => PermissionModel.fromJson(item))
           .toList(),
     );
@@ -43,7 +43,7 @@ class PermissionData {
   Map<String, dynamic> toJson() {
     return {
       'message': message,
-      'positions': permisions.map((p) => p.toJson()).toList(),
+      'permissions': permissions.map((p) => p.toJson()).toList(),
     };
   }
 }

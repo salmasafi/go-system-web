@@ -59,8 +59,7 @@ class ProductRepository implements ProductRepositoryInterface {
           .select('''
             *,
             categories:product_categories(category:category_id(*)),
-            brand:brand_id(*),
-            prices:product_prices(*, variations:product_price_variations(variation:variation_id(*), option:option_id(*)))
+            brand:brand_id(*)
           ''')
           .order('created_at', ascending: false);
 
@@ -87,7 +86,6 @@ class ProductRepository implements ProductRepositoryInterface {
             *,
             categories:product_categories(category:category_id(*)),
             brand:brand_id(*),
-            prices:product_prices(*, variations:product_price_variations(variation:variation_id(*), option:option_id(*))),
             warehouses:product_warehouses(warehouse:warehouse_id(*), quantity)
           ''')
           .eq('id', id)
@@ -203,7 +201,7 @@ class ProductRepository implements ProductRepositoryInterface {
             'price': product.price,
             'quantity': product.quantity,
             'exp_ability': product.expAbility,
-            'date_of_expiery': product.dateOfExpiery?.toIso8601String(),
+            'date_of_expiry': product.dateOfExpiry?.toIso8601String(),
             'minimum_quantity_sale': product.minimumQuantitySale,
             'low_stock': product.lowStock,
             'whole_price': product.wholePrice,
@@ -290,7 +288,7 @@ class ProductRepository implements ProductRepositoryInterface {
         'price': product.price,
         'quantity': product.quantity,
         'exp_ability': product.expAbility,
-        'date_of_expiery': product.dateOfExpiery?.toIso8601String(),
+        'date_of_expiry': product.dateOfExpiry?.toIso8601String(),
         'minimum_quantity_sale': product.minimumQuantitySale,
         'low_stock': product.lowStock,
         'whole_price': product.wholePrice,
@@ -412,7 +410,7 @@ class ProductRepository implements ProductRepositoryInterface {
       description: json['description'] ?? '',
       arDescription: json['ar_description'] ?? '',
       expAbility: json['exp_ability'] ?? false,
-      dateOfExpiery: json['date_of_expiery'] != null
+      dateOfExpiry: json['date_of_expiery'] != null
           ? DateTime.tryParse(json['date_of_expiery'])
           : null,
       minimumQuantitySale: json['minimum_quantity_sale'] ?? 0,

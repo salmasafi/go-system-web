@@ -1,6 +1,7 @@
 
 // import 'package:easy_localization/easy_localization.dart';
 // import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 // import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:GoSystem/core/constants/app_colors.dart';
 // import 'package:GoSystem/core/utils/responsive_ui.dart';
@@ -396,7 +397,38 @@ class TransfersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const TransfersView();
+    // Scale down for web
+    Widget screenContent = Scaffold(
+      backgroundColor: AppColors.lightBlueBackground,
+      appBar: appBarWithActions(
+        context,
+        title: LocaleKeys.transfers_title.tr(),
+        showActions: true,
+        onPressed: () {
+          // TODO: Add Transfer functionality
+        },
+      ),
+      body: SafeArea(
+        child: Center(
+          child: Text(
+            'Transfers Screen - Under Development',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+    );
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 }
 

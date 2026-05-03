@@ -6,7 +6,7 @@ import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:GoSystem/features/pos/checkout/model/reciept_data.dart';
 import 'package:GoSystem/features/pos/checkout/presentation/view/reciept_screen.dart';
 import 'package:GoSystem/features/pos/home/model/pos_models.dart';
-import '../../../checkout/model/checkout_models.dart';
+import 'package:GoSystem/features/pos/checkout/model/checkout_models.dart';
 import '../../cubit/history_cubit.dart';
 import '../../cubit/history_state.dart';
 import '../../model/sale_model.dart';

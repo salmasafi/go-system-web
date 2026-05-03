@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
@@ -21,7 +22,7 @@ class _CreateVariationScreenState extends State<CreateVariationScreen> {
   final _nameEnController = TextEditingController();
   final _nameArController = TextEditingController();
 
-  List<Map<String, dynamic>> _options = [];
+  final List<Map<String, dynamic>> _options = [];
 
   void _addOption() {
     setState(() {
@@ -172,7 +173,7 @@ class _CreateVariationScreenState extends State<CreateVariationScreen> {
     return BlocConsumer<VariationCubit, VariationState>(
       listener: (context, state) {
         if (state is CreateVariationSuccess) {
-          CustomSnackbar.showSuccess(context, state.message);
+          CustomSnackbar.showSuccess(context, LocaleKeys.variation_created_success.tr());
           Navigator.pop(context, true);
         } else if (state is CreateVariationError) {
           CustomSnackbar.showError(context, state.error);
@@ -181,7 +182,7 @@ class _CreateVariationScreenState extends State<CreateVariationScreen> {
       builder: (context, state) {
         final isLoading = state is CreateVariationLoading;
 
-        return Scaffold(
+        Widget screenContent = Scaffold(
           backgroundColor: const Color.fromARGB(255, 243, 249, 254),
           appBar: appBarWithActions(context, title: LocaleKeys.new_variation.tr(),),
           body: SafeArea(
@@ -217,6 +218,18 @@ class _CreateVariationScreenState extends State<CreateVariationScreen> {
             ),
           ),
         );
+
+        // Scale down for web
+        if (kIsWeb) {
+          screenContent = MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: const TextScaler.linear(0.55),
+            ),
+            child: screenContent,
+          );
+        }
+
+        return screenContent;
       },
     );
   }

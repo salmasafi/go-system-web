@@ -1278,7 +1278,6 @@ class Product {
   final int startQuantity;
   final String? taxesId;
   final bool productHasImei;
-  final bool differentPrice;
   final bool showQuantity;
   final int maximumToShow;
   final List<String> galleryProduct;
@@ -1288,7 +1287,6 @@ class Product {
   final int version;
   final double? cost;
   final int? lowStock;
-  final List<product_model.Price>? prices;
 
   Product({
     required this.id,
@@ -1309,7 +1307,6 @@ class Product {
     required this.startQuantity,
     this.taxesId,
     required this.productHasImei,
-    required this.differentPrice,
     required this.showQuantity,
     required this.maximumToShow,
     required this.galleryProduct,
@@ -1319,7 +1316,6 @@ class Product {
     required this.version,
     this.cost,
     this.lowStock,
-    this.prices
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -1344,7 +1340,6 @@ class Product {
       startQuantity: (json['start_quantaty'] ?? json['start_quantity'] ?? 0).toInt(),
       taxesId: json['taxesId'] ?? json['tax_id'],
       productHasImei: json['product_has_imei'] ?? false,
-      differentPrice: json['different_price'] ?? false,
       showQuantity: json['show_quantity'] ?? true,
       maximumToShow: (json['maximum_to_show'] ?? 0).toInt(),
       galleryProduct: List<String>.from(json['gallery_product'] ?? []),
@@ -1406,7 +1401,6 @@ class Category {
 class Option {
   final String id;
   final String purchaseItemId;
-  final ProductPrice? productPrice;
   final OptionDetails? option;
   final int quantity;
   final DateTime date;
@@ -1417,7 +1411,6 @@ class Option {
   Option({
     required this.id,
     required this.purchaseItemId,
-    this.productPrice,
     this.option,
     required this.quantity,
     required this.date,
@@ -1430,9 +1423,6 @@ class Option {
     return Option(
       id: json['id'] ?? json['_id'] ?? '',
       purchaseItemId: json['purchase_item_id'] ?? '',
-      productPrice: json['product_price_id'] != null
-          ? ProductPrice.fromJson(json['product_price_id'])
-          : null,
       option: json['option_id'] != null
           ? OptionDetails.fromJson(json['option_id'])
           : null,
@@ -1447,55 +1437,6 @@ class Option {
           ? DateTime.parse(json['updated_at'] ?? json['updatedAt'])
           : DateTime.now(),
       version: json['__v'] ?? 0,
-    );
-  }
-}
-
-// product price model
-class ProductPrice {
-  final String id;
-  final String productId;
-  final double price;
-  final String code;
-  final List<String> gallery;
-  final int quantity;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final int version;
-  final int startQuantity;
-  final double? cost;
-
-  ProductPrice({
-    required this.id,
-    required this.productId,
-    required this.price,
-    required this.code,
-    required this.gallery,
-    required this.quantity,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.version,
-    required this.startQuantity,
-    this.cost,
-  });
-
-  factory ProductPrice.fromJson(Map<String, dynamic> json) {
-    return ProductPrice(
-      id: json['id'] ?? json['_id'] ?? '',
-      productId: json['productId'] ?? json['product_id'] ?? '',
-      price: (json['price'] ?? 0).toDouble(),
-      code: json['code'] ?? '',
-      gallery: List<String>.from(json['gallery'] ?? []),
-      quantity: (json['quantity'] ?? 0).toInt(),
-      createdAt: (json['created_at'] ?? json['createdAt']) != null
-          ? DateTime.parse(json['created_at'] ?? json['createdAt'])
-          : DateTime.now(),
-      updatedAt: (json['updated_at'] ?? json['updatedAt']) != null
-          ? DateTime.parse(json['updated_at'] ?? json['updatedAt'])
-          : DateTime.now(),
-      version: json['__v'] ?? 0,
-      startQuantity: (json['strat_quantaty'] ?? json['start_quantity'] ?? 0).toInt(),
-      cost: (json['cost'] ?? 0).toDouble(),
     );
   }
 }
@@ -1623,32 +1564,26 @@ class DuePayment {
 class PurchaseItemModel {
   final String productId;
   final String productCode;
-  final String? productPriceId; // For variations
   final int quantity;
   final DateTime? dateOfExpiery;
   final double unitCost;
   final double discount;
   final double tax;
   final double subtotal;
-  final List<VariationModel> variations;
   
   // For UI reference
   final product_model.Product product;
-  final product_model.Price? selectedPrice;
 
   PurchaseItemModel({
     required this.productId,
     required this.productCode,
-    this.productPriceId,
     required this.quantity,
     this.dateOfExpiery,
     required this.unitCost,
     required this.discount,
     required this.tax,
     required this.subtotal,
-    required this.variations,
     required this.product,
-    this.selectedPrice,
   });
 
   Map<String, dynamic> toJson() {
@@ -1662,28 +1597,6 @@ class PurchaseItemModel {
       'discount': discount,
       'tax': tax,
       'subtotal': subtotal,
-      'variations': variations.map((v) => v.toJson()).toList(),
-    };
-  }
-}
-
-class VariationModel {
-  final String productPriceId;
-  final int quantity;
-  final DateTime? dateOfExpiery;
-
-  VariationModel({
-    required this.productPriceId,
-    required this.quantity,
-    this.dateOfExpiery,
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'product_price_id': productPriceId,
-      'quantity': quantity,
-      if (dateOfExpiery != null)
-        'date_of_expiery': dateOfExpiery!.toIso8601String().split('T')[0],
     };
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/features/admin/admins_screen/cubit/admins_cubit.dart';
@@ -103,27 +104,32 @@ class _AdminsScreenState extends State<AdminsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    // Scale down for web
+    Widget screenContent = Scaffold(
+      backgroundColor: AppColors.lightBlueBackground,
       appBar: appBarWithActions(
         context,
         title: LocaleKeys.admins.tr(),
         showActions: true,
-        onPressed: () => showDialog(
-          context: context,
-          builder: (context) => const AdminFormDialog(),
-        ),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => const AdminFormDialog(),
+          );
+        },
       ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: ResponsiveUI.contentMaxWidth(context),
-          ),
-          child: AnimatedElement(
-            delay: const Duration(milliseconds: 200),
-            child: _buildListContent(),
-          ),
-        ),
+      body: SafeArea(
+        child: _buildListContent(),
       ),
     );
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 }

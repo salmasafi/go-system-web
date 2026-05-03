@@ -64,7 +64,7 @@ class _CreateAttributeTypeDialogState extends State<CreateAttributeTypeDialog> {
     final isEditing = widget.attributeType != null;
 
     return AlertDialog(
-      title: Text(isEditing ? 'Edit Attribute Type' : 'Create Attribute Type'),
+      title: Text(isEditing ? 'تعديل نوع الخاصية' : 'إنشاء نوع خاصية'),
       content: Form(
         key: _formKey,
         child: Column(
@@ -73,12 +73,12 @@ class _CreateAttributeTypeDialogState extends State<CreateAttributeTypeDialog> {
             TextFormField(
               controller: _nameController,
               decoration: const InputDecoration(
-                labelText: 'Name (English)',
+                labelText: 'الاسم (إنجليزي)',
                 border: OutlineInputBorder(),
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Please enter a name';
+                  return 'الرجاء إدخال الاسم';
                 }
                 return null;
               },
@@ -87,12 +87,12 @@ class _CreateAttributeTypeDialogState extends State<CreateAttributeTypeDialog> {
             TextFormField(
               controller: _arNameController,
               decoration: const InputDecoration(
-                labelText: 'Name (Arabic)',
+                labelText: 'الاسم (عربي)',
                 border: OutlineInputBorder(),
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Please enter an Arabic name';
+                  return 'الرجاء إدخال الاسم بالعربية';
                 }
                 return null;
               },
@@ -100,7 +100,7 @@ class _CreateAttributeTypeDialogState extends State<CreateAttributeTypeDialog> {
             const SizedBox(height: 16),
             Row(
               children: [
-                const Text('Status:'),
+                const Text('الحالة:'),
                 const Spacer(),
                 Switch(
                   value: _status,
@@ -119,7 +119,7 @@ class _CreateAttributeTypeDialogState extends State<CreateAttributeTypeDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: const Text('إلغاء'),
         ),
         BlocBuilder<AttributeTypeCubit, AttributeTypeState>(
           builder: (context, state) {
@@ -140,7 +140,7 @@ class _CreateAttributeTypeDialogState extends State<CreateAttributeTypeDialog> {
                         color: Colors.white,
                       ),
                     )
-                  : Text(isEditing ? 'Update' : 'Create'),
+                  : Text(isEditing ? 'تحديث' : 'إنشاء'),
             );
           },
         ),

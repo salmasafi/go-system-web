@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/features/admin/warehouses/view/warehouse_form_dialog.dart';
 import 'package:GoSystem/features/admin/warehouses/view/widgets/animated_warehouse_card.dart';
@@ -60,11 +61,13 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    Widget screenContent = Scaffold(
+      backgroundColor: const Color.fromARGB(255, 243, 249, 254),
       appBar: appBarWithActions(
         context,
         title: LocaleKeys.warehouses.tr(),
         showActions: true,
+        actionIcon: Icons.add,
         onPressed: () {
           showDialog(
             context: context,
@@ -212,6 +215,18 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
       //   ),
       //   floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
+
+    // Scale down for web
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+
+    return screenContent;
   }
 
   void _navigateToEdit(Warehouses warehouse) {

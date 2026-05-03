@@ -40,7 +40,7 @@ class _AnimatedUnitCardState extends State<AnimatedUnitCard> {
   @override
   void initState() {
     super.initState();
-    _status = widget.unit.status;
+    _status = widget.unit.status ?? true;
   }
 
   @override
@@ -67,7 +67,7 @@ class _AnimatedUnitCardState extends State<AnimatedUnitCard> {
               offset: const Offset(0, 5),
             ),
           ],
-          border: unit.status
+          border: unit.status == true
               ? Border.all(
                   color: AppColors.darkBlue,
                   width: ResponsiveUI.value(context, 2.5),
@@ -119,16 +119,16 @@ class _AnimatedUnitCardState extends State<AnimatedUnitCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                unit.name,
+                unit.name ?? 'No name',
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 16),
                   fontWeight: FontWeight.w600,
                   color: AppColors.darkGray,
                 ),
               ),
-              if (unit.arName.isNotEmpty)
+              if (unit.arName?.isNotEmpty ?? false)
                 Text(
-                  unit.arName,
+                  unit.arName ?? '',
                   style: TextStyle(
                     fontSize: ResponsiveUI.fontSize(context, 12),
                     color: AppColors.darkGray.withValues(alpha: 0.7),
@@ -200,37 +200,7 @@ class _AnimatedUnitCardState extends State<AnimatedUnitCard> {
               SizedBox(height: ResponsiveUI.spacing(context, 2)),
           
               Text(
-                unit.code,
-                style: TextStyle(
-                  fontSize: ResponsiveUI.fontSize(context, 14),
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.darkGray,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
-        ),
-        SizedBox(width: ResponsiveUI.spacing(context, 16)),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                LocaleKeys.base_unit.tr(),
-                style: TextStyle(
-                  fontSize: ResponsiveUI.fontSize(context, 12),
-                  color: AppColors.darkGray.withValues(alpha: 0.6),
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-          
-              SizedBox(height: ResponsiveUI.spacing(context, 2)),
-          
-              Text(
-                unit.baseUnit == null ? LocaleKeys.unit_yes.tr() : (unit.baseUnit?.name ?? LocaleKeys.unit_no.tr()),
+                unit.code ?? 'No code',
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 14),
                   fontWeight: FontWeight.w500,
@@ -260,7 +230,7 @@ class _AnimatedUnitCardState extends State<AnimatedUnitCard> {
               SizedBox(height: ResponsiveUI.spacing(context, 2)),
           
               Text(
-                unit.baseUnit == null ? LocaleKeys.base.tr() : '${unit.operator} ${unit.operatorValue}',
+                '${unit.operator ?? '*'} ${unit.operatorValue ?? 1.0}',
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 14),
                   fontWeight: FontWeight.w500,

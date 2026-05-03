@@ -21,7 +21,7 @@ class AddRoleScreen extends StatefulWidget {
 }
 
 class _AddRoleScreenState extends State<AddRoleScreen> {
-  List<Permission> _permissions = [];
+  final List<Permission> _permissions = [];
   final List<String> _allActions = ['View', 'Add', 'Edit', 'Delete', 'Status'];
   final List<String> _allModules = [
     'user',
@@ -82,13 +82,9 @@ class _AddRoleScreenState extends State<AddRoleScreen> {
   Widget build(BuildContext context) {
     final maxWidth = ResponsiveUI.contentMaxWidth(context);
     final isDesktop = maxWidth > 600;
+
     return BlocConsumer<RolesCubit, RolesState>(
       listener: (context, state) {
-        // if (state is PermissionsLoaded) {
-        //   setState(() {
-        //     _permissions = List.from(state.permissions.permissions);
-        //   });
-        // }
         if (state is RolesCreateSuccess) {
           CustomSnackbar.showSuccess(context, state.message);
           Navigator.pop(context);

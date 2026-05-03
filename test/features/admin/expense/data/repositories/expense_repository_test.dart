@@ -3,8 +3,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:GoSystem/core/supabase/supabase_client.dart';
 import 'package:GoSystem/features/admin/expences/data/repositories/expense_repository.dart';
-import 'package:GoSystem/features/admin/expense/data/repositories/expense_repository.dart';
-import 'package:GoSystem/features/admin/expense/model/expense_model.dart';
 
 class MockSupabaseClient extends Mock implements SupabaseClient {}
 

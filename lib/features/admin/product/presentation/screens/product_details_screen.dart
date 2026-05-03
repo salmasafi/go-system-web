@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
@@ -35,24 +36,21 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      appBar: appBarWithActions(context, title: 'Product Details'),
-      body: BlocBuilder<ProductDetailsCubit, ProductDetailsState>(
-        builder: (context, state) {
-          if (state is ProductDetailsLoading) {
-            return CustomLoadingShimmer(
-              padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-            );
-          }
+    // Scale down for web
+    Widget screenContent = Scaffold(
+      backgroundColor: AppColors.lightBlueBackground,
+      appBar: appBarWithActions(context, title: "تفاصيل المنتج"),
+      body: SafeArea(
+        child: BlocBuilder<ProductDetailsCubit, ProductDetailsState>(
+          builder: (context, state) {
 
           if (state is ProductDetailsError) {
             return CustomEmptyState(
               icon: Icons.error_outline,
-              title: 'Error',
+              title: 'خطأ',
               message: state.message,
               onRefresh: _refresh,
-              actionLabel: 'Retry',
+              actionLabel: 'إعادة المحاولة',
               onAction: _refresh,
             );
           }
@@ -62,9 +60,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             if (product == null) {
               return CustomEmptyState(
                 icon: Icons.inventory_2_outlined,
-                title: 'No Product Found',
-                message: 'Product details not available',
-                actionLabel: 'Retry',
+                title: 'لم يتم العثور على المنتج',
+                message: 'تفاصيل المنتج غير متاحة',
+                actionLabel: 'إعادة المحاولة',
                 onAction: _refresh,
                 onRefresh: _refresh,
               );
@@ -101,7 +99,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Gallery Images',
+                                'صور المعرض',
                                 style: TextStyle(
                                   fontSize: ResponsiveUI.fontSize(context, 18),
                                   fontWeight: FontWeight.bold,
@@ -161,26 +159,26 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         ProductInfoGrid(
                           items: [
                             ProductInfoItem(
-                              label: 'Product Code',
+                              label: 'كود المنتج',
                               value: product.id,
                             ),
                             ProductInfoItem(
-                              label: 'Brand',
-                              value: product.brandId?.name ?? 'No Brand',
+                              label: 'العلامة التجارية',
+                              value: product.brandId?.name ?? 'لا توجد علامة تجارية',
                             ),
                             ProductInfoItem(
-                              label: 'Category',
+                              label: 'الفئة',
                               value: product.categoryId.isNotEmpty
                                   ? product.categoryId.first.name
-                                  : 'No Category',
+                                  : 'لا توجد فئة',
                             ),
-                            ProductInfoItem(label: 'Unit', value: product.unit),
+                            ProductInfoItem(label: 'الوحدة', value: product.unit),
                             ProductInfoItem(
-                              label: 'Quantity',
+                              label: 'الكمية',
                               value: '${product.quantity}',
                             ),
                             ProductInfoItem(
-                              label: 'Price',
+                              label: 'السعر',
                               value: '\$${product.price.toStringAsFixed(2)}',
                             ),
                           ],
@@ -276,7 +274,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'Stock & Inventory',
+                                          'المخزون والجرد',
                                           style: TextStyle(
                                             fontSize: ResponsiveUI.fontSize(context, 18),
                                             fontWeight: FontWeight.w700,
@@ -286,7 +284,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                         ),
                                         SizedBox(height: ResponsiveUI.value(context, 4)),
                                         Text(
-                                          'Product stock management details',
+                                          'تفاصيل إدارة مخزون المنتج',
                                           style: TextStyle(
                                             fontSize: ResponsiveUI.fontSize(context, 12),
                                             color: AppColors.darkGray,
@@ -324,8 +322,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                       context: context,
                                       icon: Icons.notifications_active_outlined,
                                       iconColor: AppColors.warningOrange,
-                                      label: 'Low Stock Alert',
-                                      value: '${product.lowStock} units',
+                                      label: 'تنبيه المخزون المنخفض',
+                                      value: '${product.lowStock} وحدة',
                                       isFirst: true,
                                     ),
 
@@ -342,9 +340,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                       context: context,
                                       icon: Icons.shopping_cart_outlined,
                                       iconColor: AppColors.successGreen,
-                                      label: 'Minimum Sale Quantity',
+                                      label: 'الحد الأدنى لكمية البيع',
                                       value:
-                                          '${product.minimumQuantitySale} units',
+                                          '${product.minimumQuantitySale} وحدة',
                                     ),
 
                                     Divider(
@@ -360,10 +358,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                       context: context,
                                       icon: Icons.visibility_outlined,
                                       iconColor: AppColors.primaryBlue,
-                                      label: 'Maximum Quantity to Show',
+                                      label: 'الحد الأقصى للكمية المعروضة',
                                       value: product.maximumToShow > 0
-                                          ? '${product.maximumToShow} units'
-                                          : 'No Limit',
+                                          ? '${product.maximumToShow} وحدة'
+                                          : 'بدون حد',
                                       isLast: true,
                                     ),
                                   ],
@@ -427,7 +425,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'Product Features',
+                                          'مميزات المنتج',
                                           style: TextStyle(
                                             fontSize: ResponsiveUI.fontSize(context, 18),
                                             fontWeight: FontWeight.w700,
@@ -437,7 +435,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                         ),
                                         SizedBox(height: ResponsiveUI.value(context, 4)),
                                         Text(
-                                          'Toggle features and capabilities',
+                                          'تبديل المميزات والإمكانيات',
                                           style: TextStyle(
                                             fontSize: ResponsiveUI.fontSize(context, 12),
                                             color: AppColors.darkGray,
@@ -464,35 +462,36 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 children: [
                                   _buildEnhancedFeatureChip(
                                     context,
-                                    'Expiration Ability',
+                                    'قابلية انتهاء الصلاحية',
                                     product.expAbility,
                                     Icons.calendar_today_outlined,
                                     AppColors.warningOrange,
                                   ),
                                   _buildEnhancedFeatureChip(
                                     context,
-                                    'Has IMEI',
+                                    'له رقم IMEI',
                                     product.productHasImei,
                                     Icons.qr_code_scanner_outlined,
                                     AppColors.primaryBlue,
                                   ),
+                                  // Note: differentPrice removed in migration 014
+                                  // _buildEnhancedFeatureChip(
+                                  //   context,
+                                  //   'Different Prices',
+                                  //   false,
+                                  //   Icons.attach_money_outlined,
+                                  //   AppColors.successGreen,
+                                  // ),
                                   _buildEnhancedFeatureChip(
                                     context,
-                                    'Different Prices',
-                                    product.differentPrice,
-                                    Icons.attach_money_outlined,
-                                    AppColors.successGreen,
-                                  ),
-                                  _buildEnhancedFeatureChip(
-                                    context,
-                                    'Show Quantity',
+                                    'إظهار الكمية',
                                     product.showQuantity,
                                     Icons.visibility_outlined,
                                     AppColors.linkBlue,
                                   ),
                                   _buildEnhancedFeatureChip(
                                     context,
-                                    'Featured',
+                                    'مميز',
                                     product.isFeatured,
                                     Icons.star_outlined,
                                     AppColors.holdBeige,
@@ -604,7 +603,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'Product Attributes',
+                                          'خصائص المنتج',
                                           style: TextStyle(
                                             fontSize: ResponsiveUI.fontSize(context, 18),
                                             fontWeight: FontWeight.w700,
@@ -614,7 +613,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                         ),
                                         SizedBox(height: ResponsiveUI.value(context, 4)),
                                         Text(
-                                          'Manage product variations and attributes',
+                                          'إدارة تنويعات وخصائص المنتج',
                                           style: TextStyle(
                                             fontSize: ResponsiveUI.fontSize(context, 12),
                                             color: AppColors.darkGray,
@@ -632,9 +631,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               ),
 
                               // Attribute Assignment Widget
+                              // Note: differentPrice removed in migration 014
                               ProductAttributeAssignmentWidget(
                                 productId: product.id,
-                                differentPrice: product.differentPrice,
                               ),
                             ],
                           ),
@@ -644,7 +643,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           height: ResponsiveUI.verticalSpacing(context, 3),
                         ),
 
-                        // 🟢 VARIATIONS SECTION - CORRECTED
+                        // Note: VARIATIONS SECTION removed in migration 014
+                        // Prices and variations no longer exist
+                        /*
                         if (product.prices.isNotEmpty &&
                             product.prices.any(
                               (element) => element.variations.isNotEmpty,
@@ -652,229 +653,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Available Variations',
-                                style: TextStyle(
-                                  fontSize: ResponsiveUI.fontSize(context, 18),
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.black,
-                                ),
-                              ),
-                              SizedBox(
-                                height: ResponsiveUI.verticalSpacing(
-                                  context,
-                                  1,
-                                ),
-                              ),
-                              ...product.prices.map((price) {
-                                final hasVariations =
-                                    price.variations.isNotEmpty;
-                                final hasGallery = price.gallery.isNotEmpty;
-
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    ProductInfoGrid(
-                                      items: [
-                                        ProductInfoItem(
-                                          label: 'Code',
-                                          value: price.code,
-                                        ),
-                                        ProductInfoItem(
-                                          label: 'Price',
-                                          value: price.price.toString(),
-                                        ),
-                                        if (hasVariations)
-                                          ...price.variations.map((v) {
-                                            return ProductInfoItem(
-                                              label: v.name,
-                                              value: v.options
-                                                  .map((o) => o.name)
-                                                  .join(', '),
-                                            );
-                                          }),
-                                      ],
-                                      gallery: hasGallery ?
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                          top: ResponsiveUI.verticalSpacing(
-                                            context,
-                                            1,
-                                          ),
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            // Text(
-                                            //   'Price Variant Images',
-                                            //   style: TextStyle(
-                                            //     fontSize: ResponsiveUI.fontSize(context, 14),
-                                            //     fontWeight: FontWeight.w600,
-                                            //     color: AppColors.darkGray,
-                                            //   ),
-                                            // ),
-                                            SizedBox(
-                                              height:
-                                                  ResponsiveUI.verticalSpacing(
-                                                    context,
-                                                    1,
-                                                  ),
-                                            ),
-                                            SizedBox(
-                                              height: ResponsiveUI.value(context, 80), // Smaller height for variant gallery
-                                              child: ListView.builder(
-                                                scrollDirection:
-                                                    Axis.horizontal,
-                                                itemCount: price.gallery.length,
-                                                itemBuilder: (context, index) {
-                                                  return Padding(
-                                                    padding: EdgeInsets.only(
-                                                      right:
-                                                          ResponsiveUI.padding(
-                                                            context,
-                                                            1,
-                                                          ),
-                                                    ),
-                                                    child: ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            8,
-                                                          ),
-                                                      child: Image.network(
-                                                        price.gallery[index],
-                                                        width: ResponsiveUI.value(context, 80),
-                                                        height: ResponsiveUI.value(context, 80),
-                                                        fit: BoxFit.contain,
-                                                        errorBuilder:
-                                                            (
-                                                              context,
-                                                              error,
-                                                              stackTrace,
-                                                            ) {
-                                                              return Container(
-                                                                width: ResponsiveUI.value(context, 80),
-                                                                height: ResponsiveUI.value(context, 80),
-                                                                color: AppColors
-                                                                    .shadowGray,
-                                                                child: Icon(
-                                                                  Icons
-                                                                      .broken_image,
-                                                                  color:
-                                                                      AppColors
-                                                                          .white,
-                                                                  size: ResponsiveUI.iconSize(context, 30),
-                                                                ),
-                                                              );
-                                                            },
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ): null,
-                                    ),
-
-                                    // // 🖼️ VARIANT GALLERY SECTION
-                                    // if (hasGallery)
-                                    //   Padding(
-                                    //     padding: EdgeInsets.only(
-                                    //       top: ResponsiveUI.verticalSpacing(
-                                    //         context,
-                                    //         1,
-                                    //       ),
-                                    //     ),
-                                    //     child: Column(
-                                    //       crossAxisAlignment:
-                                    //           CrossAxisAlignment.start,
-                                    //       children: [
-                                    //         // Text(
-                                    //         //   'Price Variant Images',
-                                    //         //   style: TextStyle(
-                                    //         //     fontSize: ResponsiveUI.fontSize(context, 14),
-                                    //         //     fontWeight: FontWeight.w600,
-                                    //         //     color: AppColors.darkGray,
-                                    //         //   ),
-                                    //         // ),
-                                    //         SizedBox(
-                                    //           height:
-                                    //               ResponsiveUI.verticalSpacing(
-                                    //                 context,
-                                    //                 1,
-                                    //               ),
-                                    //         ),
-                                    //         SizedBox(
-                                    //           height:
-                                    //               80, // Smaller height for variant gallery
-                                    //           child: ListView.builder(
-                                    //             scrollDirection:
-                                    //                 Axis.horizontal,
-                                    //             itemCount: price.gallery.length,
-                                    //             itemBuilder: (context, index) {
-                                    //               return Padding(
-                                    //                 padding: EdgeInsets.only(
-                                    //                   right:
-                                    //                       ResponsiveUI.padding(
-                                    //                         context,
-                                    //                         1,
-                                    //                       ),
-                                    //                 ),
-                                    //                 child: ClipRRect(
-                                    //                   borderRadius:
-                                    //                       BorderRadius.circular(
-                                    //                         8,
-                                    //                       ),
-                                    //                   child: Image.network(
-                                    //                     price.gallery[index],
-                                    //                     width: ResponsiveUI.value(context, 80),
-                                    //                     height: ResponsiveUI.value(context, 80),
-                                    //                     fit: BoxFit.cover,
-                                    //                     errorBuilder:
-                                    //                         (
-                                    //                           context,
-                                    //                           error,
-                                    //                           stackTrace,
-                                    //                         ) {
-                                    //                           return Container(
-                                    //                             width: ResponsiveUI.value(context, 80),
-                                    //                             height: ResponsiveUI.value(context, 80),
-                                    //                             color: AppColors
-                                    //                                 .shadowGray,
-                                    //                             child: Icon(
-                                    //                               Icons
-                                    //                                   .broken_image,
-                                    //                               color:
-                                    //                                   AppColors
-                                    //                                       .white,
-                                    //                               size: ResponsiveUI.iconSize(context, 30),
-                                    //                             ),
-                                    //                           );
-                                    //                         },
-                                    //                   ),
-                                    //                 ),
-                                    //               );
-                                    //             },
-                                    //           ),
-                                    //         ),
-                                    //       ],
-                                    //     ),
-                                    //   ),
-                                    if (product.prices.indexOf(price) <
-                                        product.prices.length - 1)
-                                      Divider(
-                                        height: ResponsiveUI.verticalSpacing(
-                                          context,
-                                          3,
-                                        ),
-                                      ),
-                                  ],
-                                );
-                              }).toList(),
+                              ... variations display code removed ...
                             ],
                           ),
+                        */
                       ],
                     ),
                   ),
@@ -885,15 +667,27 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
           return CustomEmptyState(
             icon: Icons.inventory_2_outlined,
-            title: 'No Product Found',
-            message: 'Pull to refresh or check your connection',
+            title: 'لم يتم العثور على المنتج',
+            message: 'اسحب للتحديث أو تحقق من الاتصال',
             onAction: _refresh,
             onRefresh: _refresh,
-            actionLabel: 'Retry',
+            actionLabel: 'إعادة المحاولة',
           );
         },
       ),
+    ),
     );
+
+    // Scale down for web
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 
   Widget _buildFeatureChip(String label, bool isActive, IconData icon) {

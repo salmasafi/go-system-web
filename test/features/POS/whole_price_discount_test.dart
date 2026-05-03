@@ -23,9 +23,8 @@ Product _makeProduct({
 CartItem _makeItem({
   required Product product,
   int quantity = 1,
-  PriceVariation? variation,
 }) {
-  return CartItem(product: product, selectedVariation: variation, quantity: quantity);
+  return CartItem(product: product, quantity: quantity);
 }
 
 void main() {
@@ -88,46 +87,27 @@ void main() {
     });
   });
 
-  group('WholePriceDiscount — PriceVariation overrides Product', () {
-    test('uses variation wholePrice when variation has it', () {
-      final variation = PriceVariation(
-        id: 'v1',
-        productId: 'p1',
-        price: 90,
-        code: 'V001',
-        gallery: [],
-        quantity: 10,
-        variations: [],
-        wholePrice: 70,
-        startQuantity: 4,
-      );
+  // Note: PriceVariation tests removed after migration 014
+  // Products now have single price only - no price variations
+  group('WholePriceDiscount — Edge Cases', () {
+    test('wholePrice with zero startQuantity is never active', () {
       final item = _makeItem(
-        product: _makeProduct(price: 100, wholePrice: 80, startQuantity: 5),
-        variation: variation,
-        quantity: 4,
+        product: _makeProduct(price: 100, wholePrice: 80, startQuantity: 0),
+        quantity: 10,
       );
-      // يجب أن يستخدم variation.wholePrice وليس product.wholePrice
-      expect(item.effectivePrice, equals(70.0));
+      // startQuantity of 0 means wholesale never activates
+      expect(item.isWholePriceActive, isFalse);
+      expect(item.effectivePrice, equals(100.0));
     });
 
-    test('falls back to product price when variation has no wholePrice', () {
-      final variation = PriceVariation(
-        id: 'v1',
-        productId: 'p1',
-        price: 90,
-        code: 'V001',
-        gallery: [],
-        quantity: 10,
-        variations: [],
-        wholePrice: null,
-        startQuantity: null,
-      );
+    test('large quantity still uses wholePrice when conditions met', () {
       final item = _makeItem(
-        product: _makeProduct(price: 100),
-        variation: variation,
-        quantity: 10,
+        product: _makeProduct(price: 100, wholePrice: 75, startQuantity: 5),
+        quantity: 1000,
       );
-      expect(item.effectivePrice, equals(90.0)); // variation.price
+      expect(item.isWholePriceActive, isTrue);
+      expect(item.effectivePrice, equals(75.0));
+      expect(item.subtotal, equals(75.0 * 1000));
     });
   });
 }

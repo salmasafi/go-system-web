@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
@@ -299,7 +300,6 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
     return BlocConsumer<CustomerCubit, CustomerState>(
       listener: (context, state) {
         if (state is UpdateCustomerSuccess) {
-          CustomSnackbar.showSuccess(context, state.message);
           Navigator.pop(context, true);
         } else if (state is UpdateCustomerError) {
           CustomSnackbar.showError(context, state.error);
@@ -513,48 +513,193 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
             ],
           ),
         );
+        Widget content = Scaffold(
+          backgroundColor: const Color.fromARGB(255, 243, 249, 254),
+          appBar: appBarWithActions(
+            context,
+            title: LocaleKeys.edit_customer.tr(),
+          ),
+          body: Stack(
+            children: [
+              SafeArea(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: ResponsiveUI.padding(context, 16),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Basic Information Section
+                      Text(
+                        LocaleKeys.basic_information.tr(),
+                        style: TextStyle(
+                          fontSize: ResponsiveUI.fontSize(context, 16),
+                          color: AppColors.primaryBlue,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      
+                      _buildTextField(
+                        controller: _nameController,
+                        title: LocaleKeys.customer_name.tr(),
+                        hint: LocaleKeys.enter_customer_name.tr(),
+                        isRequired: true,
+                      ),
+
+                      _buildTextField(
+                        controller: _emailController,
+                        title: LocaleKeys.email.tr(),
+                        hint: LocaleKeys.enter_email.tr(),
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+
+                      _buildTextField(
+                        controller: _phoneController,
+                        title: LocaleKeys.phone_number.tr(),
+                        hint: LocaleKeys.enter_phone_number.tr(),
+                        keyboardType: TextInputType.phone,
+                        isRequired: true,
+                      ),
+
+                      // Address Information Section
+                      SizedBox(height: ResponsiveUI.spacing(context, 24)),
+                      Text(
+                        LocaleKeys.address_information.tr(),
+                        style: TextStyle(
+                          fontSize: ResponsiveUI.fontSize(context, 16),
+                          color: AppColors.primaryBlue,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      _buildTextField(
+                        controller: _addressController,
+                        title: LocaleKeys.address.tr(),
+                        hint: LocaleKeys.enter_address.tr(),
+                        maxLines: 2,
+                      ),
+
+                      _buildTextField(
+                        controller: _countryController,
+                        title: LocaleKeys.country.tr(),
+                        hint: LocaleKeys.enter_country.tr(),
+                        isRequired: true,
+                      ),
+
+                      _buildTextField(
+                        controller: _cityController,
+                        title: LocaleKeys.city.tr(),
+                        hint: LocaleKeys.enter_city.tr(),
+                        isRequired: true,
+                      ),
+
+                      // Customer Group Section
+                      SizedBox(height: ResponsiveUI.spacing(context, 24)),
+                      Text(
+                        LocaleKeys.customer_group.tr(),
+                        style: TextStyle(
+                          fontSize: ResponsiveUI.fontSize(context, 16),
+                          color: AppColors.primaryBlue,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      _buildTextField(
+                        controller: _customerGroupIdController,
+                        title: LocaleKeys.customer_group_id.tr(),
+                        hint: LocaleKeys.enter_customer_group_id.tr(),
+                      ),
+
+                      // Financial Information Section
+                      SizedBox(height: ResponsiveUI.spacing(context, 24)),
+                      Text(
+                        LocaleKeys.financial_information.tr(),
+                        style: TextStyle(
+                          fontSize: ResponsiveUI.fontSize(context, 16),
+                          color: AppColors.primaryBlue,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      _buildSwitchField(
+                        title: LocaleKeys.has_due_amount.tr(),
+                        value: _isDue,
+                        onChanged: (value) {
+                          setState(() {
+                            _isDue = value;
+                          });
+                        },
+                      ),
+
+                      if (_isDue)
+                        _buildNumberField(
+                          value: _amountDue,
+                          title: LocaleKeys.due_amount.tr(),
+                          hint: LocaleKeys.enter_due_amount.tr(),
+                          onChanged: (value) {
+                            setState(() {
+                              _amountDue = value;
+                            });
+                          },
+                        ),
+
+                      _buildNumberField(
+                        value: _totalPointsEarned.toDouble(),
+                        title: LocaleKeys.total_points_earned.tr(),
+                        hint: LocaleKeys.enter_points.tr(),
+                        onChanged: (value) {
+                          setState(() {
+                            _totalPointsEarned = value.toInt();
+                          });
+                        },
+                        isInteger: true,
+                      ),                    
+
+                      // Submit Button
+                      SizedBox(height: ResponsiveUI.spacing(context, 32)),
+                      SizedBox(
+                        width: double.infinity,
+                        height: ResponsiveUI.value(context, 48),
+                        child: CustomElevatedButton(
+                          onPressed: isLoading ? null : _validateAndSubmit,
+                          text: isLoading
+                              ? LocaleKeys.updating_customer.tr()
+                              : LocaleKeys.update_customer.tr(),
+                          isLoading: isLoading,
+                        ),
+                      ),
+                      SizedBox(height: ResponsiveUI.spacing(context, 32)),
+                    ],
+                  ),
+                ),
+              ),
+
+              if (isLoading)
+                Container(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.primaryBlue,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+        if (kIsWeb) {
+          content = MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: const TextScaler.linear(0.55),
+            ),
+            child: content,
+          );
+        }
+        return content;
       },
     );
   }
 
-  Widget _buildInfoRow({
-    required String label,
-    required String value,
-  }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          flex: 2,
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: ResponsiveUI.fontSize(context, 14),
-              color: AppColors.darkGray,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-        Expanded(
-          flex: 3,
-          child: Text(
-            value,
-            style: TextStyle(
-              fontSize: ResponsiveUI.fontSize(context, 14),
-              color: AppColors.darkGray.withValues(alpha: 0.8),
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
-    );
-  }
-
-  String _formatDate(DateTime date) {
-    return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
-  }
-
+  
   @override
   void dispose() {
     _nameController.dispose();

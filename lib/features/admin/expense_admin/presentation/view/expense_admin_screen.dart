@@ -1,4 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
@@ -42,100 +45,33 @@ class _ExpenseAdminScreenState extends State<ExpenseAdminScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    // Scale down for web
+    Widget screenContent = Scaffold(
+      backgroundColor: AppColors.lightBlueBackground,
       appBar: appBarWithActions(
         context,
-        title: 'Expense Admin',
+        title: LocaleKeys.expenses_title.tr(),
         showActions: true,
-        onPressed: () => showDialog(
-          context: context,
-          builder: (_) => BlocProvider.value(
-            value: context.read<ExpenseAdminCubit>(),
-            child: const AddExpenseAdminDialog(),
-          ),
-        ),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => const AddExpenseAdminDialog(),
+          );
+        },
       ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: ResponsiveUI.contentMaxWidth(context),
-          ),
-          child: Column(
-            children: [
-              // ── Search bar ──
-              Padding(
-                padding: EdgeInsets.fromLTRB(
-                  ResponsiveUI.padding(context, 16),
-                  ResponsiveUI.padding(context, 12),
-                  ResponsiveUI.padding(context, 16),
-                  0,
-                ),
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: (v) =>
-                      context.read<ExpenseAdminCubit>().search(v),
-                  decoration: InputDecoration(
-                    hintText: 'Search by name, account, note...',
-                    hintStyle: TextStyle(
-                      fontSize: ResponsiveUI.fontSize(context, 13),
-                      color: AppColors.shadowGray,
-                    ),
-                    prefixIcon: Icon(
-                      Icons.search_rounded,
-                      color: AppColors.shadowGray,
-                      size: ResponsiveUI.iconSize(context, 20),
-                    ),
-                    suffixIcon: _searchController.text.isNotEmpty
-                        ? IconButton(
-                            icon: Icon(Icons.close_rounded,
-                                color: AppColors.shadowGray),
-                            onPressed: () {
-                              _searchController.clear();
-                              context.read<ExpenseAdminCubit>().search('');
-                            },
-                          )
-                        : null,
-                    filled: true,
-                    fillColor: AppColors.white,
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: ResponsiveUI.padding(context, 16),
-                      vertical: ResponsiveUI.padding(context, 12),
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        ResponsiveUI.borderRadius(context, 12),
-                      ),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        ResponsiveUI.borderRadius(context, 12),
-                      ),
-                      borderSide: BorderSide(
-                        color: AppColors.lightGray.withValues(alpha: 0.5),
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        ResponsiveUI.borderRadius(context, 12),
-                      ),
-                      borderSide: BorderSide(
-                        color: Color(0xFFE53935),
-                        width: ResponsiveUI.value(context, 1.5),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: ResponsiveUI.spacing(context, 8)),
-
-              // ── List ──
-              Expanded(child: _buildList()),
-            ],
-          ),
-        ),
+      body: SafeArea(
+        child: _buildList(),
       ),
     );
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 
   Widget _buildList() {

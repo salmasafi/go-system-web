@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../sales/data/repositories/sale_repository.dart';
-import '../model/pending_sale_details_model.dart';
 import '../model/sale_model.dart';
 import 'history_state.dart';
 

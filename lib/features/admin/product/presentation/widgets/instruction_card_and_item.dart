@@ -44,7 +44,7 @@ class InstructionsCard extends StatelessWidget {
               ),
               SizedBox(width: ResponsiveUI.spacing(context, 12)),
               Text(
-                'Instructions',
+                'التعليمات',
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 16),
                   fontWeight: FontWeight.bold,
@@ -54,13 +54,13 @@ class InstructionsCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: ResponsiveUI.spacing(context, 16)),
-          InstructionItem(number: '1', text: 'Tap "Start Scanning" button'),
+          InstructionItem(number: '1', text: 'اضغط على زر "بدء المسح"'),
           SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          InstructionItem(number: '2', text: 'Point camera at the barcode'),
+          InstructionItem(number: '2', text: 'وجه الكاميرا نحو الباركود'),
           SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          InstructionItem(number: '3', text: 'Wait for automatic detection'),
+          InstructionItem(number: '3', text: 'انتظر الكشف التلقائي'),
           SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          InstructionItem(number: '4', text: 'View product details instantly'),
+          InstructionItem(number: '4', text: 'اعرض تفاصيل المنتج فوراً'),
         ],
       ),
     );

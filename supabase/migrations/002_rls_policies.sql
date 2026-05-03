@@ -14,7 +14,6 @@ ALTER TABLE brands ENABLE ROW LEVEL SECURITY;
 ALTER TABLE units ENABLE ROW LEVEL SECURITY;
 ALTER TABLE payment_methods ENABLE ROW LEVEL SECURITY;
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
-ALTER TABLE product_prices ENABLE ROW LEVEL SECURITY;
 ALTER TABLE product_categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE customer_groups ENABLE ROW LEVEL SECURITY;
@@ -128,15 +127,6 @@ CREATE POLICY "Authenticated users can view products" ON products
     FOR SELECT TO authenticated USING (true);
 
 CREATE POLICY "Only admins and managers can modify products" ON products
-    FOR ALL TO authenticated USING (
-        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND role IN ('admin', 'manager'))
-    );
-
--- Product Prices
-CREATE POLICY "Authenticated users can view product prices" ON product_prices
-    FOR SELECT TO authenticated USING (true);
-
-CREATE POLICY "Only admins and managers can modify product prices" ON product_prices
     FOR ALL TO authenticated USING (
         EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND role IN ('admin', 'manager'))
     );

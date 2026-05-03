@@ -5,29 +5,32 @@ import 'package:GoSystem/core/supabase/supabase_client.dart';
 import 'package:GoSystem/features/admin/financial_transactions/data/repositories/financial_transaction_repository.dart';
 
 class MockSupabaseClient extends Mock implements SupabaseClient {}
-class MockPostgrestQueryBuilder extends Mock implements PostgrestQueryBuilder<List<Map<String, dynamic>>> {}
-class MockPostgrestFilterBuilder extends Mock implements PostgrestFilterBuilder<List<Map<String, dynamic>>> {}
-class MockPostgrestTransformBuilder extends Mock implements PostgrestTransformBuilder<List<Map<String, dynamic>>> {}
-class MockPostgrestBuilder extends Mock implements PostgrestBuilder<Map<String, dynamic>> {}
+class MockSupabaseQueryBuilder extends Mock implements SupabaseQueryBuilder {}
+class MockPostgrestFilterBuilder extends Mock
+    implements PostgrestFilterBuilder<List<Map<String, dynamic>>> {}
+class MockPostgrestTransformBuilder extends Mock
+    implements PostgrestTransformBuilder<PostgrestMap> {}
 
 void main() {
   late FinancialTransactionRepository repository;
   late MockSupabaseClient mockClient;
-  late MockPostgrestQueryBuilder mockQueryBuilder;
+  late MockSupabaseQueryBuilder mockQueryBuilder;
   late MockPostgrestFilterBuilder mockFilterBuilder;
   late MockPostgrestTransformBuilder mockTransformBuilder;
 
   setUp(() {
     mockClient = MockSupabaseClient();
-    mockQueryBuilder = MockPostgrestQueryBuilder();
+    mockQueryBuilder = MockSupabaseQueryBuilder();
     mockFilterBuilder = MockPostgrestFilterBuilder();
     mockTransformBuilder = MockPostgrestTransformBuilder();
 
     SupabaseClientWrapper.setMockInstance(mockClient);
-    
-    // We need to enable Supabase for the repository to use the Supabase data source
+
     repository = FinancialTransactionRepository();
-    repository.enableSupabase();
+  });
+
+  tearDown(() {
+    SupabaseClientWrapper.dispose();
   });
 
   group('FinancialTransactionRepository Supabase Tests', () {
@@ -46,10 +49,17 @@ void main() {
         }
       ];
 
-      when(() => mockClient.from('financial_transactions')).thenReturn(mockQueryBuilder);
+      when(() => mockClient.from('financial_transactions'))
+          .thenReturn(mockQueryBuilder);
       when(() => mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.order('created_at', ascending: false))
-          .thenAnswer((_) async => mockData);
+          .thenReturn(mockFilterBuilder);
+
+      when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
+        final callback = invocation.positionalArguments[0]
+            as dynamic Function(List<Map<String, dynamic>>);
+        return callback(mockData);
+      });
 
       final result = await repository.getAllTransactions();
 
@@ -72,11 +82,19 @@ void main() {
         }
       ];
 
-      when(() => mockClient.from('financial_transactions')).thenReturn(mockQueryBuilder);
+      when(() => mockClient.from('financial_transactions'))
+          .thenReturn(mockQueryBuilder);
       when(() => mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq('bank_account_id', 'acc-1')).thenReturn(mockFilterBuilder);
+      when(() => mockFilterBuilder.eq('bank_account_id', 'acc-1'))
+          .thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.order('created_at', ascending: false))
-          .thenAnswer((_) async => mockData);
+          .thenReturn(mockFilterBuilder);
+
+      when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
+        final callback = invocation.positionalArguments[0]
+            as dynamic Function(List<Map<String, dynamic>>);
+        return callback(mockData);
+      });
 
       final result = await repository.getTransactionsByAccount('acc-1');
 
@@ -97,10 +115,17 @@ void main() {
         'created_at': '2026-05-01T10:00:00Z'
       };
 
-      when(() => mockClient.from('financial_transactions')).thenReturn(mockQueryBuilder);
+      when(() => mockClient.from('financial_transactions'))
+          .thenReturn(mockQueryBuilder);
       when(() => mockQueryBuilder.insert(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.select()).thenReturn(mockTransformBuilder);
-      when(() => mockTransformBuilder.single()).thenAnswer((_) async => mockResponse);
+      when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
+      when(() => mockFilterBuilder.single()).thenReturn(mockTransformBuilder);
+
+      when(() => mockTransformBuilder.then(any())).thenAnswer((invocation) async {
+        final callback = invocation.positionalArguments[0]
+            as dynamic Function(Map<String, dynamic>);
+        return callback(mockResponse);
+      });
 
       final result = await repository.createTransaction(
         transactionType: 'expense',

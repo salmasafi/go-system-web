@@ -73,9 +73,7 @@ class ProductCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        product.differentPrice
-                            ? 'From \$${product.price.toStringAsFixed(2)}'
-                            : '\$${product.price.toStringAsFixed(2)}',
+                        '\$${product.price.toStringAsFixed(2)}',
                         style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 12),
                           fontWeight: FontWeight.bold,

@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/custom_button_widget.dart';
 import 'package:GoSystem/core/widgets/custom_textfield/custom_text_field_widget.dart';
 import 'package:GoSystem/features/admin/categories/view/widgets/build_image_placeholder_widget.dart';
 import 'package:GoSystem/generated/locale_keys.g.dart';
@@ -112,12 +114,11 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
             errorBuilder: (_, __, ___) => const CustomImagePlaceholder(),
           )
         : const CustomImagePlaceholder();
-
-    return BlocListener<CategoriesCubit, CategoriesState>(
+    
+    // Scale down for web
+    return BlocConsumer<CategoriesCubit, CategoriesState>(
       listener: (context, state) {
-        if (state is GetCategoriesLoading || state is UpdateCategoryLoading) {
-          setState(() => _isLoading = true);
-        } else if (state is GetCategoriesSuccess ||
+        if (state is GetCategoriesSuccess ||
             state is GetCategoriesError) {
           setState(() => _isLoading = false);
         } else if (state is UpdateCategorySuccess) {
@@ -159,7 +160,8 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
           );
         }
       },
-      child: Container(
+      builder: (context, state) {
+        return Container(
         constraints: BoxConstraints(maxWidth: maxWidth),
         margin: EdgeInsets.symmetric(
           horizontal: isDesktop ? ResponsiveUI.padding(context, 20) : 0,
@@ -495,9 +497,9 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                     ],
                   ),
                 ),
-        ),
-      ),
-    );
+              ),
+          );
+        },
+      );
   }
 }
-

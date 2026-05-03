@@ -7,18 +7,23 @@ import 'package:GoSystem/features/admin/transfer/data/repositories/transfer_repo
 class MockSupabaseClient extends Mock implements SupabaseClient {}
 class MockSupabaseQueryBuilder extends Mock implements SupabaseQueryBuilder {}
 class MockPostgrestFilterBuilder extends Mock implements PostgrestFilterBuilder<List<Map<String, dynamic>>> {}
-class MockPostgrestTransformBuilder extends Mock implements PostgrestTransformBuilder<Map<String, dynamic>?> {}
+class MockPostgrestTransformBuilder extends Mock implements PostgrestTransformBuilder<PostgrestMap> {}
+class MockPostgrestFilterBuilderAny extends Mock implements PostgrestFilterBuilder<dynamic> {}
 
 void main() {
   late TransferRepository repository;
   late MockSupabaseClient mockClient;
   late MockSupabaseQueryBuilder mockQueryBuilder;
   late MockPostgrestFilterBuilder mockFilterBuilder;
+  late MockPostgrestTransformBuilder mockTransformBuilder;
+  late MockPostgrestFilterBuilderAny mockRpcBuilder;
 
   setUp(() {
     mockClient = MockSupabaseClient();
     mockQueryBuilder = MockSupabaseQueryBuilder();
     mockFilterBuilder = MockPostgrestFilterBuilder();
+    mockTransformBuilder = MockPostgrestTransformBuilder();
+    mockRpcBuilder = MockPostgrestFilterBuilderAny();
 
     SupabaseClientWrapper.setMockInstance(mockClient);
     repository = TransferRepository();
@@ -74,9 +79,15 @@ void main() {
       when(() => mockClient.from('transfers')).thenReturn(mockQueryBuilder);
       when(() => mockQueryBuilder.select(any())).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.maybeSingle()).thenReturn(MockPostgrestTransformBuilder());
+      when(() => mockFilterBuilder.maybeSingle()).thenReturn(mockTransformBuilder);
 
-      when(() => mockClient.rpc(any(), params: any(named: 'params'))).thenAnswer((_) async => {});
+      when(() => mockClient.rpc(any(), params: any(named: 'params')))
+          .thenReturn(mockRpcBuilder);
+      when(() => mockRpcBuilder.then(any())).thenAnswer((invocation) async {
+        final callback =
+            invocation.positionalArguments[0] as dynamic Function(dynamic);
+        return callback(<String, dynamic>{});
+      });
       when(() => mockClient.from('transfer_items')).thenReturn(mockQueryBuilder);
       when(() => mockQueryBuilder.update(any())).thenReturn(mockFilterBuilder);
 

@@ -90,7 +90,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
             )
           : null,
 
-      child: TextFormField(
+      child: Material(
+        type: MaterialType.transparency,
+        child: TextFormField(
         controller: widget.controller,
         keyboardType: widget.keyboardType,
         autofocus: widget.autofocus,
@@ -173,6 +175,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             horizontal: widget.horizontalPadding,
           ),
         ),
+      ),
       ),
     );
   }

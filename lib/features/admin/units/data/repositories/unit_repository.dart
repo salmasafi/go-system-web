@@ -16,7 +16,6 @@ abstract class UnitRepositoryInterface {
     required String name,
     required String arName,
     required String code,
-    String? baseUnitId,
     String? operator,
     double? operatorValue,
   });
@@ -25,7 +24,6 @@ abstract class UnitRepositoryInterface {
     required String name,
     required String arName,
     required String code,
-    String? baseUnitId,
     String? operator,
     double? operatorValue,
   });
@@ -44,7 +42,7 @@ class UnitRepository implements UnitRepositoryInterface {
 
       final response = await _client
           .from('units')
-          .select('*, base_unit:base_unit_id(*)')
+          .select('*')
           .order('name');
 
       final units = (response as List)
@@ -75,7 +73,6 @@ class UnitRepository implements UnitRepositoryInterface {
     required String name,
     required String arName,
     required String code,
-    String? baseUnitId,
     String? operator,
     double? operatorValue,
   }) async {
@@ -85,7 +82,6 @@ class UnitRepository implements UnitRepositoryInterface {
         'name': name,
         'ar_name': arName,
         'code': code,
-        'base_unit_id': baseUnitId,
         'operator': operator,
         'operator_value': operatorValue,
         'status': true,
@@ -102,7 +98,6 @@ class UnitRepository implements UnitRepositoryInterface {
     required String name,
     required String arName,
     required String code,
-    String? baseUnitId,
     String? operator,
     double? operatorValue,
   }) async {
@@ -112,7 +107,6 @@ class UnitRepository implements UnitRepositoryInterface {
         'name': name,
         'ar_name': arName,
         'code': code,
-        'base_unit_id': baseUnitId,
         'operator': operator,
         'operator_value': operatorValue,
       }).eq('id', id);
@@ -135,31 +129,21 @@ class UnitRepository implements UnitRepositoryInterface {
 
   /// Map Supabase response to UnitModel
   UnitModel _mapSupabaseToUnitModel(Map<String, dynamic> json) {
-    final baseUnit = json['base_unit'] as Map<String, dynamic>?;
-
     return UnitModel(
-      id: json['id'] as String,
-      code: json['code'] as String,
-      name: json['name'] as String,
-      arName: json['ar_name'] as String,
-      baseUnit: baseUnit != null
-          ? BaseUnit(
-              id: baseUnit['id'] as String,
-              code: baseUnit['code'] as String,
-              name: baseUnit['name'] as String,
-              arName: baseUnit['ar_name'] as String,
-            )
-          : null,
-      operator: json['operator'] as String? ?? '',
+      id: json['id']?.toString() ?? '',
+      code: json['code']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      arName: json['ar_name']?.toString(),
+      operator: json['operator']?.toString() ?? '*',
       operatorValue: (json['operator_value'] as num?)?.toDouble() ?? 1.0,
       status: json['status'] as bool? ?? true,
       createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
+          ? DateTime.tryParse(json['created_at'])
           : DateTime.now(),
       updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'])
+          ? DateTime.tryParse(json['updated_at'])
           : DateTime.now(),
-      version: json['version'] as int? ?? 0,
+      version: json['version'] as int? ?? 1,
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
@@ -71,18 +72,19 @@ class _PurchaseReturnsScreenState extends State<PurchaseReturnsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    // Scale down for web
+    Widget screenContent = Scaffold(
+      backgroundColor: AppColors.lightBlueBackground,
       appBar: appBarWithActions(
         context,
         title: 'Purchase Returns',
         showActions: true,
+        actionIcon: Icons.add,
         onPressed: _showAddDialog,
       ),
       body: BlocConsumer<PurchaseReturnCubit, PurchaseReturnState>(
         listener: (context, state) {
-          if (state is GetReturnsError) {
-            CustomSnackbar.showError(context, state.error);
-          } else if (state is DeleteReturnSuccess) {
+          if (state is DeleteReturnSuccess) {
             CustomSnackbar.showSuccess(context, state.message);
           } else if (state is DeleteReturnError) {
             CustomSnackbar.showError(context, state.error);
@@ -179,6 +181,15 @@ class _PurchaseReturnsScreenState extends State<PurchaseReturnsScreen> {
         },
       ),
     );
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 }
 

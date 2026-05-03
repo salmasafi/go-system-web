@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/services/dio_helper.dart';
@@ -162,10 +163,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 _searchQuery.toLowerCase(),
               ) ||
           product.price.toString().contains(_searchQuery.toLowerCase()) ||
-          product.quantity.toString().contains(_searchQuery.toLowerCase()) ||
-          product.prices.any(
-                (price) => price.code.contains(_searchQuery.toLowerCase()),
-              );
+          product.quantity.toString().contains(_searchQuery.toLowerCase());
+          // Note: prices removed in migration 014
 
       // Apply active filters in sequence
       bool matchesAllFilters = true;
@@ -181,14 +180,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 product.brandId.id == filter.id;
             break;
           case FilterType.variations:
-            matchesAllFilters = matchesAllFilters &&
-                product.prices.any(
-                      (price) => price.variations.any(
-                            (varn) => varn.options.any(
-                              (option) => option.name == filter.name,
-                            ),
-                          ),
-                    );
+            // Note: variations removed in migration 014
+            // matchesAllFilters = matchesAllFilters &&
+            //     product.prices.any(
+            //           (price) => price.variations.any(
+            //                 (varn) => varn.options.any(
+            //                   (option) => option.name == filter.name,
+            //                 ),
+            //               ),
+            //     );
             break;
           case FilterType.warehouses:
             // You'll need to update this based on your warehouse filtering logic
@@ -229,11 +229,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
           if (displayProducts.isEmpty) {
             String title = products.isEmpty
-                ? 'No Products Found'
-                : 'No Matching Products';
+                ? 'لم يتم العثور على منتجات'
+                : 'لا توجد منتجات مطابقة';
             String message = products.isEmpty
-                ? 'Add your first product to get started'
-                : 'Try adjusting your search or filters';
+                ? 'أضف منتجك الأول للبدء'
+                : 'حاول تعديل البحث أو الفلاتر';
             return Column(
               children: [
                 if (_activeFilters.isNotEmpty) _buildActiveFiltersChips(),
@@ -243,7 +243,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     title: title,
                     message: message,
                     onRefresh: _refresh,
-                    actionLabel: 'Retry',
+                    actionLabel: 'إعادة المحاولة',
                     onAction: _refresh,
                   ),
                 ),
@@ -264,19 +264,19 @@ class _ProductsScreenState extends State<ProductsScreen> {
         } else if (state is ProductsError) {
           return CustomEmptyState(
             icon: Icons.inventory_2_outlined,
-            title: 'Error Occurred',
+            title: 'حدث خطأ',
             message: state.message,
             onRefresh: _refresh,
-            actionLabel: 'Retry',
+            actionLabel: 'إعادة المحاولة',
             onAction: _refresh,
           );
         } else {
           return CustomEmptyState(
             icon: Icons.inventory_2_outlined,
-            title: 'No Products Found',
-            message: 'Pull to refresh or check your connection',
+            title: 'لم يتم العثور على منتجات',
+            message: 'اسحب للتحديث أو تحقق من الاتصال',
             onRefresh: _refresh,
-            actionLabel: 'Retry',
+            actionLabel: 'إعادة المحاولة',
             onAction: _refresh,
           );
         }
@@ -299,7 +299,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
           // Clear all button
           if (_activeFilters.length > 1)
             InputChip(
-              label: Text('Clear all'),
+              label: Text('مسح الكل'),
               onPressed: _clearAllFilters,
               backgroundColor: AppColors.primaryBlue.withValues(alpha: 0.1),
               deleteIcon: Icon(Icons.clear_all, size: ResponsiveUI.iconSize(context, 16)),
@@ -361,17 +361,18 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    // Scale down for web
+    Widget screenContent = Scaffold(
       appBar: appBarWithActions(
         context,
-        title: 'Products',
+        title: "المنتجات",
+        showActions: true,
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AddProductScreen()),
+            MaterialPageRoute(builder: (_) => const AddProductScreen()),
           );
         },
-        showActions: true,
       ),
       body: BlocConsumer<ProductFiltersCubit, ProductFiltersState>(
         listener: (context, state) {
@@ -399,7 +400,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                               _searchQuery = query;
                             });
                           },
-                          text: 'products by name or code',
+                          text: 'المنتجات بالاسم أو الكود',
                           suffixIcon: Icons.qr_code_scanner,
                           suffixOnPressed: () async {
                             // Navigate to Barcode Scanner Screen
@@ -543,6 +544,17 @@ class _ProductsScreenState extends State<ProductsScreen> {
         },
       ),
     );
+
+    // Scale down for web
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 }
 

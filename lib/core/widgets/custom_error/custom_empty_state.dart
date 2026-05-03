@@ -28,9 +28,10 @@ class CustomEmptyState extends StatelessWidget {
     Widget content = Center(
       child: Container(
         padding: EdgeInsets.all(ResponsiveUI.padding(context, 50)),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
             Container(
               padding: EdgeInsets.all(ResponsiveUI.padding(context, 30)),
               decoration: BoxDecoration(
@@ -69,6 +70,7 @@ class CustomEmptyState extends StatelessWidget {
               CustomElevatedButton(onPressed: onAction, text: actionLabel!),
             ],
           ],
+        ),
         ),
       ),
     );

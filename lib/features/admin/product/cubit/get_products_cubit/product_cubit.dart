@@ -1,4 +1,5 @@
 // cubit/product_cubit.dart
+import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../generated/locale_keys.g.dart';
@@ -14,11 +15,15 @@ class ProductsCubit extends Cubit<ProductsState> {
   static ProductsCubit get(context) => BlocProvider.of(context);
 
   Future<void> getProducts() async {
+    log('ProductsCubit: Starting getProducts');
     emit(ProductsLoading());
     try {
       final products = await _repository.getAllProducts();
+      log('ProductsCubit: getProducts success - ${products.length} products');
       emit(ProductsSuccess(products));
-    } catch (error) {
+    } catch (error, stackTrace) {
+      log('ProductsCubit: getProducts error - $error');
+      log('ProductsCubit: stackTrace - $stackTrace');
       emit(ProductsError(error.toString().replaceAll('Exception: ', '')));
     }
   }
@@ -90,7 +95,7 @@ class ProductsCubit extends Cubit<ProductsState> {
         unit: productUnit,
         price: price,
         expAbility: expAbility,
-        dateOfExpiery: expiryDate,
+        dateOfExpiry: expiryDate,
         minimumQuantitySale: minimumQuantitySale,
         lowStock: lowStock,
         wholePrice: wholePrice,
@@ -170,7 +175,7 @@ class ProductsCubit extends Cubit<ProductsState> {
         unit: unit,
         price: price,
         expAbility: expAbility,
-        dateOfExpiery: expiryDate,
+        dateOfExpiry: expiryDate,
         minimumQuantitySale: minimumQuantitySale,
         lowStock: lowStock,
         wholePrice: wholePrice,

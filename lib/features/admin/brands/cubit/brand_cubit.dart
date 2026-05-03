@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:developer';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/features/admin/brands/model/get_brand_by_id_model.dart';
@@ -18,12 +19,16 @@ class BrandsCubit extends Cubit<BrandsState> {
   BrandById? selectedBrand;
 
   Future<void> getBrands() async {
+    log('BrandsCubit: Starting getBrands');
     emit(GetBrandsLoading());
     try {
       final brands = await _repository.getAllBrands();
       allBrands = brands;
+      log('BrandsCubit: getBrands success - ${brands.length} brands');
       emit(GetBrandsSuccess(brands));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      log('BrandsCubit: getBrands error - $e');
+      log('BrandsCubit: stackTrace - $stackTrace');
       emit(GetBrandsError(e.toString().replaceAll('Exception: ', '')));
     }
   }

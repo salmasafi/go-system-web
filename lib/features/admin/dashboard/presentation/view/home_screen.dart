@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/services/cache_helper.dart';
@@ -72,11 +73,23 @@ class _HomeScreenState extends State<HomeScreen> {
     // Map tab index to screen index (logout tab 4 has no screen)
     final screenIndex = currentIndex < 4 ? currentIndex : 3;
 
+    Widget bodyContent = IndexedStack(
+      index: screenIndex,
+      children: screens,
+    );
+
+    // For web: scale down by using smaller MediaQuery
+    if (kIsWeb) {
+      bodyContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: bodyContent,
+      );
+    }
+
     return Scaffold(
-      body: IndexedStack(
-        index: screenIndex,
-        children: screens,
-      ),
+      body: bodyContent,
       bottomNavigationBar: CustomBottomAppBar(
         key: ValueKey(context.locale.languageCode),
         currentIndex: currentIndex > 3 ? 3 : currentIndex,

@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
@@ -141,20 +142,19 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    // Scale down for web
+    Widget screenContent = Scaffold(
+      backgroundColor: AppColors.lightBlueBackground,
       appBar: appBarWithActions(
         context,
         title: LocaleKeys.categories_title.tr(),
-        onPressed: () async {
-          final result = await Navigator.push(
+        showActions: true,
+        onPressed: () {
+          Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const AddCategoryScreen()),
           );
-          if (result == true && mounted) {
-            CategoriesCubit.get(context).getCategories();
-          }
         },
-        showActions: true,
       ),
       body: BlocConsumer<CategoriesCubit, CategoriesState>(
         listener: (context, state) {
@@ -200,5 +200,14 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         },
       ),
     );
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaleFactor: 0.55,
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 }

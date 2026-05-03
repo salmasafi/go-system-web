@@ -193,7 +193,7 @@ class AnimatedCheckboxTile extends StatelessWidget {
                   buildTextField(
                     context,
                     controller: priceController!,
-                    label: 'Unit Price *',
+                    label: 'سعر الوحدة *',
                     icon: Icons.price_change,
                     hint: '0.00',
                     keyboardType: TextInputType.number,
@@ -202,9 +202,9 @@ class AnimatedCheckboxTile extends StatelessWidget {
                   buildTextField(
                     context,
                     controller: codeController!,
-                    label: 'Code *',
+                    label: 'الكود *',
                     icon: Icons.qr_code,
-                    hint: 'Enter unique code',
+                    hint: 'أدخل كود فريد',
                     keyboardType: TextInputType.visiblePassword,
                      readOnly: true
                   ),
@@ -212,7 +212,7 @@ class AnimatedCheckboxTile extends StatelessWidget {
                   buildTextField(
                     context,
                     controller: quantityController!,
-                    label: 'Product Quantity *',
+                    label: 'كمية المنتج *',
                     icon: Icons.production_quantity_limits,
                     hint: '0.00',
                     keyboardType: TextInputType.number,
@@ -303,7 +303,7 @@ class DatePickerCard extends StatelessWidget {
                       Text(
                         selectedDate != null
                             ? '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}'
-                            : 'Tap to select date',
+                            : 'اضغط لاختيار التاريخ',
                         style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 15),
                           fontWeight: FontWeight.w600,
@@ -357,7 +357,7 @@ class MainImagePicker extends StatelessWidget {
                 Icon(Icons.image, size: ResponsiveUI.iconSize(context, 20), color: AppColors.primaryBlue),
                 SizedBox(width: ResponsiveUI.value(context, 8)),
                 Text(
-                  'Main Image *',
+                  'الصورة الرئيسية *',
                   style: TextStyle(
                     fontSize: ResponsiveUI.fontSize(context, 15),
                     fontWeight: FontWeight.bold,
@@ -375,7 +375,7 @@ class MainImagePicker extends StatelessWidget {
                   size: ResponsiveUI.iconSize(context, 18),
                 ),
                 label: Text(
-                  'Remove',
+                  'إزالة',
                   style: TextStyle(color: AppColors.red, fontSize: ResponsiveUI.fontSize(context, 12)),
                 ),
               ),
@@ -452,7 +452,7 @@ class MainImagePicker extends StatelessWidget {
                       ),
                       SizedBox(height: ResponsiveUI.value(context, 12)),
                       Text(
-                        'Tap to upload main image',
+                        'اضغط لرفع الصورة الرئيسية',
                         style: TextStyle(
                           color: AppColors.shadowGray,
                           fontSize: ResponsiveUI.fontSize(context, 14),
@@ -504,7 +504,7 @@ class GalleryImagesPicker extends StatelessWidget {
                 Icon(Icons.collections, size: ResponsiveUI.iconSize(context, 20), color: AppColors.primaryBlue),
                 SizedBox(width: ResponsiveUI.value(context, 8)),
                 Text(
-                  'Gallery Images',
+                  'صور المعرض',
                   style: TextStyle(
                     fontSize: ResponsiveUI.fontSize(context, 15),
                     fontWeight: FontWeight.bold,
@@ -517,7 +517,7 @@ class GalleryImagesPicker extends StatelessWidget {
               onPressed: onAdd,
               icon: Icon(Icons.add_circle, color: AppColors.primaryBlue, size: ResponsiveUI.iconSize(context, 20)),
               label: Text(
-                'Add Images',
+                'إضافة صور',
                 style: TextStyle(color: AppColors.primaryBlue, fontSize: ResponsiveUI.fontSize(context, 13)),
               ),
             ),
@@ -545,7 +545,7 @@ class GalleryImagesPicker extends StatelessWidget {
                 ),
                 SizedBox(height: ResponsiveUI.value(context, 8)),
                 Text(
-                  'No gallery images added',
+                  'لم يتم إضافة صور للمعرض',
                   style: TextStyle(color: AppColors.shadowGray, fontSize: ResponsiveUI.fontSize(context, 13)),
                 ),
               ],

@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
 import 'package:GoSystem/core/widgets/custom_button_widget.dart';
 import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:GoSystem/core/widgets/custom_textfield/custom_text_field_widget.dart';
@@ -277,11 +279,10 @@ class _EditPopupBottomSheetState extends State<EditPopupBottomSheet> {
   Widget build(BuildContext context) {
     final maxWidth = ResponsiveUI.contentMaxWidth(context);
     final isDesktop = maxWidth > 600;
-
-    return BlocConsumer<PopupCubit, PopupState>(
+    // Scale down for web
+    Widget screenContent = BlocConsumer<PopupCubit, PopupState>(
       listener: (context, state) {
         if (state is UpdatePopupSuccess) {
-          CustomSnackbar.showSuccess(context, state.message);
           Navigator.pop(context, true);
         } else if (state is UpdatePopupError) {
           CustomSnackbar.showError(context, state.error);
@@ -289,126 +290,66 @@ class _EditPopupBottomSheetState extends State<EditPopupBottomSheet> {
       },
       builder: (context, state) {
         final isLoading = state is UpdatePopupLoading;
-
-        return Container(
-          constraints: BoxConstraints(maxWidth: maxWidth),
-          margin: EdgeInsets.symmetric(
-            horizontal: isDesktop ? ResponsiveUI.padding(context, 20) : 0,
-          ),
-          decoration: BoxDecoration(
-            color: const Color.fromARGB(
-              255,
-              243,
-              249,
-              254,
-            ),
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(ResponsiveUI.borderRadius(context, 24)),
-            ),
-          ),
-          child: Material(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(ResponsiveUI.borderRadius(context, 24)),
-            ),
-            child: SafeArea(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: ResponsiveUI.value(context, 40),
-                        height: ResponsiveUI.value(context, 4),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(
-                              ResponsiveUI.borderRadius(context, 2),
-                            ),
-                          ),
+        return Scaffold(
+          backgroundColor: const Color.fromARGB(255, 243, 249, 254),
+          appBar: appBarWithActions(context, title: LocaleKeys.edit_popup.tr()),
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 16)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildTextField(
+                    controller: _titleEnController,
+                    title: LocaleKeys.popup_title_en.tr(),
+                    hint: LocaleKeys.enter_popup_title_en.tr(),
+                  ),
+                  SizedBox(height: ResponsiveUI.spacing(context, 32)),
+                  SizedBox(
+                    width: double.infinity,
+                    height: ResponsiveUI.value(context, 48),
+                    child: ElevatedButton(
+                      onPressed: isLoading ? null : _submitUpdate,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryBlue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                         ),
                       ),
+                      child: isLoading
+                          ? SizedBox(
+                              height: ResponsiveUI.iconSize(context, 20),
+                              width: ResponsiveUI.iconSize(context, 20),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                              ),
+                            )
+                          : Text(
+                              LocaleKeys.update_popup.tr(),
+                              style: TextStyle(
+                                fontSize: ResponsiveUI.fontSize(context, 16),
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.white,
+                              ),
+                            ),
                     ),
-                    SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                    Text(
-                      LocaleKeys.edit_popup.tr(),
-                      style: TextStyle(
-                        fontSize: ResponsiveUI.fontSize(context, 20),
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-
-                    _buildTextField(
-                      controller: _titleEnController,
-                      title: LocaleKeys.popup_title_en.tr(),
-                      hint: LocaleKeys.enter_popup_title_en.tr(),
-                    ),
-
-                    _buildTextField(
-                      controller: _titleArController,
-                      title: LocaleKeys.popup_title_ar.tr(),
-                      hint: LocaleKeys.enter_popup_title_ar.tr(),
-                    ),
-
-                    _buildTextField(
-                      controller: _descriptionEnController,
-                      title: LocaleKeys.popup_description_en.tr(),
-                      hint: LocaleKeys.enter_popup_description_en.tr(),
-                    ),
-
-                    _buildTextField(
-                      controller: _descriptionArController,
-                      title: LocaleKeys.popup_description_ar.tr(),
-                      hint: LocaleKeys.enter_popup_description_ar.tr(),
-                    ),
-
-                    _buildTextField(
-                      controller: _linkController,
-                      title: LocaleKeys.popup_link.tr(),
-                      hint: LocaleKeys.enter_popup_link.tr(),
-                    ),
-
-                    _buildImagePicker(
-                      selectedLocalImage: _selectedEnImage,
-                      existingImageUrl: widget.popup.image,
-                      title: LocaleKeys.popup_english_image.tr(),
-                      onPick: () => _pickImage(true),
-                      onRemove: () => _removeImage(true),
-                    ),
-
-                    // _buildImagePicker(
-                    //   selectedLocalImage: _selectedArImage,
-                    //   existingImageUrl: widget.popup.imageAr,
-                    //   title: LocaleKeys.popup_arabic_image.tr(),
-                    //   onPick: () => _pickImage(false),
-                    //   onRemove: () => _removeImage(false),
-                    // ),
-
-                    SizedBox(height: ResponsiveUI.spacing(context, 24)),
-                    SizedBox(
-                      width: double.infinity,
-                      height: ResponsiveUI.value(context, 48),
-                      child: CustomElevatedButton(
-                        onPressed: isLoading ? null : _submitUpdate,
-                        text: isLoading ? LocaleKeys.updating_popup.tr() : LocaleKeys.update_popup.tr(),
-                        isLoading: isLoading
-                      ),
-                    ),
-                    SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                    
-                  ],
-                  
-                ),
-                
+                  ),
+                ],
               ),
             ),
           ),
         );
       },
     );
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:developer';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/generated/locale_keys.g.dart';
@@ -18,10 +19,12 @@ class CategoriesCubit extends Cubit<CategoriesState> {
   CategoryItem? selectedCategory;
 
   Future<void> getCategories() async {
+    log('CategoriesCubit: Starting getCategories');
     emit(GetCategoriesLoading());
     try {
       final categories = await _repository.getAllCategories();
       allCategories = categories;
+      log('CategoriesCubit: getCategories success - ${categories.length} categories');
       
       // Filter unique parents
       final uniqueParentsMap = <String, CategoryItem>{};
@@ -34,7 +37,9 @@ class CategoriesCubit extends Cubit<CategoriesState> {
       // In hybrid, we might need a separate call or specific mapping
       // Let's assume allCategories contains everything needed for now
       emit(GetCategoriesSuccess(allCategories));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      log('CategoriesCubit: getCategories error - $e');
+      log('CategoriesCubit: stackTrace - $stackTrace');
       emit(GetCategoriesError(e.toString().replaceAll('Exception: ', '')));
     }
   }

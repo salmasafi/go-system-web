@@ -106,10 +106,9 @@ class PandelModel {
 }
 
 /// Represents a product entry in a pandel bundle.
-/// Matches the API shape: { productId: { _id, name, ... }, productPriceId: { _id, price, code } | null, quantity }
+/// Matches the API shape: { productId: { _id, name, ... }, quantity }
 class PandelProduct {
   final String productId;
-  final String? productPriceId; // null when no variation
   final int quantity;
 
   // Extra fields from the nested productId object (read-only, not sent to API)
@@ -120,7 +119,6 @@ class PandelProduct {
 
   PandelProduct({
     required this.productId,
-    this.productPriceId,
     required this.quantity,
     this.productName,
     this.productArName,
@@ -147,15 +145,8 @@ class PandelProduct {
       resolvedProductId = rawProductId?.toString() ?? '';
     }
 
-    // productPriceId can be a nested object or null
-    final rawPriceId = json['productPriceId'];
-    final String? resolvedPriceId = rawPriceId is Map<String, dynamic>
-        ? rawPriceId['_id']?.toString()
-        : rawPriceId?.toString();
-
     return PandelProduct(
       productId: resolvedProductId,
-      productPriceId: resolvedPriceId,
       quantity: (json['quantity'] as num?)?.toInt() ?? 1,
       productName: productName,
       productArName: productArName,
@@ -167,7 +158,6 @@ class PandelProduct {
   Map<String, dynamic> toJson() {
     return {
       'productId': productId,
-      'productPriceId': productPriceId,
       'quantity': quantity,
     };
   }

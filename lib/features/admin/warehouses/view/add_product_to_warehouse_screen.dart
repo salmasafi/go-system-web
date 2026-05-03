@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
@@ -133,31 +134,39 @@ class _AddProductToWarehouseScreenState extends State<AddProductToWarehouseScree
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: appBarWithActions(
-        context,
-        title: 'Inventory Entry',
-        showBackButton: true,
-      ),
-      backgroundColor: AppColors.shadowGray[50],
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(),
-            SizedBox(height: ResponsiveUI.spacing(context, 32)),
-            _buildProductSelectionField(),
-            SizedBox(height: ResponsiveUI.spacing(context, 20)),
-            _buildInitialStockField(),
-            SizedBox(height: ResponsiveUI.spacing(context, 20)),
-            _buildLowStockField(),
-            SizedBox(height: ResponsiveUI.spacing(context, 40)),
-            _buildActionButtons(),
-          ],
+    // Scale down for web
+    Widget screenContent = Scaffold(
+      backgroundColor: AppColors.lightBlueBackground,
+      appBar: appBarWithActions(context, title: "إضافة منتج للمستودع"),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(),
+              SizedBox(height: ResponsiveUI.spacing(context, 20)),
+              _buildProductSelectionField(),
+              SizedBox(height: ResponsiveUI.spacing(context, 20)),
+              _buildInitialStockField(),
+              SizedBox(height: ResponsiveUI.spacing(context, 20)),
+              _buildLowStockField(),
+              SizedBox(height: ResponsiveUI.spacing(context, 30)),
+              _buildActionButtons(),
+            ],
+          ),
         ),
       ),
     );
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 
   Widget _buildHeader() {

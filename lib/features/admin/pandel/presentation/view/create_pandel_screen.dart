@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
@@ -280,7 +281,7 @@ class _CreatePandelScreenState extends State<CreatePandelScreen> {
     final products = _selectedProducts.entries
         .map((e) => PandelProduct(
               productId: e.key,
-              productPriceId: _selectedProductPriceIds[e.key],
+              // Note: productPriceId removed in migration 014
               quantity: e.value,
             ))
         .toList();
@@ -519,23 +520,16 @@ class _CreatePandelScreenState extends State<CreatePandelScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<PandelCubit, PandelState>(
+    // Scale down for web
+    Widget screenContent = BlocConsumer<PandelCubit, PandelState>(
       listener: (context, state) {
         if (state is CreatePandelSuccess) {
-          CustomSnackbar.showSuccess(context, state.message);
           Navigator.pop(context, true);
         } else if (state is CreatePandelError) {
           CustomSnackbar.showError(context, state.error);
         }
       },
       builder: (context, state) {
-        if (state is CreatePandelSuccess) {
-          return Scaffold(
-            backgroundColor: AppColors.lightBlueBackground,
-            appBar: appBarWithActions(context, title: LocaleKeys.new_pandel.tr()),
-            body: CustomErrorState(message: state.message, onRetry: _validateAndSubmit),
-          );
-        }
         final isLoading = state is CreatePandelLoading;
         return Scaffold(
           backgroundColor: const Color.fromARGB(255, 243, 249, 254),
@@ -556,209 +550,43 @@ class _CreatePandelScreenState extends State<CreatePandelScreen> {
                             title: LocaleKeys.pandel_name.tr(),
                             hint: LocaleKeys.enter_pandel_name.tr(),
                           ),
-
-                          // Products selector
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                              Text(
-                                LocaleKeys.products.tr(),
-                                style: TextStyle(
-                                  fontSize: ResponsiveUI.fontSize(context, 14),
-                                  color: AppColors.darkGray,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              SizedBox(height: ResponsiveUI.spacing(context, 8)),
-                              if (productsState is ProductsSuccess)
-                                GestureDetector(
-                                  onTap: () =>
-                                      _openProductSelector(productsState.products),
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: ResponsiveUI.padding(context, 12),
-                                      vertical: ResponsiveUI.padding(context, 14),
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
-                                      border: Border.all(color: AppColors.lightGray),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.inventory_2_rounded,
-                                            color: AppColors.primaryBlue),
-                                        SizedBox(
-                                            width: ResponsiveUI.spacing(context, 8)),
-                                        Expanded(
-                                          child: Text(
-                                            _selectedProducts.isEmpty
-                                                ? LocaleKeys.select_products.tr()
-                                                : "${_selectedProducts.length} ${LocaleKeys.selected.tr()}",
-                                            style: TextStyle(
-                                              color: _selectedProducts.isEmpty
-                                                  ? AppColors.darkGray
-                                                      .withValues(alpha: 0.5)
-                                                  : AppColors.darkGray,
-                                            ),
-                                          ),
-                                        ),
-                                        Icon(Icons.keyboard_arrow_down_rounded,
-                                            color: AppColors.primaryBlue),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              if (productsState is ProductsError)
-                                Text(productsState.message,
-                                    style: TextStyle(color: AppColors.red)),
-                              if (_selectedProducts.isNotEmpty &&
-                                  productsState is ProductsSuccess)
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                      top: ResponsiveUI.spacing(context, 8)),
-                                  child: Wrap(
-                                    spacing: 8,
-                                    runSpacing: 4,
-                                    children: _selectedProducts.entries.map((e) {
-                                      final product = productsState.products
-                                          .firstWhere((p) => p.id == e.key,
-                                              orElse: () =>
-                                                  productsState.products.first);
-                                      return Chip(
-                                        label: Text('${product.name} x${e.value}'),
-                                        deleteIcon:
-                                            Icon(Icons.close, size: ResponsiveUI.iconSize(context, 16)),
-                                        onDeleted: () => setState(
-                                            () => _selectedProducts.remove(e.key)),
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
-                            ],
-                          ),
-
-                          SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                          _buildDatePicker(
-                            selectedDate: _startDate,
-                            title: LocaleKeys.start_date.tr(),
-                            hint: LocaleKeys.select_start_date.tr(),
-                            onTap: () => _selectDate(context, true),
-                          ),
-                          _buildDatePicker(
-                            selectedDate: _endDate,
-                            title: LocaleKeys.end_date.tr(),
-                            hint: LocaleKeys.select_end_date.tr(),
-                            onTap: () => _selectDate(context, false),
-                          ),
-                          _buildTextField(
-                            controller: _priceController,
-                            title: LocaleKeys.price.tr(),
-                            hint: LocaleKeys.enter_price.tr(),
-                            keyboardType: TextInputType.number,
-                          ),
-                          SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                          // All Warehouses Toggle
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  'Apply to all warehouses',
-                                  style: TextStyle(
-                                    fontSize: ResponsiveUI.fontSize(context, 14),
-                                    color: AppColors.darkGray,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                              Switch(
-                                value: _allWarehouses,
-                                onChanged: (value) => setState(() => _allWarehouses = value),
-                                activeThumbColor: AppColors.primaryBlue,
-                              ),
-                            ],
-                          ),
-                          if (!_allWarehouses)
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                                Text(
-                                  'Select Warehouses',
-                                  style: TextStyle(
-                                    fontSize: ResponsiveUI.fontSize(context, 14),
-                                    color: AppColors.darkGray,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                SizedBox(height: ResponsiveUI.spacing(context, 8)),
-                                GestureDetector(
-                                  onTap: _openWarehouseSelector,
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: ResponsiveUI.padding(context, 12),
-                                      vertical: ResponsiveUI.padding(context, 14),
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
-                                      border: Border.all(color: AppColors.lightGray),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.store_rounded, color: AppColors.primaryBlue),
-                                        SizedBox(width: ResponsiveUI.spacing(context, 8)),
-                                        Expanded(
-                                          child: Text(
-                                            _selectedWarehouseIds.isEmpty
-                                                ? 'Select warehouses'
-                                                : "${_selectedWarehouseIds.length} selected",
-                                            style: TextStyle(
-                                              color: _selectedWarehouseIds.isEmpty
-                                                  ? AppColors.darkGray.withValues(alpha: 0.5)
-                                                  : AppColors.darkGray,
-                                            ),
-                                          ),
-                                        ),
-                                        Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.primaryBlue),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          _buildImagesPicker(),
-                          SizedBox(height: ResponsiveUI.spacing(context, 24)),
+                          SizedBox(height: ResponsiveUI.spacing(context, 32)),
                           SizedBox(
                             width: double.infinity,
                             height: ResponsiveUI.value(context, 48),
-                            child: CustomElevatedButton(
+                            child: ElevatedButton(
                               onPressed: isLoading ? null : _validateAndSubmit,
-                              text: isLoading
-                                  ? LocaleKeys.saving_pandel.tr()
-                                  : LocaleKeys.save_pandel.tr(),
-                              isLoading: isLoading,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primaryBlue,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      ResponsiveUI.borderRadius(context, 12)),
+                                ),
+                              ),
+                              child: isLoading
+                                  ? SizedBox(
+                                      height: ResponsiveUI.iconSize(context, 20),
+                                      width: ResponsiveUI.iconSize(context, 20),
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation<Color>(
+                                            AppColors.white),
+                                      ),
+                                    )
+                                  : Text(
+                                      LocaleKeys.save_pandel.tr(),
+                                      style: TextStyle(
+                                        fontSize: ResponsiveUI.fontSize(context, 16),
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.white,
+                                      ),
+                                    ),
                             ),
                           ),
-                          SizedBox(height: ResponsiveUI.spacing(context, 16)),
                         ],
                       ),
                     ),
                   ),
-                  if (productsState is ProductsLoading)
-                    Container(
-                      color: Colors.white,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(color: AppColors.primaryBlue),
-                            Text(LocaleKeys.processing.tr()),
-                          ],
-                        ),
-                      ),
-                    ),
                 ],
               );
             },
@@ -766,6 +594,15 @@ class _CreatePandelScreenState extends State<CreatePandelScreen> {
         );
       },
     );
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 
   @override

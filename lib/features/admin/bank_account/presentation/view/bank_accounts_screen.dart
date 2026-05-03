@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/generated/locale_keys.g.dart';
@@ -116,27 +117,32 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    // Scale down for web
+    Widget screenContent = Scaffold(
+      backgroundColor: AppColors.lightBlueBackground,
       appBar: appBarWithActions(
         context,
         title: LocaleKeys.financial_accounts.tr(),
         showActions: true,
-        onPressed: () => showDialog(
-          context: context,
-          builder: (context) => BankAccountFormDialog(),
-        ),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => const BankAccountFormDialog(),
+          );
+        },
       ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: ResponsiveUI.contentMaxWidth(context),
-          ),
-          child: AnimatedElement(
-            delay: const Duration(milliseconds: 200),
-            child: _buildListContent(),
-          ),
-        ),
+      body: SafeArea(
+        child: _buildListContent(),
       ),
     );
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 }

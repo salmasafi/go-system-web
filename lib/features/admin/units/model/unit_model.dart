@@ -42,95 +42,57 @@ class UnitData {
 }
 
 class UnitModel {
-  final String id;
-  final String code;
-  final String name;
-  final String arName;
-  final BaseUnit? baseUnit; // Can be null for base units
-  final String operator;
-  final double operatorValue;
-  final bool status;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final int version;
+  final String? id;
+  final String? code;
+  final String? name;
+  final String? arName;
+  final String? operator;
+  final double? operatorValue;
+  final bool? status;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final int? version;
 
   UnitModel({
-    required this.id,
-    required this.code,
-    required this.name,
-    required this.arName,
-    this.baseUnit,
-    required this.operator,
-    required this.operatorValue,
-    required this.status,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.version,
+    this.id,
+    this.code,
+    this.name,
+    this.arName,
+    this.operator,
+    this.operatorValue,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
+    this.version,
   });
 
   factory UnitModel.fromJson(Map<String, dynamic> json) {
     return UnitModel(
       id: (json['id'] ?? json['_id'])?.toString() ?? '',
-      code: json['code'] as String? ?? '',
-      name: json['name'] as String? ?? '',
-      arName: json['ar_name'] as String? ?? '',
-      baseUnit: json['base_unit'] != null
-          ? BaseUnit.fromJson(json['base_unit'] as Map<String, dynamic>)
-          : null,
-      operator: json['operator'] as String? ?? '',
+      code: json['code']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      arName: json['ar_name']?.toString(),
+      operator: json['operator']?.toString() ?? '*',
       operatorValue: (json['operator_value'] as num?)?.toDouble() ?? 1.0,
       status: json['status'] as bool? ?? true,
-      createdAt: DateTime.tryParse((json['created_at'] ?? json['createdAt'] ?? '').toString()) ?? DateTime.now(),
-      updatedAt: DateTime.tryParse((json['updated_at'] ?? json['updatedAt'] ?? '').toString()) ?? DateTime.now(),
-      version: json['version'] ?? json['__v'] ?? 1,
+      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at']) : DateTime.now(),
+      updatedAt: json['updated_at'] != null ? DateTime.tryParse(json['updated_at']) : DateTime.now(),
+      version: json['version'] as int? ?? 1,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      '_id': id,
+      'id': id,
       'code': code,
       'name': name,
       'ar_name': arName,
-      'base_unit': baseUnit?.toJson(),
       'operator': operator,
       'operator_value': operatorValue,
       'status': status,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
-      '__v': version,
-    };
-  }
-}
-
-class BaseUnit {
-  final String id;
-  final String code;
-  final String name;
-  final String arName;
-
-  BaseUnit({
-    required this.id,
-    required this.code,
-    required this.name,
-    required this.arName,
-  });
-
-  factory BaseUnit.fromJson(Map<String, dynamic> json) {
-    return BaseUnit(
-      id: (json['id'] ?? json['_id'])?.toString() ?? '',
-      code: json['code'] as String? ?? '',
-      name: json['name'] as String? ?? '',
-      arName: json['ar_name'] as String? ?? '',
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'code': code,
-      'name': name,
-      'ar_name': arName,
+      'createdAt': createdAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
+      'version': version,
     };
   }
 }

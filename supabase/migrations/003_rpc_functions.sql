@@ -144,10 +144,10 @@ BEGIN
 
         -- Create sale item
         INSERT INTO sale_items (
-            sale_id, product_id, product_price_id, quantity, 
+            sale_id, product_id, quantity, 
             price, subtotal, discount, tax
         ) VALUES (
-            v_sale_id, v_product_id, (v_item->>'product_price_id')::UUID, v_quantity,
+            v_sale_id, v_product_id, v_quantity,
             (v_item->>'price')::DECIMAL, (v_item->>'subtotal')::DECIMAL,
             (v_item->>'discount')::DECIMAL, (v_item->>'tax')::DECIMAL
         );

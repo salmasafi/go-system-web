@@ -177,17 +177,6 @@ CREATE TABLE IF NOT EXISTS product_categories (
     UNIQUE(product_id, category_id)
 );
 
--- Product Prices (for different variations/quantities)
-CREATE TABLE IF NOT EXISTS product_prices (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    product_id UUID REFERENCES products(id) ON DELETE CASCADE,
-    code VARCHAR(100),
-    quantity INTEGER DEFAULT 0,
-    price DECIMAL(12,2) DEFAULT 0,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
 -- Customers
 CREATE TABLE IF NOT EXISTS customers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -311,7 +300,6 @@ CREATE TABLE IF NOT EXISTS sale_items (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     sale_id UUID REFERENCES sales(id) ON DELETE CASCADE,
     product_id UUID REFERENCES products(id) ON DELETE RESTRICT,
-    product_price_id UUID REFERENCES product_prices(id) ON DELETE SET NULL,
     quantity INTEGER NOT NULL CHECK (quantity > 0),
     price DECIMAL(12,2) NOT NULL,
     subtotal DECIMAL(12,2) NOT NULL,

@@ -109,9 +109,8 @@ class ProductDetailsDialog extends StatelessWidget {
             context,
             icon: Icons.attach_money,
             label: 'Price',
-            value: product.differentPrice
-                ? 'From ${product.price.toStringAsFixed(2)}'
-                : '${product.price.toStringAsFixed(2)}',
+            // Note: differentPrice removed in migration 014 - products now have single price
+            value: '\${product.price.toStringAsFixed(2)}',
           ),
           SizedBox(height: ResponsiveUI.value(context, 12)),
           _infoRow(

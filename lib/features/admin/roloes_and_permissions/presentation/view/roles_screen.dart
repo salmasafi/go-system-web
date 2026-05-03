@@ -1,16 +1,16 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
-import 'package:GoSystem/core/widgets/animation/animated_element.dart';
-import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
 import 'package:GoSystem/core/widgets/custom_error/custom_empty_state.dart';
 import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state_with_shimmer.dart';
 import 'package:GoSystem/features/admin/roloes_and_permissions/cubit/roles_cubit.dart';
-import 'package:GoSystem/features/admin/roloes_and_permissions/presentation/view/create_role_screen.dart';
 import 'package:GoSystem/features/admin/roloes_and_permissions/presentation/widgets/roles_list.dart';
+import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
 import 'package:GoSystem/generated/locale_keys.g.dart';
+import 'create_role_screen.dart';
 import '../../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 
 class RolesScreen extends StatefulWidget {
@@ -104,27 +104,40 @@ class _RolesScreenState extends State<RolesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    // Scale down for web
+    Widget screenContent = Scaffold(
+      backgroundColor: AppColors.lightBlueBackground,
       appBar: appBarWithActions(
         context,
         title: LocaleKeys.roles_title.tr(),
         showActions: true,
-        onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const AddRoleScreen()),
-            )
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const AddRoleScreen()),
+          );
+        },
       ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: ResponsiveUI.contentMaxWidth(context),
-          ),
-          child: AnimatedElement(
-            delay: const Duration(milliseconds: 200),
-            child: _buildListContent(),
+      body: SafeArea(
+        child: Center(
+          child: Text(
+            'Roles Screen - Under Development',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
     );
+    if (kIsWeb) {
+      screenContent = MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(0.55),
+        ),
+        child: screenContent,
+      );
+    }
+    return screenContent;
   }
 }

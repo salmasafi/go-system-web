@@ -36,7 +36,6 @@ import 'package:GoSystem/features/admin/permission/presentation/view/permissions
 import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/widgets/app_bar_widgets.dart';
-import '../../../payment_methods/data/repositories/payment_method_repository.dart';
 import '../../../payment_methods/presentation/view/payment_methods_screen.dart';
 import '../../cubit/notifications_cubit.dart';
 import 'notifications_screen.dart';
@@ -68,7 +67,6 @@ import 'package:GoSystem/features/admin/zone/cubit/zone_cubit.dart';
 import 'package:GoSystem/features/admin/permission/cubit/permission_cubit.dart';
 import 'package:GoSystem/features/admin/currency/cubit/currency_cubit.dart';
 import 'package:GoSystem/features/admin/warehouses/cubit/warehouse_cubit.dart';
-import 'package:GoSystem/features/admin/transfer/cubit/transfers_cubit.dart';
 import 'package:GoSystem/features/admin/purchase/cubit/purchase_cubit.dart';
 import 'package:GoSystem/features/admin/adjustment/cubit/adjustment_cubit.dart';
 import 'package:GoSystem/features/admin/reason/cubit/reason_cubit.dart';
@@ -97,7 +95,6 @@ import 'package:GoSystem/features/admin/zone/data/repositories/zone_repository.d
 import 'package:GoSystem/features/admin/permission/data/repositories/permission_repository.dart';
 import 'package:GoSystem/features/admin/currency/data/repositories/currency_repository.dart';
 import 'package:GoSystem/features/admin/warehouses/data/repositories/warehouse_repository.dart';
-import 'package:GoSystem/features/admin/transfer/data/repositories/transfer_repository.dart';
 import 'package:GoSystem/features/admin/purchase/data/repositories/purchase_repository.dart';
 import 'package:GoSystem/features/admin/purchase_returns/data/repositories/purchase_return_repository.dart';
 import 'package:GoSystem/features/admin/adjustment/data/repositories/adjustment_repository.dart';
@@ -111,6 +108,12 @@ import 'package:GoSystem/features/admin/bank_account/data/repositories/bank_acco
 import 'package:GoSystem/features/admin/points/data/repositories/points_repository.dart';
 import 'package:GoSystem/features/admin/redeem_points/data/repositories/redeem_points_repository.dart';
 import 'package:GoSystem/features/admin/expences/data/repositories/expense_repository.dart';
+
+// ─── Reports Imports ────────────────────────────────────────
+import 'package:GoSystem/features/admin/reports/presentation/view/sales_report_screen.dart';
+import 'package:GoSystem/features/admin/reports/presentation/view/product_report_screen.dart';
+import 'package:GoSystem/features/admin/reports/presentation/view/inventory_report_screen.dart';
+import 'package:GoSystem/features/admin/reports/cubit/reports_cubit.dart';
 
 // ─── Data Models ─────────────────────────────────────────────
 
@@ -223,16 +226,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     DashboardItem.payments,
     DashboardItem.barcode,
     DashboardItem.departments,
-    DashboardItem.salesReport,
-    DashboardItem.inventoryReport,
-    DashboardItem.financialReport,
-    DashboardItem.customerReport,
-    DashboardItem.productReport,
-    DashboardItem.expensesReport,
-    DashboardItem.revenueReport,
     DashboardItem.decimalSettings,
     DashboardItem.serviceFees,
     DashboardItem.couriers,
+    // Note: Reports are now implemented and available
   };
 
   // ─── Groups Definition ────────────────────────────────────
@@ -490,25 +487,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
             icon: Icons.shopping_cart_rounded,
             label: LocaleKeys.orders_report.tr(),
             id: DashboardItem.salesReport,
-            comingSoon: true,
           ),
           _ModuleItem(
             icon: Icons.assessment_rounded,
             label: LocaleKeys.product_report.tr(),
             id: DashboardItem.productReport,
-            comingSoon: true,
           ),
           _ModuleItem(
             icon: Icons.account_balance_rounded,
             label: LocaleKeys.financial_report.tr(),
             id: DashboardItem.financialReport,
-            comingSoon: true,
           ),
           _ModuleItem(
             icon: Icons.inventory_rounded,
             label: LocaleKeys.product_movement_report.tr(),
             id: DashboardItem.inventoryReport,
-            comingSoon: true,
           ),
         ],
       ),
@@ -739,6 +732,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: const RedeemPointsScreen(),
         );
         break;
+      // Reports
+      case DashboardItem.salesReport:
+        screen = BlocProvider(
+          create: (_) => ReportsCubit(),
+          child: const SalesReportScreen(),
+        );
+        break;
+      case DashboardItem.productReport:
+        screen = BlocProvider(
+          create: (_) => ReportsCubit(),
+          child: const ProductReportScreen(),
+        );
+        break;
+      case DashboardItem.inventoryReport:
+        screen = BlocProvider(
+          create: (_) => ReportsCubit(),
+          child: const InventoryReportScreen(),
+        );
+        break;
+      case DashboardItem.financialReport:
+        // Financial report can reuse the same cubit with different method
+        screen = BlocProvider(
+          create: (_) => ReportsCubit(),
+          child: const SalesReportScreen(), // Placeholder - create FinancialReportScreen later
+        );
+        break;
       default:
         _showComingSoonDialog();
         return;
@@ -948,7 +967,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         child: Text(
                           group.title,
                           style: TextStyle(
-                            fontSize: ResponsiveUI.fontSize(context, 17),
+                            fontSize: ResponsiveUI.fontSize(context, 20),
                             fontWeight: FontWeight.w700,
                             color: AppColors.darkGray,
                           ),
@@ -1100,7 +1119,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: ResponsiveUI.fontSize(context, 14),
+                          fontSize: ResponsiveUI.fontSize(context, 16),
                           fontWeight: FontWeight.w600,
                           color: module.comingSoon
                               ? (isDarkMode
@@ -1133,7 +1152,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     child: Text(
                       LocaleKeys.soon_label.tr(),
                       style: TextStyle(
-                        fontSize: ResponsiveUI.fontSize(context, 8),
+                        fontSize: ResponsiveUI.fontSize(context, 10),
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),

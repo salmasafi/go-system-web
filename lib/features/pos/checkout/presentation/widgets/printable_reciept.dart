@@ -141,7 +141,8 @@ class PrintableReceipt extends StatelessWidget {
   Widget _itemsList() {
     return Column(
       children: recieptData.cartItems.map((item) {
-        final unitPrice = item.selectedVariation?.price ?? item.product.price;
+        // Note: selectedVariation removed in migration 014, use product price
+        final unitPrice = item.product.price;
         final total = unitPrice * item.quantity;
 
         return Padding(

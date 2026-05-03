@@ -1,5 +1,5 @@
 import 'package:GoSystem/features/admin/discount/model/discount_model.dart';
-import '../../home/model/pos_models.dart';
+import 'package:GoSystem/features/pos/home/model/pos_models.dart';
 import 'checkout_models.dart';
 
 class RecieptData {

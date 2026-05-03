@@ -39,8 +39,7 @@ class _BundleSupabaseDataSource implements BundleRepositoryInterface {
         *,
         bundle_products(
           *,
-          product:products(*),
-          product_price:product_prices(*)
+          product:products(*)
         ),
         bundle_warehouses(*)
       ''').order('created_at', ascending: false);
@@ -76,7 +75,7 @@ class _BundleSupabaseDataSource implements BundleRepositoryInterface {
         final productsData = bundle.products.map((p) => {
           'bundle_id': bundleId,
           'product_id': p.productId,
-          'product_price_id': p.productPriceId,
+          // Note: product_price_id removed in migration 014
           'quantity': p.quantity,
         }).toList();
         await _client.from('bundle_products').insert(productsData);
@@ -96,8 +95,7 @@ class _BundleSupabaseDataSource implements BundleRepositoryInterface {
         *,
         bundle_products(
           *,
-          product:products(*),
-          product_price:product_prices(*)
+          product:products(*)
         ),
         bundle_warehouses(*)
       ''').eq('id', bundleId).single();
@@ -131,7 +129,7 @@ class _BundleSupabaseDataSource implements BundleRepositoryInterface {
         final productsData = bundle.products.map((p) => {
           'bundle_id': bundle.id,
           'product_id': p.productId,
-          'product_price_id': p.productPriceId,
+          // Note: product_price_id removed in migration 014
           'quantity': p.quantity,
         }).toList();
         await _client.from('bundle_products').insert(productsData);
@@ -151,8 +149,7 @@ class _BundleSupabaseDataSource implements BundleRepositoryInterface {
         *,
         bundle_products(
           *,
-          product:products(*),
-          product_price:product_prices(*)
+          product:products(*)
         ),
         bundle_warehouses(*)
       ''').eq('id', bundle.id).single();
@@ -181,7 +178,7 @@ class _BundleSupabaseDataSource implements BundleRepositoryInterface {
       final product = bp['product'] as Map<String, dynamic>?;
       return PandelProduct(
         productId: bp['product_id'],
-        productPriceId: bp['product_price_id'],
+        // Note: productPriceId removed in migration 014
         quantity: bp['quantity'],
         productName: product?['name'],
         productArName: product?['ar_name'],

@@ -14,12 +14,10 @@ import '../../models/product_attribute_model.dart';
 
 class ProductAttributeAssignmentWidget extends StatefulWidget {
   final String productId;
-  final bool differentPrice;
 
   const ProductAttributeAssignmentWidget({
     super.key,
     required this.productId,
-    required this.differentPrice,
   });
 
   @override
@@ -74,31 +72,6 @@ class _ProductAttributeAssignmentWidgetState extends State<ProductAttributeAssig
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (widget.differentPrice)
-          Container(
-            padding: const EdgeInsets.all(12),
-            margin: const EdgeInsets.only(bottom: 16),
-            decoration: BoxDecoration(
-              color: Colors.orange.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.orange),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.warning, color: Colors.orange),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Price variations are enabled. Attributes cannot be assigned to products with price variations.',
-                    style: TextStyle(
-                      fontSize: ResponsiveUI.fontSize(context, 14),
-                      color: Colors.orange.shade900,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         BlocBuilder<ProductAttributeCubit, ProductAttributeState>(
           builder: (context, state) {
             if (state is ProductAttributeLoading) {
@@ -125,16 +98,15 @@ class _ProductAttributeAssignmentWidgetState extends State<ProductAttributeAssig
                   ...currentAttributes.map((attr) => _buildCurrentAttributeCard(attr)),
                   const SizedBox(height: 24),
                 ],
-                if (!widget.differentPrice) ...[
-                  Text(
-                    'Assign New Attributes',
-                    style: TextStyle(
-                      fontSize: ResponsiveUI.fontSize(context, 18),
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.darkGray,
-                    ),
+                Text(
+                  'Assign New Attributes',
+                  style: TextStyle(
+                    fontSize: ResponsiveUI.fontSize(context, 18),
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.darkGray,
                   ),
-                  const SizedBox(height: 12),
+                ),
+                const SizedBox(height: 12),
                   BlocBuilder<AttributeTypeCubit, AttributeTypeState>(
                     builder: (context, state) {
                       if (state is AttributeTypeLoading) {
@@ -167,8 +139,7 @@ class _ProductAttributeAssignmentWidgetState extends State<ProductAttributeAssig
                     child: const Text('Save Attributes'),
                   ),
                 ],
-              ],
-            );
+              );
           },
         ),
       ],

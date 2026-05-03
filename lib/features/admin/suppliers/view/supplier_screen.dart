@@ -16,7 +16,6 @@ import '../../../../core/widgets/custom_loading/custom_loading_state_with_shimme
 import '../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../model/supplier_model.dart';
 import '../../../../generated/locale_keys.g.dart';
-import '../data/repositories/supplier_repository.dart';
 
 class SupplierScreen extends StatefulWidget {
   const SupplierScreen({super.key});
@@ -39,135 +38,139 @@ class _SupplierScreenState extends State<SupplierScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => SupplierCubit(SupplierRepository())..getSuppliers(),
-      child: Scaffold(
-        appBar: appBarWithActions(
-          context,
-          title: LocaleKeys.suppliers_title.tr(),
-          onPressed: () {
-            SupplierDialog.show(context);
-          },
-          showActions: true,
-        ),
-        body: BlocConsumer<SupplierCubit, SupplierStates>(
-          listener: (context, state) {
-            if (state is SupplierError) {
-              CustomSnackbar.showError(context, state.message);
-            }
-          },
-          builder: (context, state) {
-            if (state is SupplierLoading) {
-              return CustomLoadingShimmer(
-                itemCount: 6,
-                padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-              );
-            }
+    return Scaffold(
+      backgroundColor: AppColors.lightBlueBackground,
+      appBar: appBarWithActions(
+        context,
+        title: LocaleKeys.suppliers_title.tr(),
+        showActions: true,
+        actionIcon: Icons.add,
+        onPressed: () {
+          SupplierDialog.show(context);
+        },
+      ),
+      body: BlocConsumer<SupplierCubit, SupplierStates>(
+        listener: (context, state) {
+          if (state is SupplierSuccess) {
+            CustomSnackbar.showSuccess(
+              context,
+              LocaleKeys.success.tr(),
+            );
+          } else if (state is SupplierError) {
+            CustomSnackbar.showError(context, state.message);
+          }
+        },
+        builder: (context, state) {
+          if (state is SupplierLoading) {
+            return CustomLoadingShimmer(
+              itemCount: 6,
+              padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+            );
+          }
 
-            if (state is SupplierError) {
-              return CustomErrorState(
-                message: state.message,
-                onRetry: () {
-                  context.read<SupplierCubit>().getSuppliers();
-                },
-              );
-            }
+          if (state is SupplierError) {
+            return CustomErrorState(
+              message: state.message,
+              onRetry: () {
+                context.read<SupplierCubit>().getSuppliers();
+              },
+            );
+          }
 
-            if (state is SupplierSuccess) {
-              final cubit = context.read<SupplierCubit>();
-              final suppliers = _getFilteredSuppliers(cubit);
+          if (state is SupplierSuccess) {
+            final cubit = context.read<SupplierCubit>();
+            final suppliers = _getFilteredSuppliers(cubit);
 
-              if (suppliers.isEmpty &&
-                  _searchQuery.isEmpty &&
-                  _selectedCountry == null &&
-                  _selectedCity == null) {
-                return CustomEmptyState(
-                  icon: Icons.store_outlined,
-                  title: LocaleKeys.no_suppliers_title.tr(),
-                  message: LocaleKeys.no_suppliers_message.tr(),
-                  onRefresh: () async {
-                    await cubit.getSuppliers();
-                  },
-                );
-              }
-
-              return RefreshIndicator(
+            if (suppliers.isEmpty &&
+                _searchQuery.isEmpty &&
+                _selectedCountry == null &&
+                _selectedCity == null) {
+              return CustomEmptyState(
+                icon: Icons.store_outlined,
+                title: LocaleKeys.no_suppliers_title.tr(),
+                message: LocaleKeys.no_suppliers_message.tr(),
                 onRefresh: () async {
                   await cubit.getSuppliers();
                 },
-                color: AppColors.primaryBlue,
-                child: Column(
-                  children: [
-                    SupplierSearchFilterSection(
-                      searchController: _searchController,
-                      searchQuery: _searchQuery,
-                      selectedCountry: _selectedCountry,
-                      selectedCity: _selectedCity,
-                      cubit: cubit,
-                      onSearchChanged: (value) {
-                        setState(() {
-                          _searchQuery = value;
-                        });
-                      },
-                      onSearchCleared: () {
-                        setState(() {
-                          _searchController.clear();
-                          _searchQuery = '';
-                        });
-                      },
-                      onCountryChanged: (value) {
-                        setState(() {
-                          _selectedCountry = value;
-                          _selectedCity = null;
-                        });
-                      },
-                      onCityChanged: (value) {
-                        setState(() {
-                          _selectedCity = value;
-                        });
-                      },
-                      onCountryRemoved: () {
-                        setState(() {
-                          _selectedCountry = null;
-                          _selectedCity = null;
-                        });
-                      },
-                      onCityRemoved: () {
-                        setState(() {
-                          _selectedCity = null;
-                        });
-                      },
-                    ),
-                    if (suppliers.isEmpty &&
-                        (_searchQuery.isNotEmpty ||
-                            _selectedCountry != null ||
-                            _selectedCity != null))
-                      Expanded(
-                        child: CustomEmptyState(
-                          icon: Icons.search_off,
-                          title: LocaleKeys.no_results_title.tr(),
-                          message: LocaleKeys.no_results_message.tr(),
-                          actionLabel: LocaleKeys.clear_filters.tr(),
-                          onAction: () {
-                            setState(() {
-                              _searchQuery = '';
-                              _searchController.clear();
-                              _selectedCountry = null;
-                              _selectedCity = null;
-                            });
-                          },
-                        ),
-                      )
-                    else
-                      Expanded(child: SupplierList(suppliers: suppliers)),
-                  ],
-                ),
               );
             }
 
-            return SizedBox();
-          },
-        ),
+            return RefreshIndicator(
+              onRefresh: () async {
+                await cubit.getSuppliers();
+              },
+              color: AppColors.primaryBlue,
+              child: Column(
+                children: [
+                  SupplierSearchFilterSection(
+                    searchController: _searchController,
+                    searchQuery: _searchQuery,
+                    selectedCountry: _selectedCountry,
+                    selectedCity: _selectedCity,
+                    cubit: cubit,
+                    onSearchChanged: (value) {
+                      setState(() {
+                        _searchQuery = value;
+                      });
+                    },
+                    onSearchCleared: () {
+                      setState(() {
+                        _searchController.clear();
+                        _searchQuery = '';
+                      });
+                    },
+                    onCountryChanged: (value) {
+                      setState(() {
+                        _selectedCountry = value;
+                        _selectedCity = null;
+                      });
+                    },
+                    onCityChanged: (value) {
+                      setState(() {
+                        _selectedCity = value;
+                      });
+                    },
+                    onCountryRemoved: () {
+                      setState(() {
+                        _selectedCountry = null;
+                        _selectedCity = null;
+                      });
+                    },
+                    onCityRemoved: () {
+                      setState(() {
+                        _selectedCity = null;
+                      });
+                    },
+                  ),
+                  if (suppliers.isEmpty &&
+                      (_searchQuery.isNotEmpty ||
+                          _selectedCountry != null ||
+                          _selectedCity != null))
+                    Expanded(
+                      child: CustomEmptyState(
+                        icon: Icons.search_off,
+                        title: LocaleKeys.no_results_title.tr(),
+                        message: LocaleKeys.no_results_message.tr(),
+                        actionLabel: LocaleKeys.clear_filters.tr(),
+                        onAction: () {
+                          setState(() {
+                            _searchQuery = '';
+                            _searchController.clear();
+                            _selectedCountry = null;
+                            _selectedCity = null;
+                          });
+                        },
+                      ),
+                    )
+                  else
+                    Expanded(child: SupplierList(suppliers: suppliers)),
+                ],
+              ),
+            );
+          }
+
+          return const SizedBox.shrink();
+        },
       ),
     );
   }

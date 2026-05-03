@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/features/admin/product/cubit/attribute_type_cubit/attribute_type_cubit.dart';
-import 'package:GoSystem/features/admin/product/cubit/attribute_type_cubit/attribute_type_state.dart';
 import 'package:GoSystem/features/admin/product/cubit/attribute_value_cubit/attribute_value_cubit.dart';
 import 'package:GoSystem/features/admin/product/cubit/attribute_value_cubit/attribute_value_state.dart';
 import 'package:GoSystem/features/admin/product/models/attribute_type_model.dart';
 import 'package:GoSystem/features/admin/product/models/attribute_value_model.dart';
-import 'package:GoSystem/features/admin/product/models/product_attribute_model.dart';
 import 'package:GoSystem/features/admin/product/models/selected_attribute_model.dart';
 import 'package:GoSystem/features/pos/home/model/pos_models.dart';
 
@@ -44,7 +41,8 @@ class _AttributeSelectionDialogState extends State<AttributeSelectionDialog> {
     try {
       // Load attribute types
       await AttributeTypeCubit.get(context).loadAttributeTypes();
-      
+      if (!mounted) return;
+
       // Get product attributes from the product model
       final productAttributes = widget.product.attributes;
       
@@ -60,7 +58,8 @@ class _AttributeSelectionDialogState extends State<AttributeSelectionDialog> {
           
           // Load values for this type
           await AttributeValueCubit.get(context).loadAttributeValues(productAttr.attributeTypeId);
-          
+          if (!mounted) return;
+
           // Get the loaded values
           final valueState = AttributeValueCubit.get(context).state;
           if (valueState is AttributeValueLoaded) {

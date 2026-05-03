@@ -10,7 +10,7 @@ class POSProductCard extends StatelessWidget {
   final VoidCallback onTap;
   final int cartQuantity;
 
-  POSProductCard({
+  const POSProductCard({
     required this.product,
     required this.onTap,
     required this.cartQuantity,
@@ -73,7 +73,6 @@ class POSProductCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // في build، في Row السعر:
                   Text(
                     product.name,
                     maxLines: 1,
@@ -124,14 +123,11 @@ class POSProductCard extends StatelessWidget {
         product.startQuantity! > 0;
     final wholesaleActive =
         hasWholesale && cartQuantity >= product.startQuantity!;
-    final baseLabel = product.differentPrice
-        ? 'From \$${product.price.toStringAsFixed(2)}'
-        : '\$${product.price.toStringAsFixed(2)}';
+    // Note: differentPrice removed in migration 014 - products now have single price
+    final baseLabel = '\${product.price.toStringAsFixed(2)}';
 
     if (wholesaleActive) {
-      final wholesaleLabel = product.differentPrice
-          ? 'From \$${product.wholePrice!.toStringAsFixed(2)}'
-          : '\$${product.wholePrice!.toStringAsFixed(2)}';
+      final wholesaleLabel = '\${product.wholePrice!.toStringAsFixed(2)}';
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
