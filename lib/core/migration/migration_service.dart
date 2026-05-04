@@ -212,6 +212,8 @@ class MigrationService {
         return _config.storageSource;
       case 'returns':
       case 'return':
+      case 'purchase_returns':
+      case 'purchase_return':
         return _config.returnsSource;
       case 'adjustments':
       case 'adjustment':
@@ -342,6 +344,8 @@ class MigrationService {
         break;
       case 'returns':
       case 'return':
+      case 'purchase_returns':
+      case 'purchase_return':
         current['returns'] = source;
         break;
       case 'adjustments':

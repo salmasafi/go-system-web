@@ -17,14 +17,16 @@ void main() {
   late MockSupabaseClient mockClient;
   late MockSupabaseQueryBuilder mockQueryBuilder;
   late MockPostgrestFilterBuilder mockFilterBuilder;
-  late MockPostgrestTransformBuilder mockTransformBuilder;
+  late MockPostgrestTransformBuilder mockTransformProduct;
+  late MockPostgrestTransformBuilder mockTransformSale;
   late MockPostgrestFilterBuilderAny mockRPCBuilder;
 
   setUp(() {
     mockClient = MockSupabaseClient();
     mockQueryBuilder = MockSupabaseQueryBuilder();
     mockFilterBuilder = MockPostgrestFilterBuilder();
-    mockTransformBuilder = MockPostgrestTransformBuilder();
+    mockTransformProduct = MockPostgrestTransformBuilder();
+    mockTransformSale = MockPostgrestTransformBuilder();
     mockRPCBuilder = MockPostgrestFilterBuilderAny();
     
     SupabaseClientWrapper.setMockInstance(mockClient);
@@ -52,8 +54,8 @@ void main() {
       when(() => mockClient.from('products')).thenReturn(mockQueryBuilder);
       when(() => mockQueryBuilder.select(any())).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.eq('id', 'prod-1')).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.maybeSingle()).thenReturn(mockTransformBuilder);
-      when(() => mockTransformBuilder.then(any())).thenAnswer((invocation) async {
+      when(() => mockFilterBuilder.maybeSingle()).thenReturn(mockTransformProduct);
+      when(() => mockTransformProduct.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(Map<String, dynamic>?);
         return callback(mockProductData);
       });
@@ -64,7 +66,7 @@ void main() {
 
       // 2. Create Sale
       when(() => mockClient.rpc('create_sale_with_items', params: any(named: 'params')))
-          .thenReturn(mockRPCBuilder);
+          .thenAnswer((_) => mockRPCBuilder);
       when(() => mockRPCBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(dynamic);
         return callback({'sale_id': 'sale-1'});
@@ -80,8 +82,8 @@ void main() {
       when(() => mockClient.from('sales')).thenReturn(mockQueryBuilder);
       when(() => mockQueryBuilder.select(any())).thenReturn(mockFilterBuilder);
       when(() => mockFilterBuilder.eq('id', 'sale-1')).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.maybeSingle()).thenReturn(mockTransformBuilder);
-      when(() => mockTransformBuilder.then(any())).thenAnswer((invocation) async {
+      when(() => mockFilterBuilder.maybeSingle()).thenReturn(mockTransformSale);
+      when(() => mockTransformSale.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(Map<String, dynamic>?);
         return callback(mockSaleDetail);
       });
