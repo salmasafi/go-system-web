@@ -65,7 +65,7 @@ void main() {
           categoryId: any(named: 'categoryId'),
           financialAccountId: any(named: 'financialAccountId'),
           note: any(named: 'note'),
-        )).thenAnswer((_) async => {});
+        )).thenAnswer((_) async {});
         when(() => mockRepo.getAllExpenses()).thenAnswer((_) async => [sampleExpense('e1')]);
         return ExpenseAdminCubit(mockRepo);
       },

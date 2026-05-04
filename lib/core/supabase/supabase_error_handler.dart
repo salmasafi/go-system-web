@@ -56,6 +56,13 @@ class SupabaseErrorHandler {
       case 'PGRST116':
         return 'السجل غير موجود | Record not found.';
 
+      // Schema cache errors - column/table not found in schema
+      case 'PGRST204':
+        if (message.contains('column')) {
+          return 'عمود الجدول غير موجود في قاعدة البيانات | Database column not found. Please contact support.';
+        }
+        return 'خطأ في هيكل قاعدة البيانات | Database schema error. Please contact support.';
+
       // Default - return the original message
       default:
         return 'خطأ في قاعدة البيانات | Database error: $message';

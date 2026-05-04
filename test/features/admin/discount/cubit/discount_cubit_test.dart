@@ -8,23 +8,27 @@ import 'package:GoSystem/features/admin/discount/model/discount_model.dart';
 
 class MockDiscountRepository extends Mock implements DiscountRepository {}
 
+DiscountModel sampleDiscount(String id) => DiscountModel.fromJson({
+      '_id': id,
+      'name': 'Discount $id',
+      'amount': 10.0,
+      'type': 'fixed',
+      'status': true,
+      'createdAt': '2024-01-01',
+      'updatedAt': '2024-01-01',
+      '__v': 1,
+    });
+
 void main() {
   late MockDiscountRepository mockRepo;
+
+  setUpAll(() {
+    registerFallbackValue(sampleDiscount('fallback'));
+  });
 
   setUp(() {
     mockRepo = MockDiscountRepository();
   });
-
-  DiscountModel sampleDiscount(String id) => DiscountModel.fromJson({
-        'id': id,
-        'name': 'Discount $id',
-        'amount': 10.0,
-        'type': 'fixed',
-        'status': true,
-        'created_at': '2024-01-01',
-        'updated_at': '2024-01-01',
-        '__v': 1,
-      });
 
   group('DiscountsCubit', () {
     blocTest<DiscountsCubit, DiscountsState>(

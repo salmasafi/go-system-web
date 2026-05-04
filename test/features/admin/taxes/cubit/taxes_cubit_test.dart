@@ -8,24 +8,28 @@ import 'package:GoSystem/features/admin/taxes/model/taxes_model.dart';
 
 class MockTaxRepository extends Mock implements TaxRepository {}
 
+TaxModel sampleTax(String id) => TaxModel.fromJson({
+      '_id': id,
+      'name': 'Tax $id',
+      'ar_name': 'ضريبة $id',
+      'amount': 15.0,
+      'type': 'percentage',
+      'status': true,
+      'createdAt': '2024-01-01',
+      'updatedAt': '2024-01-01',
+      '__v': 1,
+    });
+
 void main() {
   late MockTaxRepository mockRepo;
+
+  setUpAll(() {
+    registerFallbackValue(sampleTax('fallback'));
+  });
 
   setUp(() {
     mockRepo = MockTaxRepository();
   });
-
-  TaxModel sampleTax(String id) => TaxModel.fromJson({
-        'id': id,
-        'name': 'Tax $id',
-        'ar_name': 'ضريبة $id',
-        'amount': 15.0,
-        'type': 'percentage',
-        'status': true,
-        'created_at': '2024-01-01',
-        'updated_at': '2024-01-01',
-        '__v': 1,
-      });
 
   group('TaxesCubit', () {
     blocTest<TaxesCubit, TaxesState>(

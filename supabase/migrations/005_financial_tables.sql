@@ -316,6 +316,8 @@ CREATE POLICY "Cashiers can manage their shifts" ON shifts
 ALTER TABLE bank_accounts ADD COLUMN IF NOT EXISTS account_type VARCHAR(50) DEFAULT 'checking';
 ALTER TABLE bank_accounts ADD COLUMN IF NOT EXISTS is_default BOOLEAN DEFAULT FALSE;
 ALTER TABLE bank_accounts ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
+ALTER TABLE bank_accounts ADD COLUMN IF NOT EXISTS opening_balance DECIMAL(12,2) DEFAULT 0;
+ALTER TABLE bank_accounts ADD COLUMN IF NOT EXISTS current_balance DECIMAL(12,2) DEFAULT 0;
 
 -- Add constraint if it doesn't exist
 DO $$ 

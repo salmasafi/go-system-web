@@ -58,6 +58,9 @@ import 'package:GoSystem/features/admin/dashboard/cubit/notifications_cubit.dart
 import 'package:GoSystem/features/admin/dashboard/presentation/view/home_screen.dart';
 import 'package:GoSystem/features/admin/product/cubit/filter_product_cubit/product_filter_cubit.dart';
 import 'package:GoSystem/features/admin/product/cubit/product_details_cubit/product_details_cubit.dart';
+import 'package:GoSystem/features/admin/product/cubit/attribute_type_cubit/attribute_type_cubit.dart';
+import 'package:GoSystem/features/admin/product/cubit/attribute_value_cubit/attribute_value_cubit.dart';
+import 'package:GoSystem/features/admin/product/cubit/product_attribute_cubit/product_attribute_cubit.dart';
 import 'package:GoSystem/features/admin/suppliers/cubit/supplier_cubit.dart';
 import 'package:GoSystem/features/admin/warehouses/cubit/warehouse_cubit.dart';
 import 'package:GoSystem/features/admin/warehouses/data/repositories/warehouse_repository.dart';
@@ -77,6 +80,7 @@ import 'package:GoSystem/features/admin/roloes_and_permissions/cubit/roles_cubit
 import 'package:GoSystem/features/admin/pandel/cubit/pandel_cubit.dart';
 
 import 'package:GoSystem/features/admin/product/data/repositories/product_repository.dart';
+import 'package:GoSystem/features/admin/product/data/repositories/attribute_repository.dart';
 import 'package:GoSystem/features/admin/categories/data/repositories/category_repository.dart';
 import 'package:GoSystem/features/admin/city/data/repositories/city_repository.dart';
 import 'package:GoSystem/features/admin/zone/data/repositories/zone_repository.dart';
@@ -283,6 +287,15 @@ class _MainAppState extends State<MainApp> {
         ),
         BlocProvider<ProductFiltersCubit>(
           create: (context) => ProductFiltersCubit(ProductRepository()),
+        ),
+        BlocProvider<AttributeTypeCubit>(
+          create: (context) => AttributeTypeCubit(AttributeTypeRepository()),
+        ),
+        BlocProvider<AttributeValueCubit>(
+          create: (context) => AttributeValueCubit(AttributeValueRepository()),
+        ),
+        BlocProvider<ProductAttributeCubit>(
+          create: (context) => ProductAttributeCubit(ProductAttributeRepository()),
         ),
         BlocProvider<NotificationsCubit>(create: (_) => NotificationsCubit()),
       ],

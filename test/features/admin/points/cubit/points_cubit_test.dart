@@ -9,19 +9,23 @@ import 'package:GoSystem/features/admin/points/model/points_model.dart';
 
 class MockPointsRepository extends Mock implements PointsRepository {}
 
+PointsModel samplePoints(String id) => PointsModel.fromJson({
+      'id': id,
+      'amount': 100.0,
+      'points': 10,
+      'created_at': '2024-01-01',
+    });
+
 void main() {
   late MockPointsRepository mockRepo;
+
+  setUpAll(() {
+    registerFallbackValue(samplePoints('fallback'));
+  });
 
   setUp(() {
     mockRepo = MockPointsRepository();
   });
-
-  PointsModel samplePoints(String id) => PointsModel.fromJson({
-        'id': id,
-        'amount': 100.0,
-        'points': 10,
-        'created_at': '2024-01-01',
-      });
 
   group('PointsCubit', () {
     blocTest<PointsCubit, PointsState>(

@@ -8,18 +8,22 @@ import 'package:GoSystem/features/admin/redeem_points/model/redeem_points_model.
 
 class MockRedeemPointsRepository extends Mock implements RedeemPointsRepository {}
 
+RedeemPointsModel sampleRedeemPoints(String id) => RedeemPointsModel(
+      id: id,
+      amount: 100.0,
+      points: 10,
+    );
+
 void main() {
   late MockRedeemPointsRepository mockRepo;
+
+  setUpAll(() {
+    registerFallbackValue(sampleRedeemPoints('fallback'));
+  });
 
   setUp(() {
     mockRepo = MockRedeemPointsRepository();
   });
-
-  RedeemPointsModel sampleRedeemPoints(String id) => RedeemPointsModel(
-        id: id,
-        amount: 100.0,
-        points: 10,
-      );
 
   group('RedeemPointsCubit', () {
     blocTest<RedeemPointsCubit, RedeemPointsState>(

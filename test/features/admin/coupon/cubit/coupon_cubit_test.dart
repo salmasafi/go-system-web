@@ -8,27 +8,31 @@ import 'package:GoSystem/features/admin/coupon/model/coupon_model.dart';
 
 class MockCouponRepository extends Mock implements CouponRepository {}
 
+CouponModel sampleCoupon(String id) => CouponModel.fromJson({
+      'id': id,
+      'coupon_code': 'COUPON$id',
+      'type': 'fixed',
+      'amount': 50.0,
+      'minimum_amount': 100.0,
+      'quantity': 10,
+      'available': 5,
+      'expired_date': '2024-12-31',
+      'status': true,
+      'created_at': '2024-01-01',
+      'updated_at': '2024-01-01',
+      '__v': 1,
+    });
+
 void main() {
   late MockCouponRepository mockRepo;
+
+  setUpAll(() {
+    registerFallbackValue(sampleCoupon('fallback'));
+  });
 
   setUp(() {
     mockRepo = MockCouponRepository();
   });
-
-  CouponModel sampleCoupon(String id) => CouponModel.fromJson({
-        'id': id,
-        'coupon_code': 'COUPON$id',
-        'type': 'fixed',
-        'amount': 50.0,
-        'minimum_amount': 100.0,
-        'quantity': 10,
-        'available': 5,
-        'expired_date': '2024-12-31',
-        'status': true,
-        'created_at': '2024-01-01',
-        'updated_at': '2024-01-01',
-        '__v': 1,
-      });
 
   group('CouponsCubit', () {
     blocTest<CouponsCubit, CouponsState>(
