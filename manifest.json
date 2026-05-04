@@ -1,11 +1,11 @@
 {
-    "name": "GoSystem",
-    "short_name": "GoSystem",
+    "name": "systego",
+    "short_name": "systego",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#FFFFFF",
-    "theme_color": "#2196F3",
-    "description": "GoSystem - نظام إدارة متكامل",
+    "background_color": "#0175C2",
+    "theme_color": "#0175C2",
+    "description": "A new Flutter project.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
