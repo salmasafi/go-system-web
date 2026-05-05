@@ -861,6 +861,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             actionIcon: Icons.notifications,
             showActions: true,
             showBackButton: false,
+            showSettingsIcon: true,
             title: LocaleKeys.dashboard.tr(),
             notificationCount: unreadCount,
             onPressed: () {
@@ -1024,10 +1025,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             physics: const NeverScrollableScrollPhysics(),
             itemCount: group.modules.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: kIsWeb ? 4 : 2,
+              crossAxisCount: ResponsiveUI.screenWidth(context) < 400 ? 2 : (ResponsiveUI.isMobile(context) ? 3 : 4),
               mainAxisSpacing: ResponsiveUI.spacing(context, 12),
               crossAxisSpacing: ResponsiveUI.spacing(context, 12),
-              childAspectRatio: kIsWeb ? 1.3 : 1.15,
+              childAspectRatio: ResponsiveUI.isMobile(context) ? 0.85 : 1.3,
             ),
             itemBuilder: (context, index) {
               final module = group.modules[index];
@@ -1092,7 +1093,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   children: [
                     Container(
                       padding: EdgeInsets.all(
-                        ResponsiveUI.padding(context, 14),
+                        ResponsiveUI.padding(context, 8),
                       ),
                       decoration: BoxDecoration(
                         color: module.comingSoon
@@ -1102,7 +1103,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       child: Icon(
                         module.icon,
-                        size: ResponsiveUI.iconSize(context, 32),
+                        size: ResponsiveUI.iconSize(context, ResponsiveUI.isMobile(context) ? 26 : 32),
                         color: module.comingSoon
                             ? accentColor.withValues(alpha: 0.4)
                             : accentColor,
@@ -1119,7 +1120,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: ResponsiveUI.fontSize(context, 16),
+                          fontSize: ResponsiveUI.fontSize(context, ResponsiveUI.isMobile(context) ? 13 : 16),
                           fontWeight: FontWeight.w600,
                           color: module.comingSoon
                               ? (isDarkMode

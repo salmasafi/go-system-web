@@ -15,6 +15,8 @@ abstract class SaleRepositoryInterface {
   Future<SaleDetailModel> createSale({
     required String customerId,
     required String warehouseId,
+    String? shiftId,
+    String? cashierId,
     required List<Map<String, dynamic>> items,
     required double grandTotal,
     double? taxAmount,
@@ -22,12 +24,13 @@ abstract class SaleRepositoryInterface {
     String? note,
     String? couponCode,
     List<Map<String, dynamic>>? payments,
+    bool isPending = false,
   });
   Future<bool> completePendingSale(String saleId);
   Future<bool> cancelSale(String saleId);
   Future<bool> applyCoupon(String saleId, String couponCode);
   Future<List<SaleItemModel>> searchSalesByReference(String query);
-  Future<bool> payDue(String saleId, String customerId, double amount, List<Map<String, dynamic>> financials);
+  Future<bool> payDue(String saleId, String customerId, double amount, String bankAccountId);
 }
 
 /// Sale repository using Supabase as the primary data source.
@@ -166,6 +169,8 @@ class SaleRepository implements SaleRepositoryInterface {
   Future<SaleDetailModel> createSale({
     required String customerId,
     required String warehouseId,
+    String? shiftId,
+    String? cashierId,
     required List<Map<String, dynamic>> items,
     required double grandTotal,
     double? taxAmount,
@@ -173,6 +178,7 @@ class SaleRepository implements SaleRepositoryInterface {
     String? note,
     String? couponCode,
     List<Map<String, dynamic>>? payments,
+    bool isPending = false,
   }) async {
     try {
       log('SaleRepository: Creating sale for customer: $customerId');
@@ -180,6 +186,8 @@ class SaleRepository implements SaleRepositoryInterface {
       final response = await _client.rpc('create_sale_with_items', params: {
         'p_customer_id': customerId,
         'p_warehouse_id': warehouseId,
+        'p_shift_id': shiftId,
+        'p_cashier_id': cashierId,
         'p_items': items,
         'p_grand_total': grandTotal,
         'p_tax_amount': taxAmount ?? 0.0,
@@ -187,10 +195,14 @@ class SaleRepository implements SaleRepositoryInterface {
         'p_note': note ?? '',
         'p_coupon_code': couponCode,
         'p_payments': payments ?? [],
+        'p_is_pending': isPending,
       });
 
       log('SaleRepository: Sale created successfully');
-      final sale = await getSaleById(response['sale_id']);
+      final String? saleId = response is Map ? response['sale_id'] : response.toString();
+      if (saleId == null) throw Exception('Failed to retrieve created sale ID');
+      
+      final sale = await getSaleById(saleId);
       if (sale == null) throw Exception('Failed to retrieve created sale');
       return sale;
     } catch (e) {
@@ -257,15 +269,63 @@ class SaleRepository implements SaleRepositoryInterface {
   }
 
   @override
-  Future<bool> payDue(String saleId, String customerId, double amount, List<Map<String, dynamic>> financials) async {
+  Future<bool> payDue(String saleId, String customerId, double amount, String bankAccountId) async {
     try {
-      log('SaleRepository: Processing due payment for sale: $saleId');
-      await _client.rpc('pay_sale_due', params: {
-        'p_sale_id': saleId,
-        'p_customer_id': customerId,
-        'p_amount': amount,
-        'p_financials': financials,
+      log('SaleRepository: Processing due payment for sale: $saleId, amount: $amount');
+
+      // 1. Get current sale data
+      final sale = await _client
+          .from('sales')
+          .select('paid_amount, remaining_amount, grand_total')
+          .eq('id', saleId)
+          .single();
+
+      final currentPaid = (sale['paid_amount'] as num?)?.toDouble() ?? 0.0;
+      final currentRemaining = (sale['remaining_amount'] as num?)?.toDouble() ?? 0.0;
+
+      if (amount > currentRemaining) {
+        throw Exception('Payment amount exceeds remaining due');
+      }
+
+      final newPaid = currentPaid + amount;
+      final newRemaining = currentRemaining - amount;
+      final isDue = newRemaining > 0;
+
+      // 2. Record the payment in due_payments table
+      await _client.from('due_payments').insert({
+        'sale_id': saleId,
+        'amount': amount,
+        'date': DateTime.now().toIso8601String().substring(0, 10),
+        'financial_account_id': bankAccountId,
       });
+
+      // 3. Update the sale record
+      await _client.from('sales').update({
+        'paid_amount': newPaid,
+        'remaining_amount': newRemaining,
+        'is_due': isDue,
+      }).eq('id', saleId);
+
+      // 4. Update customer due status if fully paid
+      if (!isDue) {
+        // Check if customer has any other dues
+        final otherDues = await _client
+            .from('sales')
+            .select('id')
+            .eq('customer_id', customerId)
+            .gt('remaining_amount', 0)
+            .neq('id', saleId)
+            .limit(1);
+
+        if ((otherDues as List).isEmpty) {
+          await _client.from('customers').update({
+            'is_due': false,
+            'amount_due': 0,
+          }).eq('id', customerId);
+        }
+      }
+
+      log('SaleRepository: Due payment processed successfully');
       return true;
     } catch (e) {
       log('SaleRepository: Error processing due payment - $e');

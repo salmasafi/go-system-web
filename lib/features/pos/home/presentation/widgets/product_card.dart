@@ -86,7 +86,8 @@ class POSProductCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _buildPrice(context),
+                      Expanded(child: _buildPrice(context)),
+                      SizedBox(width: ResponsiveUI.padding(context, 4)),
                       Container(
                         padding: EdgeInsets.all(
                           ResponsiveUI.padding(context, 6),
@@ -124,10 +125,10 @@ class POSProductCard extends StatelessWidget {
     final wholesaleActive =
         hasWholesale && cartQuantity >= product.startQuantity!;
     // Note: differentPrice removed in migration 014 - products now have single price
-    final baseLabel = '\${product.price.toStringAsFixed(2)}';
+    final baseLabel = '${product.price.toStringAsFixed(2)} \$';
 
     if (wholesaleActive) {
-      final wholesaleLabel = '\${product.wholePrice!.toStringAsFixed(2)}';
+      final wholesaleLabel = '${product.wholePrice!.toStringAsFixed(2)} \$';
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -86,7 +86,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
           // For this example, I assume the cubit flattens them or you pick one list
           final purchases = state.data; 
    
-          if (purchases.purchases.partial.isEmpty) {
+          if (purchases.purchases.all.isEmpty) {
             return CustomEmptyState(
               icon: Icons.shopping_bag_outlined,
               title: "No Purchases Found", // Use LocaleKeys
@@ -99,7 +99,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
             return RefreshIndicator(
               onRefresh: _refresh,
               color: AppColors.primaryBlue,
-              child: PurchaseList(purchases: purchases.purchases.partial),
+              child: PurchaseList(purchases: purchases.purchases.all),
             );
           }
         } else {

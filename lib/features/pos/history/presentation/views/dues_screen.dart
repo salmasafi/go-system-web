@@ -8,6 +8,7 @@ import 'package:GoSystem/features/pos/history/cubit/history_cubit.dart';
 import 'package:GoSystem/features/pos/history/cubit/history_state.dart';
 import 'package:GoSystem/features/pos/history/model/sale_model.dart';
 import 'package:GoSystem/features/pos/history/presentation/widgets/pay_due_dialog.dart';
+import 'package:GoSystem/features/pos/home/cubit/pos_home_cubit.dart';
 
 class DuesScreen extends StatefulWidget {
   const DuesScreen({super.key});
@@ -357,23 +358,17 @@ class _CustomerDueCard extends StatelessWidget {
   }
 
   void _showPayDialog(BuildContext context, CustomerDueModel customer) {
-    final representativeDue = DueSaleModel(
-      id: customer.firstSaleId,
-      reference: '',
-      customerId: customer.customerId,
-      customerName: customer.customerName,
-      phone: customer.phone,
-      grandTotal: customer.totalDue,
-      paidAmount: 0,
-      remainingAmount: customer.totalDue,
-      date: '',
-    );
+    // Show dialog for the first due sale of this customer
+    final due = customer.sales.first;
 
     showDialog(
       context: context,
-      builder: (_) => BlocProvider.value(
-        value: context.read<HistoryCubit>(),
-        child: PayDueDialog(due: representativeDue),
+      builder: (_) => MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: context.read<HistoryCubit>()),
+          BlocProvider.value(value: context.read<PosCubit>()),
+        ],
+        child: PayDueDialog(due: due),
       ),
     );
   }

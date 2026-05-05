@@ -64,9 +64,16 @@ class PosShiftCubit extends Cubit<PosShiftState> {
     await CacheHelper.removeData(key: _shiftKey);
   }
 
-  // 1. Get All Cashiers - TODO: Implement with Supabase when cashier table is ready
+  // 1. Get All Cashiers
   Future<void> getCashiers() async {
-    emit(PosGetCashiersError("Not implemented yet - needs Supabase cashier table"));
+    emit(PosGetCashiersLoading());
+    try {
+      cashiersList = await _repository.getCashiers();
+      emit(PosGetCashiersSuccess(cashiersList));
+    } catch (e) {
+      log("Get Cashiers Error: $e");
+      emit(PosGetCashiersError(e.toString()));
+    }
   }
 
   // 2. Select Cashier - TODO: Implement with Supabase when cashier table is ready

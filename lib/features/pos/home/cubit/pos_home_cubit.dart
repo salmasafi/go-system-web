@@ -1,14 +1,11 @@
-// lib/features/pos/home/cubit/pos_home_cubit.dart
-
 import 'dart:developer';
-import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:GoSystem/core/supabase/supabase_client.dart';
 import 'package:GoSystem/features/pos/home/cubit/pos_home_state.dart';
 import 'package:GoSystem/features/pos/home/model/pos_models.dart';
 import 'package:GoSystem/features/admin/discount/model/discount_model.dart';
-import '../../../../core/services/dio_helper.dart';
-import '../../../../core/services/endpoints.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/utils/error_handler.dart';
 import '../../../../generated/locale_keys.g.dart';
 
@@ -79,18 +76,10 @@ class PosCubit extends Cubit<PosState> {
     emit(PosDataLoaded(featuredProducts));
   }
 
-  String _extractErrorMessage(dynamic errorOrResponse) {
-    if (errorOrResponse is Map<String, dynamic>) {
-      return errorOrResponse['message']?.toString() ?? LocaleKeys.unknown_error_occurred.tr();
-    } else if (errorOrResponse is Response) {
-      final data = errorOrResponse.data;
-      if (data is Map<String, dynamic>) {
-        return data['message']?.toString() ??
-            '${LocaleKeys.server_error.tr()}: ${errorOrResponse.statusCode}';
-      }
-      return '${LocaleKeys.server_error.tr()}: ${errorOrResponse.statusCode}';
-    }
-    return ErrorHandler.handleError(errorOrResponse);
+  final SupabaseClient _client = SupabaseClientWrapper.instance;
+
+  String _extractErrorMessage(dynamic error) {
+    return ErrorHandler.handleError(error);
   }
   // ─── Main Data Loading ───
 
@@ -114,33 +103,13 @@ class PosCubit extends Cubit<PosState> {
 
   Future<void> getCategories() async {
     try {
-      final response = await DioHelper.getData(url: EndPoint.posCategories);
-      log('Categories response: ${response.data}');
-      if (response.statusCode == 200) {
-        // Try different possible response structures
-        List<dynamic> data = [];
-        
-        if (response.data['data'] != null) {
-          if (response.data['data']['category'] != null) {
-            data = response.data['data']['category'] as List;
-          } else if (response.data['data']['categories'] != null) {
-            data = response.data['data']['categories'] as List;
-          } else if (response.data['data'] is List) {
-            data = response.data['data'] as List;
-          }
-        } else if (response.data['category'] != null) {
-          data = response.data['category'] as List;
-        } else if (response.data['categories'] != null) {
-          data = response.data['categories'] as List;
-        } else if (response.data is List) {
-          data = response.data as List;
-        }
-        
-        categories = data.map((e) => Category.fromJson(e)).toList();
-        log("Loaded ${categories.length} categories");
-      } else {
-        log('Categories failed with status: ${response.statusCode}');
-      }
+      final response = await _client
+          .from('categories')
+          .select()
+          .order('name');
+      
+      categories = (response as List).map((e) => Category.fromJson(e)).toList();
+      log("Loaded ${categories.length} categories");
     } catch (e) {
       log('Categories error: $e');
     }
@@ -148,33 +117,13 @@ class PosCubit extends Cubit<PosState> {
 
   Future<void> getBrands() async {
     try {
-      final response = await DioHelper.getData(url: EndPoint.posBrands);
-      log('Brands response: ${response.data}');
-      if (response.statusCode == 200) {
-        // Try different possible response structures
-        List<dynamic> data = [];
-        
-        if (response.data['data'] != null) {
-          if (response.data['data']['brand'] != null) {
-            data = response.data['data']['brand'] as List;
-          } else if (response.data['data']['brands'] != null) {
-            data = response.data['data']['brands'] as List;
-          } else if (response.data['data'] is List) {
-            data = response.data['data'] as List;
-          }
-        } else if (response.data['brand'] != null) {
-          data = response.data['brand'] as List;
-        } else if (response.data['brands'] != null) {
-          data = response.data['brands'] as List;
-        } else if (response.data is List) {
-          data = response.data as List;
-        }
-        
-        brands = data.map((e) => Brand.fromJson(e)).toList();
-        log("Loaded ${brands.length} brands");
-      } else {
-        log('Brands failed with status: ${response.statusCode}');
-      }
+      final response = await _client
+          .from('brands')
+          .select()
+          .order('name');
+      
+      brands = (response as List).map((e) => Brand.fromJson(e)).toList();
+      log("Loaded ${brands.length} brands");
     } catch (e) {
       log('Brands error: $e');
     }
@@ -182,14 +131,20 @@ class PosCubit extends Cubit<PosState> {
 
   Future<void> getFeaturedProducts() async {
     try {
-      final response = await DioHelper.getData(url: EndPoint.posFeatured);
-      if (response.statusCode == 200) {
-        final data = response.data['data']['products'] as List;
-        // هنا يتم استخدام الموديل المحدث الذي يعالج variations
-        featuredProducts = data.map((e) => Product.fromList(e)).toList();
+      final response = await _client
+          .from('products')
+          .select('''
+            *,
+            attributes:product_attributes(
+              *,
+              attribute_type:attribute_type_id(*)
+            )
+          ''')
+          .eq('is_featured', true)
+          .eq('status', true);
 
-        log("Loaded ${featuredProducts.length} featured products.");
-      }
+      featuredProducts = (response as List).map((e) => Product.fromList(e)).toList();
+      log("Loaded ${featuredProducts.length} featured products.");
     } catch (e) {
       log('Featured error: $e');
       emit(PosError("Failed to load products: ${e.toString()}"));
@@ -198,11 +153,25 @@ class PosCubit extends Cubit<PosState> {
 
   Future<void> getBundles() async {
     try {
-      var response = await DioHelper.getData(url: EndPoint.posBundles);
-      if (response.statusCode == 200) {
-        final data = response.data['data']['bundles'] as List;
-        bundles = data.map((b) => BundleModel.fromJson(b)).toList();
-      }
+      final response = await _client
+          .from('bundles')
+          .select('''
+            *,
+            products:bundle_products(
+              quantity,
+              product:product_id(
+                *,
+                attributes:product_attributes(
+                  *,
+                  attribute_type:attribute_type_id(*)
+                )
+              )
+            )
+          ''')
+          .eq('status', true);
+
+      bundles = (response as List).map((b) => BundleModel.fromJson(b)).toList();
+      log("Loaded ${bundles.length} bundles");
     } catch (e) {
       log('Bundles error: $e');
       bundles = [];
@@ -230,63 +199,40 @@ class PosCubit extends Cubit<PosState> {
     selectedDiscount = null;
 
     try {
-      final response = await DioHelper.getData(url: EndPoint.posSelections);
-      if (response.statusCode == 200) {
-        final json = response.data['data'];
+      final warehousesResponse = await _client.from('warehouses').select();
+      warehouses = (warehousesResponse as List).map((e) => Warehouse.fromJson(e)).toList();
+      selectedWarhouse = warehouses.isNotEmpty ? warehouses.first : null;
 
-        warehouses = (json['warehouses'] as List)
-            .map((e) => Warehouse.fromJson(e))
-            .toList();
-        selectedWarhouse = warehouses.isNotEmpty ? warehouses.first : null;
+      final customersResponse = await _client.from('customers').select();
+      customers = (customersResponse as List).map((e) => Customer.fromJson(e)).toList();
+      selectedCustomer = customers.isNotEmpty ? customers.first : null;
 
-        customers = (json['customers'] as List)
-            .map((e) => Customer.fromJson(e))
-            .toList();
-        selectedCustomer = customers.isNotEmpty ? customers.first : null;
+      final accountsResponse = await _client.from('bank_accounts').select().eq('status', true);
+      accounts = (accountsResponse as List).map((e) => BankAccount.fromJson(e)).toList();
+      selectedAccount = accounts.isNotEmpty ? accounts.first : null;
 
-        accounts = (json['accounts'] as List? ?? [])
-            .map((e) => BankAccount.fromJson(e))
-            .toList();
-        selectedAccount = accounts.isNotEmpty ? accounts.first : null;
+      final taxesResponse = await _client.from('taxes').select().eq('status', true);
+      final List<Tax> taxesFromJson = (taxesResponse as List).map((e) => Tax.fromJson(e)).toList();
+      taxes.addAll(taxesFromJson);
+      selectedTax = taxes.first;
 
-        List<Tax> taxesFromJson = ((json['taxes'] as List?) ?? [])
-            .map<Tax>((dynamic e) => Tax.fromJson(e as Map<String, dynamic>))
-            .toList();
-        var filteredTaxes = taxesFromJson.isNotEmpty
-            ? taxesFromJson.where((element) => element.status).toList()
-            : null;
-        if (filteredTaxes != null) taxes.addAll(filteredTaxes);
-        selectedTax = taxes.first;
+      final discountsResponse = await _client.from('discounts').select().eq('status', true);
+      final List<DiscountModel> discountsFromJson = (discountsResponse as List).map((e) => DiscountModel.fromJson(e)).toList();
+      discounts.addAll(discountsFromJson);
+      selectedDiscount = discounts.first;
 
-        List<DiscountModel> discountsFromJson =
-            ((json['discounts'] as List?) ?? [])
-                .map<DiscountModel>(
-                  (dynamic e) =>
-                      DiscountModel.fromJson(e as Map<String, dynamic>),
-                )
-                .toList();
-        var filteredDiscounts = discountsFromJson.isNotEmpty
-            ? discountsFromJson.where((element) => element.status).toList()
-            : null;
-        if (filteredDiscounts != null) discounts.addAll(filteredDiscounts);
-        selectedDiscount = discounts.first;
+      final currenciesResponse = await _client.from('currencies').select();
+      currencies = (currenciesResponse as List).map((e) => Currency.fromJson(e)).toList();
+      selectedCurrency = currencies.isNotEmpty ? currencies.first : null;
 
-        currencies = (json['currencies'] as List? ?? [])
-            .map((e) => Currency.fromJson(e))
-            .toList();
-        selectedCurrency = currencies.isNotEmpty ? currencies.first : null;
-
-        paymentMethods = (json['paymentMethods'] as List)
-            .map((e) => PaymentMethod.fromJson(e))
-            .toList();
-        
-        // Select the first payment method with name 'Cash', or just the first one
-        selectedPaymentMethod = paymentMethods.isNotEmpty
-            ? (paymentMethods.where((element) => element.name == 'Cash').isNotEmpty
-                ? paymentMethods.where((element) => element.name == 'Cash').first
-                : paymentMethods.first)
-            : null;
-      }
+      final paymentMethodsResponse = await _client.from('payment_methods').select().eq('is_active', true);
+      paymentMethods = (paymentMethodsResponse as List).map((e) => PaymentMethod.fromJson(e)).toList();
+      
+      selectedPaymentMethod = paymentMethods.isNotEmpty
+          ? (paymentMethods.any((element) => element.name == 'Cash')
+              ? paymentMethods.firstWhere((element) => element.name == 'Cash')
+              : paymentMethods.first)
+          : null;
     } catch (e) {
       log('Selections error: $e');
     }
@@ -340,19 +286,23 @@ class PosCubit extends Cubit<PosState> {
 
     if (categoryId != null) {
       try {
-        final response = await DioHelper.getData(
-          url: EndPoint.posCategoryProducts(categoryId),
-        );
-        if (response.statusCode == 200) {
-          final data = response.data['data']['products'] as List;
-          categoryProducts = data.map((e) => Product.fromList(e)).toList();
-          selectedCategoryId = categoryId;
+        final response = await _client
+            .from('products')
+            .select('''
+              *,
+              attributes:product_attributes(
+                *,
+                attribute_type:attribute_type_id(*)
+              ),
+              categories:product_categories!inner(category_id)
+            ''')
+            .eq('product_categories.category_id', categoryId)
+            .eq('status', true);
 
-          // hideFilterPanels(); // لا نحتاج لاستدعائها هنا لأننا أغلقناها في البداية
-
-          isCategoryProductsLoading = false;
-          emit(PosDataLoaded(categoryProducts));
-        }
+        categoryProducts = (response as List).map((e) => Product.fromList(e)).toList();
+        selectedCategoryId = categoryId;
+        isCategoryProductsLoading = false;
+        emit(PosDataLoaded(categoryProducts));
       } catch (e) {
         final msg = _extractErrorMessage(e);
         isCategoryProductsLoading = false;
@@ -379,19 +329,22 @@ class PosCubit extends Cubit<PosState> {
 
     if (brandId != null) {
       try {
-        final response = await DioHelper.getData(
-          url: EndPoint.posBrandProducts(brandId),
-        );
-        if (response.statusCode == 200) {
-          final data = response.data['data']['products'] as List;
-          brandProducts = data.map((e) => Product.fromList(e)).toList();
-          selectedBrandId = brandId;
+        final response = await _client
+            .from('products')
+            .select('''
+              *,
+              attributes:product_attributes(
+                *,
+                attribute_type:attribute_type_id(*)
+              )
+            ''')
+            .eq('brand_id', brandId)
+            .eq('status', true);
 
-          // hideFilterPanels(); // تم الإغلاق مسبقاً
-
-          isBrandProductsLoading = false;
-          emit(PosDataLoaded(brandProducts));
-        }
+        brandProducts = (response as List).map((e) => Product.fromList(e)).toList();
+        selectedBrandId = brandId;
+        isBrandProductsLoading = false;
+        emit(PosDataLoaded(brandProducts));
       } catch (e) {
         final msg = _extractErrorMessage(e);
         isBrandProductsLoading = false;
@@ -459,24 +412,23 @@ class PosCubit extends Cubit<PosState> {
   Future<Product?> getProductByCode(String code) async {
     emit(PosLoading());
     try {
-      final response = await DioHelper.postData(
-        url: EndPoint.productByCode,
-        data: {'code': code},
-      );
+      final response = await _client
+          .from('products')
+          .select('''
+            *,
+            attributes:product_attributes(
+              *,
+              attribute_type:attribute_type_id(*)
+            )
+          ''')
+          .eq('code', code)
+          .maybeSingle();
 
-      if (response.statusCode == 200) {
-        final data = response.data['data']['product'];
-        if (data != null) {
-          final product = Product.fromScan(data);
-          return product;
-        } else {
-          emit(PosError('Product not found'));
-          selectTab();
-          return null;
-        }
+      if (response != null) {
+        final product = Product.fromScan(response);
+        return product;
       } else {
-        final msg = _extractErrorMessage(response);
-        emit(PosError(msg));
+        emit(PosError('Product not found'));
         selectTab();
         return null;
       }

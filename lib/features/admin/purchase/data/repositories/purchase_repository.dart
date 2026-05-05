@@ -166,32 +166,34 @@ class _PurchaseSupabaseDataSource implements PurchaseRepositoryInterface {
             warehouse:warehouse_id(*),
             supplier:supplier_id(*),
             tax:tax_id(*),
-            items:purchase_items(*, product:product_id(*)),
+            items:purchase_items(*, product:product_id(*), category:category_id(*)),
             invoices:invoices(*),
             due_payments:due_payments(*)
           ''')
           .order('created_at', ascending: false);
 
-      // Calculate stats
-      final full = response.where((p) => p['payment_status'] == 'full').toList();
-      final later = response.where((p) => p['payment_status'] == 'later').toList();
-      final partial = response.where((p) => p['payment_status'] == 'partial').toList();
+      final purchasesList = (response as List).map((json) => _mapSupabaseToPurchase(json)).toList();
+      
+      final full = purchasesList.where((p) => p.paymentStatus == 'full').toList();
+      final later = purchasesList.where((p) => p.paymentStatus == 'later').toList();
+      final partial = purchasesList.where((p) => p.paymentStatus == 'partial').toList();
 
       final stats = PurchaseStats(
-        totalPurchases: response.length,
+        totalPurchases: purchasesList.length,
         fullCount: full.length,
         laterCount: later.length,
         partialCount: partial.length,
-        totalAmount: response.fold<int>(0, (sum, p) => sum + ((p['grand_total'] as num?)?.toInt() ?? 0)),
-        fullAmount: full.fold<int>(0, (sum, p) => sum + ((p['grand_total'] as num?)?.toInt() ?? 0)),
-        laterAmount: later.fold<int>(0, (sum, p) => sum + ((p['grand_total'] as num?)?.toInt() ?? 0)),
-        partialAmount: partial.fold<int>(0, (sum, p) => sum + ((p['grand_total'] as num?)?.toInt() ?? 0)),
+        totalAmount: purchasesList.fold<int>(0, (sum, p) => sum + p.grandTotal.toInt()),
+        fullAmount: full.fold<int>(0, (sum, p) => sum + p.grandTotal.toInt()),
+        laterAmount: later.fold<int>(0, (sum, p) => sum + p.grandTotal.toInt()),
+        partialAmount: partial.fold<int>(0, (sum, p) => sum + p.grandTotal.toInt()),
       );
 
       final purchases = Purchases(
-        full: full.map((json) => _mapSupabaseToPurchase(json)).toList(),
-        later: later.map((json) => _mapSupabaseToPurchase(json)).toList(),
-        partial: partial.map((json) => _mapSupabaseToPurchase(json)).toList(),
+        full: full,
+        later: later,
+        partial: partial,
+        all: purchasesList,
       );
 
       log('PurchaseSupabase: Fetched ${response.length} purchases');
@@ -214,7 +216,7 @@ class _PurchaseSupabaseDataSource implements PurchaseRepositoryInterface {
             warehouse:warehouse_id(*),
             supplier:supplier_id(*),
             tax:tax_id(*),
-            items:purchase_items(*, product:product_id(*)),
+            items:purchase_items(*, product:product_id(*), category:category_id(*)),
             invoices:invoices(*),
             due_payments:due_payments(*)
           ''')
@@ -378,7 +380,7 @@ class _PurchaseSupabaseDataSource implements PurchaseRepositoryInterface {
             warehouse:warehouse_id(*),
             supplier:supplier_id(*),
             tax:tax_id(*),
-            items:purchase_items(*, product:product_id(*)),
+            items:purchase_items(*, product:product_id(*), category:category_id(*)),
             invoices:invoices(*),
             due_payments:due_payments(*)
           ''')
@@ -404,7 +406,7 @@ class _PurchaseSupabaseDataSource implements PurchaseRepositoryInterface {
             warehouse:warehouse_id(*),
             supplier:supplier_id(*),
             tax:tax_id(*),
-            items:purchase_items(*, product:product_id(*)),
+            items:purchase_items(*, product:product_id(*), category:category_id(*)),
             invoices:invoices(*),
             due_payments:due_payments(*)
           ''')

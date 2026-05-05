@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:GoSystem/core/utils/responsive_ui.dart';
-import 'package:GoSystem/features/admin/settings/presentation/view/settings_screen.dart';
+import 'package:GoSystem/features/admin/settings/presentation/settings_screen.dart';
 import '../constants/app_colors.dart';
 
 AppBar appBarWithActions(
@@ -12,6 +12,7 @@ AppBar appBarWithActions(
   IconData? actionIcon,
   bool showActions = false,
   bool showBackButton = true,
+  bool showSettingsIcon = false,
   int notificationCount = 0,
 }) {
   return AppBar(
@@ -42,7 +43,9 @@ AppBar appBarWithActions(
               ),
             ),
             child: IconButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.of(context).canPop()
+                  ? Navigator.of(context).pop()
+                  : null,
               icon: Icon(
                 Icons.arrow_back_ios_new,
                 color: AppColors.mediumBlue700[700],
@@ -51,32 +54,34 @@ AppBar appBarWithActions(
               padding: EdgeInsets.zero,
             ),
           )
-        : Container(
-          margin: EdgeInsetsDirectional.only(
-                start: ResponsiveUI.padding(context, 8),
-                top: ResponsiveUI.padding(context, 8),
-                bottom: ResponsiveUI.padding(context, 8)),
-            decoration: BoxDecoration(
-              color: AppColors.lightBlueBackground,
-              borderRadius: BorderRadius.circular(
-                ResponsiveUI.borderRadius(context, 12),
-              ),
-            ),
-            child: IconButton(
-              onPressed: () {
-                Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const SettingsScreen()),
-        );
-              },
-              icon: Icon(
-                Icons.settings,
-                color: AppColors.mediumBlue700[700],
-                size: kIsWeb ? 20 : ResponsiveUI.iconSize(context, 25),
-              ),
-              padding: EdgeInsets.zero,
-            ),
-          ),
+        : showSettingsIcon
+            ? Container(
+                margin: EdgeInsetsDirectional.only(
+                    start: ResponsiveUI.padding(context, 8),
+                    top: ResponsiveUI.padding(context, 8),
+                    bottom: ResponsiveUI.padding(context, 8)),
+                decoration: BoxDecoration(
+                  color: AppColors.lightBlueBackground,
+                  borderRadius: BorderRadius.circular(
+                    ResponsiveUI.borderRadius(context, 12),
+                  ),
+                ),
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                    );
+                  },
+                  icon: Icon(
+                    Icons.settings,
+                    color: AppColors.mediumBlue700[700],
+                    size: kIsWeb ? 20 : ResponsiveUI.iconSize(context, 25),
+                  ),
+                  padding: EdgeInsets.zero,
+                ),
+              )
+            : null,
     actions: showActions
         ? [
             Container(
@@ -201,7 +206,9 @@ AppBar appBarWithActionsWidget(
               ),
             ),
             child: IconButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.of(context).canPop()
+                  ? Navigator.of(context).pop()
+                  : null,
               icon: Icon(
                 Icons.arrow_back_ios_new,
                 color: AppColors.mediumBlue700[700],

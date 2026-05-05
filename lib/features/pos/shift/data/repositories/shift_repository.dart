@@ -1,8 +1,11 @@
+// lib/features/pos/shift/data/repositories/shift_repository.dart
+
 import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../../core/supabase/supabase_client.dart';
 import '../../../../../core/supabase/supabase_error_handler.dart';
 import '../../model/shift_model.dart';
+import '../../model/cashier_model.dart';
 
 // ─────────────────────────────────────────────
 // Supabase-specific model
@@ -15,17 +18,12 @@ class SupabaseShiftModel {
   final String? cashierManId;
   final DateTime startTime;
   final DateTime? endTime;
-  final double openingAmount;
-  final double expectedAmount;
-  final double? actualAmount;
-  final double? difference;
-  final double totalSales;
-  final double totalReturns;
-  final double totalDiscounts;
+  final double openingBalance;
+  final double totalSaleAmount;
+  final double netCashInDrawer;
   final double totalExpenses;
-  final String status; // open, closed, approved
-  final String? openingNote;
-  final String? closingNote;
+  final String status; // open, closed
+  final String? currencyId;
   final DateTime createdAt;
 
   SupabaseShiftModel({
@@ -35,17 +33,12 @@ class SupabaseShiftModel {
     this.cashierManId,
     required this.startTime,
     this.endTime,
-    required this.openingAmount,
-    required this.expectedAmount,
-    this.actualAmount,
-    this.difference,
-    required this.totalSales,
-    required this.totalReturns,
-    required this.totalDiscounts,
+    required this.openingBalance,
+    required this.totalSaleAmount,
+    required this.netCashInDrawer,
     required this.totalExpenses,
     required this.status,
-    this.openingNote,
-    this.closingNote,
+    this.currencyId,
     required this.createdAt,
   });
 
@@ -54,24 +47,19 @@ class SupabaseShiftModel {
       id: json['id'] as String? ?? '',
       reference: json['reference'] as String?,
       cashierId: json['cashier_id'] as String? ?? '',
-      cashierManId: json['cashier_man_id'] as String?,
+      cashierManId: json['cashierman_id'] as String?,
       startTime: json['start_time'] != null
           ? DateTime.parse(json['start_time'] as String)
           : DateTime.now(),
       endTime: json['end_time'] != null
           ? DateTime.parse(json['end_time'] as String)
           : null,
-      openingAmount: (json['opening_amount'] as num?)?.toDouble() ?? 0.0,
-      expectedAmount: (json['expected_amount'] as num?)?.toDouble() ?? 0.0,
-      actualAmount: (json['actual_amount'] as num?)?.toDouble(),
-      difference: (json['difference'] as num?)?.toDouble(),
-      totalSales: (json['total_sales'] as num?)?.toDouble() ?? 0.0,
-      totalReturns: (json['total_returns'] as num?)?.toDouble() ?? 0.0,
-      totalDiscounts: (json['total_discounts'] as num?)?.toDouble() ?? 0.0,
+      openingBalance: (json['opening_balance'] as num?)?.toDouble() ?? 0.0,
+      totalSaleAmount: (json['total_sale_amount'] as num?)?.toDouble() ?? 0.0,
+      netCashInDrawer: (json['net_cash_in_drawer'] as num?)?.toDouble() ?? 0.0,
       totalExpenses: (json['total_expenses'] as num?)?.toDouble() ?? 0.0,
       status: json['status'] as String? ?? 'open',
-      openingNote: json['opening_note'] as String?,
-      closingNote: json['closing_note'] as String?,
+      currencyId: json['currency_id'] as String?,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String)
           : DateTime.now(),
@@ -85,8 +73,8 @@ class SupabaseShiftModel {
       status: status,
       cashierId: cashierId,
       cashierManId: cashierManId ?? '',
-      totalSaleAmount: totalSales,
-      netCashInDrawer: actualAmount ?? expectedAmount,
+      totalSaleAmount: totalSaleAmount,
+      netCashInDrawer: netCashInDrawer,
       totalExpenses: totalExpenses,
     );
   }
@@ -97,6 +85,7 @@ class SupabaseShiftModel {
 // ─────────────────────────────────────────────
 
 abstract class ShiftRepositoryInterface {
+  Future<List<CashierModel>> getCashiers();
   Future<SupabaseShiftModel> startShift({
     required String cashierId,
     required double openingAmount,
@@ -113,16 +102,33 @@ abstract class ShiftRepositoryInterface {
 }
 
 // ─────────────────────────────────────────────
-// Hybrid Repository
-// ─────────────────────────────────────────────
-
-// ─────────────────────────────────────────────
 // Repository Implementation
 // ─────────────────────────────────────────────
 
 class ShiftRepository implements ShiftRepositoryInterface {
   final SupabaseClient _client = SupabaseClientWrapper.instance;
   static const String _table = 'shifts';
+
+  @override
+  Future<List<CashierModel>> getCashiers() async {
+    try {
+      log('ShiftRepository: Fetching all active cashiers directly');
+
+      // Fetch all active cashiers directly from the cashiers table
+      final response = await _client
+          .from('cashiers')
+          .select('*, warehouse:warehouse_id (*)')
+          .eq('status', true)
+          .order('name');
+      
+      return (response as List)
+          .map((json) => CashierModel.fromJson(json))
+          .toList();
+    } catch (e) {
+      log('ShiftRepository: Error fetching cashiers - $e');
+      throw Exception(SupabaseErrorHandler.handleError(e));
+    }
+  }
 
   @override
   Future<SupabaseShiftModel> startShift({
@@ -139,18 +145,18 @@ class ShiftRepository implements ShiftRepositoryInterface {
         throw Exception('Cashier already has an active shift');
       }
 
-      final reference =
-          'SHF-${DateTime.now().millisecondsSinceEpoch.toString().substring(6)}';
+      final userId = _client.auth.currentUser?.id;
 
       final response = await _client.from(_table).insert({
-        'reference': reference,
         'cashier_id': cashierId,
+        'cashierman_id': userId,
         'start_time': DateTime.now().toIso8601String(),
-        'opening_amount': openingAmount,
-        'expected_amount': openingAmount,
+        'opening_balance': openingAmount,
         'status': 'open',
-        'opening_note': note,
       }).select().single();
+
+      // Update cashier status
+      await _client.from('cashiers').update({'cashier_active': true}).eq('id', cashierId);
 
       return SupabaseShiftModel.fromJson(response);
     } catch (e) {
@@ -171,17 +177,14 @@ class ShiftRepository implements ShiftRepositoryInterface {
       final shift = await getShiftById(shiftId);
       if (shift == null) throw Exception('Shift not found');
 
-      final expected = shift.openingAmount + shift.totalSales - shift.totalExpenses;
-      final diff = actualAmount - expected;
-
       final response = await _client.from(_table).update({
         'end_time': DateTime.now().toIso8601String(),
-        'expected_amount': expected,
-        'actual_amount': actualAmount,
-        'difference': diff,
+        'net_cash_in_drawer': actualAmount,
         'status': 'closed',
-        'closing_note': note,
       }).eq('id', shiftId).select().single();
+
+      // Update cashier status
+      await _client.from('cashiers').update({'cashier_active': false}).eq('id', shift.cashierId);
 
       return SupabaseShiftModel.fromJson(response);
     } catch (e) {
@@ -213,7 +216,16 @@ class ShiftRepository implements ShiftRepositoryInterface {
   Future<SupabaseShiftModel?> getActiveShift() async {
     final userId = _client.auth.currentUser?.id;
     if (userId == null) return null;
-    return getActiveShiftByCashier(userId);
+
+    // We need to find if this user is assigned to a cashier that has an active shift
+    final cashierUser = await _client
+        .from('cashier_users')
+        .select('cashier_id')
+        .eq('admin_id', userId)
+        .maybeSingle();
+    
+    if (cashierUser == null) return null;
+    return getActiveShiftByCashier(cashierUser['cashier_id']);
   }
 
   @override
@@ -234,3 +246,4 @@ class ShiftRepository implements ShiftRepositoryInterface {
     }
   }
 }
+

@@ -7,6 +7,7 @@ import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:GoSystem/features/pos/checkout/cubit/checkout_cubit/checkout_cubit.dart';
 import 'package:GoSystem/features/pos/customer/cubit/pos_customer_cubit.dart';
 import 'package:GoSystem/features/pos/home/cubit/pos_home_cubit.dart';
+import 'package:GoSystem/features/pos/shift/cubit/pos_shift_cubit.dart';
 import 'package:GoSystem/features/pos/checkout/model/checkout_models.dart';
 import 'action_botton.dart';
 import 'cart_item_tile.dart';
@@ -379,13 +380,23 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
   }
 
   void _holdSale() async {
+    final shiftCubit = context.read<PosShiftCubit>();
+    final customerCubit = context.read<PosCustomerCubit>();
+    
+    if (customerCubit.selectedCustomer == null) {
+      CustomSnackbar.showError(context, "Please select a customer first");
+      return;
+    }
+
     final success = await cubit.createSale(
       totalAmount: total,
       paidAmount: 0,
       note: "Sale on Hold",
       isPending: true,
-      customerId: context.read<PosCustomerCubit>().selectedCustomer?.id ?? '',
+      customerId: customerCubit.selectedCustomer!.id,
       warehouseId: posCubit.selectedWarhouse?.id,
+      shiftId: shiftCubit.currentShift?.id,
+      cashierId: shiftCubit.selectedCashier?.id,
     );
 
     if (success && mounted) {
@@ -395,15 +406,21 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
   }
 
   void _showCheckoutDialog() {
-    final selectedCustomer = context.read<PosCustomerCubit>().selectedCustomer;
+    final customerCubit = context.read<PosCustomerCubit>();
+    final selectedCustomer = customerCubit.selectedCustomer;
+
+    if (selectedCustomer == null) {
+      CustomSnackbar.showError(context, "Please select a customer first");
+      return;
+    }
 
     showDialog(
       context: context,
       builder: (_) => POSCheckoutDialog(
         totalAmount: total,
         cartItems: cartItems,
-        selectedPaymentMethod: posCubit.selectedPaymentMethod!,
-        customerId: selectedCustomer?.id ?? '',
+        selectedPaymentMethod: posCubit.selectedPaymentMethod,
+        customerId: selectedCustomer.id,
       ),
     );
   }

@@ -90,9 +90,14 @@ class _POSHomeScreenState extends State<POSHomeScreen>
     void updateTime() {
       final cubit = context.read<PosShiftCubit>();
       if (cubit.isShiftOpen && cubit.currentShift != null) {
+        // Use the difference directly - Dart handles UTC/Local conversion
         final duration = DateTime.now().difference(cubit.currentShift!.startTime);
+        
         if (mounted) {
-          setState(() => _shiftDuration = _formatDuration(duration));
+          // If duration is negative (client clock behind server), show 00:00:00
+          setState(() => _shiftDuration = _formatDuration(
+            duration.isNegative ? Duration.zero : duration
+          ));
         }
       }
     }
@@ -280,55 +285,51 @@ class _POSHomeScreenState extends State<POSHomeScreen>
                       padding: EdgeInsets.zero,
                     ),
                   ),
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
+                  title: Row(
                     children: [
-                      Text(
-                        shiftCubit.selectedCashier?.name ?? "Cashier",
-                        style: TextStyle(
-                          color: AppColors.darkGray,
-                          fontWeight: FontWeight.bold,
-                          fontSize: ResponsiveUI.fontSize(context, 15),
+                      Expanded(
+                        child: Text(
+                          shiftCubit.selectedCashier?.name ?? "Cashier",
+                          style: TextStyle(
+                            color: AppColors.darkGray,
+                            fontWeight: FontWeight.bold,
+                            fontSize: ResponsiveUI.fontSize(context, 15),
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                    ],
-                  ),
-                  centerTitle: false,
-                  titleSpacing: 0,
-                  // Timer in center
-                  flexibleSpace: SafeArea(
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 120)),
-                        child: Container(
+                      const SizedBox(width: 8),
+                      Container(
                         padding: EdgeInsets.symmetric(
-                            horizontal: ResponsiveUI.padding(context, 12), vertical: ResponsiveUI.padding(context, 5)),
+                            horizontal: ResponsiveUI.padding(context, 8),
+                            vertical: ResponsiveUI.padding(context, 4)),
                         decoration: BoxDecoration(
                           color: AppColors.lightBlueBackground,
-                          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
+                          borderRadius: BorderRadius.circular(
+                              ResponsiveUI.borderRadius(context, 20)),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(Icons.timer_outlined,
-                                size: ResponsiveUI.iconSize(context, 18), color: AppColors.primaryBlue),
-                            SizedBox(width: ResponsiveUI.value(context, 6)),
+                                size: ResponsiveUI.iconSize(context, 14),
+                                color: AppColors.primaryBlue),
+                            const SizedBox(width: 4),
                             Text(
                               _shiftDuration,
                               style: TextStyle(
-                                fontSize: ResponsiveUI.fontSize(context, 17),
+                                fontSize: ResponsiveUI.fontSize(context, 14),
                                 color: AppColors.primaryBlue,
                                 fontWeight: FontWeight.bold,
-                                letterSpacing: 1.5,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      ),
-                    ),
+                    ],
                   ),
+                  centerTitle: false,
+                  titleSpacing: ResponsiveUI.padding(context, 8),
                   actions: [
                     // Pending Orders button
                     Container(

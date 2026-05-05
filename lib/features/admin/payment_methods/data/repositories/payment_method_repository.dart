@@ -185,16 +185,20 @@ class _PaymentMethodSupabaseDataSource implements PaymentMethodRepositoryInterfa
     Map<String, dynamic> json,
   ) {
     return PaymentMethodModel(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-      arName: json['ar_name'] ?? '',
-      icon: json['icon_url'],
-      type: json['type'] ?? '',
-      isActive: json['is_active'] ?? true,
-      version: json['version'] ?? 1,
-      description: json['description'] ?? '',
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : DateTime.now(),
-      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : DateTime.now(),
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      arName: json['ar_name']?.toString() ?? '',
+      icon: json['icon_url']?.toString() ?? '',
+      type: json['type']?.toString() ?? '',
+      isActive: json['is_active'] as bool? ?? true,
+      version: json['version'] as int? ?? 1,
+      description: json['description']?.toString() ?? '',
+      createdAt: json['created_at'] != null 
+          ? DateTime.parse(json['created_at'].toString()) 
+          : DateTime.now(),
+      updatedAt: json['updated_at'] != null 
+          ? DateTime.parse(json['updated_at'].toString()) 
+          : DateTime.now(),
     );
   }
 }

@@ -19,43 +19,35 @@ class CustomBottomAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: kIsWeb ? 50 : ResponsiveUI.value(context, 75),
-      child: ClipRect(
-        child: ConvexAppBar(
-          style: TabStyle.fixedCircle,
-          backgroundColor: Colors.white,
-          activeColor: AppColors.primaryBlue,
-          color: Colors.grey[600],
-          height: kIsWeb ? 50 : ResponsiveUI.value(context, 75),
-          top: kIsWeb ? -12 : -22,
-          curveSize: kIsWeb ? 60 : 90,
-          elevation: ResponsiveUI.value(context, 8),
-          shadowColor: Colors.black26,
-          items: [
-            TabItem(
-              icon: Icons.dashboard_rounded,
-              title: LocaleKeys.dashboard.tr(),
-            ),
-            TabItem(
-              icon: Icons.shopping_bag_outlined,
-              title: 'Online',
-            ),
-            TabItem(
-              icon: Icons.point_of_sale_rounded,
-              title: LocaleKeys.point_of_sale.tr(),
-            ),
-            TabItem(
-              icon: Icons.settings_rounded,
-              title: LocaleKeys.settings.tr(),
-            ),
-            TabItem(
-              icon: Icons.exit_to_app_rounded,
-              title: LocaleKeys.exit.tr(),
-            ),
-          ],
-          initialActiveIndex: currentIndex,
-          onTap: onTap,
-        ),
+      height: kIsWeb ? 60 : ResponsiveUI.value(context, 75),
+      child: ConvexAppBar(
+        style: TabStyle.fixedCircle,
+        backgroundColor: Colors.white,
+        activeColor: AppColors.primaryBlue,
+        color: Colors.grey[600],
+        height: kIsWeb ? 60 : ResponsiveUI.value(context, 65),
+        top: kIsWeb ? -15 : -25,
+        curveSize: kIsWeb ? 60 : 100,
+        elevation: 2,
+        shadowColor: Colors.black12,
+        items: [
+          TabItem(
+            icon: Icons.dashboard_rounded,
+            title: LocaleKeys.dashboard.tr(),
+          ),
+          // TabItem(icon: Icons.shopping_bag_outlined, title: 'Online'),
+          TabItem(
+            icon: Icons.point_of_sale_rounded,
+            title: LocaleKeys.point_of_sale.tr(),
+          ),
+          TabItem(
+            icon: Icons.settings_rounded,
+            title: LocaleKeys.settings.tr(),
+          ),
+          // TabItem(icon: Icons.exit_to_app_rounded, title: LocaleKeys.exit.tr()),
+        ],
+        initialActiveIndex: currentIndex,
+        onTap: onTap,
       ),
     );
   }

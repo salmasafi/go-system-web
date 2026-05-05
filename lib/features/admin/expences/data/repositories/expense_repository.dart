@@ -110,7 +110,7 @@ class ExpenseRepository implements ExpenseRepositoryInterface {
       log('ExpenseRepository: Fetching all expenses');
       final response = await _client
           .from(_table)
-          .select('*, expense_categories(name), financial_accounts(name)')
+          .select('*, expense_categories!fk_expense_category(name), bank_accounts!bank_account_id(name)')
           .order('created_at', ascending: false);
 
       return (response as List)
@@ -163,7 +163,7 @@ class ExpenseRepository implements ExpenseRepositoryInterface {
       log('ExpenseRepository: Fetching expenses for shift: $shiftId');
       final response = await _client
           .from(_table)
-          .select('*, expense_categories(name), financial_accounts(name)')
+          .select('*, expense_categories!fk_expense_category(name), bank_accounts!bank_account_id(name)')
           .eq('shift_id', shiftId)
           .order('created_at', ascending: false);
 
@@ -178,7 +178,7 @@ class ExpenseRepository implements ExpenseRepositoryInterface {
 
   ExpenseAdminModel _mapSupabaseToModel(Map<String, dynamic> json) {
     final category = json['expense_categories'] as Map<String, dynamic>?;
-    final account = json['financial_accounts'] as Map<String, dynamic>?;
+    final account = json['bank_accounts'] as Map<String, dynamic>?;
 
     return ExpenseAdminModel(
       id: json['id'] ?? '',

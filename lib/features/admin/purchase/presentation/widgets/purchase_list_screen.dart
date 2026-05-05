@@ -31,15 +31,30 @@ class _PurchaseListState extends State<PurchaseList> {
         showBackButton: true,
       ),
       body: SafeArea(
-        child: Center(
-          child: Text(
-            'Purchase List Screen - Under Development',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
+        child: widget.purchases.isEmpty
+            ? Center(
+                child: Text(
+                  LocaleKeys.no_popups_default_message.tr(),
+                  style: TextStyle(fontSize: 16),
+                ),
+              )
+            : ListView.builder(
+                padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+                itemCount: widget.purchases.length,
+                itemBuilder: (context, index) {
+                  final purchase = widget.purchases[index];
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: ResponsiveUI.padding(context, 12)),
+                    child: AnimatedPurchaseCard(
+                      purchase: purchase,
+                      onEdit: () => _showEditDialog(context, purchase),
+                      onDelete: () {
+                        // Implement delete if needed or pass from parent
+                      },
+                    ),
+                  );
+                },
+              ),
       ),
     );
     if (kIsWeb) {

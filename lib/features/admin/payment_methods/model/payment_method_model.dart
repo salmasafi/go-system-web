@@ -49,10 +49,10 @@ class PaymentMethodModel {
   final String arName;
   final String type;
   final String description;
-  final String icon;
+  final String? icon;
   final bool isActive;
   final int version;
-   final DateTime createdAt;
+  final DateTime createdAt;
   final DateTime updatedAt;
 
   PaymentMethodModel({
@@ -61,7 +61,7 @@ class PaymentMethodModel {
     required this.arName,
     required this.type,
     required this.description,
-    required this.icon,
+    this.icon,
     required this.isActive,
     required this.version,
     required this.createdAt,
@@ -73,15 +73,19 @@ class PaymentMethodModel {
   factory PaymentMethodModel.fromJson(Map<String, dynamic> json) {
     return PaymentMethodModel(
       id: (json['id'] ?? json['_id'])?.toString() ?? '',
-      name: json['name'] as String,
-      arName: json['ar_name'] ?? '', //as String,
-      type: json['type'] ?? '', // as String,
-      description: json['discription'],
-      icon: json['icon'],
-      isActive: json['isActive'],
-      version: json['__v'] as int,
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      name: (json['name']?.toString()) ?? '',
+      arName: (json['ar_name']?.toString()) ?? '',
+      type: (json['type']?.toString()) ?? '',
+      description: (json['discription']?.toString()) ?? '',
+      icon: json['icon']?.toString(),
+      isActive: json['isActive'] as bool? ?? false,
+      version: json['__v'] as int? ?? 0,
+      createdAt: json['createdAt'] != null 
+          ? DateTime.parse(json['createdAt'].toString())
+          : DateTime.now(),
+      updatedAt: json['updatedAt'] != null 
+          ? DateTime.parse(json['updatedAt'].toString())
+          : DateTime.now(),
     );
   }
 

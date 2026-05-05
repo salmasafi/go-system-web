@@ -73,11 +73,11 @@ class HistoryCubit extends Cubit<HistoryState> {
     }
   }
 
-  // 3b. Pay Due - supports multiple payment methods
-  Future<void> payDue(String saleId, String customerId, double totalAmount, List<Map<String, dynamic>> financials) async {
+  // 3b. Pay Due - single payment method
+  Future<void> payDue(String saleId, String customerId, double totalAmount, String bankAccountId) async {
     emit(DuesPayLoading(saleId));
     try {
-      final success = await _saleRepository.payDue(saleId, customerId, totalAmount, financials);
+      final success = await _saleRepository.payDue(saleId, customerId, totalAmount, bankAccountId);
       if (success) {
         emit(DuesPaySuccess(saleId));
       } else {

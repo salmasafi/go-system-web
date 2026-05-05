@@ -10,6 +10,7 @@ import 'package:GoSystem/features/admin/discount/model/discount_model.dart';
 import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:GoSystem/features/pos/checkout/cubit/checkout_cubit/checkout_cubit.dart';
 import 'package:GoSystem/features/pos/checkout/model/checkout_models.dart';
+import 'package:GoSystem/features/pos/shift/cubit/pos_shift_cubit.dart';
 import 'receipt_dialog.dart';
 
 // --------------------------------------------------------------
@@ -133,14 +134,14 @@ Widget buildDropdownField<T>(
 class POSCheckoutDialog extends StatefulWidget {
   final double totalAmount; // This is the Subtotal
   final List<CartItem> cartItems;
-  final PaymentMethod selectedPaymentMethod;
+  final PaymentMethod? selectedPaymentMethod;
   final String customerId;
 
   const POSCheckoutDialog({
     super.key,
     required this.totalAmount,
     required this.cartItems,
-    required this.selectedPaymentMethod,
+    this.selectedPaymentMethod,
     required this.customerId,
   });
 
@@ -177,6 +178,9 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   List<BankAccount> _accounts = [];
   BankAccount? _selectedAccount;
 
+  late PaymentMethod? _selectedPaymentMethod;
+  List<PaymentMethod> _paymentMethods = [];
+
   double currentTaxAmount = 0;
   double currentDiscountAmount = 0;
   late PosCubit posCubit;
@@ -197,6 +201,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     _taxes = posCubit.taxes;
     _discounts = posCubit.discounts;
     _accounts = posCubit.accounts;
+    _paymentMethods = posCubit.paymentMethods;
 
     _selectedTax =
         posCubit.selectedTax ?? (_taxes.isNotEmpty ? _taxes.first : null);
@@ -206,6 +211,8 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     _selectedAccount =
         posCubit.selectedAccount ??
         (_accounts.isNotEmpty ? _accounts.first : null);
+    _selectedPaymentMethod = 
+        widget.selectedPaymentMethod ?? posCubit.selectedPaymentMethod;
 
     _calculateValues();
     _totalPayingCtrl.addListener(_onAmountFieldChanged);
@@ -334,7 +341,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _paymentMethodDisplay(),
+                      _paymentMethodDropdown(),
                       SizedBox(height: ResponsiveUI.spacing(context, 16)),
                       _dynamicFields(),
                       SizedBox(height: ResponsiveUI.spacing(context, 16)),
@@ -393,28 +400,17 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     ),
   );
 
-  Widget _paymentMethodDisplay() => Container(
-    padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-    decoration: BoxDecoration(
-      color: AppColors.lightBlueBackground,
-      borderRadius: BorderRadius.circular(
-        ResponsiveUI.borderRadius(context, 12),
-      ),
-      border: Border.all(color: AppColors.primaryBlue.withValues(alpha: 0.3)),
-    ),
-    child: Row(
-      children: [
-        Icon(Icons.payment, color: AppColors.primaryBlue),
-        SizedBox(width: ResponsiveUI.value(context, 12)),
-        Text(
-          widget.selectedPaymentMethod.name,
-          style: TextStyle(
-            fontSize: ResponsiveUI.fontSize(context, 16),
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
-    ),
+  Widget _paymentMethodDropdown() => buildDropdownField<PaymentMethod>(
+    context,
+    value: _selectedPaymentMethod,
+    items: _paymentMethods,
+    label: 'Payment Method',
+    hint: 'Select Method',
+    icon: Icons.payment,
+    onChanged: (v) {
+      if (v != null) setState(() => _selectedPaymentMethod = v);
+    },
+    itemLabel: (m) => m.name,
   );
 
   Widget _summaryPanel() => Container(
@@ -575,7 +571,8 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   );
 
   Widget _dynamicFields() {
-    final method = widget.selectedPaymentMethod.name.toLowerCase();
+    if (_selectedPaymentMethod == null) return SizedBox.shrink();
+    final method = _selectedPaymentMethod!.name.toLowerCase();
     if (method.contains('card') && !method.contains('gift')) {
       return Column(
         children: [
@@ -668,10 +665,12 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   void _hold() async {
     final posCubit = context.read<PosCubit>();
     final checkOutCubit = context.read<CheckoutCubit>();
+    final shiftCubit = context.read<PosShiftCubit>();
 
-    // عند الإيقاف المؤقت، نرسل order_pending = 1 (true)
-    // عادة لا يتم دفع مبالغ في الإيقاف، أو يمكن حفظ ما دفعه كعربون
-    // هنا سنفترض أن الإيقاف يعني تأجيل العملية بالكامل
+    if (widget.customerId.isEmpty) {
+      CustomSnackbar.showError(context, "Please select a customer first");
+      return;
+    }
 
     final success = await checkOutCubit.createSale(
       totalAmount: _grandTotal,
@@ -680,6 +679,9 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
       isPending: true,
       customerId: widget.customerId,
       warehouseId: posCubit.selectedWarhouse?.id,
+      paymentMethodId: _selectedPaymentMethod?.id,
+      shiftId: shiftCubit.currentShift?.id,
+      cashierId: shiftCubit.selectedCashier?.id,
       taxAmount: currentTaxAmount,
       discountAmount: currentDiscountAmount,
       taxId: _normalizeSelectionId(_selectedTax?.id),
@@ -687,9 +689,8 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     );
 
     if (success && mounted) {
-      Navigator.pop(context); // إغلاق الديالوج
+      Navigator.pop(context);
       CustomSnackbar.showSuccess(context, "Sale put on hold successfully");
-      // لا نعرض إيصالاً عند التعليق
     }
   }
 
@@ -699,17 +700,11 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   void _submit() async {
     final posCubit = context.read<PosCubit>();
     final checkOutCubit = context.read<CheckoutCubit>();
+    final shiftCubit = context.read<PosShiftCubit>();
 
-    // 1. تحديد المبلغ الفعلي للدفع
-    // لا نرسل مبلغاً أكبر من الإجمالي (الباقي يعاد للزبون)
     double actualPaidToSend = _totalPaying >= _grandTotal
         ? _grandTotal
         : _totalPaying;
-
-    // 2. التنفيذ: دائماً isPending = false لأننا ضغطنا على "Complete"
-    // الباك إند سيقرر:
-    // - إذا paidAmount < grandTotal -> ستصبح Due (عليها دين)
-    // - إذا paidAmount == grandTotal -> ستصبح Completed
 
     final success = await checkOutCubit.createSale(
       totalAmount: _grandTotal,
@@ -718,17 +713,19 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
       isPending: false,
       customerId: widget.customerId,
       warehouseId: posCubit.selectedWarhouse?.id,
+      accountId: _selectedAccount?.id,
+      paymentMethodId: _selectedPaymentMethod?.id,
+      shiftId: shiftCubit.currentShift?.id,
+      cashierId: shiftCubit.selectedCashier?.id,
       taxAmount: currentTaxAmount,
       discountAmount: currentDiscountAmount,
       taxId: _normalizeSelectionId(_selectedTax?.id),
       discountId: _normalizeSelectionId(_selectedDiscount?.id),
-      accountId: _selectedAccount?.id,
     );
 
     if (success && mounted) {
       Navigator.pop(context);
 
-      // Show Receipt
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -741,11 +738,9 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
               selectedTax: _selectedTax,
               discountAmount: currentDiscountAmount,
               selectedDiscount: _selectedDiscount,
-              paidAmount: _totalPaying, // للعرض في الإيصال (شاملاً الباقي)
+              paidAmount: _totalPaying,
               change: _change,
               reference: checkOutCubit.reference ?? 'N/A',
-              // pointsEarned: checkOutCubit.pointsEarned ?? 0,
-              // paymentMethod: widget.selectedPaymentMethod,
             ),
           );
         },

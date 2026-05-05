@@ -66,7 +66,7 @@ class CustomerRepository implements CustomerRepositoryInterface {
             *,
             country:country_id(id, name),
             city:city_id(id, name),
-            customer_group:customer_group_id(id, name, status)
+            customer_group:customer_groups!customers_customer_group_id_fkey(id, name, status)
           ''')
           .order('name');
 
@@ -93,7 +93,7 @@ class CustomerRepository implements CustomerRepositoryInterface {
             *,
             country:country_id(id, name),
             city:city_id(id, name),
-            customer_group:customer_group_id(id, name, status)
+            customer_group:customer_groups!customers_customer_group_id_fkey(id, name, status)
           ''')
           .eq('id', id)
           .maybeSingle();
@@ -118,7 +118,7 @@ class CustomerRepository implements CustomerRepositoryInterface {
             *,
             country:country_id(id, name),
             city:city_id(id, name),
-            customer_group:customer_group_id(id, name, status)
+            customer_group:customer_groups!customers_customer_group_id_fkey(id, name, status)
           ''')
           .eq('customer_group_id', groupId)
           .order('name');
@@ -166,7 +166,7 @@ class CustomerRepository implements CustomerRepositoryInterface {
             *,
             country:country_id(id, name),
             city:city_id(id, name),
-            customer_group:customer_group_id(id, name, status)
+            customer_group:customer_groups!customers_customer_group_id_fkey(id, name, status)
           ''')
           .single();
 
@@ -208,7 +208,7 @@ class CustomerRepository implements CustomerRepositoryInterface {
             *,
             country:country_id(id, name),
             city:city_id(id, name),
-            customer_group:customer_group_id(id, name, status)
+            customer_group:customer_groups!customers_customer_group_id_fkey(id, name, status)
           ''')
           .single();
 

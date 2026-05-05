@@ -22,18 +22,20 @@ class ExpenseModel {
   });
 
   factory ExpenseModel.fromJson(Map<String, dynamic> json) {
-    final cat = json['Category_id'] is Map ? json['Category_id'] : {};
-    final acc = json['financial_accountId'] is Map ? json['financial_accountId'] : {};
+    // Handle both old API structure and new Supabase joins
+    final cat = (json['category'] ?? json['Category_id']) as Map<String, dynamic>? ?? {};
+    final acc = (json['bank_account'] ?? json['financial_accountId']) as Map<String, dynamic>? ?? {};
+    
     return ExpenseModel(
-      id: json['_id'] ?? '',
-      name: json['name'] ?? '',
+      id: json['id']?.toString() ?? json['_id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
       amount: (json['amount'] as num?)?.toDouble() ?? 0,
-      categoryId: cat['_id'] ?? '',
-      categoryName: cat['name'] ?? '',
-      financialAccountId: acc['_id'] ?? '',
-      financialAccountName: acc['name'] ?? '',
-      note: json['note'] ?? '',
-      createdAt: json['createdAt'] ?? '',
+      categoryId: cat['id']?.toString() ?? cat['_id']?.toString() ?? '',
+      categoryName: cat['name']?.toString() ?? '',
+      financialAccountId: acc['id']?.toString() ?? acc['_id']?.toString() ?? '',
+      financialAccountName: acc['name']?.toString() ?? '',
+      note: json['note']?.toString() ?? '',
+      createdAt: json['created_at']?.toString() ?? json['createdAt']?.toString() ?? '',
     );
   }
 }

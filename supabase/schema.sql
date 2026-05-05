@@ -92,6 +92,8 @@ CREATE TABLE public.bank_accounts (
   updated_at timestamp with time zone DEFAULT now(),
   account_type character varying DEFAULT 'checking'::character varying CHECK (account_type::text = ANY (ARRAY['checking'::character varying, 'savings'::character varying, 'cash'::character varying, 'credit'::character varying]::text[])),
   is_active boolean DEFAULT true,
+  opening_balance numeric DEFAULT 0,
+  current_balance numeric DEFAULT 0,
   CONSTRAINT bank_accounts_pkey PRIMARY KEY (id),
   CONSTRAINT bank_accounts_warehouse_id_fkey FOREIGN KEY (warehouse_id) REFERENCES public.warehouses(id),
   CONSTRAINT bank_accounts_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.admins(id)
@@ -379,7 +381,6 @@ CREATE TABLE public.expenses (
   receipt_image text,
   status boolean DEFAULT true,
   CONSTRAINT expenses_pkey PRIMARY KEY (id),
-  CONSTRAINT expenses_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.expense_categories(id),
   CONSTRAINT expenses_bank_account_id_fkey FOREIGN KEY (bank_account_id) REFERENCES public.bank_accounts(id),
   CONSTRAINT expenses_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.admins(id),
   CONSTRAINT fk_expenses_shift FOREIGN KEY (shift_id) REFERENCES public.shifts(id),
@@ -561,7 +562,6 @@ CREATE TABLE public.products (
   minimum_quantity_sale integer DEFAULT 0,
   low_stock integer DEFAULT 0,
   product_has_imei boolean DEFAULT false,
-  different_price boolean DEFAULT false,
   show_quantity boolean DEFAULT true,
   maximum_to_show integer DEFAULT 0,
   is_featured boolean DEFAULT false,
@@ -640,37 +640,35 @@ CREATE TABLE public.purchase_items (
 CREATE TABLE public.purchase_return_items (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   return_id uuid NOT NULL,
-  product_id uuid NOT NULL,
-  purchase_item_id uuid,
-  original_quantity integer NOT NULL,
+  purchase_item_id uuid NOT NULL,
   returned_quantity integer NOT NULL,
-  price numeric NOT NULL,
-  subtotal numeric NOT NULL,
   reason text,
-  created_at timestamp with time zone DEFAULT now(),
+  original_quantity integer NOT NULL DEFAULT 0,
+  price numeric NOT NULL DEFAULT 0,
+  subtotal numeric NOT NULL DEFAULT 0,
   CONSTRAINT purchase_return_items_pkey PRIMARY KEY (id),
-  CONSTRAINT purchase_return_items_return_id_fkey FOREIGN KEY (return_id) REFERENCES public.purchase_returns(id),
-  CONSTRAINT purchase_return_items_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id),
+  CONSTRAINT purchase_return_items_purchase_return_id_fkey FOREIGN KEY (return_id) REFERENCES public.purchase_returns(id),
   CONSTRAINT purchase_return_items_purchase_item_id_fkey FOREIGN KEY (purchase_item_id) REFERENCES public.purchase_items(id)
 );
 CREATE TABLE public.purchase_returns (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   purchase_id uuid NOT NULL,
   reference text NOT NULL UNIQUE,
-  supplier_id uuid,
-  warehouse_id uuid,
-  total_amount numeric NOT NULL,
-  refund_method text DEFAULT 'cash'::text,
-  status text DEFAULT 'completed'::text CHECK (status = ANY (ARRAY['pending'::text, 'completed'::text, 'cancelled'::text])),
+  date date NOT NULL,
+  status text DEFAULT 'pending'::text CHECK (status = ANY (ARRAY['pending'::text, 'completed'::text, 'cancelled'::text])),
   note text,
   created_by uuid,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
+  supplier_id uuid,
+  warehouse_id uuid,
+  total_amount numeric NOT NULL DEFAULT 0,
+  refund_method character varying DEFAULT 'cash'::character varying,
   CONSTRAINT purchase_returns_pkey PRIMARY KEY (id),
   CONSTRAINT purchase_returns_purchase_id_fkey FOREIGN KEY (purchase_id) REFERENCES public.purchases(id),
+  CONSTRAINT purchase_returns_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.admins(id),
   CONSTRAINT purchase_returns_supplier_id_fkey FOREIGN KEY (supplier_id) REFERENCES public.suppliers(id),
-  CONSTRAINT purchase_returns_warehouse_id_fkey FOREIGN KEY (warehouse_id) REFERENCES public.warehouses(id),
-  CONSTRAINT purchase_returns_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.admins(id)
+  CONSTRAINT purchase_returns_warehouse_id_fkey FOREIGN KEY (warehouse_id) REFERENCES public.warehouses(id)
 );
 CREATE TABLE public.purchases (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
@@ -803,16 +801,15 @@ CREATE TABLE public.sale_payments (
 CREATE TABLE public.sale_return_items (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   return_id uuid NOT NULL,
+  sale_item_id uuid NOT NULL,
   product_id uuid NOT NULL,
-  sale_item_id uuid,
   original_quantity integer NOT NULL,
   returned_quantity integer NOT NULL,
+  reason text,
   price numeric NOT NULL,
   subtotal numeric NOT NULL,
-  reason text,
-  created_at timestamp with time zone DEFAULT now(),
   CONSTRAINT sale_return_items_pkey PRIMARY KEY (id),
-  CONSTRAINT sale_return_items_return_id_fkey FOREIGN KEY (return_id) REFERENCES public.sale_returns(id),
+  CONSTRAINT sale_return_items_sale_return_id_fkey FOREIGN KEY (return_id) REFERENCES public.sale_returns(id),
   CONSTRAINT sale_return_items_sale_item_id_fkey FOREIGN KEY (sale_item_id) REFERENCES public.sale_items(id),
   CONSTRAINT sale_return_items_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id)
 );
@@ -820,20 +817,21 @@ CREATE TABLE public.sale_returns (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   sale_id uuid NOT NULL,
   reference text NOT NULL UNIQUE,
-  customer_id uuid,
-  warehouse_id uuid,
-  total_amount numeric NOT NULL,
-  refund_method text DEFAULT 'cash'::text,
+  date date NOT NULL,
+  total_amount numeric DEFAULT 0,
   note text,
   status text DEFAULT 'completed'::text CHECK (status = ANY (ARRAY['pending'::text, 'completed'::text, 'cancelled'::text])),
   created_by uuid,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
+  customer_id uuid,
+  warehouse_id uuid,
+  refund_method character varying DEFAULT 'cash'::character varying,
   CONSTRAINT sale_returns_pkey PRIMARY KEY (id),
   CONSTRAINT sale_returns_sale_id_fkey FOREIGN KEY (sale_id) REFERENCES public.sales(id),
+  CONSTRAINT sale_returns_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.admins(id),
   CONSTRAINT sale_returns_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.customers(id),
-  CONSTRAINT sale_returns_warehouse_id_fkey FOREIGN KEY (warehouse_id) REFERENCES public.warehouses(id),
-  CONSTRAINT sale_returns_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.admins(id)
+  CONSTRAINT sale_returns_warehouse_id_fkey FOREIGN KEY (warehouse_id) REFERENCES public.warehouses(id)
 );
 CREATE TABLE public.sales (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
@@ -967,6 +965,9 @@ CREATE TABLE public.units (
   updated_at timestamp with time zone DEFAULT now(),
   status boolean NOT NULL DEFAULT true,
   code character varying,
+  operator character varying CHECK (operator::text = ANY (ARRAY['*'::character varying, '/'::character varying]::text[])),
+  operator_value numeric DEFAULT 1,
+  version integer DEFAULT 1,
   CONSTRAINT units_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.user_profiles (

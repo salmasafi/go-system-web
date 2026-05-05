@@ -934,11 +934,13 @@ class Purchases {
   final List<Purchase> full;
   final List<Purchase> later;
   final List<Purchase> partial;
+  final List<Purchase> all;
 
   Purchases({
     required this.full,
     required this.later,
     required this.partial,
+    required this.all,
   });
 
   factory Purchases.fromJson(Map<String, dynamic> json) {
@@ -949,6 +951,8 @@ class Purchases {
           (json['later'] ?? []).map((x) => Purchase.fromJson(x))),
       partial: List<Purchase>.from(
           (json['partial'] ?? []).map((x) => Purchase.fromJson(x))),
+      all: List<Purchase>.from(
+          (json['all'] ?? []).map((x) => Purchase.fromJson(x))),
     );
   }
 }
@@ -1226,11 +1230,11 @@ class PurchaseItem {
       date: json['date'] != null
           ? DateTime.parse(json['date'])
           : DateTime.now(),
-      product: json['product_id'] != null
-          ? Product.fromJson(json['product_id'])
+      product: json['product'] != null && json['product'] is Map<String, dynamic>
+          ? Product.fromJson(json['product'])
           : null,
-      category: json['category_id'] != null
-          ? Category.fromJson(json['category_id'])
+      category: json['category'] != null && json['category'] is Map<String, dynamic>
+          ? Category.fromJson(json['category'])
           : null,
       dateOfExpiry: (json['date_of_expiery'] ?? json['date_of_expiry']) != null
           ? DateTime.parse(json['date_of_expiery'] ?? json['date_of_expiry'])

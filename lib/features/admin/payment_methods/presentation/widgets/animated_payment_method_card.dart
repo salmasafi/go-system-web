@@ -109,7 +109,7 @@ class _AnimatedPaymentMethodCardState extends State<AnimatedPaymentMethodCard> {
         CircleAvatar(
           radius: ResponsiveUI.borderRadius(context, 25),
           backgroundColor: AppColors.lightBlueBackground,
-          child: paymentMethod.icon.isEmpty
+          child: (paymentMethod.icon?.isEmpty ?? true)
               ? Icon(
                  Icons.attach_money_rounded,
                   color: AppColors.white,
@@ -117,7 +117,7 @@ class _AnimatedPaymentMethodCardState extends State<AnimatedPaymentMethodCard> {
                 )
               : ClipOval(
                   child: Image.network(
-                    paymentMethod.icon,
+                    paymentMethod.icon!,
                     fit: BoxFit.cover,
                     width: ResponsiveUI.borderRadius(context, 50),
                     height: ResponsiveUI.borderRadius(context, 50),

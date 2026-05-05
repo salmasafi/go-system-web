@@ -266,15 +266,15 @@ class BundleProduct {
   bool get hasAttributes => attributes.isNotEmpty;
 
   factory BundleProduct.fromJson(Map<String, dynamic> json) {
-    final product = (json['product'] ?? json['product_id']) as Map<String, dynamic>? ?? {};
+    final productData = (json['product'] is Map) ? json['product'] as Map<String, dynamic> : {};
     return BundleProduct(
-      productId: json['productId']?.toString() ?? json['product_id']?.toString() ?? '',
-      name: product['name']?.toString() ?? '',
-      image: product['image']?.toString() ?? product['image_url']?.toString(),
-      price: (product['price'] as num?)?.toDouble() ?? 0.0,
+      productId: productData['id']?.toString() ?? json['product_id']?.toString() ?? '',
+      name: productData['name']?.toString() ?? '',
+      image: productData['image']?.toString() ?? productData['image_url']?.toString(),
+      price: (productData['price'] as num?)?.toDouble() ?? 0.0,
       quantity: (json['quantity'] as num?)?.toInt() ?? 0,
       attributes:
-          (product['attributes'] as List<dynamic>?)
+          (productData['attributes'] as List<dynamic>?)
               ?.map((e) =>
                   ProductAttribute.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -309,22 +309,44 @@ class BundleModel {
   });
 
   factory BundleModel.fromJson(Map<String, dynamic> json) {
+    final productsList = (json['products'] as List?)
+            ?.map((p) => BundleProduct.fromJson(p))
+            .toList() ??
+        [];
+    
+    final double bundlePrice = (json['price'] as num?)?.toDouble() ?? 0.0;
+    
+    // Calculate original price from sum of products
+    double calculatedOriginalPrice = 0;
+    for (var p in productsList) {
+      calculatedOriginalPrice += (p.price * p.quantity);
+    }
+
+    final double originalPriceValue = (json['original_price'] as num?)?.toDouble() ?? 
+                                     (json['originalPrice'] as num?)?.toDouble() ?? 
+                                     calculatedOriginalPrice;
+    
+    final double savingsValue = (json['savings'] as num?)?.toDouble() ?? (originalPriceValue - bundlePrice);
+    
+    int savingsPct = 0;
+    if (originalPriceValue > 0) {
+      savingsPct = ((savingsValue / originalPriceValue) * 100).toInt();
+    }
+    final int savingsPercentageValue = (json['savings_percentage'] as num?)?.toInt() ?? 
+                                      (json['savingsPercentage'] as num?)?.toInt() ?? 
+                                      savingsPct;
+
     return BundleModel(
       id: json['id']?.toString() ?? json['_id']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
-      images:
-          (json['images'] as List?)?.map((e) => e.toString()).toList() ?? [],
-      price: (json['price'] as num?)?.toDouble() ?? 0.0,
-      originalPrice: (json['originalPrice'] as num?)?.toDouble() ?? (json['original_price'] as num?)?.toDouble() ?? 0.0,
-      savings: (json['savings'] as num?)?.toDouble() ?? 0.0,
-      savingsPercentage: (json['savingsPercentage'] as num?)?.toInt() ?? (json['savings_percentage'] as num?)?.toInt() ?? 0,
+      images: (json['images'] as List?)?.map((e) => e.toString()).toList() ?? [],
+      price: bundlePrice,
+      originalPrice: originalPriceValue,
+      savings: savingsValue,
+      savingsPercentage: savingsPercentageValue,
       startDate: json['startdate']?.toString() ?? json['start_date']?.toString() ?? '',
       endDate: json['enddate']?.toString() ?? json['end_date']?.toString() ?? '',
-      products:
-          (json['products'] as List?)
-              ?.map((p) => BundleProduct.fromJson(p))
-              .toList() ??
-          [],
+      products: productsList,
     );
   }
 }

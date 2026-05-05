@@ -85,13 +85,13 @@ class ExpenseCategoryModel {
 
   factory ExpenseCategoryModel.fromJson(Map<String, dynamic> json) {
     return ExpenseCategoryModel(
-      id: json['_id'],
-      name: json['name'],
-      arName: json['ar_name'],
-      status: json['status'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
-      version: json['__v'],
+      id: json['id']?.toString() ?? json['_id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      arName: json['ar_name']?.toString() ?? '',
+      status: json['status'] == true || json['status'] == 1,
+      createdAt: json['created_at']?.toString() ?? json['createdAt']?.toString() ?? '',
+      updatedAt: json['updated_at']?.toString() ?? json['updatedAt']?.toString() ?? '',
+      version: (json['__v'] as num?)?.toInt() ?? 0,
     );
   }
 

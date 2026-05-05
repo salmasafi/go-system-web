@@ -203,15 +203,12 @@ class PendingSaleDetailsScreen extends StatelessWidget {
     // 4. Navigate back to POS Home and open Checkout
     Navigator.popUntil(context, (route) => route.isFirst); 
 
-    // Open Checkout Dialog Immediately
     showDialog(
       context: context,
       builder: (_) => POSCheckoutDialog(
         totalAmount: details.grandTotal, // Pass the total directly or let it recalc from cart
         cartItems: checkoutCubit.cartItems,
-        selectedPaymentMethod: posCubit.paymentMethods.isNotEmpty 
-            ? posCubit.paymentMethods.first 
-            : PaymentMethod(id: '0', name: 'Cash'), // Default fallback
+        selectedPaymentMethod: posCubit.selectedPaymentMethod,
         customerId: details.customer.id,
       ),
     );

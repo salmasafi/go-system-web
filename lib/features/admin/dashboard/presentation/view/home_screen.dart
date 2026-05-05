@@ -59,22 +59,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Only 4 navigable screens (logout is a dialog, not a screen)
     final List<Widget> screens = [
       DashboardScreen(key: ValueKey(context.locale.languageCode)),
-      BlocProvider(
-        create: (_) => OnlineOrdersCubit(),
-        child: const OnlineOrdersScreen(),
-      ),
       const POSHomeScreen(),
-      const SettingsScreen(),
+      const SettingsScreen(showBackButton: false),
     ];
 
-    // Map tab index to screen index (logout tab 4 has no screen)
-    final screenIndex = currentIndex < 4 ? currentIndex : 3;
-
     Widget bodyContent = IndexedStack(
-      index: screenIndex,
+      index: currentIndex,
       children: screens,
     );
 
@@ -92,16 +84,11 @@ class _HomeScreenState extends State<HomeScreen> {
       body: bodyContent,
       bottomNavigationBar: CustomBottomAppBar(
         key: ValueKey(context.locale.languageCode),
-        currentIndex: currentIndex > 3 ? 3 : currentIndex,
+        currentIndex: currentIndex,
         onTap: (index) {
-          if (index == 4) {
-            _showLogoutDialog();
-            // Don't update currentIndex — stay on current screen
-          } else {
-            setState(() {
-              currentIndex = index;
-            });
-          }
+          setState(() {
+            currentIndex = index;
+          });
         },
       ),
     );

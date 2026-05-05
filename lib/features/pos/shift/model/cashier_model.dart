@@ -1,90 +1,63 @@
-// lib/features/pos/cashier/model/cashier_model.dart
-
-class CashierResponse {
-  final bool success;
-  final CashierData data;
-
-  CashierResponse({
-    required this.success,
-    required this.data,
-  });
-
-  factory CashierResponse.fromJson(Map<String, dynamic> json) {
-    return CashierResponse(
-      success: json['success'] ?? false,
-      data: CashierData.fromJson(json['data']),
-    );
-  }
-}
-
-class CashierData {
-  final List<CashierModel> cashiers;
-
-  CashierData({required this.cashiers});
-
-  factory CashierData.fromJson(Map<String, dynamic> json) {
-    return CashierData(
-      cashiers: (json['cashiers'] as List<dynamic>?)
-              ?.map((item) => CashierModel.fromJson(item))
-              .toList() ??
-          [],
-    );
-  }
-}
+// lib/features/pos/shift/model/cashier_model.dart
 
 class CashierModel {
   final String id;
   final String name;
   final String arName;
-  final WarehouseModel warehouse; // تم تعديل النوع هنا ليتناسب مع الرد
+  final String warehouseId;
+  final WarehouseModel? warehouse;
   final bool status;
   final bool cashierActive;
   final List<String> bankAccounts;
-  final String createdAt;
-  final String updatedAt;
+  final String? createdAt;
+  final String? updatedAt;
 
   CashierModel({
     required this.id,
     required this.name,
     required this.arName,
-    required this.warehouse,
+    required this.warehouseId,
+    this.warehouse,
     required this.status,
     required this.cashierActive,
-    required this.bankAccounts,
-    required this.createdAt,
-    required this.updatedAt,
+    this.bankAccounts = const [],
+    this.createdAt,
+    this.updatedAt,
   });
 
   factory CashierModel.fromJson(Map<String, dynamic> json) {
     return CashierModel(
-      id: json['_id'] ?? '',
+      id: json['id'] ?? '',
       name: json['name'] ?? '',
       arName: json['ar_name'] ?? '',
-      // التعامل الذكي مع Warehouse (سواء كان أوبجكت أو نص)
-      warehouse: WarehouseModel.fromJson(json['warehouse_id']),
+      warehouseId: json['warehouse_id'] ?? '',
+      warehouse: json['warehouse'] != null 
+          ? WarehouseModel.fromJson(json['warehouse']) 
+          : (json['warehouse_id'] is Map 
+              ? WarehouseModel.fromJson(json['warehouse_id']) 
+              : null),
       status: json['status'] ?? false,
       cashierActive: json['cashier_active'] ?? false,
-      // تحويل قائمة الحسابات البنكية بأمان
-      bankAccounts: (json['bankAccounts'] as List<dynamic>?)
+      bankAccounts: (json['bank_accounts'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
-      createdAt: json['createdAt'] ?? '',
-      updatedAt: json['updatedAt'] ?? '',
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      '_id': id,
+      'id': id,
       'name': name,
       'ar_name': arName,
-      'warehouse_id': {'_id': warehouse.id, 'name': warehouse.name},
+      'warehouse_id': warehouseId,
       'status': status,
       'cashier_active': cashierActive,
-      'bankAccounts': bankAccounts,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
+      'bank_accounts': bankAccounts,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
     };
   }
 }
@@ -92,25 +65,36 @@ class CashierModel {
 class WarehouseModel {
   final String id;
   final String name;
+  final String? arName;
 
-  WarehouseModel({required this.id, required this.name});
+  WarehouseModel({
+    required this.id, 
+    required this.name,
+    this.arName,
+  });
 
   factory WarehouseModel.fromJson(dynamic json) {
-    // إذا كان البيانات عبارة عن Map (كما في الرد الجديد)
     if (json is Map<String, dynamic>) {
       return WarehouseModel(
-        id: json['_id'] ?? '',
+        id: json['id'] ?? json['_id'] ?? '',
         name: json['name'] ?? '',
+        arName: json['ar_name'],
       );
-    } 
-    // إذا كان البيانات عبارة عن String (مجرد ID فقط)
-    else if (json is String) {
+    } else if (json is String) {
       return WarehouseModel(
         id: json,
-        name: '', // الاسم غير متوفر في هذه الحالة
+        name: '',
       );
     }
-    // حالة افتراضية
     return WarehouseModel(id: '', name: '');
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'ar_name': arName,
+    };
+  }
 }
+
