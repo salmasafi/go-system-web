@@ -29,18 +29,24 @@ class AppConfig {
   /// Initialize configuration by loading the appropriate .env file
   static Future<void> initialize() async {
     const envFile = kReleaseMode ? '.env.production' : '.env.development';
+    // On web, assets are served from the assets/ directory
+    final assetPath = kIsWeb ? 'assets/$envFile' : envFile;
 
     try {
-      await dotenv.load(fileName: envFile);
+      await dotenv.load(fileName: assetPath);
     } catch (e) {
-      // If the specific env file fails, try to load default .env
+      // If the specific env file fails, try alternate paths
       try {
-        await dotenv.load();
-      } catch (fallbackError) {
-        throw Exception(
-          'Failed to load environment configuration. '
-          'Please ensure $envFile or .env exists in the project root.',
-        );
+        await dotenv.load(fileName: envFile);
+      } catch (e2) {
+        try {
+          await dotenv.load();
+        } catch (fallbackError) {
+          throw Exception(
+            'Failed to load environment configuration. '
+            'Please ensure $envFile or .env exists in the project root.',
+          );
+        }
       }
     }
 

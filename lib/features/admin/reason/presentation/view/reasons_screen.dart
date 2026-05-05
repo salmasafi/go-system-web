@@ -46,12 +46,16 @@ class _ReasonsScreenState extends State<ReasonsScreen> {
           CustomSnackbar.showError(context, state.error);
         } else if (state is DeleteReasonError) {
           CustomSnackbar.showError(context, state.error);
+          reasonsInit();
         } else if (state is DeleteReasonSuccess) {
           CustomSnackbar.showSuccess(context, state.message);
+          reasonsInit();
         } else if (state is CreateReasonSuccess) {
           CustomSnackbar.showSuccess(context, state.message);
+          reasonsInit();
         } else if (state is UpdateReasonSuccess) {
           CustomSnackbar.showSuccess(context, state.message);
+          reasonsInit();
         }
       },
       builder: (context, state) {

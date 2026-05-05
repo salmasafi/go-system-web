@@ -122,15 +122,7 @@ class _TaxesScreenState extends State<TaxesScreen> {
         },
       ),
       body: SafeArea(
-        child: Center(
-          child: Text(
-            'Taxes Screen - Under Development',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
+        child: _buildListContent(),
       ),
     );
     if (kIsWeb) {

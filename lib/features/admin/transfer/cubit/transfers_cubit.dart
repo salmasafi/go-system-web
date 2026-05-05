@@ -61,6 +61,7 @@ class TransfersCubit extends Cubit<TransfersState> {
         items: products,
       );
       emit(CreateTransferSuccess(LocaleKeys.transfer_created_success.tr()));
+      await getAllTransfers();
     } catch (e) {
       emit(CreateTransferError(e.toString().replaceAll('Exception: ', '')));
     }

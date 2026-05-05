@@ -11,6 +11,7 @@ import 'package:GoSystem/core/widgets/custom_button_widget.dart';
 import 'package:GoSystem/core/widgets/custom_textfield/custom_text_field_widget.dart';
 import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../../../../core/widgets/custom_error/custom_error_state.dart';
+import '../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../cubit/brand_cubit.dart';
 import '../cubit/brand_states.dart';
 
@@ -43,19 +44,10 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
     Widget screenContent = BlocConsumer<BrandsCubit, BrandsState>(
       listener: (context, state) {
         if (state is CreateBrandSuccess) {
+          CustomSnackbar.showSuccess(context, state.message);
           Navigator.pop(context, true);
         } else if (state is CreateBrandError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.error),
-              backgroundColor: Colors.red,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
-              ),
-              margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
-            ),
-          );
+          CustomSnackbar.showError(context, state.error);
         }
       },
       builder: (context, state) {
@@ -221,40 +213,17 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                           ? null
                           : () {
                               if (_nameController.text.trim().isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      LocaleKeys.please_enter_brand_name.tr(),
-                                    ),
-                                    backgroundColor: Colors.red,
-                                    behavior: SnackBarBehavior.floating,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
-                                    ),
-                                    margin: EdgeInsets.all(
-                                      ResponsiveUI.padding(context, 12),
-                                    ),
-                                  ),
+                                CustomSnackbar.showWarning(
+                                  context,
+                                  LocaleKeys.please_enter_brand_name.tr(),
                                 );
                                 return;
                               } else if (_arNameController.text
                                   .trim()
                                   .isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      LocaleKeys.please_enter_brand_ar_name
-                                          .tr(),
-                                    ),
-                                    backgroundColor: Colors.red,
-                                    behavior: SnackBarBehavior.floating,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
-                                    ),
-                                    margin: EdgeInsets.all(
-                                      ResponsiveUI.padding(context, 12),
-                                    ),
-                                  ),
+                                CustomSnackbar.showWarning(
+                                  context,
+                                  LocaleKeys.please_enter_brand_ar_name.tr(),
                                 );
                                 return;
                               }

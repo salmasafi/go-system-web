@@ -133,15 +133,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
         },
       ),
       body: SafeArea(
-        child: Center(
-          child: Text(
-            'Purchase Screen - Under Development',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
+        child: _buildListContent(),
       ),
     );
     if (kIsWeb) {

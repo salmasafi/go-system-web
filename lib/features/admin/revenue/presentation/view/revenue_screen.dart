@@ -126,15 +126,7 @@ class _RevenueScreenState extends State<RevenueScreen> {
         },
       ),
       body: SafeArea(
-        child: Center(
-          child: Text(
-            'Revenue Screen - Under Development',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
+        child: _buildListContent(),
       ),
     );
     if (kIsWeb) {

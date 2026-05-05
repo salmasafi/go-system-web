@@ -11,6 +11,7 @@ import 'package:GoSystem/core/widgets/custom_textfield/custom_text_field_widget.
 import 'package:GoSystem/features/admin/categories/view/widgets/build_image_placeholder_widget.dart';
 import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../../../../core/widgets/custom_loading/custom_loading_state.dart';
+import '../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../cubit/categories_cubit.dart';
 import '../cubit/categories_states.dart';
 import '../model/get_categories_model.dart';
@@ -61,22 +62,7 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
   void _submitUpdate() {
     if (_nameController.text.trim().isEmpty ||
         _arNameController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            LocaleKeys.please_enter_category_name_en_ar.tr(),
-            style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14)),
-          ),
-          backgroundColor: AppColors.red,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(
-              ResponsiveUI.borderRadius(context, 8),
-            ),
-          ),
-          margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
-        ),
-      );
+      CustomSnackbar.showWarning(context, LocaleKeys.please_enter_category_name_en_ar.tr());
       return;
     }
 
@@ -123,41 +109,11 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
           setState(() => _isLoading = false);
         } else if (state is UpdateCategorySuccess) {
           setState(() => _isLoading = false);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                state.message,
-                style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14)),
-              ),
-              backgroundColor: AppColors.successGreen,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(
-                  ResponsiveUI.borderRadius(context, 8),
-                ),
-              ),
-              margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
-            ),
-          );
+          CustomSnackbar.showSuccess(context, state.message);
           Navigator.pop(context, true);
         } else if (state is UpdateCategoryError) {
           setState(() => _isLoading = false);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                state.error,
-                style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14)),
-              ),
-              backgroundColor: AppColors.red,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(
-                  ResponsiveUI.borderRadius(context, 8),
-                ),
-              ),
-              margin: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
-            ),
-          );
+          CustomSnackbar.showError(context, state.error);
         }
       },
       builder: (context, state) {
