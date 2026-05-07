@@ -113,7 +113,7 @@ class _FilterButtonsState extends State<FilterButtons> {
                         children: [
                           Expanded(
                             child: FilterButton(
-                              label: 'Variations',
+                              label: 'Attributes',
                               isActive: _showVariationsFilter,
                               onTap: () {
                                 setState(() {
@@ -296,7 +296,7 @@ class GenericFilterPanel extends StatelessWidget {
       case FilterType.brands:
         return 'Brands';
       case FilterType.variations:
-        return 'Variations';
+        return 'Attributes';
       case FilterType.warehouses:
         return 'Warehouses';
     }
@@ -531,7 +531,7 @@ class VariationsFilterPanel extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                FilterPanelHeader(title: 'Variations', onClose: onClose),
+                FilterPanelHeader(title: 'Attributes', onClose: onClose),
                 SizedBox(height: ResponsiveUI.spacing(context, 16)),
                 SizedBox(
                   height: ResponsiveUI.value(context, 300),

@@ -19,7 +19,6 @@ class CreateAttributeTypeDialog extends StatefulWidget {
 class _CreateAttributeTypeDialogState extends State<CreateAttributeTypeDialog> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _arNameController = TextEditingController();
   bool _status = true;
 
   @override
@@ -27,7 +26,6 @@ class _CreateAttributeTypeDialogState extends State<CreateAttributeTypeDialog> {
     super.initState();
     if (widget.attributeType != null) {
       _nameController.text = widget.attributeType!.name;
-      _arNameController.text = widget.attributeType!.arName;
       _status = widget.attributeType!.status;
     }
   }
@@ -35,7 +33,6 @@ class _CreateAttributeTypeDialogState extends State<CreateAttributeTypeDialog> {
   @override
   void dispose() {
     _nameController.dispose();
-    _arNameController.dispose();
     super.dispose();
   }
 
@@ -44,14 +41,12 @@ class _CreateAttributeTypeDialogState extends State<CreateAttributeTypeDialog> {
       if (widget.attributeType == null) {
         AttributeTypeCubit.get(context).createAttributeType(
           name: _nameController.text.trim(),
-          arName: _arNameController.text.trim(),
           status: _status,
         );
       } else {
         AttributeTypeCubit.get(context).updateAttributeType(
           id: widget.attributeType!.id,
           name: _nameController.text.trim(),
-          arName: _arNameController.text.trim(),
           status: _status,
         );
       }
@@ -73,26 +68,12 @@ class _CreateAttributeTypeDialogState extends State<CreateAttributeTypeDialog> {
             TextFormField(
               controller: _nameController,
               decoration: const InputDecoration(
-                labelText: 'الاسم (إنجليزي)',
+                labelText: 'Name',
                 border: OutlineInputBorder(),
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'الرجاء إدخال الاسم';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _arNameController,
-              decoration: const InputDecoration(
-                labelText: 'الاسم (عربي)',
-                border: OutlineInputBorder(),
-              ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'الرجاء إدخال الاسم بالعربية';
+                  return 'Please enter a name';
                 }
                 return null;
               },

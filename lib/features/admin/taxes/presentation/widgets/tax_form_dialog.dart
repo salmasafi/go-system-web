@@ -26,7 +26,6 @@ class _TaxFormDialogState extends State<TaxFormDialog>
   final _nameController = TextEditingController();
   final _amountController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final _arNameController = TextEditingController();
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
 
@@ -61,7 +60,6 @@ class _TaxFormDialogState extends State<TaxFormDialog>
   void _initializeControllers() {
     if (isEditMode) {
       _nameController.text = widget.tax!.name;
-      _arNameController.text = widget.tax!.arName;
       _amountController.text = widget.tax!.amount.toString();
       selectedtaxType = widget.tax!.type.toLowerCase();
     }
@@ -139,21 +137,6 @@ class _TaxFormDialogState extends State<TaxFormDialog>
                                       LoginValidator.validateRequired(
                                         v,
                                         LocaleKeys.tax_name_en.tr(),
-                                      ),
-                                ),
-                                SizedBox(
-                                  height: ResponsiveUI.spacing(context, 12),
-                                ),
-                                buildTextField(
-                                  context,
-                                  controller: _arNameController,
-                                  label: LocaleKeys.tax_name_ar.tr(),
-                                  icon: Icons.receipt_long_rounded,
-                                  hint: LocaleKeys.tax_name_ar_hint.tr(),
-                                  validator: (v) =>
-                                      LoginValidator.validateRequired(
-                                        v,
-                                        LocaleKeys.tax_name_ar.tr(),
                                       ),
                                 ),
                                 SizedBox(
@@ -252,14 +235,12 @@ class _TaxFormDialogState extends State<TaxFormDialog>
         cubit.updateTax(
           taxId: widget.tax!.id,
           name: _nameController.text.trim(),
-          arName: _arNameController.text.trim(),
           taxType: selectedtaxType!,
           amount: double.parse(_amountController.text.trim()),
         );
       } else {
         cubit.createTax(
           name: _nameController.text.trim(),
-          arName: _arNameController.text.trim(),
           taxType: selectedtaxType!,
           amount: double.parse(_amountController.text.trim()),
         );

@@ -18,7 +18,6 @@ void main() {
   CurrencyModel sampleCurrency(String id) => CurrencyModel.fromJson({
         'id': id,
         'name': 'Currency $id',
-        'ar_name': 'عملة $id',
         'code': 'CUR$id',
         'exchange_rate': 1.0,
         'is_default': false,
@@ -60,7 +59,6 @@ void main() {
       build: () {
         when(() => mockRepo.createCurrency(
           name: any(named: 'name'),
-          arName: any(named: 'arName'),
           amount: any(named: 'amount'),
           isDefault: any(named: 'isDefault'),
         )).thenAnswer((_) async => {});
@@ -69,7 +67,6 @@ void main() {
       },
       act: (c) => c.createCurrency(
         name: 'New Currency',
-        arName: 'عملة جديدة',
         amount: 1.5,
         isDefault: false,
       ),

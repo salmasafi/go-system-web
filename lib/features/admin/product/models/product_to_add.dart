@@ -11,7 +11,8 @@ class ProductToAdd {
   final String image;
   final List<String> categoryId;
   final String brandId;
-  final String unit;
+  final String saleUnit;
+  final String purchaseUnit;
   final double price;
   final String description;
   final bool expAbility; // Note: camelCase for Dart convention
@@ -30,7 +31,8 @@ class ProductToAdd {
     required this.image,
     required this.categoryId,
     required this.brandId,
-    required this.unit,
+    required this.saleUnit,
+    required this.purchaseUnit,
     required this.price,
     required this.description,
     required this.expAbility,
@@ -51,7 +53,8 @@ class ProductToAdd {
       image: json['image'] ?? '',
       categoryId: (json['categoryId'] as List<dynamic>?)?.cast<String>() ?? [],
       brandId: json['brandId'] ?? '',
-      unit: json['unit'] ?? '',
+      saleUnit: json['sale_unit'] ?? '',
+      purchaseUnit: json['purchase_unit'] ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       description: json['description'] ?? '',
       expAbility: json['exp_ability'] ?? false,
@@ -73,7 +76,8 @@ class ProductToAdd {
       'image': image,
       'categoryId': categoryId,
       'brandId': brandId,
-      'unit': unit,
+      'sale_unit': saleUnit,
+      'purchase_unit': purchaseUnit,
       'price': price,
       'description': description,
       'exp_ability': expAbility,

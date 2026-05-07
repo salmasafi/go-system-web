@@ -57,7 +57,6 @@ class CityModel {
   final num
   shipingCost; // Note: Typo in JSON key ('shipingCost')—keep as-is to match API
   final String name;
-  final String arName;
   final CountryModel? country; // Fix: Make nullable to handle null from JSON
   final int version;
 
@@ -65,20 +64,15 @@ class CityModel {
     required this.id,
     required this.shipingCost,
     required this.name,
-    required this.arName,
     this.country, // Nullable
     required this.version,
   });
 
-  // Fix: Handle null 'country' in JSON (e.g., second city in your response has "country": null)
-  // Also specify Map<String, dynamic> for type safety
   factory CityModel.fromJson(Map<String, dynamic> json) {
     return CityModel(
       id: json['_id'] as String,
       shipingCost: json['shipingCost'] as num,
       name: json['name'] as String,
-      arName: json['ar_name'] as String,
-      // Null-safe: Only parse if present and not null
       country: json['country'] != null
           ? CountryModel.fromJson(json['country'] as Map<String, dynamic>)
           : null,
@@ -91,7 +85,6 @@ class CityModel {
       '_id': id,
       'shipingCost': shipingCost,
       'name': name,
-      'ar_name': arName,
       '__v': version,
       'country': country?.toJson(), // Null-safe
     };

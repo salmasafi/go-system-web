@@ -195,17 +195,9 @@ class _AnimatedBrandCardState extends State<AnimatedBrandCard>
       children: [
         Expanded(
           child: CustomStatChip(
-            icon: Icons.branding_watermark,
-            label: '${LocaleKeys.created.tr()} ${widget.brand.createdAt}',
+            icon: Icons.inventory_2_outlined,
+            label: '${widget.brand.productQuantity ?? 0} ${LocaleKeys.products.tr()}',
             color: AppColors.successGreen,
-          ),
-        ),
-        SizedBox(width: ResponsiveUI.spacing(context, 10)),
-        Expanded(
-          child: CustomStatChip(
-            icon: Icons.update,
-            label: '${LocaleKeys.updated.tr()} ${_formatDate(widget.brand.updatedAt)}',
-            color: AppColors.linkBlue,
           ),
         ),
       ],

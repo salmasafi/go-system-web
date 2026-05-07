@@ -3,7 +3,6 @@
 class ProductReportModel {
   final String id;
   final String name;
-  final String? arName;
   final String code;
   final String? categoryName;
   final String? brandName;
@@ -18,7 +17,6 @@ class ProductReportModel {
   ProductReportModel({
     required this.id,
     required this.name,
-    this.arName,
     required this.code,
     this.categoryName,
     this.brandName,
@@ -61,7 +59,6 @@ class ProductReportModel {
     return ProductReportModel(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
-      arName: json['ar_name'],
       code: json['code'] ?? '',
       categoryName: categoryName,
       brandName: json['brands']?['name'] as String?,

@@ -98,9 +98,7 @@ class _AttributeSelectionDialogState extends State<AttributeSelectionDialog> {
           attributeTypeId: typeId,
           attributeValueId: valueId,
           attributeTypeName: type.name,
-          attributeTypeArName: type.arName,
           attributeValueName: value.name,
-          attributeValueArName: value.arName,
         ));
       }
     }
@@ -278,14 +276,6 @@ class _AttributeSelectionDialogState extends State<AttributeSelectionDialog> {
                               color: AppColors.darkGray,
                             ),
                           ),
-                          if (type.arName.isNotEmpty)
-                            Text(
-                              type.arName,
-                              style: TextStyle(
-                                fontSize: ResponsiveUI.fontSize(context, 14),
-                                color: AppColors.linkBlue,
-                              ),
-                            ),
                         ],
                       ),
                     ),

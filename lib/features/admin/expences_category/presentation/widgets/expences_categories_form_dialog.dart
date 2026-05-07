@@ -26,7 +26,6 @@ class _ExpenseCategoryFormDialogState extends State<ExpenseCategoryFormDialog>
   final _formKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();
-  final _arNameController = TextEditingController();
   bool status = true;
 
   late AnimationController _animationController;
@@ -44,7 +43,6 @@ class _ExpenseCategoryFormDialogState extends State<ExpenseCategoryFormDialog>
   void _initializeControllers() {
     if (isEditMode) {
       _nameController.text = widget.category!.name;
-      _arNameController.text = widget.category!.arName;
       status = widget.category!.status;
     }
   }
@@ -64,7 +62,6 @@ class _ExpenseCategoryFormDialogState extends State<ExpenseCategoryFormDialog>
   @override
   void dispose() {
     _nameController.dispose();
-    _arNameController.dispose();
     _animationController.dispose();
     super.dispose();
   }
@@ -120,21 +117,6 @@ class _ExpenseCategoryFormDialogState extends State<ExpenseCategoryFormDialog>
                                       LoginValidator.validateRequired(
                                         v,
                                         LocaleKeys.name.tr(),
-                                      ),
-                                ),
-                                SizedBox(
-                                  height: ResponsiveUI.spacing(context, 12),
-                                ),
-                                buildTextField(
-                                  context,
-                                  controller: _arNameController,
-                                  label: LocaleKeys.arabic_name.tr(),
-                                  icon: Icons.translate,
-                                  hint: LocaleKeys.enter_arabic_name.tr(),
-                                  validator: (v) =>
-                                      LoginValidator.validateRequired(
-                                        v,
-                                        LocaleKeys.arabic_name.tr(),
                                       ),
                                 ),
                                 SizedBox(
@@ -212,13 +194,11 @@ class _ExpenseCategoryFormDialogState extends State<ExpenseCategoryFormDialog>
         cubit.updateExpenseCategory(
           categoryId: widget.category!.id,
           name: _nameController.text.trim(),
-          arName: _arNameController.text.trim(),
           status: status,
         );
       } else {
         cubit.createExpenseCategory(
           name: _nameController.text.trim(),
-          arName: _arNameController.text.trim(),
           status: status,
         );
       }

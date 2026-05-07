@@ -9,12 +9,10 @@ abstract class CountryRepositoryInterface {
   Future<List<CountryModel>> getCountries();
   Future<void> createCountry({
     required String name,
-    required String arName,
   });
   Future<void> updateCountry({
     required String countryId,
     required String name,
-    required String arName,
   });
   Future<void> deleteCountry(String countryId);
   Future<void> selectCountry(String countryId);
@@ -30,15 +28,13 @@ class CountryRepository implements CountryRepositoryInterface {
   @override
   Future<void> createCountry({
     required String name,
-    required String arName,
-  }) => _dataSource.createCountry(name: name, arName: arName);
+  }) => _dataSource.createCountry(name: name);
 
   @override
   Future<void> updateCountry({
     required String countryId,
     required String name,
-    required String arName,
-  }) => _dataSource.updateCountry(countryId: countryId, name: name, arName: arName);
+  }) => _dataSource.updateCountry(countryId: countryId, name: name);
 
   @override
   Future<void> deleteCountry(String countryId) => _dataSource.deleteCountry(countryId);
@@ -66,13 +62,11 @@ class _CountrySupabaseDataSource implements CountryRepositoryInterface {
   @override
   Future<void> createCountry({
     required String name,
-    required String arName,
   }) async {
     try {
       log('CountrySupabase: Creating country: $name');
       await _client.from('countries').insert({
         'name': name,
-        'ar_name': arName,
       });
     } catch (e) {
       log('CountrySupabase: Error creating country - $e');
@@ -84,13 +78,11 @@ class _CountrySupabaseDataSource implements CountryRepositoryInterface {
   Future<void> updateCountry({
     required String countryId,
     required String name,
-    required String arName,
   }) async {
     try {
       log('CountrySupabase: Updating country: $countryId');
       await _client.from('countries').update({
         'name': name,
-        'ar_name': arName,
       }).eq('id', countryId);
     } catch (e) {
       log('CountrySupabase: Error updating country - $e');
@@ -125,7 +117,6 @@ class _CountrySupabaseDataSource implements CountryRepositoryInterface {
     return CountryModel(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
-      arName: json['ar_name'] ?? '',
       isDefault: json['is_default'] ?? false,
       version: json['version'] ?? 1,
     );

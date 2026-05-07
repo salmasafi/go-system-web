@@ -47,8 +47,8 @@ class Brands {
   Brands({
     this.id,
     this.name,
-    this.arName,
     this.logo,
+    this.productQuantity,
     this.createdAt,
     this.updatedAt,
     this.v,
@@ -57,16 +57,16 @@ class Brands {
   Brands.fromJson(dynamic json) {
     id = (json['id'] ?? json['_id'] ?? "").toString();
     name = json['name']?.toString() ?? "";
-    arName = json['ar_name']?.toString() ?? "";
     logo = (json['logo'] ?? json['image_url'] ?? "").toString();
+    productQuantity = json['product_quantity'] ?? json['productQuantity'] ?? 0;
     createdAt = (json['created_at'] ?? json['createdAt'] ?? "").toString();
     updatedAt = (json['updated_at'] ?? json['updatedAt'] ?? "").toString();
     v = json['version'] ?? json['__v'] ?? 0;
   }
   String? id;
   String? name;
-  String? arName;
   String? logo;
+  int? productQuantity;
   String? createdAt;
   String? updatedAt;
   int? v;
@@ -75,8 +75,8 @@ class Brands {
     final map = <String, dynamic>{};
     map['_id'] = id;
     map['name'] = name;
-    map['ar_name'] = arName;
     map['logo'] = logo;
+    map['product_quantity'] = productQuantity;
     map['createdAt'] = createdAt;
     map['updatedAt'] = updatedAt;
     map['__v'] = v;

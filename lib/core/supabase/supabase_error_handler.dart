@@ -28,6 +28,7 @@ class SupabaseErrorHandler {
     switch (code) {
       // Connection/Auth errors
       case 'PGRST301':
+      case 'PGRST303':
         return 'انتهت صلاحية الجلسة | Session expired. Please login again.';
       case 'PGRST302':
         return 'غير مصرح | Not authorized. Please check your permissions.';
@@ -127,7 +128,7 @@ class SupabaseErrorHandler {
     if (error is PostgrestException) {
       if (error.code == '23505') return ErrorType.duplicate;
       if (error.code == '23503') return ErrorType.foreignKey;
-      if (error.code == 'PGRST301') return ErrorType.unauthorized;
+      if (error.code == 'PGRST301' || error.code == 'PGRST303') return ErrorType.unauthorized;
       if (error.code == 'PGRST116') return ErrorType.notFound;
       return ErrorType.database;
     } else if (error is AuthException) {

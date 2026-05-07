@@ -169,7 +169,7 @@ void didChangeDependencies() {
                                   controller: _nameController,
                                   label: LocaleKeys.bank_name_en.tr(),
                                   icon: Icons.account_balance,
-                                  hint: LocaleKeys.hint_bank_name_en,
+                                  hint: LocaleKeys.hint_bank_name_en.tr(),
                                   validator: (v) =>
                                       LoginValidator.validateRequired(
                                         v,
@@ -642,7 +642,6 @@ void didChangeDependencies() {
   //       cubit.updateBankAccount(
   //         accountId: widget.account!.id,
   //         name: name,
-  //         arName: _arNameController.text.trim(),
   //         accountNumber: accountNo,
   //         initialBalance: balance,
   //         note: note,
@@ -652,7 +651,6 @@ void didChangeDependencies() {
   //     } else {
   //       cubit.addBankAccount(
   //         name: name,
-  //         arName: _arNameController.text.trim(),
   //         accountNumber: accountNo,
   //         initialBalance: balance,
   //         note: note,

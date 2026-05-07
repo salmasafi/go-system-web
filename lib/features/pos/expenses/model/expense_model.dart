@@ -6,6 +6,8 @@ class ExpenseModel {
   final String categoryName;
   final String financialAccountId;
   final String financialAccountName;
+  final String reasonId;
+  final String reasonName;
   final String note;
   final String createdAt;
 
@@ -17,6 +19,8 @@ class ExpenseModel {
     required this.categoryName,
     required this.financialAccountId,
     required this.financialAccountName,
+    this.reasonId = '',
+    this.reasonName = '',
     required this.note,
     required this.createdAt,
   });
@@ -25,6 +29,7 @@ class ExpenseModel {
     // Handle both old API structure and new Supabase joins
     final cat = (json['category'] ?? json['Category_id']) as Map<String, dynamic>? ?? {};
     final acc = (json['bank_account'] ?? json['financial_accountId']) as Map<String, dynamic>? ?? {};
+    final reason = (json['reason']) as Map<String, dynamic>? ?? {};
     
     return ExpenseModel(
       id: json['id']?.toString() ?? json['_id']?.toString() ?? '',
@@ -34,6 +39,8 @@ class ExpenseModel {
       categoryName: cat['name']?.toString() ?? '',
       financialAccountId: acc['id']?.toString() ?? acc['_id']?.toString() ?? '',
       financialAccountName: acc['name']?.toString() ?? '',
+      reasonId: reason['id']?.toString() ?? json['reason_id']?.toString() ?? '',
+      reasonName: reason['name']?.toString() ?? reason['reason']?.toString() ?? '',
       note: json['note']?.toString() ?? '',
       createdAt: json['created_at']?.toString() ?? json['createdAt']?.toString() ?? '',
     );

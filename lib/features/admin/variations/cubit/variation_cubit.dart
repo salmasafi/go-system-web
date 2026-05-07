@@ -34,14 +34,13 @@ class VariationCubit extends Cubit<VariationState> {
       final variation = allVariations.firstWhere((v) => v.id == variationId);
       emit(GetVariationByIdSuccess(variation));
     } catch (e) {
-      emit(GetVariationByIdError('Variation not found'));
+      emit(GetVariationByIdError('Attribute not found'));
     }
   }
 
   // Add variation
   Future<void> addVariation({
     required String name,
-    required String arName,
     required List<Map<String, dynamic>> options,
   }) async {
     emit(CreateVariationLoading());
@@ -49,7 +48,6 @@ class VariationCubit extends Cubit<VariationState> {
       final variation = VariationModel(
         id: '',
         name: name,
-        arName: arName,
         createdAt: '',
         updatedAt: '',
         version: 0,
@@ -70,6 +68,7 @@ class VariationCubit extends Cubit<VariationState> {
 
       await _repository.createVariation(variation);
       emit(CreateVariationSuccess(LocaleKeys.variation_created_success.tr()));
+      await getAllVariations();
     } catch (e) {
       emit(CreateVariationError(e.toString().replaceAll('Exception: ', '')));
     }
@@ -78,7 +77,6 @@ class VariationCubit extends Cubit<VariationState> {
   Future<void> updateVariation({
     required String variationId,
     required String name,
-    required String arName,
     required List<Map<String, dynamic>> options,
   }) async {
     emit(UpdateVariationLoading());
@@ -86,7 +84,6 @@ class VariationCubit extends Cubit<VariationState> {
       final variation = VariationModel(
         id: variationId,
         name: name,
-        arName: arName,
         createdAt: '',
         updatedAt: '',
         version: 0,
@@ -107,6 +104,7 @@ class VariationCubit extends Cubit<VariationState> {
 
       await _repository.updateVariation(variation);
       emit(UpdateVariationSuccess(LocaleKeys.variation_updated_success.tr()));
+      await getAllVariations();
     } catch (e) {
       emit(UpdateVariationError(e.toString().replaceAll('Exception: ', '')));
     }
@@ -136,7 +134,7 @@ class VariationCubit extends Cubit<VariationState> {
         allVariations.removeWhere((v) => v.id == variationId);
         emit(DeleteVariationSuccess(LocaleKeys.variation_deleted_success.tr()));
       } else {
-        emit(DeleteVariationError('Failed to delete variation'));
+        emit(DeleteVariationError('Failed to delete attribute'));
       }
     } catch (e) {
       emit(DeleteVariationError(e.toString().replaceAll('Exception: ', '')));

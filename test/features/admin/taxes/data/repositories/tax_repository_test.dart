@@ -37,7 +37,6 @@ void main() {
         {
           'id': 'tax-1',
           'name': 'VAT',
-          'ar_name': 'ضريبة القيمة المضافة',
           'type': 'percentage',
           'status': true,
           'amount': 15.0,
@@ -47,7 +46,6 @@ void main() {
         {
           'id': 'tax-2',
           'name': 'Service Tax',
-          'ar_name': 'ضريبة الخدمة',
           'type': 'fixed',
           'status': true,
           'amount': 5.0,
@@ -70,7 +68,6 @@ void main() {
       expect(result.length, 2);
       expect(result[0].id, 'tax-1');
       expect(result[0].name, 'VAT');
-      expect(result[0].arName, 'ضريبة القيمة المضافة');
       expect(result[0].type, 'percentage');
       expect(result[0].amount, 15.0);
     });
@@ -79,7 +76,6 @@ void main() {
       final tax = TaxModel(
         id: '',
         name: 'New Tax',
-        arName: 'ضريبة جديدة',
         type: 'percentage',
         status: true,
         amount: 10.0,
@@ -88,7 +84,6 @@ void main() {
       final mockData = {
         'id': 'tax-new',
         'name': 'New Tax',
-        'ar_name': 'ضريبة جديدة',
         'type': 'percentage',
         'status': true,
         'amount': 10.0,
@@ -114,7 +109,6 @@ void main() {
       final tax = TaxModel(
         id: 'tax-1',
         name: 'Updated VAT',
-        arName: 'ضريبة مضافة محدثة',
         type: 'percentage',
         status: true,
         amount: 15.0,
@@ -123,7 +117,6 @@ void main() {
       final mockData = {
         'id': 'tax-1',
         'name': 'Updated VAT',
-        'ar_name': 'ضريبة مضافة محدثة',
         'type': 'percentage',
         'status': true,
         'amount': 15.0,

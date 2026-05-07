@@ -33,16 +33,16 @@ class CustomEmptyState extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
             Container(
-              padding: EdgeInsets.all(ResponsiveUI.padding(context, 30)),
+              padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
               decoration: BoxDecoration(
-                color: (iconColor ?? AppColors.primaryBlue).withValues(alpha: 
+                color: (iconColor ?? AppColors.primaryBlue).withValues(alpha:
                   0.1,
                 ),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 icon,
-                size: ResponsiveUI.iconSize(context, 100),
+                size: ResponsiveUI.iconSize(context, 64),
                 color: iconColor ?? AppColors.primaryBlue,
               ),
             ),

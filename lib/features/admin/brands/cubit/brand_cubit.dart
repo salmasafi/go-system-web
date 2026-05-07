@@ -42,7 +42,6 @@ class BrandsCubit extends Cubit<BrandsState> {
         selectedBrand = BrandById(
           id: brand.id,
           name: brand.name,
-          arName: brand.arName,
           logo: brand.logo,
           createdAt: brand.createdAt,
           updatedAt: brand.updatedAt,
@@ -59,14 +58,12 @@ class BrandsCubit extends Cubit<BrandsState> {
 
   Future<void> createBrand({
     required String name,
-    required String arName,
     File? logoFile,
   }) async {
     emit(CreateBrandLoading());
     try {
       await _repository.createBrand(
         name: name,
-        arName: arName,
         logoFile: logoFile,
       );
       await getBrands();
@@ -79,7 +76,6 @@ class BrandsCubit extends Cubit<BrandsState> {
   Future<void> updateBrand({
     required String brandId,
     required String name,
-    required String arName,
     File? logoFile,
   }) async {
     emit(UpdateBrandLoading());
@@ -87,7 +83,6 @@ class BrandsCubit extends Cubit<BrandsState> {
       await _repository.updateBrand(
         id: brandId,
         name: name,
-        arName: arName,
         logoFile: logoFile,
       );
       await getBrands();

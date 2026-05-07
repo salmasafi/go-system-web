@@ -35,7 +35,6 @@ void main() {
         {
           'id': 'var-1',
           'name': 'Size',
-          'ar_name': 'المقاس',
           'created_at': '2024-01-01',
           'updated_at': '2024-01-01',
           'options': [
@@ -46,7 +45,6 @@ void main() {
         {
           'id': 'var-2',
           'name': 'Color',
-          'ar_name': 'اللون',
           'created_at': '2024-01-02',
           'updated_at': '2024-01-02',
           'options': [

@@ -5,28 +5,22 @@
 class SelectedAttribute {
   final String attributeTypeId;
   final String attributeTypeName;
-  final String attributeTypeArName;
   final String attributeValueId;
   final String attributeValueName;
-  final String attributeValueArName;
 
   SelectedAttribute({
     required this.attributeTypeId,
     required this.attributeTypeName,
-    required this.attributeTypeArName,
     required this.attributeValueId,
     required this.attributeValueName,
-    required this.attributeValueArName,
   });
 
   factory SelectedAttribute.fromJson(Map<String, dynamic> json) {
     return SelectedAttribute(
       attributeTypeId: json['attribute_type_id'] ?? '',
       attributeTypeName: json['attribute_type_name'] ?? '',
-      attributeTypeArName: json['attribute_type_ar_name'] ?? '',
       attributeValueId: json['attribute_value_id'] ?? '',
       attributeValueName: json['attribute_value_name'] ?? '',
-      attributeValueArName: json['attribute_value_ar_name'] ?? '',
     );
   }
 
@@ -34,10 +28,8 @@ class SelectedAttribute {
     return {
       'attribute_type_id': attributeTypeId,
       'attribute_type_name': attributeTypeName,
-      'attribute_type_ar_name': attributeTypeArName,
       'attribute_value_id': attributeValueId,
       'attribute_value_name': attributeValueName,
-      'attribute_value_ar_name': attributeValueArName,
     };
   }
 
@@ -47,49 +39,27 @@ class SelectedAttribute {
       'sale_item_id': saleItemId,
       'attribute_type_id': attributeTypeId,
       'attribute_type_name': attributeTypeName,
-      'attribute_type_ar_name': attributeTypeArName,
       'attribute_value_id': attributeValueId,
       'attribute_value_name': attributeValueName,
-      'attribute_value_ar_name': attributeValueArName,
     };
   }
 
-  /// Returns localized type name
-  String getLocalizedTypeName({bool isArabic = false}) {
-    return isArabic && attributeTypeArName.isNotEmpty 
-        ? attributeTypeArName 
-        : attributeTypeName;
-  }
-
-  /// Returns localized value name
-  String getLocalizedValueName({bool isArabic = false}) {
-    return isArabic && attributeValueArName.isNotEmpty 
-        ? attributeValueArName 
-        : attributeValueName;
-  }
-
   /// Returns display string like "Color: Red"
-  String getDisplayString({bool isArabic = false}) {
-    final typeName = getLocalizedTypeName(isArabic: isArabic);
-    final valueName = getLocalizedValueName(isArabic: isArabic);
-    return '$typeName: $valueName';
+  String getDisplayString() {
+    return '$attributeTypeName: $attributeValueName';
   }
 
   SelectedAttribute copyWith({
     String? attributeTypeId,
     String? attributeTypeName,
-    String? attributeTypeArName,
     String? attributeValueId,
     String? attributeValueName,
-    String? attributeValueArName,
   }) {
     return SelectedAttribute(
       attributeTypeId: attributeTypeId ?? this.attributeTypeId,
       attributeTypeName: attributeTypeName ?? this.attributeTypeName,
-      attributeTypeArName: attributeTypeArName ?? this.attributeTypeArName,
       attributeValueId: attributeValueId ?? this.attributeValueId,
       attributeValueName: attributeValueName ?? this.attributeValueName,
-      attributeValueArName: attributeValueArName ?? this.attributeValueArName,
     );
   }
 
@@ -150,10 +120,10 @@ class CartItemAttributes {
   }
 
   /// Get display string for all attributes
-  String getDisplayString({bool isArabic = false}) {
+  String getDisplayString() {
     if (attributes.isEmpty) return '';
     return attributes
-        .map((a) => a.getDisplayString(isArabic: isArabic))
+        .map((a) => a.getDisplayString())
         .join(', ');
   }
 }

@@ -54,7 +54,6 @@ class SelectionData {
 class CategorySelection {
   final String id;
   final String name;
-  final String arName;
   final bool status;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -63,7 +62,6 @@ class CategorySelection {
   CategorySelection({
     required this.id,
     required this.name,
-    required this.arName,
     required this.status,
     required this.createdAt,
     required this.updatedAt,
@@ -74,7 +72,6 @@ class CategorySelection {
     return CategorySelection(
       id: (json['id'] ?? json['_id'] ?? '').toString(),
       name: json['name']?.toString() ?? '',
-      arName: json['ar_name']?.toString() ?? '',
       status: json['status'] as bool? ?? true,
       createdAt: DateTime.tryParse((json['created_at'] ?? json['createdAt'] ?? '').toString()) ?? DateTime.now(),
       updatedAt: DateTime.tryParse((json['updated_at'] ?? json['updatedAt'] ?? '').toString()) ?? DateTime.now(),
@@ -86,7 +83,6 @@ class CategorySelection {
     return {
       '_id': id,
       'name': name,
-      'ar_name': arName,
       'status': status,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
@@ -160,16 +156,14 @@ class AccountSelection {
 class CategoryModel {
   final String id;
   final String name;
-  final String arName;
-  final bool status; // Add this
-  final DateTime createdAt; // Add this
-  final DateTime updatedAt; // Add this
-  final int version; // Add this
+  final bool status;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final int version;
 
   CategoryModel({
     required this.id,
     required this.name,
-    required this.arName,
     required this.status,
     required this.createdAt,
     required this.updatedAt,
@@ -180,7 +174,6 @@ class CategoryModel {
     return CategoryModel(
       id: (json['id'] ?? json['_id'] ?? '').toString(),
       name: json['name']?.toString() ?? '',
-      arName: json['ar_name']?.toString() ?? '',
       status: json['status'] as bool? ?? true,
       createdAt: DateTime.tryParse((json['created_at'] ?? json['createdAt'] ?? '').toString()) ?? DateTime.now(),
       updatedAt: DateTime.tryParse((json['updated_at'] ?? json['updatedAt'] ?? '').toString()) ?? DateTime.now(),
@@ -192,7 +185,6 @@ class CategoryModel {
     return {
       '_id': id,
       'name': name,
-      'ar_name': arName,
       'status': status,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),

@@ -125,13 +125,16 @@ class _PandelScreenState extends State<PandelScreen> {
       backgroundColor: AppColors.lightBlueBackground,
       appBar: appBarWithActions(
         context,
-        title: "اللوحات",
+        title: LocaleKeys.pandels_title.tr(),
         showActions: true,
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          final result = await Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const CreatePandelScreen()),
           );
+          if (result == true && mounted) {
+            pandelsInit();
+          }
         },
       ),
       body: SafeArea(

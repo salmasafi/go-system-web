@@ -42,7 +42,6 @@ class CashierData {
 class CashierModel {
   final String id;
   final String name;
-  final String arName;
   final WarehouseFromCashier warehouse;
   final bool status;
   final bool cashierActive;
@@ -55,7 +54,6 @@ class CashierModel {
   CashierModel copyWith({
     String? id,
     String? name,
-    String? arName,
     WarehouseFromCashier? warehouse,
     bool? status,
     bool? cashierActive,
@@ -68,7 +66,6 @@ class CashierModel {
     return CashierModel(
       id: id ?? this.id,
       name: name ?? this.name,
-      arName: arName ?? this.arName,
       warehouse: warehouse ?? this.warehouse,
       status: status ?? this.status,
       cashierActive: cashierActive ?? this.cashierActive,
@@ -83,7 +80,6 @@ class CashierModel {
   CashierModel({
     required this.id,
     required this.name,
-    required this.arName,
     required this.warehouse,
     required this.status,
     required this.cashierActive,
@@ -98,7 +94,6 @@ class CashierModel {
     return CashierModel(
       id: json['_id'],
       name: json['name'],
-      arName: json['ar_name'],
       warehouse: WarehouseFromCashier.fromJson(json['warehouse_id']),
       status: json['status'],
       cashierActive: json['cashier_active'],
@@ -123,7 +118,6 @@ class CashierModel {
     return {
       '_id': id,
       'name': name,
-      'ar_name': arName,
       'warehouse_id': warehouse.toJson(),
       'status': status,
       'cashier_active': cashierActive,

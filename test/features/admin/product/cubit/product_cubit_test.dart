@@ -19,9 +19,7 @@ void main() {
   Product sampleProduct(String id) => Product.fromJson({
         'id': id,
         'name': 'Product $id',
-        'ar_name': 'منتج $id',
         'description': 'Description',
-        'ar_description': 'وصف',
         'image': 'product_$id.jpg',
         'code': 'P$id',
         'price': 100.0,

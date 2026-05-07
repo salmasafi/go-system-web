@@ -27,7 +27,6 @@ class CashierCubit extends Cubit<CashierState> {
 
   Future<void> createCashier({
     required String name,
-    required String arName,
     String? warehouseId,
     required bool status,
   }) async {
@@ -35,7 +34,6 @@ class CashierCubit extends Cubit<CashierState> {
     try {
       await _repository.createCashier(
         name: name,
-        arName: arName,
         warehouseId: warehouseId,
         status: status,
       );
@@ -49,7 +47,6 @@ class CashierCubit extends Cubit<CashierState> {
   Future<void> updateCashier({
     required String cashierId,
     required String name,
-    required String arName,
     String? warehouseId,
     required bool status,
   }) async {
@@ -58,7 +55,6 @@ class CashierCubit extends Cubit<CashierState> {
       await _repository.updateCashier(
         id: cashierId,
         name: name,
-        arName: arName,
         warehouseId: warehouseId,
         status: status,
       );
@@ -73,8 +69,8 @@ class CashierCubit extends Cubit<CashierState> {
     emit(DeleteCashierLoading());
     try {
       await _repository.deleteCashier(cashierId);
-      allCashiers.removeWhere((c) => c.id == cashierId);
       emit(DeleteCashierSuccess(LocaleKeys.cashier_deleted_success.tr()));
+      await getCashiers();
     } catch (e) {
       emit(DeleteCashierError(e.toString().replaceAll('Exception: ', '')));
     }

@@ -21,7 +21,6 @@ void main() {
         cities: [CityModel.fromJson({
           'id': 'c1',
           'name': 'City 1',
-          'ar_name': 'مدينة 1',
           'country_id': {'id': 'co1', 'name': 'Country'},
           'shipping_cost': 10.0,
           'created_at': '2024-01-01',
@@ -64,7 +63,6 @@ void main() {
       build: () {
         when(() => mockRepo.createCity(
           name: any(named: 'name'),
-          arName: any(named: 'arName'),
           countryId: any(named: 'countryId'),
           shipingCost: any(named: 'shipingCost'),
         )).thenAnswer((_) async => {});
@@ -73,7 +71,6 @@ void main() {
       },
       act: (c) => c.createCity(
         name: 'New City',
-        arName: 'مدينة جديدة',
         countryId: 'co1',
         shipingCost: '15',
       ),

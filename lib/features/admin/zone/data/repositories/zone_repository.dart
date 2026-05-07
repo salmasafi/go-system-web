@@ -9,7 +9,6 @@ abstract class ZoneRepositoryInterface {
   Future<List<ZoneModel>> getZones();
   Future<void> createZone({
     required String name,
-    required String arName,
     required String countryId,
     required String cityId,
     required num cost,
@@ -17,7 +16,6 @@ abstract class ZoneRepositoryInterface {
   Future<void> updateZone({
     required String zoneId,
     required String name,
-    required String arName,
     required String countryId,
     required String cityId,
     required String cost,
@@ -35,13 +33,11 @@ class ZoneRepository implements ZoneRepositoryInterface {
   @override
   Future<void> createZone({
     required String name,
-    required String arName,
     required String countryId,
     required String cityId,
     required num cost,
   }) => _dataSource.createZone(
         name: name,
-        arName: arName,
         countryId: countryId,
         cityId: cityId,
         cost: cost,
@@ -51,14 +47,12 @@ class ZoneRepository implements ZoneRepositoryInterface {
   Future<void> updateZone({
     required String zoneId,
     required String name,
-    required String arName,
     required String countryId,
     required String cityId,
     required String cost,
   }) => _dataSource.updateZone(
         zoneId: zoneId,
         name: name,
-        arName: arName,
         countryId: countryId,
         cityId: cityId,
         cost: cost,
@@ -87,7 +81,6 @@ class _ZoneSupabaseDataSource implements ZoneRepositoryInterface {
   @override
   Future<void> createZone({
     required String name,
-    required String arName,
     required String countryId,
     required String cityId,
     required num cost,
@@ -96,7 +89,6 @@ class _ZoneSupabaseDataSource implements ZoneRepositoryInterface {
       log('ZoneSupabase: Creating zone: $name');
       await _client.from('zones').insert({
         'name': name,
-        'ar_name': arName,
         'country_id': countryId,
         'city_id': cityId,
         'cost': cost.toDouble(),
@@ -111,7 +103,6 @@ class _ZoneSupabaseDataSource implements ZoneRepositoryInterface {
   Future<void> updateZone({
     required String zoneId,
     required String name,
-    required String arName,
     required String countryId,
     required String cityId,
     required String cost,
@@ -120,7 +111,6 @@ class _ZoneSupabaseDataSource implements ZoneRepositoryInterface {
       log('ZoneSupabase: Updating zone: $zoneId');
       await _client.from('zones').update({
         'name': name,
-        'ar_name': arName,
         'country_id': countryId,
         'city_id': cityId,
         'cost': double.tryParse(cost) ?? 0.0,
@@ -146,16 +136,13 @@ class _ZoneSupabaseDataSource implements ZoneRepositoryInterface {
     return ZoneModel(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
-      arName: json['ar_name'] ?? '',
       country: CountryForZone(
         id: json['country_id'] ?? '',
         name: '',
-        arName: '',
       ),
       city: CityForZone(
         id: json['city_id'] ?? '',
         name: '',
-        arName: '',
         shipingCost: 0,
       ),
       cost: json['cost'] ?? 0,

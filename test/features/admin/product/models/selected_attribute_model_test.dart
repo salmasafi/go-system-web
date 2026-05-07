@@ -7,50 +7,40 @@ void main() {
       final json = {
         'attribute_type_id': 'type-1',
         'attribute_type_name': 'Color',
-        'attribute_type_ar_name': 'لون',
         'attribute_value_id': 'val-1',
         'attribute_value_name': 'Red',
-        'attribute_value_ar_name': 'أحمر',
       };
 
       final model = SelectedAttribute.fromJson(json);
 
       expect(model.attributeTypeId, 'type-1');
       expect(model.attributeTypeName, 'Color');
-      expect(model.attributeTypeArName, 'لون');
       expect(model.attributeValueId, 'val-1');
       expect(model.attributeValueName, 'Red');
-      expect(model.attributeValueArName, 'أحمر');
     });
 
     test('should serialize to JSON correctly', () {
       final model = SelectedAttribute(
         attributeTypeId: 'type-1',
         attributeTypeName: 'Color',
-        attributeTypeArName: 'لون',
         attributeValueId: 'val-1',
         attributeValueName: 'Red',
-        attributeValueArName: 'أحمر',
       );
 
       final json = model.toJson();
 
       expect(json['attribute_type_id'], 'type-1');
       expect(json['attribute_type_name'], 'Color');
-      expect(json['attribute_type_ar_name'], 'لون');
       expect(json['attribute_value_id'], 'val-1');
       expect(json['attribute_value_name'], 'Red');
-      expect(json['attribute_value_ar_name'], 'أحمر');
     });
 
     test('should generate correct DB JSON', () {
       final model = SelectedAttribute(
         attributeTypeId: 'type-1',
         attributeTypeName: 'Color',
-        attributeTypeArName: 'لون',
         attributeValueId: 'val-1',
         attributeValueName: 'Red',
-        attributeValueArName: 'أحمر',
       );
 
       final dbJson = model.toDbJson('sale-item-123');
@@ -60,51 +50,37 @@ void main() {
       expect(dbJson['attribute_value_name'], 'Red');
     });
 
-    test('should return localized strings correctly', () {
+    test('should return display string correctly', () {
       final model = SelectedAttribute(
         attributeTypeId: 'type-1',
         attributeTypeName: 'Color',
-        attributeTypeArName: 'لون',
         attributeValueId: 'val-1',
         attributeValueName: 'Red',
-        attributeValueArName: 'أحمر',
       );
 
-      expect(model.getLocalizedTypeName(isArabic: false), 'Color');
-      expect(model.getLocalizedTypeName(isArabic: true), 'لون');
-      expect(model.getLocalizedValueName(isArabic: false), 'Red');
-      expect(model.getLocalizedValueName(isArabic: true), 'أحمر');
-      
-      expect(model.getDisplayString(isArabic: false), 'Color: Red');
-      expect(model.getDisplayString(isArabic: true), 'لون: أحمر');
+      expect(model.getDisplayString(), 'Color: Red');
     });
 
     test('equality operator compares by typeId and valueId', () {
       final model1 = SelectedAttribute(
         attributeTypeId: 'type-1',
         attributeTypeName: 'Color',
-        attributeTypeArName: 'لون',
         attributeValueId: 'val-1',
         attributeValueName: 'Red',
-        attributeValueArName: 'أحمر',
       );
 
       final model2 = SelectedAttribute(
         attributeTypeId: 'type-1',
         attributeTypeName: 'Colour', // different name
-        attributeTypeArName: 'لون',
         attributeValueId: 'val-1',
         attributeValueName: 'Red',
-        attributeValueArName: 'أحمر',
       );
 
       final model3 = SelectedAttribute(
         attributeTypeId: 'type-1',
         attributeTypeName: 'Color',
-        attributeTypeArName: 'لون',
         attributeValueId: 'val-2', // different value
         attributeValueName: 'Blue',
-        attributeValueArName: 'أزرق',
       );
 
       expect(model1 == model2, isTrue); // Same IDs
@@ -115,12 +91,12 @@ void main() {
   group('CartItemAttributes Tests', () {
     test('isSameAs should return true for same attributes regardless of order', () {
       final attr1 = SelectedAttribute(
-        attributeTypeId: 't1', attributeTypeName: '', attributeTypeArName: '',
-        attributeValueId: 'v1', attributeValueName: '', attributeValueArName: '',
+        attributeTypeId: 't1', attributeTypeName: '',
+        attributeValueId: 'v1', attributeValueName: '',
       );
       final attr2 = SelectedAttribute(
-        attributeTypeId: 't2', attributeTypeName: '', attributeTypeArName: '',
-        attributeValueId: 'v2', attributeValueName: '', attributeValueArName: '',
+        attributeTypeId: 't2', attributeTypeName: '',
+        attributeValueId: 'v2', attributeValueName: '',
       );
 
       final cartAttr1 = CartItemAttributes(attributes: [attr1, attr2]);
@@ -131,16 +107,16 @@ void main() {
 
     test('isSameAs should return false if attributes differ', () {
       final attr1 = SelectedAttribute(
-        attributeTypeId: 't1', attributeTypeName: '', attributeTypeArName: '',
-        attributeValueId: 'v1', attributeValueName: '', attributeValueArName: '',
+        attributeTypeId: 't1', attributeTypeName: '',
+        attributeValueId: 'v1', attributeValueName: '',
       );
       final attr2 = SelectedAttribute(
-        attributeTypeId: 't2', attributeTypeName: '', attributeTypeArName: '',
-        attributeValueId: 'v2', attributeValueName: '', attributeValueArName: '',
+        attributeTypeId: 't2', attributeTypeName: '',
+        attributeValueId: 'v2', attributeValueName: '',
       );
       final attr3 = SelectedAttribute(
-        attributeTypeId: 't2', attributeTypeName: '', attributeTypeArName: '',
-        attributeValueId: 'v3', attributeValueName: '', attributeValueArName: '',
+        attributeTypeId: 't2', attributeTypeName: '',
+        attributeValueId: 'v3', attributeValueName: '',
       );
 
       final cartAttr1 = CartItemAttributes(attributes: [attr1, attr2]);
@@ -153,18 +129,17 @@ void main() {
 
     test('getDisplayString joins multiple attributes', () {
       final attr1 = SelectedAttribute(
-        attributeTypeId: 't1', attributeTypeName: 'Color', attributeTypeArName: 'لون',
-        attributeValueId: 'v1', attributeValueName: 'Red', attributeValueArName: 'أحمر',
+        attributeTypeId: 't1', attributeTypeName: 'Color',
+        attributeValueId: 'v1', attributeValueName: 'Red',
       );
       final attr2 = SelectedAttribute(
-        attributeTypeId: 't2', attributeTypeName: 'Size', attributeTypeArName: 'مقاس',
-        attributeValueId: 'v2', attributeValueName: 'Large', attributeValueArName: 'كبير',
+        attributeTypeId: 't2', attributeTypeName: 'Size',
+        attributeValueId: 'v2', attributeValueName: 'Large',
       );
 
       final cartAttr = CartItemAttributes(attributes: [attr1, attr2]);
 
-      expect(cartAttr.getDisplayString(isArabic: false), 'Color: Red, Size: Large');
-      expect(cartAttr.getDisplayString(isArabic: true), 'لون: أحمر, مقاس: كبير');
+      expect(cartAttr.getDisplayString(), 'Color: Red, Size: Large');
     });
   });
 }

@@ -51,7 +51,8 @@ class Product {
   final String image;
   final List<Category> categoryId;
   final Brand? brandId;
-  final String unit;
+  final String saleUnit;
+  final String purchaseUnit;
   final double price;
   final int quantity;
   final String description;
@@ -73,7 +74,8 @@ class Product {
     required this.image,
     required this.categoryId,
     this.brandId,
-    required this.unit,
+    required this.saleUnit,
+    required this.purchaseUnit,
     required this.price,
     required this.quantity,
     required this.description,
@@ -102,7 +104,8 @@ class Product {
           [],
       brandId:
           json['brandId'] != null ? Brand.fromJson(json['brandId']) : null,
-      unit: json['unit'] ?? '',
+      saleUnit: json['sale_unit'] ?? '',
+      purchaseUnit: json['purchase_unit'] ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       quantity: json['quantity'] ?? 0,
       description: json['description'] ?? '',
@@ -130,7 +133,8 @@ class Product {
         'image': image,
         'categoryId': categoryId.map((e) => e.toJson()).toList(),
         'brandId': brandId?.toJson(),
-        'unit': unit,
+        'sale_unit': saleUnit,
+        'purchase_unit': purchaseUnit,
         'price': price,
         'quantity': quantity,
         'description': description,

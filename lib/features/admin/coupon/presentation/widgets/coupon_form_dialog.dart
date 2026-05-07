@@ -153,12 +153,13 @@ class _CouponFormDialogState extends State<CouponFormDialog>
                                   controller: _amountController,
                                   label: LocaleKeys.coupon_amount.tr(),
                                   icon: Icons.attach_money,
+                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
                                   hint: LocaleKeys.please_enter_minimum_amount.tr(),
                                   validator: (v) {
                                     if (v == null || v.isEmpty) {
                                       return LocaleKeys.enter_amount.tr();
                                     }
-                                    if (double.tryParse(v) == null) {
+                                    if (double.tryParse(v.replaceAll(',', '.')) == null) {
                                       return LocaleKeys.invalid_number.tr();
                                     }
                                     return null;
@@ -170,6 +171,7 @@ class _CouponFormDialogState extends State<CouponFormDialog>
                                   controller: _minAmountController,
                                   label: LocaleKeys.minimum_order_amount.tr(),
                                   icon: Icons.shopping_cart_checkout,
+                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
                                   hint: LocaleKeys.minimum_amount_to_apply_coupon_hint.tr(),
                                   validator: (v) {
                                     if (v == null || v.isEmpty) {
@@ -184,6 +186,7 @@ class _CouponFormDialogState extends State<CouponFormDialog>
                                   controller: _quantityController,
                                   label: LocaleKeys.coupon_quantity.tr(),
                                   icon: Icons.numbers,
+                                  keyboardType: TextInputType.number,
                                   hint: LocaleKeys.total_coupon_quantity_hint.tr(),
                                   validator: (v) {
                                     if (v == null || v.isEmpty) {
@@ -201,6 +204,7 @@ class _CouponFormDialogState extends State<CouponFormDialog>
                                   controller: _availableController,
                                   label: LocaleKeys.coupon_available.tr(),
                                   icon: Icons.numbers,
+                                  keyboardType: TextInputType.number,
                                   hint: LocaleKeys.total_available_coupons_hint.tr(),
                                   validator: (v) {
                                     if (v == null || v.isEmpty) {
@@ -325,21 +329,21 @@ class _CouponFormDialogState extends State<CouponFormDialog>
           couponId: widget.coupon!.id,
           couponCode: _codeController.text.trim(),
           type: selectedType!.toLowerCase(),
-          amount: double.parse(_amountController.text),
-          minimumAmount: double.parse(_minAmountController.text),
-          quantity: int.parse(_quantityController.text),
+          amount: double.parse(_amountController.text.replaceAll(',', '.')),
+          minimumAmount: double.parse(_minAmountController.text.replaceAll(',', '.')),
+          quantity: int.parse(_quantityController.text.trim()),
           expiredDate: _expiredDateController.text.trim(),
-          available: int.parse(_availableController.text),
+          available: int.parse(_availableController.text.trim()),
         );
       } else {
         cubit.createCoupon(
           couponCode: _codeController.text.trim(),
           type: selectedType!.toLowerCase(),
-          amount: double.parse(_amountController.text),
-          minimumAmount: double.parse(_minAmountController.text),
-          quantity: int.parse(_quantityController.text),
+          amount: double.parse(_amountController.text.replaceAll(',', '.')),
+          minimumAmount: double.parse(_minAmountController.text.replaceAll(',', '.')),
+          quantity: int.parse(_quantityController.text.trim()),
           expiredDate: _expiredDateController.text.trim(),
-          available: int.parse(_availableController.text),
+          available: int.parse(_availableController.text.trim()),
         );
       }
     }

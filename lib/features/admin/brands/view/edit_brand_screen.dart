@@ -26,7 +26,6 @@ class EditBrandBottomSheet extends StatefulWidget {
 
 class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
   late TextEditingController _nameController;
-  late TextEditingController _arNameController;
 
   File? _selectedImage;
   final _picker = ImagePicker();
@@ -38,14 +37,12 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
   void initState() {
     super.initState();
     _nameController = TextEditingController();
-    _arNameController = TextEditingController();
     BrandsCubit.get(context).getBrandById(widget.brandId);
   }
 
   @override
   void dispose() {
     _nameController.dispose();
-    _arNameController.dispose();
     super.dispose();
   }
 
@@ -60,14 +57,10 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
     if (_nameController.text.trim().isEmpty) {
       CustomSnackbar.showWarning(context, LocaleKeys.please_enter_brand_name.tr());
       return;
-    } else if (_arNameController.text.trim().isEmpty) {
-      CustomSnackbar.showWarning(context, LocaleKeys.please_enter_brand_ar_name.tr());
-      return;
     }
     BrandsCubit.get(context).updateBrand(
       brandId: widget.brandId,
       name: _nameController.text.trim(),
-      arName: _arNameController.text.trim(),
       logoFile: _selectedImage,
     );
   }
@@ -92,7 +85,6 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
           setState(() {
             _brand = state.brand;
             _nameController.text = _brand?.name ?? '';
-            _arNameController.text = _brand?.arName ?? '';
             _isLoading = false;
           });
         } else if (state is GetBrandByIdError) {
@@ -166,16 +158,6 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
                         controller: _nameController,
                         labelText: LocaleKeys.brand_name.tr(),
                         hintText: LocaleKeys.enter_brand_name.tr(),
-                        prefixIcon: Icons.branding_watermark,
-                        hasBoxDecoration: false,
-                        hasBorder: true,
-                        prefixIconColor: AppColors.darkGray.withValues(alpha: 0.7),
-                      ),
-                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                      CustomTextField(
-                        controller: _arNameController,
-                        labelText: LocaleKeys.brand_ar_name.tr(),
-                        hintText: LocaleKeys.enter_brand_ar_name.tr(),
                         prefixIcon: Icons.branding_watermark,
                         hasBoxDecoration: false,
                         hasBorder: true,

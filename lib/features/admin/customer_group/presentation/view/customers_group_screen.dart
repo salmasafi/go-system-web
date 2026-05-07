@@ -45,16 +45,24 @@ class _CustomerGroupsScreenState extends State<CustomerGroupsScreen> {
         } else if (state is CreateCustomerGroupSuccess) {
           CustomSnackbar.showSuccess(context, state.message);
           customerGroupsInit();
-        }else if (state is DeleteCustomerGroupSuccess) {
+        } else if (state is CreateCustomerGroupError) {
+          CustomSnackbar.showError(context, state.error);
+        } else if (state is UpdateCustomerGroupSuccess) {
           CustomSnackbar.showSuccess(context, state.message);
           customerGroupsInit();
-        }else if (state is DeleteCustomerGroupError) {
+        } else if (state is UpdateCustomerGroupError) {
           CustomSnackbar.showError(context, state.error);
+        } else if (state is DeleteCustomerGroupSuccess) {
+          CustomSnackbar.showSuccess(context, state.message);
+          customerGroupsInit();
+        } else if (state is DeleteCustomerGroupError) {
+          CustomSnackbar.showError(context, state.error);
+          customerGroupsInit();
         }
       },
       builder: (context, state) {
-        if (state is GetCustomerGroupsLoading
-           ) {
+        if (state is GetCustomerGroupsLoading ||
+            state is DeleteCustomerGroupLoading) {
           return RefreshIndicator(
             onRefresh: _refresh,
             color: AppColors.primaryBlue,

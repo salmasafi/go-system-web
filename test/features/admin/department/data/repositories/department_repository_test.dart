@@ -37,8 +37,6 @@ void main() {
           'id': 'd1',
           'name': 'Sales',
           'description': 'desc',
-          'ar_name': 'ar',
-          'ar_description': 'ard',
           'version': 1,
           'created_at': '2024-01-01',
           'updated_at': '2024-01-01',

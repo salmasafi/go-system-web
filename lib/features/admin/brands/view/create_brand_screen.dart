@@ -24,7 +24,6 @@ class AddBrandScreen extends StatefulWidget {
 
 class _AddBrandScreenState extends State<AddBrandScreen> {
   final _nameController = TextEditingController();
-  final _arNameController = TextEditingController();
   File? _selectedImage;
 
   Future<void> _pickImage() async {
@@ -61,13 +60,11 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
               message: state.error,
               onRetry: () {
                 if (_nameController.text.trim().isEmpty ||
-                    _arNameController.text.trim().isEmpty ||
                     _selectedImage == null) {
                   return;
                 }
                 BrandsCubit.get(context).createBrand(
                   name: _nameController.text.trim(),
-                  arName: _arNameController.text.trim(),
                   logoFile: _selectedImage!,
                 );
               },
@@ -99,16 +96,6 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                     controller: _nameController,
                     labelText: LocaleKeys.brand_name.tr(),
                     hintText: LocaleKeys.enter_brand_name.tr(),
-                    hasBoxDecoration: false,
-                    hasBorder: true,
-                    prefixIcon: Icons.branding_watermark,
-                    prefixIconColor: AppColors.darkGray.withValues(alpha: 0.7),
-                  ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                  CustomTextField(
-                    controller: _arNameController,
-                    labelText: LocaleKeys.brand_ar_name.tr(),
-                    hintText: LocaleKeys.enter_brand_ar_name.tr(),
                     hasBoxDecoration: false,
                     hasBorder: true,
                     prefixIcon: Icons.branding_watermark,
@@ -218,19 +205,10 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                                   LocaleKeys.please_enter_brand_name.tr(),
                                 );
                                 return;
-                              } else if (_arNameController.text
-                                  .trim()
-                                  .isEmpty) {
-                                CustomSnackbar.showWarning(
-                                  context,
-                                  LocaleKeys.please_enter_brand_ar_name.tr(),
-                                );
-                                return;
                               }
                               // Logo is now optional - removed validation
                               BrandsCubit.get(context).createBrand(
                                 name: _nameController.text.trim(),
-                                arName: _arNameController.text.trim(),
                                 logoFile: _selectedImage,
                               );
                             },
@@ -285,7 +263,6 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
   @override
   void dispose() {
     _nameController.dispose();
-    _arNameController.dispose();
     super.dispose();
   }
 }

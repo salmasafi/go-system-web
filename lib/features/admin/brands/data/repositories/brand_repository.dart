@@ -14,13 +14,11 @@ abstract class BrandRepositoryInterface {
   Future<Brands?> getBrandById(String id);
   Future<Brands> createBrand({
     required String name,
-    required String arName,
     File? logoFile,
   });
   Future<Brands> updateBrand({
     required String id,
     required String name,
-    required String arName,
     File? logoFile,
   });
   Future<void> deleteBrand(String id);
@@ -45,6 +43,30 @@ class BrandRepository implements BrandRepositoryInterface {
       final brands = (response as List)
           .map((json) => _mapSupabaseToBrand(json))
           .toList();
+
+      // Fetch product counts per brand
+      try {
+        final productCounts = await _client
+            .from('products')
+            .select('brand_id');
+
+        // Count products per brand_id
+        final Map<String, int> countMap = {};
+        for (final row in productCounts) {
+          final brandId = row['brand_id']?.toString();
+          if (brandId != null) {
+            countMap[brandId] = (countMap[brandId] ?? 0) + 1;
+          }
+        }
+
+        // Assign product counts to brands
+        for (final brand in brands) {
+          brand.productQuantity = countMap[brand.id] ?? 0;
+        }
+      } catch (e) {
+        log('BrandRepository: Error fetching product counts - $e');
+        // Continue without product counts
+      }
 
       log('BrandRepository: Fetched ${brands.length} brands');
       return brands;
@@ -77,7 +99,6 @@ class BrandRepository implements BrandRepositoryInterface {
   @override
   Future<Brands> createBrand({
     required String name,
-    required String arName,
     File? logoFile,
   }) async {
     try {
@@ -98,7 +119,6 @@ class BrandRepository implements BrandRepositoryInterface {
           .from('brands')
           .insert({
             'name': name,
-            'ar_name': arName,
             'logo': logoUrl,
           })
           .select()
@@ -116,7 +136,6 @@ class BrandRepository implements BrandRepositoryInterface {
   Future<Brands> updateBrand({
     required String id,
     required String name,
-    required String arName,
     File? logoFile,
   }) async {
     try {
@@ -148,7 +167,6 @@ class BrandRepository implements BrandRepositoryInterface {
 
       final updateData = {
         'name': name,
-        'ar_name': arName,
         if (logoUrl != null) 'logo': logoUrl,
       };
 
@@ -197,7 +215,6 @@ class BrandRepository implements BrandRepositoryInterface {
     return Brands(
       id: json['id'] as String?,
       name: json['name'] as String?,
-      arName: json['ar_name'] as String?,
       logo: json['logo'] as String?,
       createdAt: json['created_at'] as String?,
       updatedAt: json['updated_at'] as String?,

@@ -36,7 +36,6 @@ void main() {
         {
           'id': 'e1',
           'name': 'Travel',
-          'ar_name': 'tr_ar',
           'status': true,
           'version': 1,
           'created_at': '2024-01-01',

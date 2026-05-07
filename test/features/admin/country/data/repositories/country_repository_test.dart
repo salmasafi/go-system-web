@@ -33,14 +33,12 @@ void main() {
         {
           'id': 'country-1',
           'name': 'Saudi Arabia',
-          'ar_name': 'المملكة العربية السعودية',
           'is_default': true,
           'version': 1,
         },
         {
           'id': 'country-2',
           'name': 'United Arab Emirates',
-          'ar_name': 'الإمارات العربية المتحدة',
           'is_default': false,
           'version': 1,
         },
@@ -60,7 +58,6 @@ void main() {
       expect(result.length, 2);
       expect(result[0].id, 'country-1');
       expect(result[0].name, 'Saudi Arabia');
-      expect(result[0].arName, 'المملكة العربية السعودية');
       expect(result[0].isDefault, true);
       expect(result[1].name, 'United Arab Emirates');
     });
@@ -72,7 +69,7 @@ void main() {
       when(() => mockFilterBuilder.then(any())).thenAnswer((_) async {});
 
       await expectLater(
-        repository.createCountry(name: 'Kuwait', arName: 'الكويت'),
+        repository.createCountry(name: 'Kuwait'),
         completes,
       );
     });
@@ -85,7 +82,7 @@ void main() {
       when(() => mockFilterBuilder.then(any())).thenAnswer((_) async {});
 
       await expectLater(
-        repository.updateCountry(countryId: 'country-1', name: 'KSA', arName: 'السعودية'),
+        repository.updateCountry(countryId: 'country-1', name: 'KSA'),
         completes,
       );
     });

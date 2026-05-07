@@ -77,7 +77,6 @@ CREATE TABLE IF NOT EXISTS zones (
 CREATE TABLE IF NOT EXISTS categories (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(100) NOT NULL,
-    ar_name VARCHAR(100),
     description TEXT,
     image TEXT,
     parent_id UUID REFERENCES categories(id) ON DELETE SET NULL,
@@ -90,7 +89,6 @@ CREATE TABLE IF NOT EXISTS categories (
 CREATE TABLE IF NOT EXISTS brands (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(100) NOT NULL,
-    ar_name VARCHAR(100),
     logo TEXT,
     status BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -103,7 +101,6 @@ CREATE TABLE IF NOT EXISTS units (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     code VARCHAR(50) NOT NULL,
     name VARCHAR(100) NOT NULL,
-    ar_name VARCHAR(100),
     base_unit_id UUID REFERENCES units(id) ON DELETE SET NULL,
     operator VARCHAR(10) CHECK (operator IN ('*', '/')),
     operator_value DECIMAL(10,4) DEFAULT 1,
@@ -132,10 +129,8 @@ CREATE TABLE IF NOT EXISTS payment_methods (
 CREATE TABLE IF NOT EXISTS products (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(200) NOT NULL,
-    ar_name VARCHAR(200),
     code VARCHAR(100) UNIQUE,
     description TEXT,
-    ar_description TEXT,
     image TEXT,
     gallery TEXT[], -- Array of image URLs
     brand_id UUID REFERENCES brands(id) ON DELETE SET NULL,
@@ -476,7 +471,6 @@ ALTER TABLE units ADD COLUMN IF NOT EXISTS code VARCHAR(50);
 ALTER TABLE units DROP COLUMN IF EXISTS is_base_unit;
 
 -- Ensure categories columns exist (for reruns)
-ALTER TABLE categories ADD COLUMN IF NOT EXISTS ar_name VARCHAR(100);
 ALTER TABLE categories DROP COLUMN IF EXISTS status;
 
 -- Default payment methods
@@ -488,14 +482,14 @@ INSERT INTO payment_methods (name, code, is_active, is_default) VALUES
 ON CONFLICT DO NOTHING;
 
 -- Default units
-INSERT INTO units (code, name, ar_name, status) VALUES
-    ('pcs', 'Pieces', 'قطع', TRUE),
-    ('kg', 'Kilogram', 'كيلوجرام', TRUE),
-    ('litre', 'Litre', 'لتر', TRUE),
-    ('box', 'Box', 'صندوق', TRUE)
+INSERT INTO units (code, name, status) VALUES
+    ('pcs', 'Pieces', TRUE),
+    ('kg', 'Kilogram', TRUE),
+    ('litre', 'Litre', TRUE),
+    ('box', 'Box', TRUE)
 ON CONFLICT DO NOTHING;
 
 -- Root category
-INSERT INTO categories (name, ar_name) VALUES
-    ('General', 'عام')
+INSERT INTO categories (name) VALUES
+    ('General')
 ON CONFLICT DO NOTHING;

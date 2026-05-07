@@ -18,9 +18,7 @@ void main() {
   DepartmentModel sampleDepartment(String id) => DepartmentModel.fromJson({
         'id': id,
         'name': 'Department $id',
-        'ar_name': 'قسم $id',
         'description': 'Description',
-        'ar_description': 'وصف',
         'created_at': '2024-01-01',
         'updated_at': '2024-01-01',
         '__v': 1,
@@ -62,8 +60,6 @@ void main() {
         when(() => mockRepo.addDepartment(
           name: any(named: 'name'),
           description: any(named: 'description'),
-          arName: any(named: 'arName'),
-          arDescription: any(named: 'arDescription'),
         )).thenAnswer((_) async => {});
         when(() => mockRepo.getAllDepartments()).thenAnswer((_) async => [sampleDepartment('d1')]);
         return DepartmentCubit(mockRepo);
@@ -71,8 +67,6 @@ void main() {
       act: (c) => c.addDepartment(
         name: 'New Department',
         description: 'Description',
-        arName: 'قسم جديد',
-        arDescription: 'وصف',
       ),
       expect: () => [
         isA<CreateDepartmentLoading>(),

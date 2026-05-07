@@ -10,7 +10,6 @@ abstract class PaymentMethodRepositoryInterface {
   Future<List<PaymentMethodModel>> getPaymentMethods();
   Future<void> createPaymentMethod({
     required String name,
-    required String arName,
     required String description,
     required String type,
     required bool isActive,
@@ -19,7 +18,6 @@ abstract class PaymentMethodRepositoryInterface {
   Future<void> updatePaymentMethod({
     required String paymentMethodId,
     required String name,
-    required String arName,
     required String description,
     required String type,
     required bool isActive,
@@ -38,14 +36,12 @@ class PaymentMethodRepository implements PaymentMethodRepositoryInterface {
   @override
   Future<void> createPaymentMethod({
     required String name,
-    required String arName,
     required String description,
     required String type,
     required bool isActive,
     String? iconPath,
   }) => _dataSource.createPaymentMethod(
         name: name,
-        arName: arName,
         description: description,
         type: type,
         isActive: isActive,
@@ -56,7 +52,6 @@ class PaymentMethodRepository implements PaymentMethodRepositoryInterface {
   Future<void> updatePaymentMethod({
     required String paymentMethodId,
     required String name,
-    required String arName,
     required String description,
     required String type,
     required bool isActive,
@@ -64,7 +59,6 @@ class PaymentMethodRepository implements PaymentMethodRepositoryInterface {
   }) => _dataSource.updatePaymentMethod(
         paymentMethodId: paymentMethodId,
         name: name,
-        arName: arName,
         description: description,
         type: type,
         isActive: isActive,
@@ -97,7 +91,6 @@ class _PaymentMethodSupabaseDataSource implements PaymentMethodRepositoryInterfa
   @override
   Future<void> createPaymentMethod({
     required String name,
-    required String arName,
     required String description,
     required String type,
     required bool isActive,
@@ -117,7 +110,6 @@ class _PaymentMethodSupabaseDataSource implements PaymentMethodRepositoryInterfa
 
       await _client.from(_table).insert({
         'name': name,
-        'ar_name': arName,
         'description': description,
         'type': type,
         'is_active': isActive,
@@ -133,7 +125,6 @@ class _PaymentMethodSupabaseDataSource implements PaymentMethodRepositoryInterfa
   Future<void> updatePaymentMethod({
     required String paymentMethodId,
     required String name,
-    required String arName,
     required String description,
     required String type,
     required bool isActive,
@@ -153,7 +144,6 @@ class _PaymentMethodSupabaseDataSource implements PaymentMethodRepositoryInterfa
 
       final updates = {
         'name': name,
-        'ar_name': arName,
         'description': description,
         'type': type,
         'is_active': isActive,
@@ -187,7 +177,6 @@ class _PaymentMethodSupabaseDataSource implements PaymentMethodRepositoryInterfa
     return PaymentMethodModel(
       id: json['id']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
-      arName: json['ar_name']?.toString() ?? '',
       icon: json['icon_url']?.toString() ?? '',
       type: json['type']?.toString() ?? '',
       isActive: json['is_active'] as bool? ?? true,

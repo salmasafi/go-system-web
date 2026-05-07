@@ -28,7 +28,6 @@ class _CashierFormDialogState extends State<CashierFormDialog>
   final _formKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();
-  final _arNameController = TextEditingController();
 
   String? selectedWarehouse;
   bool status = true;
@@ -48,7 +47,6 @@ class _CashierFormDialogState extends State<CashierFormDialog>
   void _initializeControllers() {
     if (isEditMode) {
       _nameController.text = widget.cashier!.name;
-      _arNameController.text = widget.cashier!.arName;
       selectedWarehouse = widget.cashier!.warehouse.id;
       status = widget.cashier!.status;
     }
@@ -77,7 +75,6 @@ class _CashierFormDialogState extends State<CashierFormDialog>
   @override
   void dispose() {
     _nameController.dispose();
-    _arNameController.dispose();
     _animationController.dispose();
     super.dispose();
   }
@@ -129,21 +126,6 @@ class _CashierFormDialogState extends State<CashierFormDialog>
                                       LoginValidator.validateRequired(
                                         v,
                                         LocaleKeys.name.tr(),
-                                      ),
-                                ),
-                                SizedBox(
-                                  height: ResponsiveUI.spacing(context, 12),
-                                ),
-                                buildTextField(
-                                  context,
-                                  controller: _arNameController,
-                                  label: LocaleKeys.arabic_name.tr(),
-                                  icon: Icons.text_fields,
-                                  hint: LocaleKeys.enter_arabic_name.tr(),
-                                  validator: (v) =>
-                                      LoginValidator.validateRequired(
-                                        v,
-                                        LocaleKeys.arabic_name.tr(),
                                       ),
                                 ),
                                 SizedBox(
@@ -451,14 +433,12 @@ class _CashierFormDialogState extends State<CashierFormDialog>
         cubit.updateCashier(
           cashierId: widget.cashier!.id,
           name: _nameController.text.trim(),
-          arName: _arNameController.text.trim(),
           warehouseId: selectedWarehouse,
           status: status,
         );
       } else {
         cubit.createCashier(
           name: _nameController.text.trim(),
-          arName: _arNameController.text.trim(),
           warehouseId: selectedWarehouse,
           status: status,
         );

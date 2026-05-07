@@ -57,7 +57,6 @@ CREATE TABLE public.admins (
 CREATE TABLE public.attribute_types (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name character varying NOT NULL UNIQUE,
-  ar_name character varying NOT NULL,
   status boolean DEFAULT true,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
@@ -67,7 +66,6 @@ CREATE TABLE public.attribute_values (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   attribute_type_id uuid NOT NULL,
   name character varying NOT NULL,
-  ar_name character varying NOT NULL,
   status boolean DEFAULT true,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
@@ -77,7 +75,6 @@ CREATE TABLE public.attribute_values (
 CREATE TABLE public.bank_accounts (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name text NOT NULL,
-  ar_name text,
   account_number text,
   description text,
   image text,
@@ -101,7 +98,6 @@ CREATE TABLE public.bank_accounts (
 CREATE TABLE public.branches (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name text NOT NULL,
-  ar_name text,
   warehouse_id uuid,
   address text,
   phone text,
@@ -113,7 +109,6 @@ CREATE TABLE public.branches (
 CREATE TABLE public.brands (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name text NOT NULL,
-  ar_name text,
   logo text,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
@@ -170,7 +165,6 @@ CREATE TABLE public.cashier_users (
 CREATE TABLE public.cashiers (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name text NOT NULL,
-  ar_name text,
   warehouse_id uuid NOT NULL,
   status boolean DEFAULT true,
   cashier_active boolean DEFAULT false,
@@ -182,7 +176,6 @@ CREATE TABLE public.cashiers (
 CREATE TABLE public.categories (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name text NOT NULL,
-  ar_name text,
   image text,
   parent_id uuid,
   created_at timestamp with time zone DEFAULT now(),
@@ -193,7 +186,6 @@ CREATE TABLE public.categories (
 CREATE TABLE public.cities (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name text NOT NULL,
-  ar_name text,
   country_id uuid NOT NULL,
   shipping_cost numeric DEFAULT 0,
   created_at timestamp with time zone DEFAULT now(),
@@ -204,7 +196,6 @@ CREATE TABLE public.cities (
 CREATE TABLE public.countries (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name text NOT NULL,
-  ar_name text,
   is_default boolean DEFAULT false,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
@@ -260,7 +251,6 @@ CREATE TABLE public.currencies (
 CREATE TABLE public.customer_groups (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name text NOT NULL,
-  ar_name text,
   status boolean DEFAULT true,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
@@ -293,9 +283,7 @@ CREATE TABLE public.customers (
 CREATE TABLE public.departments (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name text NOT NULL,
-  ar_name text,
   description text,
-  ar_description text,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   CONSTRAINT departments_pkey PRIMARY KEY (id)
@@ -321,7 +309,6 @@ CREATE TABLE public.discount_products (
 CREATE TABLE public.discounts (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name text NOT NULL,
-  ar_name text,
   amount numeric NOT NULL DEFAULT 0,
   type text NOT NULL DEFAULT 'percentage'::text,
   status boolean DEFAULT true,
@@ -357,7 +344,6 @@ CREATE TABLE public.exchange_rates (
 CREATE TABLE public.expense_categories (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name text NOT NULL,
-  ar_name text,
   status boolean DEFAULT true,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
@@ -371,6 +357,7 @@ CREATE TABLE public.expenses (
   amount numeric NOT NULL,
   category_id uuid,
   bank_account_id uuid NOT NULL,
+  reason_id uuid,
   shift_id uuid,
   note text,
   created_by uuid,
@@ -384,7 +371,8 @@ CREATE TABLE public.expenses (
   CONSTRAINT expenses_bank_account_id_fkey FOREIGN KEY (bank_account_id) REFERENCES public.bank_accounts(id),
   CONSTRAINT expenses_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.admins(id),
   CONSTRAINT fk_expenses_shift FOREIGN KEY (shift_id) REFERENCES public.shifts(id),
-  CONSTRAINT fk_expense_category FOREIGN KEY (category_id) REFERENCES public.expense_categories(id)
+  CONSTRAINT fk_expense_category FOREIGN KEY (category_id) REFERENCES public.expense_categories(id),
+  CONSTRAINT fk_expenses_reason FOREIGN KEY (reason_id) REFERENCES public.reasons(id)
 );
 CREATE TABLE public.financial_transactions (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
@@ -473,7 +461,6 @@ CREATE TABLE public.online_orders (
 CREATE TABLE public.payment_methods (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name text NOT NULL,
-  ar_name text,
   type text,
   description text,
   icon text,
@@ -544,17 +531,14 @@ CREATE TABLE public.product_warehouses (
 CREATE TABLE public.products (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name text NOT NULL,
-  ar_name text,
   code text NOT NULL UNIQUE,
   description text,
-  ar_description text,
   image text,
   gallery_product ARRAY DEFAULT '{}'::text[],
   price numeric NOT NULL DEFAULT 0,
   whole_price numeric DEFAULT 0,
   start_quantity integer DEFAULT 0,
   cost numeric DEFAULT 0,
-  unit_id uuid,
   brand_id uuid,
   tax_id uuid,
   exp_ability boolean DEFAULT false,
@@ -570,11 +554,9 @@ CREATE TABLE public.products (
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   name_ar text,
-  product_unit character varying,
   purchase_unit character varying,
   sale_unit character varying,
   CONSTRAINT products_pkey PRIMARY KEY (id),
-  CONSTRAINT products_unit_id_fkey FOREIGN KEY (unit_id) REFERENCES public.units(id),
   CONSTRAINT products_tax_id_fkey FOREIGN KEY (tax_id) REFERENCES public.taxes(id),
   CONSTRAINT products_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.admins(id),
   CONSTRAINT products_brand_id_fkey FOREIGN KEY (brand_id) REFERENCES public.brands(id)
@@ -699,7 +681,6 @@ CREATE TABLE public.purchases (
 CREATE TABLE public.reasons (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name text NOT NULL,
-  ar_name text,
   type text NOT NULL,
   status boolean DEFAULT true,
   created_at timestamp with time zone DEFAULT now(),
@@ -709,7 +690,6 @@ CREATE TABLE public.reasons (
 CREATE TABLE public.revenue_categories (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name text NOT NULL,
-  ar_name text,
   status boolean DEFAULT true,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
@@ -744,7 +724,6 @@ CREATE TABLE public.role_permissions (
 CREATE TABLE public.roles (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name text NOT NULL UNIQUE,
-  ar_name text,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   permissions jsonb DEFAULT '[]'::jsonb,
@@ -758,9 +737,7 @@ CREATE TABLE public.sale_item_attributes (
   attribute_type_id uuid NOT NULL,
   attribute_value_id uuid NOT NULL,
   attribute_type_name character varying NOT NULL,
-  attribute_type_ar_name character varying NOT NULL,
   attribute_value_name character varying NOT NULL,
-  attribute_value_ar_name character varying NOT NULL,
   created_at timestamp with time zone DEFAULT now(),
   CONSTRAINT sale_item_attributes_pkey PRIMARY KEY (id),
   CONSTRAINT sale_item_attributes_sale_item_id_fkey FOREIGN KEY (sale_item_id) REFERENCES public.sale_items(id),
@@ -911,7 +888,6 @@ CREATE TABLE public.suppliers (
 CREATE TABLE public.taxes (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name text NOT NULL,
-  ar_name text,
   amount numeric NOT NULL DEFAULT 0,
   type text NOT NULL DEFAULT 'fixed'::text,
   status boolean DEFAULT true,
@@ -960,7 +936,6 @@ CREATE TABLE public.transfers (
 CREATE TABLE public.units (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name text NOT NULL,
-  ar_name text,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   status boolean NOT NULL DEFAULT true,
@@ -1005,7 +980,6 @@ CREATE TABLE public.variation_options (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   variation_id uuid NOT NULL,
   name text NOT NULL,
-  ar_name text,
   status boolean DEFAULT true,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
@@ -1015,7 +989,6 @@ CREATE TABLE public.variation_options (
 CREATE TABLE public.variations (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name text NOT NULL,
-  ar_name text,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   CONSTRAINT variations_pkey PRIMARY KEY (id)
@@ -1035,7 +1008,6 @@ CREATE TABLE public.warehouse_products (
 CREATE TABLE public.warehouses (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name text NOT NULL,
-  ar_name text,
   address text,
   phone text,
   email text,
@@ -1049,7 +1021,6 @@ CREATE TABLE public.warehouses (
 CREATE TABLE public.zones (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name text NOT NULL,
-  ar_name text,
   city_id uuid NOT NULL,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),

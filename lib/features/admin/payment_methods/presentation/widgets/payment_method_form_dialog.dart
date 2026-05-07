@@ -36,7 +36,6 @@ class PaymentMethodFormDialog extends StatefulWidget {
 class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
     with SingleTickerProviderStateMixin {
   final _nameController = TextEditingController();
-  final _arNameController = TextEditingController();
   final _typeController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -59,7 +58,6 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
     // Common setup for both modes
     if (isEditMode) {
       _nameController.text = widget.paymentMethod!.name;
-      _arNameController.text = widget.paymentMethod!.arName;
       _typeController.text = widget.paymentMethod!.type;
       _descriptionController.text = widget.paymentMethod!.description;
       selectedtaxType = widget.paymentMethod!.type.toLowerCase();
@@ -100,7 +98,6 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
   @override
   void dispose() {
     _nameController.dispose();
-    _arNameController.dispose();
     _typeController.dispose();
     _descriptionController.dispose();
     _animationController.dispose();
@@ -170,22 +167,6 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
                                 SizedBox(
                                   height: ResponsiveUI.spacing(context, 12),
                                 ),
-                                buildTextField(
-                                  context,
-                                  controller: _arNameController,
-                                  label: LocaleKeys.payment_method_name_ar.tr(),
-                                  icon: Icons.attach_money_rounded,
-                                  hint: LocaleKeys.enter_payment_method_name_ar
-                                      .tr(),
-                                  validator: (v) =>
-                                      LoginValidator.validateRequired(
-                                        v,
-                                        LocaleKeys.payment_method_name_ar.tr(),
-                                      ),
-                                ),
-                                SizedBox(
-                                  height: ResponsiveUI.spacing(context, 12),
-                                ),
                                 buildDropdownField<String>(
                                   context,
                                   value: selectedtaxType,
@@ -217,11 +198,6 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
                                   label: LocaleKeys.description.tr(),
                                   icon: Icons.description,
                                   hint: LocaleKeys.enter_description.tr(),
-                                  validator: (v) =>
-                                      LoginValidator.validateRequired(
-                                        v,
-                                        LocaleKeys.description.tr(),
-                                      ),
                                   maxLines: 4,
                                 ),
                               ],
@@ -506,7 +482,6 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
         cubit.updatePaymentMethod(
           paymentMethodId: widget.paymentMethod!.id,
           name: _nameController.text.trim(),
-          arName: _arNameController.text.trim(),
           type: selectedtaxType!.toLowerCase(),
           description: _descriptionController.text.trim(),
           isActive: true,
@@ -515,7 +490,6 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
       } else {
         cubit.createPaymentMethod(
           name: _nameController.text.trim(),
-          arName: _arNameController.text.trim(),
           type: selectedtaxType!.toLowerCase(),
           description: _descriptionController.text.trim(),
           isActive: true,

@@ -1,7 +1,9 @@
 import 'dart:developer';
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/features/admin/country/model/country_model.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../model/city_model.dart';
 import 'city_state.dart';
 
@@ -28,7 +30,6 @@ class CityCubit extends Cubit<CityState> {
 
   Future<void> createCity({
     required String name,
-    required String arName,
     required String countryId,
     required String shipingCost,
   }) async {
@@ -36,12 +37,11 @@ class CityCubit extends Cubit<CityState> {
     try {
       await _repository.createCity(
         name: name,
-        arName: arName,
         countryId: countryId,
         shipingCost: shipingCost,
       );
-      emit(CreateCitySuccess('City is created successfully'));
-      getCities();
+      emit(CreateCitySuccess(LocaleKeys.create_city.tr()));
+      await getCities();
     } catch (e) {
       emit(CreateCityError(e.toString().replaceAll('Exception: ', '')));
     }
@@ -50,7 +50,6 @@ class CityCubit extends Cubit<CityState> {
   Future<void> updateCity({
     required String cityId,
     required String name,
-    required String arName,
     required String countryId,
     required String shipingCost,
   }) async {
@@ -59,12 +58,11 @@ class CityCubit extends Cubit<CityState> {
       await _repository.updateCity(
         cityId: cityId,
         name: name,
-        arName: arName,
         countryId: countryId,
         shipingCost: shipingCost,
       );
-      emit(UpdateCitySuccess('City updated successfully'));
-      getCities();
+      emit(UpdateCitySuccess(LocaleKeys.update_city.tr()));
+      await getCities();
     } catch (e) {
       emit(UpdateCityError(e.toString().replaceAll('Exception: ', '')));
     }
@@ -74,8 +72,8 @@ class CityCubit extends Cubit<CityState> {
     emit(DeleteCityLoading());
     try {
       await _repository.deleteCity(cityId);
-      cities.removeWhere((city) => city.id == cityId);
-      emit(DeleteCitySuccess('City deleted successfully'));
+      emit(DeleteCitySuccess(LocaleKeys.delete_city.tr()));
+      await getCities();
     } catch (e) {
       emit(DeleteCityError(e.toString().replaceAll('Exception: ', '')));
     }

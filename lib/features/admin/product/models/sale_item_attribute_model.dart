@@ -8,9 +8,7 @@ class SaleItemAttribute {
   final String attributeTypeId;
   final String attributeValueId;
   final String attributeTypeName;
-  final String attributeTypeArName;
   final String attributeValueName;
-  final String attributeValueArName;
   final DateTime createdAt;
 
   SaleItemAttribute({
@@ -19,9 +17,7 @@ class SaleItemAttribute {
     required this.attributeTypeId,
     required this.attributeValueId,
     required this.attributeTypeName,
-    required this.attributeTypeArName,
     required this.attributeValueName,
-    required this.attributeValueArName,
     required this.createdAt,
   });
 
@@ -32,9 +28,7 @@ class SaleItemAttribute {
       attributeTypeId: json['attribute_type_id'] ?? '',
       attributeValueId: json['attribute_value_id'] ?? '',
       attributeTypeName: json['attribute_type_name'] ?? '',
-      attributeTypeArName: json['attribute_type_ar_name'] ?? '',
       attributeValueName: json['attribute_value_name'] ?? '',
-      attributeValueArName: json['attribute_value_ar_name'] ?? '',
       createdAt: DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
     );
   }
@@ -46,32 +40,14 @@ class SaleItemAttribute {
       'attribute_type_id': attributeTypeId,
       'attribute_value_id': attributeValueId,
       'attribute_type_name': attributeTypeName,
-      'attribute_type_ar_name': attributeTypeArName,
       'attribute_value_name': attributeValueName,
-      'attribute_value_ar_name': attributeValueArName,
       'created_at': createdAt.toIso8601String(),
     };
   }
 
-  /// Returns localized type name
-  String getLocalizedTypeName({bool isArabic = false}) {
-    return isArabic && attributeTypeArName.isNotEmpty 
-        ? attributeTypeArName 
-        : attributeTypeName;
-  }
-
-  /// Returns localized value name
-  String getLocalizedValueName({bool isArabic = false}) {
-    return isArabic && attributeValueArName.isNotEmpty 
-        ? attributeValueArName 
-        : attributeValueName;
-  }
-
   /// Returns display string like "Color: Red"
-  String getDisplayString({bool isArabic = false}) {
-    final typeName = getLocalizedTypeName(isArabic: isArabic);
-    final valueName = getLocalizedValueName(isArabic: isArabic);
-    return '$typeName: $valueName';
+  String getDisplayString() {
+    return '$attributeTypeName: $attributeValueName';
   }
 
   SaleItemAttribute copyWith({
@@ -80,9 +56,7 @@ class SaleItemAttribute {
     String? attributeTypeId,
     String? attributeValueId,
     String? attributeTypeName,
-    String? attributeTypeArName,
     String? attributeValueName,
-    String? attributeValueArName,
     DateTime? createdAt,
   }) {
     return SaleItemAttribute(
@@ -91,9 +65,7 @@ class SaleItemAttribute {
       attributeTypeId: attributeTypeId ?? this.attributeTypeId,
       attributeValueId: attributeValueId ?? this.attributeValueId,
       attributeTypeName: attributeTypeName ?? this.attributeTypeName,
-      attributeTypeArName: attributeTypeArName ?? this.attributeTypeArName,
       attributeValueName: attributeValueName ?? this.attributeValueName,
-      attributeValueArName: attributeValueArName ?? this.attributeValueArName,
       createdAt: createdAt ?? this.createdAt,
     );
   }

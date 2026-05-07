@@ -266,11 +266,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
             label: LocaleKeys.units_title.tr(),
             id: DashboardItem.units,
           ),
-          _ModuleItem(
-            icon: Icons.qr_code_rounded,
-            label: LocaleKeys.print_labels_title.tr(),
-            id: DashboardItem.printLabels,
-          ),
+          // Print Labels hidden from dashboard per request
+          // _ModuleItem(
+          //   icon: Icons.qr_code_rounded,
+          //   label: LocaleKeys.print_labels_title.tr(),
+          //   id: DashboardItem.printLabels,
+          // ),
         ],
       ),
       _DashboardGroup(
@@ -551,9 +552,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: const UnitsScreen(),
         );
         break;
-      case DashboardItem.printLabels:
-        screen = const PrintLabelsScreen();
-        break;
+      // Print Labels hidden from dashboard per request
+      // case DashboardItem.printLabels:
+      //   screen = const PrintLabelsScreen();
+      //   break;
       case DashboardItem.financialAccounts:
         screen = BlocProvider(
           create: (_) => BankAccountCubit(BankAccountRepository()),

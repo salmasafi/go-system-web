@@ -46,7 +46,6 @@ class PaymentMethodData {
 class PaymentMethodModel {
   final String id;
   final String name;
-  final String arName;
   final String type;
   final String description;
   final String? icon;
@@ -58,7 +57,6 @@ class PaymentMethodModel {
   PaymentMethodModel({
     required this.id,
     required this.name,
-    required this.arName,
     required this.type,
     required this.description,
     this.icon,
@@ -68,22 +66,19 @@ class PaymentMethodModel {
     required this.updatedAt,
   });
 
-  // Fix: Handle null 'country' in JSON (e.g., second PaymentMethod in your response has "country": null)
-  // Also specify Map<String, dynamic> for type safety
   factory PaymentMethodModel.fromJson(Map<String, dynamic> json) {
     return PaymentMethodModel(
       id: (json['id'] ?? json['_id'])?.toString() ?? '',
       name: (json['name']?.toString()) ?? '',
-      arName: (json['ar_name']?.toString()) ?? '',
       type: (json['type']?.toString()) ?? '',
       description: (json['discription']?.toString()) ?? '',
       icon: json['icon']?.toString(),
       isActive: json['isActive'] as bool? ?? false,
       version: json['__v'] as int? ?? 0,
-      createdAt: json['createdAt'] != null 
+      createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'].toString())
           : DateTime.now(),
-      updatedAt: json['updatedAt'] != null 
+      updatedAt: json['updatedAt'] != null
           ? DateTime.parse(json['updatedAt'].toString())
           : DateTime.now(),
     );
@@ -93,7 +88,6 @@ class PaymentMethodModel {
     return {
       '_id': id,
       'name': name,
-      'ar_name': arName,
       'discription': description,
       'icon': icon,
       'isActive': isActive,

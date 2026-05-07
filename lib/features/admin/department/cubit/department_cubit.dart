@@ -29,16 +29,12 @@ class DepartmentCubit extends Cubit<DepartmentState> {
   Future<void> addDepartment({
     required String name,
     required String description,
-    required String arName,
-    required String arDescription,
   }) async {
     emit(CreateDepartmentLoading());
     try {
       await _repository.addDepartment(
         name: name,
         description: description,
-        arName: arName,
-        arDescription: arDescription,
       );
       emit(CreateDepartmentSuccess("Department created successfully"));
       getAllDepartments();
@@ -51,8 +47,6 @@ class DepartmentCubit extends Cubit<DepartmentState> {
     required String departmentId,
     required String name,
     required String description,
-    required String arName,
-    required String arDescription,
   }) async {
     emit(UpdateDepartmentLoading());
     try {
@@ -60,8 +54,6 @@ class DepartmentCubit extends Cubit<DepartmentState> {
         id: departmentId,
         name: name,
         description: description,
-        arName: arName,
-        arDescription: arDescription,
       );
       emit(UpdateDepartmentSuccess("Department updated successfully"));
       getAllDepartments();

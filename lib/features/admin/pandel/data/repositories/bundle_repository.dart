@@ -181,7 +181,6 @@ class _BundleSupabaseDataSource implements BundleRepositoryInterface {
         // Note: productPriceId removed in migration 014
         quantity: bp['quantity'],
         productName: product?['name'],
-        productArName: product?['ar_name'],
         productImage: product?['image'],
         productPrice: (product?['price'] as num?)?.toDouble(),
       );

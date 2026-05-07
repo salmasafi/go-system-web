@@ -163,7 +163,7 @@ class _CreatePandelScreenState extends State<CreatePandelScreen> {
                             title: Text(p.name),
                             subtitle: p.variations.isNotEmpty && isSelected
                                 ? DropdownButton<String>(
-                                    hint: Text('Select variation'),
+                                    hint: Text('Select attribute'),
                                     value: selectedPriceId,
                                     isExpanded: true,
                                     onChanged: (value) => setModal(() {
@@ -550,6 +550,48 @@ class _CreatePandelScreenState extends State<CreatePandelScreen> {
                             title: LocaleKeys.pandel_name.tr(),
                             hint: LocaleKeys.enter_pandel_name.tr(),
                           ),
+                          _buildTextField(
+                            controller: _priceController,
+                            title: LocaleKeys.price.tr(),
+                            hint: LocaleKeys.enter_price.tr(),
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          ),
+                          _buildDatePicker(
+                            selectedDate: _startDate,
+                            title: LocaleKeys.start_date.tr(),
+                            hint: LocaleKeys.select_start_date.tr(),
+                            onTap: () => _selectDate(context, true),
+                          ),
+                          _buildDatePicker(
+                            selectedDate: _endDate,
+                            title: LocaleKeys.end_date.tr(),
+                            hint: LocaleKeys.select_end_date.tr(),
+                            onTap: () => _selectDate(context, false),
+                          ),
+                          _buildImagesPicker(),
+                          SizedBox(height: ResponsiveUI.spacing(context, 16)),
+                          if (productsState is ProductsSuccess) ...[
+                            Text(
+                              LocaleKeys.select_products.tr(),
+                              style: TextStyle(
+                                fontSize: ResponsiveUI.fontSize(context, 14),
+                                color: AppColors.darkGray,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            SizedBox(height: ResponsiveUI.spacing(context, 8)),
+                            OutlinedButton.icon(
+                              onPressed: () => _openProductSelector(productsState.products),
+                              icon: const Icon(Icons.add_shopping_cart),
+                              label: Text(
+                                _selectedProducts.isEmpty
+                                    ? LocaleKeys.select_products.tr()
+                                    : '${_selectedProducts.length} ${LocaleKeys.selected.tr()}',
+                              ),
+                            ),
+                          ] else if (productsState is ProductsLoading) ...[
+                            const Center(child: CircularProgressIndicator()),
+                          ],
                           SizedBox(height: ResponsiveUI.spacing(context, 32)),
                           SizedBox(
                             width: double.infinity,

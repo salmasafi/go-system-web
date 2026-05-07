@@ -71,6 +71,14 @@ class _RoleSupabaseDataSource implements RoleRepositoryInterface {
       final response = await _client.from('roles').select().order('name');
       return (response as List).map((json) => _mapSupabaseToRoleModel(json)).toList();
     } catch (e) {
+      if (e is PostgrestException && (e.code == 'PGRST303' || e.code == 'PGRST301')) {
+        try {
+          log('RoleSupabase: JWT expired, attempting session refresh');
+          await _client.auth.refreshSession();
+          final response = await _client.from('roles').select().order('name');
+          return (response as List).map((json) => _mapSupabaseToRoleModel(json)).toList();
+        } catch (_) {}
+      }
       log('RoleSupabase: Error fetching roles - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }

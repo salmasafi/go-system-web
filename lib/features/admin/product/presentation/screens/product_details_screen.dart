@@ -172,7 +172,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                   ? product.categoryId.first.name
                                   : 'لا توجد فئة',
                             ),
-                            ProductInfoItem(label: 'الوحدة', value: product.unit),
+                            ProductInfoItem(label: 'وحدة البيع', value: product.saleUnit.isNotEmpty ? product.saleUnit : '-'),
+                            ProductInfoItem(label: 'وحدة الشراء', value: product.purchaseUnit.isNotEmpty ? product.purchaseUnit : '-'),
                             ProductInfoItem(
                               label: 'الكمية',
                               value: '${product.quantity}',

@@ -99,7 +99,7 @@ class _CashierSelectionScreenState extends State<CashierSelectionScreen> {
                   ),
                   subtitle: isBusy
                       ? const Text("Occupied", style: TextStyle(color: AppColors.red))
-                      : Text(cashier.arName),
+                      : Text(cashier.name),
                   trailing: isBusy
                       ? Icon(Icons.block, color: AppColors.red)
                       : Icon(Icons.arrow_forward_ios, size: ResponsiveUI.iconSize(context, 16), color: AppColors.primaryBlue),

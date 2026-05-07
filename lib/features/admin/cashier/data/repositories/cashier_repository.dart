@@ -9,14 +9,12 @@ abstract class CashierRepositoryInterface {
   Future<List<CashierModel>> getAllCashiers();
   Future<void> createCashier({
     required String name,
-    required String arName,
     String? warehouseId,
     required bool status,
   });
   Future<void> updateCashier({
     required String id,
     required String name,
-    required String arName,
     String? warehouseId,
     required bool status,
   });
@@ -33,12 +31,10 @@ class CashierRepository implements CashierRepositoryInterface {
   @override
   Future<void> createCashier({
     required String name,
-    required String arName,
     String? warehouseId,
     required bool status,
   }) => _dataSource.createCashier(
         name: name,
-        arName: arName,
         warehouseId: warehouseId,
         status: status,
       );
@@ -47,13 +43,11 @@ class CashierRepository implements CashierRepositoryInterface {
   Future<void> updateCashier({
     required String id,
     required String name,
-    required String arName,
     String? warehouseId,
     required bool status,
   }) => _dataSource.updateCashier(
         id: id,
         name: name,
-        arName: arName,
         warehouseId: warehouseId,
         status: status,
       );
@@ -81,7 +75,6 @@ class _CashierSupabaseDataSource implements CashierRepositoryInterface {
   @override
   Future<void> createCashier({
     required String name,
-    required String arName,
     String? warehouseId,
     required bool status,
   }) async {
@@ -89,7 +82,6 @@ class _CashierSupabaseDataSource implements CashierRepositoryInterface {
       log('CashierSupabase: Creating cashier: $name');
       await _client.from('cashiers').insert({
         'name': name,
-        'ar_name': arName,
         'warehouse_id': warehouseId,
         'status': status,
       });
@@ -103,7 +95,6 @@ class _CashierSupabaseDataSource implements CashierRepositoryInterface {
   Future<void> updateCashier({
     required String id,
     required String name,
-    required String arName,
     String? warehouseId,
     required bool status,
   }) async {
@@ -111,7 +102,6 @@ class _CashierSupabaseDataSource implements CashierRepositoryInterface {
       log('CashierSupabase: Updating cashier: $id');
       await _client.from('cashiers').update({
         'name': name,
-        'ar_name': arName,
         'warehouse_id': warehouseId,
         'status': status,
       }).eq('id', id);
@@ -137,7 +127,6 @@ class _CashierSupabaseDataSource implements CashierRepositoryInterface {
     return CashierModel(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
-      arName: json['ar_name'] ?? '',
       warehouse: warehouse != null ? WarehouseFromCashier(
         id: warehouse['id'] ?? '',
         name: warehouse['name'] ?? '',

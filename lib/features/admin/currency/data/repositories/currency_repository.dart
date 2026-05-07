@@ -9,14 +9,12 @@ abstract class CurrencyRepositoryInterface {
   Future<List<CurrencyModel>> getCurrencies();
   Future<void> createCurrency({
     required String name,
-    required String arName,
     required double amount,
     required bool isDefault,
   });
   Future<void> updateCurrency({
     required String currencyId,
     required String name,
-    required String arName,
     required double amount,
     required bool isDefault,
   });
@@ -33,12 +31,10 @@ class CurrencyRepository implements CurrencyRepositoryInterface {
   @override
   Future<void> createCurrency({
     required String name,
-    required String arName,
     required double amount,
     required bool isDefault,
   }) => _dataSource.createCurrency(
         name: name,
-        arName: arName,
         amount: amount,
         isDefault: isDefault,
       );
@@ -47,13 +43,11 @@ class CurrencyRepository implements CurrencyRepositoryInterface {
   Future<void> updateCurrency({
     required String currencyId,
     required String name,
-    required String arName,
     required double amount,
     required bool isDefault,
   }) => _dataSource.updateCurrency(
         currencyId: currencyId,
         name: name,
-        arName: arName,
         amount: amount,
         isDefault: isDefault,
       );
@@ -81,7 +75,6 @@ class _CurrencySupabaseDataSource implements CurrencyRepositoryInterface {
   @override
   Future<void> createCurrency({
     required String name,
-    required String arName,
     required double amount,
     required bool isDefault,
   }) async {
@@ -94,7 +87,6 @@ class _CurrencySupabaseDataSource implements CurrencyRepositoryInterface {
 
       await _client.from('currencies').insert({
         'name': name,
-        'ar_name': arName,
         'exchange_rate': amount,
         'is_default': isDefault,
       });
@@ -108,7 +100,6 @@ class _CurrencySupabaseDataSource implements CurrencyRepositoryInterface {
   Future<void> updateCurrency({
     required String currencyId,
     required String name,
-    required String arName,
     required double amount,
     required bool isDefault,
   }) async {
@@ -121,7 +112,6 @@ class _CurrencySupabaseDataSource implements CurrencyRepositoryInterface {
 
       await _client.from('currencies').update({
         'name': name,
-        'ar_name': arName,
         'exchange_rate': amount,
         'is_default': isDefault,
       }).eq('id', currencyId);
@@ -146,7 +136,6 @@ class _CurrencySupabaseDataSource implements CurrencyRepositoryInterface {
     return CurrencyModel(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
-      arName: json['ar_name'] ?? '',
       amount: (json['exchange_rate'] ?? 0).toDouble(),
       isDefault: json['is_default'] ?? false,
       version: json['version'] ?? 1,

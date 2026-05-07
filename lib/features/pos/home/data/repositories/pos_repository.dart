@@ -111,9 +111,8 @@ class _POSSupabaseDataSource implements POSRepositoryInterface {
           .from(_productsTable)
           .select('''
             *,
-            unit:units(*),
             brand:brands(id, name, logo),
-            categories:product_categories(category:category_id(id, name, ar_name))
+            categories:product_categories(category:category_id(id, name))
           ''')
           .eq('barcode', barcode)
           .maybeSingle();
@@ -139,9 +138,8 @@ class _POSSupabaseDataSource implements POSRepositoryInterface {
           .from(_productsTable)
           .select('''
             *,
-            unit:units(*),
             brand:brands(id, name, logo),
-            categories:product_categories(category:category_id(id, name, ar_name))
+            categories:product_categories(category:category_id(id, name))
           ''')
           .ilike('code', code)
           .maybeSingle();
@@ -167,9 +165,8 @@ class _POSSupabaseDataSource implements POSRepositoryInterface {
           .from(_productsTable)
           .select('''
             *,
-            unit:units(*),
             brand:brands(id, name, logo),
-            categories:product_categories(category:category_id(id, name, ar_name))
+            categories:product_categories(category:category_id(id, name))
           ''')
           .or('name.ilike.%$query%,code.ilike.%$query%,barcode.ilike.%$query%')
           .eq('status', 'active')
@@ -194,9 +191,8 @@ class _POSSupabaseDataSource implements POSRepositoryInterface {
           .from(_productsTable)
           .select('''
             *,
-            unit:units(*),
             brand:brands(id, name, logo),
-            categories:product_categories!inner(category:category_id(id, name, ar_name))
+            categories:product_categories!inner(category:category_id(id, name))
           ''')
           .eq('product_categories.category_id', categoryId)
           .eq('status', 'active')
@@ -222,9 +218,8 @@ class _POSSupabaseDataSource implements POSRepositoryInterface {
           .from(_productsTable)
           .select('''
             *,
-            unit:units(*),
             brand:brands(id, name, logo),
-            categories:product_categories(category:category_id(id, name, ar_name))
+            categories:product_categories(category:category_id(id, name))
           ''')
           .eq('status', 'active')
           .order('sales_count', ascending: false)
@@ -248,9 +243,8 @@ class _POSSupabaseDataSource implements POSRepositoryInterface {
           .from(_productsTable)
           .select('''
             *,
-            unit:units(*),
             brand:brands(id, name, logo),
-            categories:product_categories(category:category_id(id, name, ar_name))
+            categories:product_categories(category:category_id(id, name))
           ''')
           .lte('quantity', 10)
           .eq('status', 'active')

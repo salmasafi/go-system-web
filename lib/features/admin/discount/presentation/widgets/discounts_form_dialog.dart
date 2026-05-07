@@ -149,13 +149,14 @@ class _DiscountFormDialogState extends State<DiscountFormDialog>
                                   controller: _amountController,
                                   label: LocaleKeys.discount_amount.tr(),
                                   icon: Icons.attach_money,
+                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
                                   hint: LocaleKeys.please_enter_minimum_amount
                                       .tr(),
                                   validator: (v) {
                                     if (v == null || v.isEmpty) {
                                       return LocaleKeys.enter_amount.tr();
                                     }
-                                    if (double.tryParse(v) == null) {
+                                    if (double.tryParse(v.replaceAll(',', '.')) == null) {
                                       return LocaleKeys.invalid_number.tr();
                                     }
                                     return null;
@@ -282,14 +283,14 @@ class _DiscountFormDialogState extends State<DiscountFormDialog>
           discountId: widget.discount!.id,
           name: _nameController.text.trim(),
           type: selectedType!.toLowerCase(),
-          amount: double.parse(_amountController.text),
+          amount: double.parse(_amountController.text.replaceAll(',', '.')),
           status: status,
         );
       } else {
         cubit.createDiscount(
           name: _nameController.text.trim(),
           type: selectedType!.toLowerCase(),
-          amount: double.parse(_amountController.text),
+          amount: double.parse(_amountController.text.replaceAll(',', '.')),
           status: status,
         );
       }

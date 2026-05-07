@@ -113,7 +113,6 @@ class PandelProduct {
 
   // Extra fields from the nested productId object (read-only, not sent to API)
   final String? productName;
-  final String? productArName;
   final String? productImage;
   final double? productPrice;
 
@@ -121,7 +120,6 @@ class PandelProduct {
     required this.productId,
     required this.quantity,
     this.productName,
-    this.productArName,
     this.productImage,
     this.productPrice,
   });
@@ -131,14 +129,12 @@ class PandelProduct {
     final rawProductId = json['productId'];
     final String resolvedProductId;
     String? productName;
-    String? productArName;
     String? productImage;
     double? productPrice;
 
     if (rawProductId is Map<String, dynamic>) {
       resolvedProductId = rawProductId['_id'] ?? '';
       productName = rawProductId['name'];
-      productArName = rawProductId['ar_name'];
       productImage = rawProductId['image'];
       productPrice = (rawProductId['price'] as num?)?.toDouble();
     } else {
@@ -149,7 +145,6 @@ class PandelProduct {
       productId: resolvedProductId,
       quantity: (json['quantity'] as num?)?.toInt() ?? 1,
       productName: productName,
-      productArName: productArName,
       productImage: productImage,
       productPrice: productPrice,
     );

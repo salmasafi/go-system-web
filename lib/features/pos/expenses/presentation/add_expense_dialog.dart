@@ -8,6 +8,7 @@ import 'package:GoSystem/features/pos/expenses/model/expense_model.dart';
 import 'package:GoSystem/features/admin/bank_account/cubit/bank_account_cubit.dart';
 import 'package:GoSystem/features/admin/bank_account/model/bank_account_model.dart';
 import 'package:GoSystem/features/admin/expences_category/model/expences_categories_model.dart';
+import 'package:GoSystem/features/admin/reason/model/reason_model.dart';
 
 const _purple = Color(0xFF7C3AED);
 
@@ -27,6 +28,7 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
   late final TextEditingController _noteCtrl;
   ExpenseCategoryModel? _selectedCategory;
   BankAccountModel? _selectedAccount;
+  ReasonModel? _selectedReason;
 
   bool get _isEdit => widget.expense != null;
 
@@ -38,9 +40,11 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
     _amountCtrl =
         TextEditingController(text: e != null ? e.amount.toString() : '');
     _noteCtrl = TextEditingController(text: e?.note ?? '');
-    // Load categories when dialog opens
+    // Load categories and reasons when dialog opens
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ExpenseCubit>().getCategories();
+      final cubit = context.read<ExpenseCubit>();
+      cubit.getCategories();
+      cubit.getReasons();
     });
   }
 
@@ -81,6 +85,7 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
             amount: amount,
             note: _noteCtrl.text.trim(),
             financialAccountId: _selectedAccount!.id,
+            reasonId: _selectedReason?.id,
           );
     } else {
       context.read<ExpenseCubit>().addExpense(
@@ -89,13 +94,14 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
             amount: amount,
             note: _noteCtrl.text.trim(),
             financialAccountId: _selectedAccount!.id,
+            reasonId: _selectedReason?.id,
           );
     }
   }
 
-  /// Pre-select category & account once lists are loaded
+  /// Pre-select category, account & reason once lists are loaded
   void _tryPreselect(
-      List<ExpenseCategoryModel> cats, List<BankAccountModel> accs) {
+      List<ExpenseCategoryModel> cats, List<BankAccountModel> accs, List<ReasonModel> reasons) {
     final e = widget.expense;
     if (e == null) return;
     if (_selectedCategory == null && cats.isNotEmpty) {
@@ -105,6 +111,10 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
     if (_selectedAccount == null && accs.isNotEmpty) {
       final match = accs.where((a) => a.id == e.financialAccountId);
       if (match.isNotEmpty) setState(() => _selectedAccount = match.first);
+    }
+    if (_selectedReason == null && reasons.isNotEmpty && e.reasonId.isNotEmpty) {
+      final match = reasons.where((r) => r.id == e.reasonId);
+      if (match.isNotEmpty) setState(() => _selectedReason = match.first);
     }
   }
 
@@ -178,7 +188,8 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
                   final accs = accState is GetBankAccountsSuccess
                       ? accState.accounts
                       : <BankAccountModel>[];
-                  _tryPreselect(cats, accs);
+                  final reasons = context.read<ExpenseCubit>().reasons;
+                  _tryPreselect(cats, accs, reasons);
                   return _DropdownField<ExpenseCategoryModel>(
                     hint: state is ExpenseCategoriesLoading
                         ? 'Loading...'
@@ -187,6 +198,25 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
                     items: cats,
                     itemLabel: (c) => c.name,
                     onChanged: (v) => setState(() => _selectedCategory = v),
+                  );
+                },
+              ),
+              SizedBox(height: ResponsiveUI.spacing(context, 16)),
+
+              // ── Reason ──
+              _Label('Reason'),
+              SizedBox(height: ResponsiveUI.spacing(context, 6)),
+              BlocBuilder<ExpenseCubit, ExpenseState>(
+                builder: (context, state) {
+                  final reasons = context.read<ExpenseCubit>().reasons;
+                  return _DropdownField<ReasonModel>(
+                    hint: state is ExpenseReasonsLoading
+                        ? 'Loading...'
+                        : 'Select Reason (Optional)',
+                    value: _selectedReason,
+                    items: reasons,
+                    itemLabel: (r) => r.reason,
+                    onChanged: (v) => setState(() => _selectedReason = v),
                   );
                 },
               ),
@@ -216,11 +246,6 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
                   final accs = state is GetBankAccountsSuccess
                       ? state.accounts
                       : <BankAccountModel>[];
-                  final catState = context.read<ExpenseCubit>().state;
-                  final cats = catState is ExpenseCategoriesLoaded
-                      ? catState.categories
-                      : <ExpenseCategoryModel>[];
-                  _tryPreselect(cats, accs);
                   return _DropdownField<BankAccountModel>(
                     hint: state is GetBankAccountsLoading
                         ? 'Loading...'

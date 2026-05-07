@@ -23,7 +23,6 @@ class CurrencyFormDialog extends StatefulWidget {
 class _CurrencyFormDialogState extends State<CurrencyFormDialog>
     with SingleTickerProviderStateMixin {
   final _nameController = TextEditingController();
-  final _arNameController = TextEditingController();
   final _amountController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool status = true;
@@ -42,7 +41,6 @@ class _CurrencyFormDialogState extends State<CurrencyFormDialog>
   void _initializeControllers() {
     if (isEditMode) {
       _nameController.text = widget.currency!.name;
-      _arNameController.text = widget.currency!.arName;
       _amountController.text = widget.currency!.amount.toString();
       status = widget.currency!.isDefault;
     }
@@ -63,7 +61,7 @@ class _CurrencyFormDialogState extends State<CurrencyFormDialog>
   @override
   void dispose() {
     _nameController.dispose();
-    _arNameController.dispose();
+    _amountController.dispose();
     _animationController.dispose();
     super.dispose();
   }
@@ -139,22 +137,6 @@ class _CurrencyFormDialogState extends State<CurrencyFormDialog>
                                       ),
                                 ),
                                 SizedBox(
-                                  height: ResponsiveUI.spacing(context, 12),
-                                ),
-                                buildTextField(
-                                  context,
-                                  controller: _arNameController,
-                                  label: LocaleKeys.currency_name_ar_label.tr(),
-                                  icon: Icons.monetization_on_rounded,
-                                  hint: LocaleKeys.hint_currency_name_ar_dialog.tr(),
-                                  validator: (v) =>
-                                      LoginValidator.validateRequired(
-                                        v,
-                                        LocaleKeys.currency_name_ar_label.tr(),
-                                      ),
-                                ),
-
-                                 SizedBox(
                                   height: ResponsiveUI.spacing(context, 12),
                                 ),
                                 Row(
@@ -243,14 +225,12 @@ class _CurrencyFormDialogState extends State<CurrencyFormDialog>
         cubit.updateCurrency(
           currencyId: widget.currency!.id,
           name: _nameController.text.trim(),
-          arName: _arNameController.text.trim(),
           isDefault: status,
           amount: amount,
         );
       } else {
         cubit.createCurrency(
           name: _nameController.text.trim(),
-          arName: _arNameController.text.trim(),
           isDefault: status,
           amount: amount,
         );

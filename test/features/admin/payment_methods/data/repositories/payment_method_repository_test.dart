@@ -35,7 +35,6 @@ void main() {
         {
           'id': 'pm-1',
           'name': 'Cash',
-          'ar_name': 'نقدي',
           'type': 'cash',
           'description': 'Pay with cash',
           'icon_url': null,
@@ -47,7 +46,6 @@ void main() {
         {
           'id': 'pm-2',
           'name': 'Credit Card',
-          'ar_name': 'بطاقة ائتمان',
           'type': 'card',
           'description': 'Pay with credit card',
           'icon_url': 'card_icon.png',
@@ -72,7 +70,6 @@ void main() {
       expect(result.length, 2);
       expect(result[0].id, 'pm-1');
       expect(result[0].name, 'Cash');
-      expect(result[0].arName, 'نقدي');
       expect(result[0].type, 'cash');
       expect(result[0].isActive, true);
       expect(result[1].name, 'Credit Card');
@@ -87,7 +84,6 @@ void main() {
       await expectLater(
         repository.createPaymentMethod(
           name: 'Bank Transfer',
-          arName: 'تحويل بنكي',
           description: 'Pay via bank transfer',
           type: 'bank',
           isActive: true,
@@ -107,7 +103,6 @@ void main() {
         repository.updatePaymentMethod(
           paymentMethodId: 'pm-1',
           name: 'Cash Payment',
-          arName: 'دفع نقدي',
           description: 'Updated description',
           type: 'cash',
           isActive: true,

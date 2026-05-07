@@ -8,7 +8,6 @@
 CREATE TABLE IF NOT EXISTS taxes (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(100) NOT NULL,
-    ar_name VARCHAR(100),
     rate DECIMAL(5,2) NOT NULL DEFAULT 0.00,
     type VARCHAR(20) NOT NULL DEFAULT 'percentage', -- percentage, fixed
     is_active BOOLEAN DEFAULT true,
@@ -63,7 +62,6 @@ CREATE POLICY "Taxes delete access for admins only" ON taxes
 CREATE TABLE IF NOT EXISTS discounts (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(100) NOT NULL,
-    ar_name VARCHAR(100),
     type VARCHAR(20) NOT NULL DEFAULT 'percentage', -- percentage, fixed_amount
     value DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     is_active BOOLEAN DEFAULT true,
@@ -123,7 +121,6 @@ CREATE TABLE IF NOT EXISTS coupons (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     code VARCHAR(50) UNIQUE NOT NULL,
     name VARCHAR(100) NOT NULL,
-    ar_name VARCHAR(100),
     type VARCHAR(20) NOT NULL DEFAULT 'percentage', -- percentage, fixed_amount
     value DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     is_active BOOLEAN DEFAULT true,

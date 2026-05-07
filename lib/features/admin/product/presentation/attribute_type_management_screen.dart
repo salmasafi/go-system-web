@@ -68,8 +68,7 @@ class _AttributeTypeManagementScreenState extends State<AttributeTypeManagementS
 
     List<AttributeType> filteredTypes = attributeTypes
         .where(
-          (type) => type.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-              type.arName.toLowerCase().contains(_searchQuery.toLowerCase()),
+          (type) => type.name.toLowerCase().contains(_searchQuery.toLowerCase()),
         )
         .toList();
 

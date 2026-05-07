@@ -43,8 +43,6 @@ class DepartmentModel {
   final String id;
   final String name;
   final String description;
-  final String? arName;
-  final String? arDescription;
   final String createdAt;
   final String updatedAt;
   final int version;
@@ -53,8 +51,6 @@ class DepartmentModel {
     required this.id,
     required this.name,
     required this.description,
-    required this.arName,
-    required this.arDescription,
     required this.createdAt,
     required this.updatedAt,
     required this.version,
@@ -65,8 +61,6 @@ class DepartmentModel {
       id: (json['id'] ?? json['_id'])?.toString() ?? '',
       name: json['name'] as String? ?? '',
       description: json['description'] as String,
-      arName: json['ar_name'] as String?,
-      arDescription: json['ar_description'] as String?,
       createdAt: json['createdAt'] as String,
       updatedAt: json['updatedAt'] as String,
       version: json['__v'] as int,
@@ -78,8 +72,6 @@ class DepartmentModel {
       '_id': id,
       'name': name,
       'description': description,
-      'ar_name': arName,
-      'ar_description': arDescription,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       '__v': version,

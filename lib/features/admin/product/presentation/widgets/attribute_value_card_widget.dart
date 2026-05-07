@@ -52,14 +52,6 @@ class AttributeValueCard extends StatelessWidget {
                       color: AppColors.black,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    attributeValue.arName,
-                    style: TextStyle(
-                      fontSize: ResponsiveUI.fontSize(context, 14),
-                      color: AppColors.black,
-                    ),
-                  ),
                 ],
               ),
             ),

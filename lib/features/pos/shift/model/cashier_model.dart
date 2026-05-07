@@ -3,7 +3,6 @@
 class CashierModel {
   final String id;
   final String name;
-  final String arName;
   final String warehouseId;
   final WarehouseModel? warehouse;
   final bool status;
@@ -15,7 +14,6 @@ class CashierModel {
   CashierModel({
     required this.id,
     required this.name,
-    required this.arName,
     required this.warehouseId,
     this.warehouse,
     required this.status,
@@ -29,12 +27,11 @@ class CashierModel {
     return CashierModel(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
-      arName: json['ar_name'] ?? '',
       warehouseId: json['warehouse_id'] ?? '',
-      warehouse: json['warehouse'] != null 
-          ? WarehouseModel.fromJson(json['warehouse']) 
-          : (json['warehouse_id'] is Map 
-              ? WarehouseModel.fromJson(json['warehouse_id']) 
+      warehouse: json['warehouse'] != null
+          ? WarehouseModel.fromJson(json['warehouse'])
+          : (json['warehouse_id'] is Map
+              ? WarehouseModel.fromJson(json['warehouse_id'])
               : null),
       status: json['status'] ?? false,
       cashierActive: json['cashier_active'] ?? false,
@@ -51,7 +48,6 @@ class CashierModel {
     return {
       'id': id,
       'name': name,
-      'ar_name': arName,
       'warehouse_id': warehouseId,
       'status': status,
       'cashier_active': cashierActive,
@@ -65,12 +61,10 @@ class CashierModel {
 class WarehouseModel {
   final String id;
   final String name;
-  final String? arName;
 
   WarehouseModel({
-    required this.id, 
+    required this.id,
     required this.name,
-    this.arName,
   });
 
   factory WarehouseModel.fromJson(dynamic json) {
@@ -78,7 +72,6 @@ class WarehouseModel {
       return WarehouseModel(
         id: json['id'] ?? json['_id'] ?? '',
         name: json['name'] ?? '',
-        arName: json['ar_name'],
       );
     } else if (json is String) {
       return WarehouseModel(
@@ -93,7 +86,6 @@ class WarehouseModel {
     return {
       'id': id,
       'name': name,
-      'ar_name': arName,
     };
   }
 }

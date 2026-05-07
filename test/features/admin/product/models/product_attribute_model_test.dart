@@ -14,7 +14,6 @@ void main() {
         'attribute_type': {
           'id': 'type-1',
           'name': 'Color',
-          'ar_name': 'لون',
           'status': true,
           'created_at': '2026-01-01T00:00:00.000Z',
           'updated_at': '2026-01-01T00:00:00.000Z',
@@ -24,7 +23,6 @@ void main() {
             'id': 'val-1',
             'attribute_type_id': 'type-1',
             'name': 'Red',
-            'ar_name': 'أحمر',
             'status': true,
             'created_at': '2026-01-01T00:00:00.000Z',
             'updated_at': '2026-01-01T00:00:00.000Z',
@@ -80,11 +78,10 @@ void main() {
       expect(model.hasValue('val-3'), isFalse);
     });
 
-    test('getLocalizedTypeName should return correct localization', () {
+    test('getLocalizedTypeName should return name', () {
       final type = AttributeType(
         id: 'type-1',
         name: 'Color',
-        arName: 'لون',
         status: true,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
@@ -101,14 +98,14 @@ void main() {
       );
 
       expect(model.getLocalizedTypeName(isArabic: false), 'Color');
-      expect(model.getLocalizedTypeName(isArabic: true), 'لون');
+      expect(model.getLocalizedTypeName(isArabic: true), 'Color');
     });
 
     test('getLocalizedValueNames should filter based on available and selected IDs', () {
       final available = [
-        AttributeValue(id: 'val-1', attributeTypeId: 't-1', name: 'Red', arName: 'أحمر', status: true, createdAt: DateTime.now(), updatedAt: DateTime.now()),
-        AttributeValue(id: 'val-2', attributeTypeId: 't-1', name: 'Blue', arName: 'أزرق', status: true, createdAt: DateTime.now(), updatedAt: DateTime.now()),
-        AttributeValue(id: 'val-3', attributeTypeId: 't-1', name: 'Green', arName: 'أخضر', status: true, createdAt: DateTime.now(), updatedAt: DateTime.now()),
+        AttributeValue(id: 'val-1', attributeTypeId: 't-1', name: 'Red', status: true, createdAt: DateTime.now(), updatedAt: DateTime.now()),
+        AttributeValue(id: 'val-2', attributeTypeId: 't-1', name: 'Blue', status: true, createdAt: DateTime.now(), updatedAt: DateTime.now()),
+        AttributeValue(id: 'val-3', attributeTypeId: 't-1', name: 'Green', status: true, createdAt: DateTime.now(), updatedAt: DateTime.now()),
       ];
 
       final model = ProductAttribute(
@@ -125,7 +122,7 @@ void main() {
       final arNames = model.getLocalizedValueNames(isArabic: true);
 
       expect(enNames, ['Red', 'Green']);
-      expect(arNames, ['أحمر', 'أخضر']);
+      expect(arNames, ['Red', 'Green']);
     });
   });
 }

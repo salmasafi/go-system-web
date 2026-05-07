@@ -49,7 +49,6 @@ class _VariationSupabaseDataSource implements VariationRepositoryInterface {
       // 1. Create the variation
       final varData = {
         'name': variation.name,
-        'ar_name': variation.arName,
       };
       final varResponse = await _client.from('variations').insert(varData).select().single();
       final varId = varResponse['id'];
@@ -80,7 +79,6 @@ class _VariationSupabaseDataSource implements VariationRepositoryInterface {
       // 1. Update variation name
       await _client.from('variations').update({
         'name': variation.name,
-        'ar_name': variation.arName,
       }).eq('id', variation.id);
 
       // 2. Handle options (this is simplified, ideally you'd diff them)
@@ -109,7 +107,6 @@ class _VariationSupabaseDataSource implements VariationRepositoryInterface {
     return VariationModel(
       id: json['id'],
       name: json['name'],
-      arName: json['ar_name'],
       createdAt: json['created_at'] ?? DateTime.now().toIso8601String(),
       updatedAt: json['updated_at'] ?? DateTime.now().toIso8601String(),
       version: 0,

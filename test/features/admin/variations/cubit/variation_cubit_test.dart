@@ -9,14 +9,13 @@ import 'package:GoSystem/features/admin/variations/model/variation_model.dart';
 class MockVariationRepository extends Mock implements VariationRepository {}
 
 VariationModel sampleVariation(String id) => VariationModel.fromJson({
-        'id': id,
-        'name': 'Variation $id',
-        'ar_name': 'تنويعة $id',
-        'createdAt': '2024-01-01',
-        'updatedAt': '2024-01-01',
-        '__v': 1,
-        'options': [],
-      });
+      'id': id,
+      'name': 'Variation $id',
+      'createdAt': '2024-01-01',
+      'updatedAt': '2024-01-01',
+      '__v': 1,
+      'options': [],
+    });
 
 void main() {
   late MockVariationRepository mockRepo;
@@ -65,7 +64,7 @@ void main() {
         when(() => mockRepo.createVariation(any())).thenAnswer((_) async => sampleVariation('new'));
         return VariationCubit(mockRepo);
       },
-      act: (c) => c.addVariation(name: 'New Variation', arName: 'تنويعة جديدة', options: []),
+      act: (c) => c.addVariation(name: 'New Variation', options: []),
       expect: () => [
         isA<CreateVariationLoading>(),
         isA<CreateVariationSuccess>(),

@@ -47,7 +47,6 @@ class ExpenseCategoryData {
 class ExpenseCategoryModel {
   final String id;
   final String name;
-  final String arName;
   final bool status;
   final String createdAt;
   final String updatedAt;
@@ -56,7 +55,6 @@ class ExpenseCategoryModel {
   ExpenseCategoryModel copyWith({
     String? id,
     String? name,
-    String? arName,
     bool? status,
     String? createdAt,
     String? updatedAt,
@@ -65,7 +63,6 @@ class ExpenseCategoryModel {
     return ExpenseCategoryModel(
       id: id ?? this.id,
       name: name ?? this.name,
-      arName: arName ?? this.arName,
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -76,7 +73,6 @@ class ExpenseCategoryModel {
   ExpenseCategoryModel({
     required this.id,
     required this.name,
-    required this.arName,
     required this.status,
     required this.createdAt,
     required this.updatedAt,
@@ -87,7 +83,6 @@ class ExpenseCategoryModel {
     return ExpenseCategoryModel(
       id: json['id']?.toString() ?? json['_id']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
-      arName: json['ar_name']?.toString() ?? '',
       status: json['status'] == true || json['status'] == 1,
       createdAt: json['created_at']?.toString() ?? json['createdAt']?.toString() ?? '',
       updatedAt: json['updated_at']?.toString() ?? json['updatedAt']?.toString() ?? '',
@@ -99,7 +94,6 @@ class ExpenseCategoryModel {
     return {
       '_id': id,
       'name': name,
-      'ar_name': arName,
       'status': status,
       'createdAt': createdAt,
       'updatedAt': updatedAt,

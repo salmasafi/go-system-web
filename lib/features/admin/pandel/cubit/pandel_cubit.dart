@@ -80,8 +80,9 @@ class PandelCubit extends Cubit<PandelState> {
 
       await _repository.createBundle(pandel);
       emit(CreatePandelSuccess(LocaleKeys.pandel_created_success.tr()));
+      await getAllPandels();
     } catch (e) {
-      emit(GetPandelsError(e.toString().replaceAll('Exception: ', '')));
+      emit(CreatePandelError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -129,6 +130,7 @@ class PandelCubit extends Cubit<PandelState> {
 
       await _repository.updateBundle(pandel);
       emit(UpdatePandelSuccess(LocaleKeys.pandel_updated_success.tr()));
+      await getAllPandels();
     } catch (e) {
       emit(UpdatePandelError(e.toString().replaceAll('Exception: ', '')));
     }
@@ -139,8 +141,8 @@ class PandelCubit extends Cubit<PandelState> {
     try {
       final success = await _repository.deleteBundle(pandelId);
       if (success) {
-        allPandels.removeWhere((p) => p.id == pandelId);
         emit(DeletePandelSuccess(LocaleKeys.pandel_deleted_success.tr()));
+        await getAllPandels();
       } else {
         emit(DeletePandelError('Failed to delete bundle'));
       }

@@ -126,14 +126,6 @@ class _AnimatedUnitCardState extends State<AnimatedUnitCard> {
                   color: AppColors.darkGray,
                 ),
               ),
-              if (unit.arName?.isNotEmpty ?? false)
-                Text(
-                  unit.arName ?? '',
-                  style: TextStyle(
-                    fontSize: ResponsiveUI.fontSize(context, 12),
-                    color: AppColors.darkGray.withValues(alpha: 0.7),
-                  ),
-                ),
             ],
           ),
         ),

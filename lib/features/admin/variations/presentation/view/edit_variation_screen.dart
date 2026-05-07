@@ -24,7 +24,6 @@ class EditVariationBottomSheet extends StatefulWidget {
 
 class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
   late final TextEditingController _nameEnController;
-  late final TextEditingController _nameArController;
 
   List<VariationOption> _options = [];
   final List<String> _optionsToDelete = [];
@@ -33,14 +32,12 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
   void initState() {
     super.initState();
     _nameEnController = TextEditingController(text: widget.variation.name);
-    _nameArController = TextEditingController(text: widget.variation.arName);
     _options = List.from(widget.variation.options);
   }
 
   @override
   void dispose() {
     _nameEnController.dispose();
-    _nameArController.dispose();
     super.dispose();
   }
 
@@ -101,10 +98,6 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
       CustomSnackbar.showWarning(context, LocaleKeys.variation_name_en_required.tr(),);
       return;
     }
-    if (_nameArController.text.trim().isEmpty) {
-      CustomSnackbar.showWarning(context, LocaleKeys.variation_name_ar_required.tr(),);
-      return;
-    }
 
     final optionsData = _options.map((o) {
       final map = {'name': o.name, 'status': o.status};
@@ -119,7 +112,6 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
     await context.read<VariationCubit>().updateVariation(
       variationId: widget.variation.id,
       name: _nameEnController.text.trim(),
-      arName: _nameArController.text.trim(),
       options: optionsData,
     );
 
@@ -229,12 +221,6 @@ class _EditVariationBottomSheetState extends State<EditVariationBottomSheet> {
                           controller: _nameEnController,
                           title: LocaleKeys.variation_name_en_label.tr(),
                           hint: LocaleKeys.variation_name_en_hint.tr(),
-                        ),
-                        SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                        _buildTextField(
-                          controller: _nameArController,
-                          title: LocaleKeys.variation_name_ar_label.tr(),
-                          hint: LocaleKeys.variation_name_ar_hint.tr(),
                         ),
                         SizedBox(height: ResponsiveUI.spacing(context, 20)),
                         Row(

@@ -53,12 +53,18 @@ class _CouponsScreenState extends State<CouponsScreen> {
         } else if (state is UpdateCouponSuccess) {
           CustomSnackbar.showSuccess(context, state.message);
           couponsInit();
+        } else if (state is ChangeCouponStatusSuccess) {
+          CustomSnackbar.showSuccess(context, state.message);
+          couponsInit();
+        } else if (state is ChangeCouponStatusError) {
+          CustomSnackbar.showError(context, state.error);
+          couponsInit();
         }
       },
       builder: (context, state) {
         if (state is GetCouponsLoading ||
-            state is DeleteCouponLoading 
-            ) {
+            state is DeleteCouponLoading ||
+            state is ChangeCouponStatusLoading) {
           return RefreshIndicator(
             onRefresh: _refresh,
             color: AppColors.primaryBlue,

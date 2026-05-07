@@ -60,7 +60,7 @@ class ProductInfo extends StatelessWidget {
             ),
             SizedBox(width: ResponsiveUI.spacing(context, 4)),
             Text(
-              '• ${product.unit}',
+              '• ${product.saleUnit.isNotEmpty ? product.saleUnit : product.purchaseUnit}',
               style: TextStyle(
                 color: AppColors.shadowGray[500],
                 fontSize: ResponsiveUI.fontSize(context, 11),

@@ -11,6 +11,13 @@ class ExpenseCategoriesLoaded extends ExpenseState {
   ExpenseCategoriesLoaded(this.categories);
 }
 
+class ExpenseReasonsLoading extends ExpenseState {}
+
+class ExpenseReasonsLoaded extends ExpenseState {
+  final List<ReasonModel> reasons;
+  ExpenseReasonsLoaded(this.reasons);
+}
+
 class ExpensesLoading extends ExpenseState {}
 
 class ExpensesLoaded extends ExpenseState {

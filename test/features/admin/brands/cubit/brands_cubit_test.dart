@@ -19,7 +19,6 @@ void main() {
   Brands sampleBrand(String id) => Brands.fromJson({
         'id': id,
         'name': 'Nike',
-        'ar_name': 'nike_ar',
         'logo': '',
         'created_at': '',
         'updated_at': '',

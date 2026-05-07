@@ -18,7 +18,6 @@ void main() {
   UnitModel sampleUnit(String id) => UnitModel.fromJson({
         'id': id,
         'name': 'Unit $id',
-        'ar_name': 'وحدة $id',
         'code': 'U$id',
         'operator': '*',
         'operator_value': 1.0,

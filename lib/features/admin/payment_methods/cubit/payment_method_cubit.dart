@@ -28,7 +28,6 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
 
   Future<void> createPaymentMethod({
     required String name,
-    required String arName,
     required File? icon,
     required String description,
     required String type,
@@ -38,7 +37,6 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
     try {
       await _repository.createPaymentMethod(
         name: name,
-        arName: arName,
         description: description,
         type: type,
         isActive: isActive,
@@ -54,7 +52,6 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
   Future<void> updatePaymentMethod({
     required String paymentMethodId,
     required String name,
-    required String arName,
     required File? icon,
     required String description,
     required String type,
@@ -65,7 +62,6 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
       await _repository.updatePaymentMethod(
         paymentMethodId: paymentMethodId,
         name: name,
-        arName: arName,
         description: description,
         type: type,
         isActive: isActive,

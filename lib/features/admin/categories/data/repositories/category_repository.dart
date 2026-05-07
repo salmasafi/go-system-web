@@ -12,14 +12,12 @@ abstract class CategoryRepositoryInterface {
   Future<CategoryItem?> getCategoryById(String id);
   Future<CategoryItem> createCategory({
     required String name,
-    required String arName,
     String? parentId,
     File? imageFile,
   });
   Future<CategoryItem> updateCategory({
     required String id,
     required String name,
-    required String arName,
     String? parentId,
     File? imageFile,
   });
@@ -39,12 +37,10 @@ class CategoryRepository implements CategoryRepositoryInterface {
   @override
   Future<CategoryItem> createCategory({
     required String name,
-    required String arName,
     String? parentId,
     File? imageFile,
   }) => _dataSource.createCategory(
     name: name,
-    arName: arName,
     parentId: parentId,
     imageFile: imageFile,
   );
@@ -53,13 +49,11 @@ class CategoryRepository implements CategoryRepositoryInterface {
   Future<CategoryItem> updateCategory({
     required String id,
     required String name,
-    required String arName,
     String? parentId,
     File? imageFile,
   }) => _dataSource.updateCategory(
     id: id,
     name: name,
-    arName: arName,
     parentId: parentId,
     imageFile: imageFile,
   );
@@ -80,7 +74,7 @@ class _CategorySupabaseDataSource implements CategoryRepositoryInterface {
 
       final response = await _client
           .from('categories')
-          .select('*, parent:parent_id(id, name, ar_name), product_categories(count)')
+          .select('*, parent:parent_id(id, name), product_categories(count)')
           .order('name');
 
       final categories = (response as List)
@@ -102,7 +96,7 @@ class _CategorySupabaseDataSource implements CategoryRepositoryInterface {
 
       final response = await _client
           .from('categories')
-          .select('*, parent:parent_id(id, name, ar_name), product_categories(count)')
+          .select('*, parent:parent_id(id, name), product_categories(count)')
           .eq('id', id)
           .maybeSingle();
 
@@ -118,7 +112,6 @@ class _CategorySupabaseDataSource implements CategoryRepositoryInterface {
   @override
   Future<CategoryItem> createCategory({
     required String name,
-    required String arName,
     String? parentId,
     File? imageFile,
   }) async {
@@ -140,11 +133,10 @@ class _CategorySupabaseDataSource implements CategoryRepositoryInterface {
           .from('categories')
           .insert({
             'name': name,
-            'ar_name': arName,
             'parent_id': parentId,
             'image': imageUrl,
           })
-          .select('*, parent:parent_id(id, name, ar_name)')
+          .select('*, parent:parent_id(id, name)')
           .single();
 
       log('CategorySupabase: Created category successfully');
@@ -159,7 +151,6 @@ class _CategorySupabaseDataSource implements CategoryRepositoryInterface {
   Future<CategoryItem> updateCategory({
     required String id,
     required String name,
-    required String arName,
     String? parentId,
     File? imageFile,
   }) async {
@@ -192,7 +183,6 @@ class _CategorySupabaseDataSource implements CategoryRepositoryInterface {
 
       final updateData = {
         'name': name,
-        'ar_name': arName,
         'parent_id': parentId,
         if (imageUrl != null) 'image': imageUrl,
       };
@@ -201,7 +191,7 @@ class _CategorySupabaseDataSource implements CategoryRepositoryInterface {
           .from('categories')
           .update(updateData)
           .eq('id', id)
-          .select('*, parent:parent_id(id, name, ar_name)')
+          .select('*, parent:parent_id(id, name)')
           .single();
 
       log('CategorySupabase: Updated category successfully');
@@ -244,7 +234,6 @@ class _CategorySupabaseDataSource implements CategoryRepositoryInterface {
     return CategoryItem(
       id: json['id'] as String,
       name: json['name'] as String,
-      arName: json['ar_name'] ?? '',
       image: json['image'] ?? '',
       productQuantity: ((json['product_categories'] as List?)?.isNotEmpty == true
           ? (json['product_categories'][0]['count'] as num?)?.toInt()
@@ -256,7 +245,6 @@ class _CategorySupabaseDataSource implements CategoryRepositoryInterface {
           ? ParentCategory(
               id: parent['id'] as String,
               name: parent['name'] as String,
-              arName: parent['ar_name'] ?? '',
             )
           : null,
     );

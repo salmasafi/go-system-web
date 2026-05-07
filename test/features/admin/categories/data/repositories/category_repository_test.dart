@@ -36,7 +36,6 @@ void main() {
         {
           'id': 'cat-1',
           'name': 'Electronics',
-          'ar_name': 'إلكترونيات',
           'image': 'electronics.jpg',
           'product_quantity': 10,
           'created_at': '2024-01-01',
@@ -47,13 +46,12 @@ void main() {
         {
           'id': 'cat-2',
           'name': 'Phones',
-          'ar_name': 'هواتف',
           'image': 'phones.jpg',
           'product_quantity': 5,
           'created_at': '2024-01-02',
           'updated_at': '2024-01-02',
           'version': 1,
-          'parent': {'id': 'cat-1', 'name': 'Electronics', 'ar_name': 'إلكترونيات'},
+          'parent': {'id': 'cat-1', 'name': 'Electronics'},
         },
       ];
 
@@ -71,7 +69,6 @@ void main() {
       expect(result.length, 2);
       expect(result[0].id, 'cat-1');
       expect(result[0].name, 'Electronics');
-      expect(result[0].arName, 'إلكترونيات');
       expect(result[1].parentId, isNotNull);
       expect(result[1].parentId!.name, 'Electronics');
     });
@@ -80,7 +77,6 @@ void main() {
       final mockData = {
         'id': 'cat-1',
         'name': 'Electronics',
-        'ar_name': 'إلكترونيات',
         'image': 'electronics.jpg',
         'product_quantity': 10,
         'created_at': '2024-01-01',

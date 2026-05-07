@@ -52,6 +52,7 @@ class DiscountsCubit extends Cubit<DiscountsState> {
 
       await _repository.createDiscount(discount);
       emit(CreateDiscountSuccess(LocaleKeys.discount_created_successfully.tr()));
+      await getDiscounts();
     } catch (e) {
       emit(CreateDiscountError(e.toString().replaceAll('Exception: ', '')));
     }
@@ -81,6 +82,7 @@ class DiscountsCubit extends Cubit<DiscountsState> {
 
       await _repository.updateDiscount(discount);
       emit(UpdateDiscountSuccess(LocaleKeys.discount_updated_successfully.tr()));
+      await getDiscounts();
     } catch (e) {
       emit(UpdateDiscountError(e.toString().replaceAll('Exception: ', '')));
     }
@@ -92,6 +94,7 @@ class DiscountsCubit extends Cubit<DiscountsState> {
     try {
       final success = await _repository.deleteDiscount(discountId);
       if (success) {
+        allDiscounts.removeWhere((d) => d.id == discountId);
         emit(DeleteDiscountSuccess(LocaleKeys.discount_deleted_successfully.tr()));
       } else {
         emit(DeleteDiscountError('Failed to delete discount'));

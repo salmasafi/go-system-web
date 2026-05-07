@@ -75,8 +75,7 @@ class _AttributeValueManagementScreenState extends State<AttributeValueManagemen
 
     List<AttributeValue> filteredValues = attributeValues
         .where(
-          (value) => value.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-              value.arName.toLowerCase().contains(_searchQuery.toLowerCase()),
+          (value) => value.name.toLowerCase().contains(_searchQuery.toLowerCase()),
         )
         .toList();
 

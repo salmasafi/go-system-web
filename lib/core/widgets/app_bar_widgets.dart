@@ -20,6 +20,7 @@ AppBar appBarWithActions(
     elevation: 0,
     backgroundColor: backgroundColor ?? AppColors.white,
     centerTitle: true,
+    leadingWidth: showBackButton ? null : ResponsiveUI.value(context, 120),
     title: Text(
       title ?? '',
       style: TextStyle(
@@ -83,12 +84,11 @@ AppBar appBarWithActions(
               )
             : Padding(
                 padding: EdgeInsetsDirectional.only(
-                  start: ResponsiveUI.padding(context, 12),
-                  top: ResponsiveUI.padding(context, 6),
-                  bottom: ResponsiveUI.padding(context, 6),
+                  start: ResponsiveUI.padding(context, 8),
                 ),
                 child: Image.asset(
                   'assets/images/gosystem_logo.png',
+                  height: ResponsiveUI.value(context, 40),
                   fit: BoxFit.contain,
                 ),
               ),
@@ -193,6 +193,7 @@ AppBar appBarWithActionsWidget(
     elevation: 0,
     backgroundColor: backgroundColor ?? AppColors.white,
     centerTitle: true,
+    leadingWidth: showBackButton ? null : ResponsiveUI.value(context, 120),
     title: Text(
       title ?? '',
       style: TextStyle(
@@ -227,7 +228,16 @@ AppBar appBarWithActionsWidget(
               padding: EdgeInsets.zero,
             ),
           )
-        : null,
+        : Padding(
+            padding: EdgeInsetsDirectional.only(
+              start: ResponsiveUI.padding(context, 8),
+            ),
+            child: Image.asset(
+              'assets/images/gosystem_logo.png',
+              height: ResponsiveUI.value(context, 40),
+              fit: BoxFit.contain,
+            ),
+          ),
     actions: showActions && actionWidget != null ? [actionWidget] : null,
     bottom: PreferredSize(
       preferredSize: Size.fromHeight(ResponsiveUI.value(context, 1)),

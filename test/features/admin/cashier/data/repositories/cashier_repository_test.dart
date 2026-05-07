@@ -36,7 +36,6 @@ void main() {
         {
           'id': 'c1',
           'name': 'C1',
-          'ar_name': 'ar1',
           'status': true,
           'cashier_active': true,
           'version': 1,

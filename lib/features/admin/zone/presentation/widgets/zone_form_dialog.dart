@@ -28,7 +28,6 @@ class ZoneFormDialog extends StatefulWidget {
 class _ZoneFormDialogState extends State<ZoneFormDialog>
     with SingleTickerProviderStateMixin {
   final _nameController = TextEditingController();
-  final _arNameController = TextEditingController();
   final _costController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   late AnimationController _animationController;
@@ -52,7 +51,6 @@ class _ZoneFormDialogState extends State<ZoneFormDialog>
     // Common setup for both modes
     if (isEditMode) {
       _nameController.text = widget.zone!.name;
-      _arNameController.text = widget.zone!.arName;
       _costController.text = widget.zone!.cost.toString();
     } else {
       _costController.text = '';
@@ -81,27 +79,14 @@ class _ZoneFormDialogState extends State<ZoneFormDialog>
             selectedCity = matchingCities.first;
           }
         }
-      } else {
-        // Fallback to default if no match
-        final defaultCountries = countries.where((c) => c.isDefault);
-        if (defaultCountries.isNotEmpty) {
-          final defaultCountry = defaultCountries.first;
-          selectedCountry = defaultCountry;
-          _filterCitiesByCountry(defaultCountry);
-        }
-      }
-    } else if (countries.isNotEmpty) {
-      // Create mode: Default to first default country
-      final defaultCountries = countries.where((country) => country.isDefault);
-      if (defaultCountries.isNotEmpty) {
-        final defaultCountry = defaultCountries.first;
-        selectedCountry = defaultCountry;
-        _filterCitiesByCountry(defaultCountry);
-      } else {
-        // Fallback to first country if no default
+      } else if (countries.isNotEmpty) {
         selectedCountry = countries.first;
         _filterCitiesByCountry(selectedCountry!);
       }
+    } else if (countries.isNotEmpty) {
+      final defaultCountries = countries.where((country) => country.isDefault);
+      selectedCountry = defaultCountries.isNotEmpty ? defaultCountries.first : countries.first;
+      _filterCitiesByCountry(selectedCountry!);
     }
   }
 
@@ -136,7 +121,6 @@ class _ZoneFormDialogState extends State<ZoneFormDialog>
   @override
   void dispose() {
     _nameController.dispose();
-    _arNameController.dispose();
     _costController.dispose();
     _animationController.dispose();
     super.dispose();
@@ -194,21 +178,6 @@ class _ZoneFormDialogState extends State<ZoneFormDialog>
                                       LoginValidator.validateRequired(
                                         v,
                                         LocaleKeys.zone_name_en.tr(),
-                                      ),
-                                ),
-                                SizedBox(
-                                  height: ResponsiveUI.spacing(context, 12),
-                                ),
-                                buildTextField(
-                                  context,
-                                  controller: _arNameController,
-                                  label: LocaleKeys.zone_name_ar.tr(),
-                                  icon: Icons.gps_fixed,
-                                  hint:  LocaleKeys.enter_zone_name_ar.tr(),
-                                  validator: (v) =>
-                                      LoginValidator.validateRequired(
-                                        v,
-                                        LocaleKeys.zone_name_ar.tr(),
                                       ),
                                 ),
                                 SizedBox(
@@ -343,7 +312,6 @@ class _ZoneFormDialogState extends State<ZoneFormDialog>
         cubit.updateZone(
           zoneId: widget.zone!.id,
           name: _nameController.text.trim(),
-          arName: _arNameController.text.trim(),
           countryId: selectedCountry!.id,
           cityId: selectedCity!.id,
           cost: cost.toString(),
@@ -351,7 +319,6 @@ class _ZoneFormDialogState extends State<ZoneFormDialog>
       } else {
         cubit.createZone(
           name: _nameController.text.trim(),
-          arName: _arNameController.text.trim(),
           countryId: selectedCountry!.id,
           cityId: selectedCity!.id,
           cost: cost,

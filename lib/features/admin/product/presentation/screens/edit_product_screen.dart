@@ -35,9 +35,7 @@ class EditProductScreen extends StatefulWidget {
 
 class _EditProductScreenState extends State<EditProductScreen> {
   final _nameController = TextEditingController();
-  final _arNameController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _arDescriptionController = TextEditingController();
   final _priceController = TextEditingController();
   final _wholePriceController = TextEditingController();
   final _startQuantityController = TextEditingController();
@@ -55,7 +53,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
   // Selections
   List<CategoryItem>? _selectedCategories;
   Brands? _selectedBrand;
-  UnitModel? _selectedProductUnit;
   UnitModel? _selectedSaleUnit;
   UnitModel? _selectedPurchaseUnit;
 
@@ -83,9 +80,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   void _initFields() {
     final p = widget.product;
     _nameController.text = p.name;
-    _arNameController.text = p.arName;
     _descriptionController.text = p.description;
-    _arDescriptionController.text = p.arDescription;
     _priceController.text = p.price.toString();
     _wholePriceController.text = p.wholePrice.toString();
     _startQuantityController.text = p.startQuantaty.toString();
@@ -135,11 +130,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   void _saveProduct() {
     if (_nameController.text.trim().isEmpty) {
-      CustomSnackbar.showError(context, 'الرجاء إدخال اسم المنتج بالإنجليزية');
-      return;
-    }
-    if (_arNameController.text.trim().isEmpty) {
-      CustomSnackbar.showError(context, 'الرجاء إدخال اسم المنتج بالعربية');
+      CustomSnackbar.showError(context, 'الرجاء إدخال اسم المنتج');
       return;
     }
     if (_selectedCategories == null || _selectedCategories!.isEmpty) {
@@ -173,14 +164,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
     context.read<ProductsCubit>().updateProductWithData(
           id: widget.product.id,
           name: _nameController.text.trim(),
-          arName: _arNameController.text.trim(),
           description: _descriptionController.text.trim(),
-          arDescription: _arDescriptionController.text.trim(),
           image: mainImage,
           code: _codeController.text.trim(),
           categoryIds: _selectedCategories!.map((c) => c.id).toList(),
           brandId: _selectedBrand!.id ?? '',
-          unit: _selectedProductUnit?.id ?? widget.product.unit,
+          saleUnit: _selectedSaleUnit?.id ?? widget.product.saleUnit,
+          purchaseUnit: _selectedPurchaseUnit?.id ?? widget.product.purchaseUnit,
           price: price,
           expAbility: _hasExpiry,
           expiryDate: _expiryDate,
@@ -262,45 +252,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
       title: 'معلومات المنتج',
       icon: Icons.inventory_2_outlined,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: buildTextField(
-                context,
-                controller: _nameController,
-                label: 'الاسم (EN) *',
-                icon: Icons.label_outline,
-                hint: 'Product name',
-              ),
-            ),
-            SizedBox(width: ResponsiveUI.spacing(context, 12)),
-            Expanded(
-              child: buildTextField(
-                context,
-                controller: _arNameController,
-                label: 'الاسم (AR) *',
-                icon: Icons.label_outline,
-                hint: 'اسم المنتج',
-              ),
-            ),
-          ],
+        buildTextField(
+          context,
+          controller: _nameController,
+          label: 'اسم المنتج *',
+          icon: Icons.label_outline,
+          hint: 'Product name',
         ),
         SizedBox(height: ResponsiveUI.spacing(context, 12)),
         buildTextField(
           context,
           controller: _descriptionController,
-          label: 'الوصف (EN)',
+          label: 'الوصف',
           icon: Icons.description_outlined,
           hint: 'Product description...',
-          maxLines: 3,
-        ),
-        SizedBox(height: ResponsiveUI.spacing(context, 12)),
-        buildTextField(
-          context,
-          controller: _arDescriptionController,
-          label: 'الوصف (AR)',
-          icon: Icons.description_outlined,
-          hint: 'وصف المنتج...',
           maxLines: 3,
         ),
       ],
@@ -408,18 +373,24 @@ class _EditProductScreenState extends State<EditProductScreen> {
         BlocConsumer<UnitsCubit, UnitsState>(
           listener: (context, state) {
             if (!_unitPrePopulated && state is GetUnitsSuccess) {
-              final matched = state.units.firstWhere(
-                (u) => u.name == widget.product.unit,
+              // Pre-populate sale and purchase units
+              final saleMatch = state.units.firstWhere(
+                (u) => u.name == widget.product.saleUnit,
                 orElse: () => UnitModel(),
               );
-              if (matched.id != null && matched.id!.isNotEmpty) {
-                setState(() {
-                  _selectedProductUnit = matched;
-                  _unitPrePopulated = true;
-                });
-              } else {
+              final purchaseMatch = state.units.firstWhere(
+                (u) => u.name == widget.product.purchaseUnit,
+                orElse: () => UnitModel(),
+              );
+              setState(() {
+                if (saleMatch.id != null && saleMatch.id!.isNotEmpty) {
+                  _selectedSaleUnit = saleMatch;
+                }
+                if (purchaseMatch.id != null && purchaseMatch.id!.isNotEmpty) {
+                  _selectedPurchaseUnit = purchaseMatch;
+                }
                 _unitPrePopulated = true;
-              }
+              });
             }
           },
           builder: (context, state) {
@@ -429,17 +400,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
             if (state is GetUnitsSuccess) {
               return Column(
                 children: [
-                  buildDropdownField<UnitModel>(
-                    context,
-                    items: state.units,
-                    label: 'وحدة المنتج',
-                    hint: 'اختر وحدة المنتج',
-                    value: _selectedProductUnit,
-                    onChanged: (v) =>
-                        setState(() => _selectedProductUnit = v),
-                    itemLabel: (u) => u.name ?? '',
-                  ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 12)),
                   Row(
                     children: [
                       Expanded(
@@ -903,9 +863,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   @override
   void dispose() {
     _nameController.dispose();
-    _arNameController.dispose();
     _descriptionController.dispose();
-    _arDescriptionController.dispose();
     _priceController.dispose();
     _wholePriceController.dispose();
     _startQuantityController.dispose();

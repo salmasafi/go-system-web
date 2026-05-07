@@ -45,19 +45,16 @@ class RevenueData {
 class CategoryModel {
   final String id;
   final String name;
-  final String arName;
 
   CategoryModel({
     required this.id,
     required this.name,
-    required this.arName,
   });
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
     return CategoryModel(
       id: (json['id'] ?? json['_id'])?.toString() ?? '',
       name: json['name'] as String? ?? '',
-      arName: json['ar_name'] as String? ?? '',
     );
   }
 
@@ -65,7 +62,6 @@ class CategoryModel {
     return {
       '_id': id,
       'name': name,
-      'ar_name': arName,
     };
   }
 }

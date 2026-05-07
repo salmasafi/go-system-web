@@ -25,7 +25,6 @@ class _CreateAttributeValueDialogState
     extends State<CreateAttributeValueDialog> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _arNameController = TextEditingController();
   bool _status = true;
 
   @override
@@ -33,7 +32,6 @@ class _CreateAttributeValueDialogState
     super.initState();
     if (widget.attributeValue != null) {
       _nameController.text = widget.attributeValue!.name;
-      _arNameController.text = widget.attributeValue!.arName;
       _status = widget.attributeValue!.status;
     }
   }
@@ -41,7 +39,6 @@ class _CreateAttributeValueDialogState
   @override
   void dispose() {
     _nameController.dispose();
-    _arNameController.dispose();
     super.dispose();
   }
 
@@ -51,14 +48,12 @@ class _CreateAttributeValueDialogState
         AttributeValueCubit.get(context).createAttributeValue(
           attributeTypeId: widget.attributeTypeId,
           name: _nameController.text.trim(),
-          arName: _arNameController.text.trim(),
           status: _status,
         );
       } else {
         AttributeValueCubit.get(context).updateAttributeValue(
           id: widget.attributeValue!.id,
           name: _nameController.text.trim(),
-          arName: _arNameController.text.trim(),
           status: _status,
         );
       }
@@ -82,26 +77,12 @@ class _CreateAttributeValueDialogState
             TextFormField(
               controller: _nameController,
               decoration: const InputDecoration(
-                labelText: 'Value (English)',
+                labelText: 'Value',
                 border: OutlineInputBorder(),
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return 'Please enter a value';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _arNameController,
-              decoration: const InputDecoration(
-                labelText: 'Value (Arabic)',
-                border: OutlineInputBorder(),
-              ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Please enter an Arabic value';
                 }
                 return null;
               },

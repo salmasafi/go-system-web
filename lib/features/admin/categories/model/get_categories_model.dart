@@ -53,7 +53,6 @@ class CategoryData {
 class CategoryItem {
   final String id;
   final String name;
-  final String arName;
   final String image;
   final int productQuantity;
   final String createdAt;
@@ -64,7 +63,6 @@ class CategoryItem {
   CategoryItem({
     required this.id,
     required this.name,
-    required this.arName,
     required this.image,
     required this.productQuantity,
     required this.createdAt,
@@ -77,7 +75,6 @@ class CategoryItem {
     return CategoryItem(
       id: (json['id'] ?? json['_id'] ?? '').toString(),
       name: json['name']?.toString() ?? '',
-      arName: json['ar_name']?.toString() ?? '',
       image: json['image']?.toString() ?? json['image_url']?.toString() ?? '',
       productQuantity: (json['product_quantity'] ?? json['productQuantity'] ?? 0) as int,
       createdAt: (json['created_at'] ?? json['createdAt'] ?? '').toString(),
@@ -94,7 +91,6 @@ class CategoryItem {
       'id': id,
       '_id': id,
       'name': name,
-      'ar_name': arName,
       'image': image,
       'product_quantity': productQuantity,
       'created_at': createdAt,
@@ -108,19 +104,17 @@ class CategoryItem {
 class ParentCategory {
   final String id;
   final String name;
-  final String arName;
 
-  ParentCategory({required this.id, required this.name, required this.arName});
+  ParentCategory({required this.id, required this.name});
 
   factory ParentCategory.fromJson(Map<String, dynamic> json) {
     return ParentCategory(
       id: (json['id'] ?? json['_id'] ?? '').toString(),
       name: json['name']?.toString() ?? '',
-      arName: json['ar_name']?.toString() ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'_id': id, 'name': name, 'ar_name': arName};
+    return {'_id': id, 'name': name};
   }
 }

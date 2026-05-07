@@ -42,35 +42,28 @@ class TaxData {
 class TaxModel {
   final String id;
   final String name;
-  final String? _arName;
-  final String type;   
+  final String type;
   final bool status;
   final double amount;
   final String? createdAt;
   final String? updatedAt;
   final int? version;
 
-  String get arName => _arName ?? '';
-
   TaxModel({
     required this.id,
     required this.name,
-    String? arName,
     required this.type,
     required this.status,
     required this.amount,
     this.createdAt,
     this.updatedAt,
     this.version,
-  }) : _arName = arName;
-
-
+  });
 
   factory TaxModel.fromJson(Map json) {
     return TaxModel(
       id: (json['id'] ?? json['_id'])?.toString() ?? '',
       name: json['name']?.toString() ?? '',
-      arName: json['ar_name']?.toString(),
       type: json['type']?.toString() ?? 'percentage',
       status: json['status'] as bool? ?? true,
       amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
@@ -84,8 +77,7 @@ class TaxModel {
     return {
       '_id': id,
       'name': name,
-      'ar_name': arName,
-      'type': type,     
+      'type': type,
       'status': status,
       'amount': amount,
       'createdAt': createdAt,
@@ -97,7 +89,6 @@ class TaxModel {
   TaxModel copyWith({
     String? id,
     String? name,
-    String? arName,
     String? type,
     bool? status,
     double? amount,
@@ -108,7 +99,6 @@ class TaxModel {
     return TaxModel(
       id: id ?? this.id,
       name: name ?? this.name,
-      arName: arName ?? this.arName,
       type: type ?? this.type,
       status: status ?? this.status,
       amount: amount ?? this.amount,

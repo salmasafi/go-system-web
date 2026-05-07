@@ -45,7 +45,7 @@ class CartItemAttributeDisplay extends StatelessWidget {
         spacing: 4,
         runSpacing: 4,
         children: attrs.map((attr) {
-          final label = attr.getDisplayString(isArabic: isArabic);
+          final label = attr.getDisplayString();
           return Container(
             padding: EdgeInsets.symmetric(
               horizontal: ResponsiveUI.padding(context, 7),
@@ -90,7 +90,7 @@ class CartItemAttributeDisplay extends StatelessWidget {
     final bundleAttrs = item.bundleProductAttributes!;
     // Collect all attribute strings
     final allStrings = bundleAttrs.values
-        .expand((attrs) => attrs.map((a) => a.getDisplayString(isArabic: isArabic)))
+        .expand((attrs) => attrs.map((a) => a.getDisplayString()))
         .toList();
 
     if (allStrings.isEmpty) return const SizedBox.shrink();

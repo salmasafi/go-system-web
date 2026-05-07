@@ -19,7 +19,6 @@ void main() {
   ZoneModel sampleZone(String id) => ZoneModel.fromJson({
         'id': id,
         'name': 'Zone $id',
-        'ar_name': 'منطقة $id',
         'country_id': {'id': 'c1', 'name': 'Country'},
         'city_id': {'id': 'c2', 'name': 'City'},
         'cost': 50.0,
@@ -61,7 +60,6 @@ void main() {
       build: () {
         when(() => mockRepo.createZone(
           name: any(named: 'name'),
-          arName: any(named: 'arName'),
           countryId: any(named: 'countryId'),
           cityId: any(named: 'cityId'),
           cost: any(named: 'cost'),
@@ -71,7 +69,6 @@ void main() {
       },
       act: (c) => c.createZone(
         name: 'New Zone',
-        arName: 'منطقة جديدة',
         countryId: 'c1',
         cityId: 'c2',
         cost: 50.0,

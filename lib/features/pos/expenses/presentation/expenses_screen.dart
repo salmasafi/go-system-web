@@ -172,6 +172,11 @@ class _ExpenseCard extends StatelessWidget {
                       icon: Icons.category_outlined,
                       label: 'Category',
                       value: expense.categoryName),
+                  if (expense.reasonName.isNotEmpty)
+                    _InfoRow(
+                        icon: Icons.rule_rounded,
+                        label: 'Reason',
+                        value: expense.reasonName),
                   _InfoRow(
                       icon: Icons.account_balance_outlined,
                       label: 'Financial Account',

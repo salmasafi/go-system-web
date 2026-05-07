@@ -24,8 +24,6 @@ class _DepartmentFormDialogState extends State<DepartmentFormDialog>
     with SingleTickerProviderStateMixin {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
-   final _arNameController = TextEditingController();
-    final _arDescriptionController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
@@ -44,8 +42,6 @@ class _DepartmentFormDialogState extends State<DepartmentFormDialog>
     if (isEditMode) {
       _nameController.text = widget.department!.name;
        _descriptionController.text = widget.department!.description;
-        _arNameController.text = widget.department!.arName ?? '';
-        _arNameController.text = widget.department!.arDescription ?? '';
     }
   }
 
@@ -64,8 +60,7 @@ class _DepartmentFormDialogState extends State<DepartmentFormDialog>
   @override
   void dispose() {
     _nameController.dispose();
-    _arDescriptionController.dispose();
-    _arNameController.dispose();
+    _descriptionController.dispose();
     _animationController.dispose();
     super.dispose();
   }
@@ -127,22 +122,6 @@ class _DepartmentFormDialogState extends State<DepartmentFormDialog>
                                 SizedBox(
                                   height: ResponsiveUI.spacing(context, 12),
                                 ),
-
-                                buildTextField(
-                                  context,
-                                  controller: _arNameController,
-                                  label: LocaleKeys.department_name_ar.tr(),
-                                  icon: Icons.business,
-                                  hint: LocaleKeys.hint_department_name_ar.tr(),
-                                  validator: (v) =>
-                                      LoginValidator.validateRequired(
-                                        v,
-                                        LocaleKeys.department_name_ar.tr(),
-                                      ),
-                                ),
-                                SizedBox(
-                                  height: ResponsiveUI.spacing(context, 12),
-                                ),
                                buildTextField(
                                   context,
                                   controller: _descriptionController,
@@ -159,21 +138,6 @@ class _DepartmentFormDialogState extends State<DepartmentFormDialog>
                                 SizedBox(
                                   height: ResponsiveUI.spacing(context, 12),
                                 ),
-                                
-                                 buildTextField(
-                                  context,
-                                  controller: _arDescriptionController,
-                                  label: LocaleKeys.department_description_ar.tr(),
-                                  icon: Icons.description,
-                                  hint:  LocaleKeys.hint_department_description_ar.tr(),
-                                  maxLines: 3,
-                                  validator: (v) =>
-                                      LoginValidator.validateRequired(
-                                        v,
-                                         LocaleKeys.department_description_ar.tr(),
-                                      ),
-                                ),
-                                
                               ],
                             ),
                           ),
@@ -234,15 +198,11 @@ class _DepartmentFormDialogState extends State<DepartmentFormDialog>
           departmentId: widget.department!.id,
           name: _nameController.text.trim(),
           description: _descriptionController.text.trim(),
-          arName: _arNameController.text.trim(),
-          arDescription: _arDescriptionController.text.trim(),
         );
       } else {
         cubit.addDepartment(
           name: _nameController.text.trim(),
           description: _descriptionController.text.trim(),
-          arName: _arNameController.text.trim(),
-          arDescription: _arDescriptionController.text.trim(),
         );
       }
     }

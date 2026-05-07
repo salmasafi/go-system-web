@@ -31,7 +31,6 @@ double? _readWholePrice(Map<String, dynamic> json) {
 class Category {
   final String id;
   final String name;
-  final String? arName;
   final String? image;
   final int productQuantity;
   final String? parentId;
@@ -39,7 +38,6 @@ class Category {
   Category({
     required this.id,
     required this.name,
-    this.arName,
     this.image,
     required this.productQuantity,
     this.parentId,
@@ -49,7 +47,6 @@ class Category {
     return Category(
       id: json['id']?.toString() ?? json['_id']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
-      arName: json['ar_name']?.toString(),
       image: json['image']?.toString() ?? json['image_url']?.toString(),
       productQuantity: (json['product_quantity'] as num?)?.toInt() ?? 0,
       parentId: json['parentId']?.toString() ?? json['parent_id']?.toString(),
@@ -178,7 +175,6 @@ class PaymentMethod {
 class BankAccount {
   final String id;
   final String name;
-  final String? arName;
   final String? accountNumber;
   final num? initialBalance;
   final bool isDefault;
@@ -188,7 +184,6 @@ class BankAccount {
   BankAccount({
     required this.id,
     required this.name,
-    required this.arName,
     required this.accountNumber,
     required this.initialBalance,
     required this.isDefault,
@@ -200,7 +195,6 @@ class BankAccount {
     return BankAccount(
       id: json['id'] ?? json['_id'] ?? '',
       name: json['name'] ?? 'Cash Register',
-      arName: json['ar_name'] ?? '',
       accountNumber: json['account_number'] ?? json['accountNumber'],
       initialBalance: json['initial_balance'] ?? json['initialBalance'] ?? 0,
       isDefault: json['is_default'] ?? json['isDefault'] ?? false,

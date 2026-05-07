@@ -48,7 +48,6 @@ class _TaxSupabaseDataSource implements TaxRepositoryInterface {
       log('TaxSupabase: Creating tax');
       final data = {
         'name': tax.name,
-        'ar_name': tax.arName,
         'amount': tax.amount,
         'type': tax.type,
         'status': tax.status,
@@ -67,7 +66,6 @@ class _TaxSupabaseDataSource implements TaxRepositoryInterface {
       log('TaxSupabase: Updating tax');
       final data = {
         'name': tax.name,
-        'ar_name': tax.arName,
         'amount': tax.amount,
         'type': tax.type,
         'status': tax.status,

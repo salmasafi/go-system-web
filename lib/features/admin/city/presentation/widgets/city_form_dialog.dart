@@ -26,7 +26,6 @@ class CityFormDialog extends StatefulWidget {
 class _CityFormDialogState extends State<CityFormDialog>
     with SingleTickerProviderStateMixin {
   final _nameController = TextEditingController();
-  final _arNameController = TextEditingController();
   final _shipingCostController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   late AnimationController _animationController;
@@ -48,52 +47,25 @@ class _CityFormDialogState extends State<CityFormDialog>
   void _initializeControllers() {
     if (isEditMode) {
       _nameController.text = widget.city!.name;
-      _arNameController.text = widget.city!.arName;
       _shipingCostController.text = widget.city!.shipingCost.toString();
-      // Start with null
       selectedCountry = null;
-      // Set to city's country if available AND it exists in countries
       if (widget.city?.country != null && countries.isNotEmpty) {
         final matching = countries.where(
-          (country) =>
-              country.id ==
-              widget.city!.country?.id, // Match by ID for uniqueness
+          (country) => country.id == widget.city!.country?.id,
         );
         if (matching.isNotEmpty) {
           selectedCountry = matching.first;
         }
       }
-
-      // Fallback: If still null, find default from countries
       if (selectedCountry == null && countries.isNotEmpty) {
-        final defaults = countries.where((country) => country.isDefault);
-        if (defaults.isNotEmpty) {
-          selectedCountry = null;
-        }
+        selectedCountry = countries.first;
       }
     } else {
       _shipingCostController.text = '';
-
-      // Start with null
       selectedCountry = null;
-      // Set to city's country if available AND it exists in countries
-      if (widget.city?.country != null && countries.isNotEmpty) {
-        final matching = countries.where(
-          (country) =>
-              country.id ==
-              widget.city!.country?.id, // Match by ID for uniqueness
-        );
-        if (matching.isNotEmpty) {
-          selectedCountry = matching.first;
-        }
-      }
-
-      // Fallback: If still null, find default from countries
-      if (selectedCountry == null && countries.isNotEmpty) {
+      if (countries.isNotEmpty) {
         final defaults = countries.where((country) => country.isDefault);
-        if (defaults.isNotEmpty) {
-          selectedCountry = defaults.first;
-        }
+        selectedCountry = defaults.isNotEmpty ? defaults.first : countries.first;
       }
     }
   }
@@ -113,7 +85,6 @@ class _CityFormDialogState extends State<CityFormDialog>
   @override
   void dispose() {
     _nameController.dispose();
-    _arNameController.dispose();
     _shipingCostController.dispose();
     _animationController.dispose();
     super.dispose();
@@ -171,21 +142,6 @@ class _CityFormDialogState extends State<CityFormDialog>
                                       LoginValidator.validateRequired(
                                         v,
                                         LocaleKeys.city_name_en.tr(),
-                                      ),
-                                ),
-                                SizedBox(
-                                  height: ResponsiveUI.spacing(context, 12),
-                                ),
-                                buildTextField(
-                                  context,
-                                  controller: _arNameController,
-                                  label: LocaleKeys.city_name_ar.tr(),
-                                  icon: Icons.location_city_rounded,
-                                  hint: LocaleKeys.hint_city_name_ar.tr(),
-                                  validator: (v) =>
-                                      LoginValidator.validateRequired(
-                                        v,
-                                        LocaleKeys.city_name_ar.tr(),
                                       ),
                                 ),
                                 SizedBox(
@@ -287,14 +243,12 @@ class _CityFormDialogState extends State<CityFormDialog>
         cubit.updateCity(
           cityId: widget.city!.id,
           name: _nameController.text.trim(),
-          arName: _arNameController.text.trim(),
           countryId: selectedCountry!.id,
           shipingCost: _shipingCostController.text.trim(),
         );
       } else {
         cubit.createCity(
           name: _nameController.text.trim(),
-          arName: _arNameController.text.trim(),
           countryId: selectedCountry!.id,
           shipingCost: _shipingCostController.text.trim(),
         );

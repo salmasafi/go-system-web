@@ -4,15 +4,14 @@ import 'product_attribute_model.dart';
 class Product {
   final String id;
   final String name;
-  final String arName;
   final String image;
   final List<Category> categoryId;
   final Brand brandId;
-  final String unit;
+  final String saleUnit;
+  final String purchaseUnit;
   final double price;
   final int quantity;
   final String description;
-  final String arDescription;
   final bool expAbility;
   final DateTime? dateOfExpiry;
   final int minimumQuantitySale;
@@ -32,15 +31,14 @@ class Product {
   Product({
     required this.id,
     required this.name,
-    required this.arName,
     required this.image,
     required this.categoryId,
     required this.brandId,
-    required this.unit,
+    required this.saleUnit,
+    required this.purchaseUnit,
     required this.price,
     required this.quantity,
     required this.description,
-    required this.arDescription,
     required this.expAbility,
     this.dateOfExpiry,
     required this.minimumQuantitySale,
@@ -68,7 +66,6 @@ class Product {
     return Product(
       id: (json['id'] ?? json['_id'] ?? '').toString(),
       name: json['name'] ?? '',
-      arName: json['ar_name'] ?? '',
       image: json['image'] ?? '',
       categoryId: isSupabase 
           ? (json['product_categories'] as List<dynamic>?)
@@ -80,12 +77,10 @@ class Product {
       brandId: isSupabase
           ? (json['brand'] != null ? Brand.fromSupabase(json['brand']) : Brand.empty())
           : (json['brandId'] != null ? Brand.fromJson(json['brandId']) : Brand.empty()),
-      unit: isSupabase
-          ? (json['unit']?['name'] ?? '')
-          : (json['unit'] ?? ''),
+      saleUnit: json['sale_unit'] ?? '',
+      purchaseUnit: json['purchase_unit'] ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       quantity: (json['quantity'] as num?)?.toInt() ?? 0,
-      arDescription: json['ar_description'] ?? '',
       description: json['description'] ?? '',
       expAbility: json['exp_ability'] ?? false,
       dateOfExpiry: json['date_of_expiry'] != null
@@ -117,7 +112,8 @@ class Product {
       'image': image,
       'categoryId': categoryId.map((e) => e.toJson()).toList(),
       'brandId': brandId.toJson(),
-      'unit': unit,
+      'sale_unit': saleUnit,
+      'purchase_unit': purchaseUnit,
       'price': price,
       'quantity': quantity,
       'description': description,

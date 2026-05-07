@@ -9,13 +9,11 @@ abstract class ExpenseCategoryRepositoryInterface {
   Future<List<ExpenseCategoryModel>> getExpenseCategories();
   Future<void> createExpenseCategory({
     required String name,
-    required String arName,
     required bool status,
   });
   Future<void> updateExpenseCategory({
     required String categoryId,
     required String name,
-    required String arName,
     required bool status,
   });
   Future<void> deleteExpenseCategory(String categoryId);
@@ -31,20 +29,17 @@ class ExpenseCategoryRepository implements ExpenseCategoryRepositoryInterface {
   @override
   Future<void> createExpenseCategory({
     required String name,
-    required String arName,
     required bool status,
-  }) => _dataSource.createExpenseCategory(name: name, arName: arName, status: status);
+  }) => _dataSource.createExpenseCategory(name: name, status: status);
 
   @override
   Future<void> updateExpenseCategory({
     required String categoryId,
     required String name,
-    required String arName,
     required bool status,
   }) => _dataSource.updateExpenseCategory(
         categoryId: categoryId,
         name: name,
-        arName: arName,
         status: status,
       );
 
@@ -71,14 +66,12 @@ class _ExpenseCategorySupabaseDataSource implements ExpenseCategoryRepositoryInt
   @override
   Future<void> createExpenseCategory({
     required String name,
-    required String arName,
     required bool status,
   }) async {
     try {
       log('ExpenseCategorySupabase: Creating expense category: $name');
       await _client.from('expense_categories').insert({
         'name': name,
-        'ar_name': arName,
         'status': status,
       });
     } catch (e) {
@@ -91,14 +84,12 @@ class _ExpenseCategorySupabaseDataSource implements ExpenseCategoryRepositoryInt
   Future<void> updateExpenseCategory({
     required String categoryId,
     required String name,
-    required String arName,
     required bool status,
   }) async {
     try {
       log('ExpenseCategorySupabase: Updating expense category: $categoryId');
       await _client.from('expense_categories').update({
         'name': name,
-        'ar_name': arName,
         'status': status,
       }).eq('id', categoryId);
     } catch (e) {
@@ -122,7 +113,6 @@ class _ExpenseCategorySupabaseDataSource implements ExpenseCategoryRepositoryInt
     return ExpenseCategoryModel(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
-      arName: json['ar_name'] ?? '',
       status: json['status'] ?? true,
       version: json['version'] ?? 1,
       createdAt: json['created_at']?.toString() ?? DateTime.now().toIso8601String(),

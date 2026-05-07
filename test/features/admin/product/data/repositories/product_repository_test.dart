@@ -37,11 +37,11 @@ void main() {
         {
           'id': 'prod-123',
           'name': 'Test Product',
-          'ar_name': 'منتج تجريبي',
           'price': 100.0,
           'quantity': 10,
           'image': 'test.jpg',
-          'unit': 'pcs',
+          'sale_unit': 'pcs',
+          'purchase_unit': 'pcs',
           'categories': [
             {
               'category': {'id': 'cat-1', 'name': 'Electronics'}

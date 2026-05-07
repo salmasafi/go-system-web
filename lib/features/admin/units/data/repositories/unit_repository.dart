@@ -14,7 +14,6 @@ abstract class UnitRepositoryInterface {
   Future<void> updateUnitStatus(String id, bool status);
   Future<void> createUnit({
     required String name,
-    required String arName,
     required String code,
     String? operator,
     double? operatorValue,
@@ -22,7 +21,6 @@ abstract class UnitRepositoryInterface {
   Future<void> updateUnit({
     required String id,
     required String name,
-    required String arName,
     required String code,
     String? operator,
     double? operatorValue,
@@ -71,7 +69,6 @@ class UnitRepository implements UnitRepositoryInterface {
   @override
   Future<void> createUnit({
     required String name,
-    required String arName,
     required String code,
     String? operator,
     double? operatorValue,
@@ -80,7 +77,6 @@ class UnitRepository implements UnitRepositoryInterface {
       log('UnitRepository: Creating unit: $name');
       await _client.from('units').insert({
         'name': name,
-        'ar_name': arName,
         'code': code,
         'operator': operator,
         'operator_value': operatorValue,
@@ -96,7 +92,6 @@ class UnitRepository implements UnitRepositoryInterface {
   Future<void> updateUnit({
     required String id,
     required String name,
-    required String arName,
     required String code,
     String? operator,
     double? operatorValue,
@@ -105,7 +100,6 @@ class UnitRepository implements UnitRepositoryInterface {
       log('UnitRepository: Updating unit: $id');
       await _client.from('units').update({
         'name': name,
-        'ar_name': arName,
         'code': code,
         'operator': operator,
         'operator_value': operatorValue,
@@ -133,7 +127,6 @@ class UnitRepository implements UnitRepositoryInterface {
       id: json['id']?.toString() ?? '',
       code: json['code']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
-      arName: json['ar_name']?.toString(),
       operator: json['operator']?.toString() ?? '*',
       operatorValue: (json['operator_value'] as num?)?.toDouble() ?? 1.0,
       status: json['status'] as bool? ?? true,

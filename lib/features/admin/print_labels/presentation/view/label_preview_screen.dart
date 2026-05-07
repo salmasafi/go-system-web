@@ -164,7 +164,7 @@ class _LabelPreviewContent extends StatelessWidget {
                   ),
                   if (item.variationName != null)
                     Text(
-                      'Var: ${item.variationName}',
+                      'Attr: ${item.variationName}',
                       style: TextStyle(color: Colors.grey[600], fontSize: ResponsiveUI.fontSize(context, 13)),
                     ),
                   Text(

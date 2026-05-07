@@ -28,7 +28,6 @@ class EditCategoryBottomSheet extends StatefulWidget {
 
 class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
   late TextEditingController _nameController;
-  late TextEditingController _arNameController;
   String? _selectedParentId;
   File? _selectedImage;
   final _picker = ImagePicker();
@@ -38,7 +37,6 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.category.name);
-    _arNameController = TextEditingController(text: widget.category.arName);
     _selectedParentId = widget.category.parentId?.id;
     CategoriesCubit.get(
       context,
@@ -48,7 +46,6 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
   @override
   void dispose() {
     _nameController.dispose();
-    _arNameController.dispose();
     super.dispose();
   }
 
@@ -60,8 +57,7 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
   }
 
   void _submitUpdate() {
-    if (_nameController.text.trim().isEmpty ||
-        _arNameController.text.trim().isEmpty) {
+    if (_nameController.text.trim().isEmpty) {
       CustomSnackbar.showWarning(context, LocaleKeys.please_enter_category_name_en_ar.tr());
       return;
     }
@@ -71,7 +67,6 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
       CategoriesCubit.get(context).updateCategory(
         categoryId: widget.category.id,
         name: _nameController.text.trim(),
-        arName: _arNameController.text.trim(),
         imageFile: _selectedImage,
         parentId: _selectedParentId,
       );
@@ -80,7 +75,6 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
       CategoriesCubit.get(context).updateCategory(
         categoryId: widget.category.id,
         name: _nameController.text.trim(),
-        arName: _arNameController.text.trim(),
         imageFile: _selectedImage,
       );
     }
@@ -173,16 +167,6 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                         controller: _nameController,
                         labelText: LocaleKeys.category_name_en.tr(),
                         hintText: LocaleKeys.enter_category_name_en.tr(),
-                        prefixIcon: Icons.category,
-                        hasBoxDecoration: false,
-                        hasBorder: true,
-                        prefixIconColor: AppColors.darkGray.withValues(alpha: 0.7),
-                      ),
-                      SizedBox(height: ResponsiveUI.spacing(context, 25)),
-                      CustomTextField(
-                        controller: _arNameController,
-                        labelText: LocaleKeys.category_name_ar.tr(),
-                        hintText: LocaleKeys.enter_category_name_ar.tr(),
                         prefixIcon: Icons.category,
                         hasBoxDecoration: false,
                         hasBorder: true,

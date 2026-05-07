@@ -44,7 +44,6 @@ class TaxesCubit extends Cubit<TaxesState> {
 
   Future<void> createTax({
     required String name,
-    required String arName,
     required double amount,
     required String taxType,
     bool status = true,
@@ -54,7 +53,6 @@ class TaxesCubit extends Cubit<TaxesState> {
       final tax = TaxModel(
         id: '',
         name: name,
-        arName: arName,
         amount: amount,
         type: taxType,
         status: status,
@@ -71,7 +69,6 @@ class TaxesCubit extends Cubit<TaxesState> {
   Future<void> updateTax({
     required String taxId,
     required String name,
-    required String arName,
     required double amount,
     required String taxType,
     bool? status,
@@ -83,7 +80,6 @@ class TaxesCubit extends Cubit<TaxesState> {
         orElse: () => TaxModel(
           id: taxId,
           name: name,
-          arName: arName,
           amount: amount,
           type: taxType,
           status: true,
@@ -91,7 +87,6 @@ class TaxesCubit extends Cubit<TaxesState> {
       );
       final updatedTax = existing.copyWith(
         name: name,
-        arName: arName,
         amount: amount,
         type: taxType,
         status: status,

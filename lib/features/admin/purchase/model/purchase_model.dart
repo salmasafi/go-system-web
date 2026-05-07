@@ -1266,12 +1266,11 @@ class PurchaseItem {
 class Product {
   final String id;
   final String name;
-  final String? arName;
-  final String? arDescription;
   final String image;
   final List<String> categoryId;
   final String brandId;
-  final String unit;
+  final String saleUnit;
+  final String purchaseUnit;
   final double price;
   final int quantity;
   final String description;
@@ -1295,12 +1294,11 @@ class Product {
   Product({
     required this.id,
     required this.name,
-    this.arName,
-    this.arDescription,
     required this.image,
     required this.categoryId,
     required this.brandId,
-    required this.unit,
+    required this.saleUnit,
+    required this.purchaseUnit,
     required this.price,
     required this.quantity,
     required this.description,
@@ -1326,12 +1324,11 @@ class Product {
     return Product(
       id: json['id'] ?? json['_id'] ?? '',
       name: json['name'] ?? '',
-      arName: json['ar_name'],
-      arDescription: json['ar_description'],
       image: json['image'] ?? json['image_url'] ?? '',
       categoryId: List<String>.from(json['categoryId'] ?? json['category_id'] ?? []),
       brandId: json['brandId'] ?? json['brand_id'] ?? '',
-      unit: json['unit'] ?? '',
+      saleUnit: json['sale_unit'] ?? '',
+      purchaseUnit: json['purchase_unit'] ?? '',
       price: (json['price'] ?? 0).toDouble(),
       quantity: (json['quantity'] ?? 0).toInt(),
       description: json['description'] ?? '',
@@ -1365,7 +1362,6 @@ class Product {
 class Category {
   final String id;
   final String name;
-  final String? arName;
   final String image;
   final int productQuantity;
   final DateTime createdAt;
@@ -1375,7 +1371,6 @@ class Category {
   Category({
     required this.id,
     required this.name,
-    this.arName,
     required this.image,
     required this.productQuantity,
     required this.createdAt,
@@ -1387,7 +1382,6 @@ class Category {
     return Category(
       id: json['id'] ?? json['_id'] ?? '',
       name: json['name'] ?? '',
-      arName: json['ar_name'],
       image: json['image'] ?? json['image_url'] ?? '',
       productQuantity: json['product_quantity'] ?? 0,
       createdAt: (json['created_at'] ?? json['createdAt']) != null

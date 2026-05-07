@@ -41,7 +41,6 @@ class Data {
 class Brand {
   Brand({
     this.name,
-    this.arName,
     this.logo,
     this.id,
     this.createdAt,
@@ -51,7 +50,6 @@ class Brand {
 
   Brand.fromJson(dynamic json) {
     name = json['name'];
-    arName = json['ar_name'];
     logo = json['logo'];
     id = json['_id'];
     createdAt = json['createdAt'];
@@ -59,7 +57,6 @@ class Brand {
     v = json['__v'];
   }
   String? name;
-  String? arName;
   String? logo;
   String? id;
   String? createdAt;
@@ -69,7 +66,6 @@ class Brand {
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['name'] = name;
-    map['ar_name'] = arName;
     map['logo'] = logo;
     map['_id'] = id;
     map['createdAt'] = createdAt;

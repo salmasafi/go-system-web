@@ -61,7 +61,6 @@ class CategoriesCubit extends Cubit<CategoriesState> {
 
   Future<void> createCategory({
     required String name,
-    required String arName,
     File? imageFile,
     String? parentId,
   }) async {
@@ -69,7 +68,6 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     try {
       await _repository.createCategory(
         name: name,
-        arName: arName,
         parentId: parentId,
         imageFile: imageFile,
       );
@@ -83,7 +81,6 @@ class CategoriesCubit extends Cubit<CategoriesState> {
   Future<void> updateCategory({
     required String categoryId,
     required String name,
-    required String arName,
     File? imageFile,
     String? parentId,
   }) async {
@@ -92,7 +89,6 @@ class CategoriesCubit extends Cubit<CategoriesState> {
       await _repository.updateCategory(
         id: categoryId,
         name: name,
-        arName: arName,
         parentId: parentId,
         imageFile: imageFile,
       );

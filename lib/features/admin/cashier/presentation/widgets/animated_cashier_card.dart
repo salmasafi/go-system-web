@@ -145,17 +145,6 @@ class AnimatedCashierCard extends StatelessWidget {
                       : AppColors.shadowGray,
                 ),
               ),
-              SizedBox(height: ResponsiveUI.spacing(context, 4)),
-              Text(
-                cashier.arName,
-                style: TextStyle(
-                  fontSize: ResponsiveUI.fontSize(context, 14),
-                  color: cashier.cashierActive
-                      ? AppColors.darkGray.withValues(alpha: 0.7)
-                      : AppColors.shadowGray.withValues(alpha: 0.7),
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
             ],
           ),
         ),

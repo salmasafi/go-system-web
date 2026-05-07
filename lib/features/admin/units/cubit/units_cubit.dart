@@ -51,7 +51,6 @@ class UnitsCubit extends Cubit<UnitsState> {
 
   Future<void> createUnit({
     required String name,
-    required String arName,
     required String code,
     required String operator,
     required double operatorValue,
@@ -61,7 +60,6 @@ class UnitsCubit extends Cubit<UnitsState> {
     try {
       await _repository.createUnit(
         name: name,
-        arName: arName,
         code: code,
         operator: operator,
         operatorValue: operatorValue,
@@ -76,7 +74,6 @@ class UnitsCubit extends Cubit<UnitsState> {
   Future<void> updateUnit({
     required String unitId,
     required String name,
-    required String arName,
     required String code,
     required String operator,
     required double operatorValue,
@@ -87,7 +84,6 @@ class UnitsCubit extends Cubit<UnitsState> {
       await _repository.updateUnit(
         id: unitId,
         name: name,
-        arName: arName,
         code: code,
         operator: operator,
         operatorValue: operatorValue,

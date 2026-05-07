@@ -80,10 +80,10 @@ class CartItem {
   }
   
   // NEW: Get display string for selected attributes
-  String getAttributesDisplay({bool isArabic = false}) {
+  String getAttributesDisplay() {
     if (selectedAttributes.isEmpty) return '';
     return selectedAttributes
-        .map((a) => a.getDisplayString(isArabic: isArabic))
+        .map((a) => a.getDisplayString())
         .join(', ');
   }
   

@@ -96,9 +96,7 @@ class AnimatedExpenseCategoryCard extends StatelessWidget {
 
         Expanded(
           child: Text(
-            context.locale.languageCode == 'ar'
-                ? category.arName
-                : category.name,
+            category.name,
             style: TextStyle(
               fontSize: ResponsiveUI.fontSize(context, 16),
               fontWeight: FontWeight.w600,

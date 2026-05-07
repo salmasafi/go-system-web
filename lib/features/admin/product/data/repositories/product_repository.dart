@@ -191,13 +191,12 @@ class ProductRepository implements ProductRepositoryInterface {
           .from('products')
           .insert({
             'name': product.name,
-            'ar_name': product.arName,
             'code': await generateProductCode(),
             'description': product.description,
-            'ar_description': product.arDescription,
             'image': mainImageUrl ?? product.image,
             'brand_id': product.brandId.id.isNotEmpty ? product.brandId.id : null,
-            'unit': product.unit,
+            'sale_unit': product.saleUnit,
+            'purchase_unit': product.purchaseUnit,
             'price': product.price,
             'quantity': product.quantity,
             'exp_ability': product.expAbility,
@@ -280,11 +279,10 @@ class ProductRepository implements ProductRepositoryInterface {
       // Update product
       final updateData = {
         'name': product.name,
-        'ar_name': product.arName,
         'description': product.description,
-        'ar_description': product.arDescription,
         'brand_id': product.brandId.id.isNotEmpty ? product.brandId.id : null,
-        'unit': product.unit,
+        'sale_unit': product.saleUnit,
+        'purchase_unit': product.purchaseUnit,
         'price': product.price,
         'quantity': product.quantity,
         'exp_ability': product.expAbility,
@@ -400,15 +398,14 @@ class ProductRepository implements ProductRepositoryInterface {
     return Product(
       id: (json['id'] ?? json['_id'] ?? '').toString(),
       name: json['name'] ?? '',
-      arName: json['ar_name'] ?? '',
       image: json['image'] ?? '',
       categoryId: categories,
       brandId: brand,
-      unit: json['unit'] ?? '',
+      saleUnit: json['sale_unit'] ?? '',
+      purchaseUnit: json['purchase_unit'] ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       quantity: json['quantity'] ?? 0,
       description: json['description'] ?? '',
-      arDescription: json['ar_description'] ?? '',
       expAbility: json['exp_ability'] ?? false,
       dateOfExpiry: json['date_of_expiery'] != null
           ? DateTime.tryParse(json['date_of_expiery'])

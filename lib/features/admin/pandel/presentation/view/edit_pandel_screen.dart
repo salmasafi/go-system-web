@@ -507,7 +507,7 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
                             title: Text(product.name),
                             subtitle: product.prices.isNotEmpty && isSelected
                                 ? DropdownButton<String>(
-                                    hint: Text('select_variation'.tr()),
+                                    hint: Text(LocaleKeys.select_attribute.tr()),
                                     value: selectedPriceId,
                                     isExpanded: true,
                                     onChanged: (value) => setModalState(() {

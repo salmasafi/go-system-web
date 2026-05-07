@@ -50,9 +50,13 @@ class _ExpenseCategoriesScreenState extends State<ExpenseCategoriesScreen> {
         } else if (state is CreateExpenseCategorySuccess) {
           CustomSnackbar.showSuccess(context, state.successMessage);
           expenseCategoriesInit();
+        } else if (state is CreateExpenseCategoryError) {
+          CustomSnackbar.showError(context, state.errorMessage);
         } else if (state is UpdateExpenseCategorySuccess) {
           CustomSnackbar.showSuccess(context, state.successMessage);
           expenseCategoriesInit();
+        } else if (state is UpdateExpenseCategoryError) {
+          CustomSnackbar.showError(context, state.errorMessage);
         }
       },
       builder: (context, state) {

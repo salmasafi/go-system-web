@@ -1,5 +1,6 @@
 // cubit/product_cubit.dart
 import 'dart:developer';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../generated/locale_keys.g.dart';
@@ -39,14 +40,11 @@ class ProductsCubit extends Cubit<ProductsState> {
 
   Future<void> addProductWithData({
     required String name,
-    required String arName,
     required String description,
-    required String arDescription,
     String? image,
     required String? code,
     required List<String> categoryIds,
     required String brandId,
-    required String productUnit,
     required String purchaseUnit,
     required String saleUnit,
     required double price,
@@ -69,9 +67,7 @@ class ProductsCubit extends Cubit<ProductsState> {
       final product = Product(
         id: '',
         name: name,
-        arName: arName,
         description: description,
-        arDescription: arDescription,
         image: image ?? '',
         categoryId: categoryIds
             .map(
@@ -92,7 +88,8 @@ class ProductsCubit extends Cubit<ProductsState> {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         ),
-        unit: productUnit,
+        saleUnit: saleUnit,
+        purchaseUnit: purchaseUnit,
         price: price,
         expAbility: expAbility,
         dateOfExpiry: expiryDate,
@@ -112,7 +109,8 @@ class ProductsCubit extends Cubit<ProductsState> {
       );
 
       await _repository.createProduct(product);
-      emit(ProductAddSuccess('Product created successfully'));
+      emit(ProductAddSuccess('Product added successfully'.tr()));
+      await getProducts();
     } catch (error) {
       emit(ProductsError(error.toString().replaceAll('Exception: ', '')));
     }
@@ -121,14 +119,13 @@ class ProductsCubit extends Cubit<ProductsState> {
   Future<void> updateProductWithData({
     required String id,
     required String name,
-    required String arName,
     required String description,
-    required String arDescription,
     String? image,
     required String? code,
     required List<String> categoryIds,
     required String brandId,
-    required String unit,
+    required String saleUnit,
+    required String purchaseUnit,
     required double price,
     required bool expAbility,
     required DateTime? expiryDate,
@@ -149,9 +146,7 @@ class ProductsCubit extends Cubit<ProductsState> {
       final product = Product(
         id: id,
         name: name,
-        arName: arName,
         description: description,
-        arDescription: arDescription,
         image: image ?? '',
         categoryId: categoryIds
             .map(
@@ -172,7 +167,8 @@ class ProductsCubit extends Cubit<ProductsState> {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         ),
-        unit: unit,
+        saleUnit: saleUnit,
+        purchaseUnit: purchaseUnit,
         price: price,
         expAbility: expAbility,
         dateOfExpiry: expiryDate,
@@ -192,7 +188,8 @@ class ProductsCubit extends Cubit<ProductsState> {
       );
 
       await _repository.updateProduct(id, product);
-      emit(ProductAddSuccess('Product updated successfully'));
+      emit(ProductAddSuccess('Product updated successfully'.tr()));
+      await getProducts();
     } catch (error) {
       emit(ProductsError(error.toString().replaceAll('Exception: ', '')));
     }

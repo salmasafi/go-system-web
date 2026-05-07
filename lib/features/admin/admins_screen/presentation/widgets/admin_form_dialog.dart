@@ -183,12 +183,10 @@ class _AdminFormDialogState extends State<AdminFormDialog>
                                   icon: Icons.lock,
                                   validator: (value) {
                                     if (!isEditMode) {
-                                      // Required when creating
                                       return LoginValidator.validatePassword(value);
                                     }
-                                    // Optional when updating (validate only if entered)
                                     if (value != null && value.isNotEmpty) {
-                                       if (value.length < 6) return "LocaleKeys.password_too_short.tr()";
+                                      if (value.length < 6) return LocaleKeys.password.tr();
                                     }
                                     return null;
                                   },
@@ -611,8 +609,8 @@ class _AdminDialogButtons extends StatelessWidget {
                   Flexible(
                     child: Text(
                       isEditMode
-                          ? LocaleKeys.update_account.tr()
-                          : LocaleKeys.create_account.tr(),
+                          ? LocaleKeys.update_admin.tr()
+                          : LocaleKeys.new_admin.tr(),
                       style: TextStyle(
                         fontSize: value14,
                         fontWeight: FontWeight.bold,

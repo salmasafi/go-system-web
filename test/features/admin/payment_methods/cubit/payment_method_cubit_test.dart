@@ -19,7 +19,6 @@ void main() {
   PaymentMethodModel samplePaymentMethod(String id) => PaymentMethodModel.fromJson({
         'id': id,
         'name': 'Method $id',
-        'ar_name': 'طريقة $id',
         'description': 'Description',
         'type': 'cash',
         'icon': 'icon.png',
@@ -62,7 +61,6 @@ void main() {
       build: () {
         when(() => mockRepo.createPaymentMethod(
           name: any(named: 'name'),
-          arName: any(named: 'arName'),
           description: any(named: 'description'),
           type: any(named: 'type'),
           isActive: any(named: 'isActive'),
@@ -73,7 +71,6 @@ void main() {
       },
       act: (c) => c.createPaymentMethod(
         name: 'New Method',
-        arName: 'طريقة جديدة',
         icon: null,
         description: 'Description',
         type: 'cash',

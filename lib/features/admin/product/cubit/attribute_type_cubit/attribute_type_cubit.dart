@@ -26,7 +26,6 @@ class AttributeTypeCubit extends Cubit<AttributeTypeState> {
 
   Future<void> createAttributeType({
     required String name,
-    required String arName,
     bool status = true,
   }) async {
     emit(AttributeTypeCreating());
@@ -34,7 +33,6 @@ class AttributeTypeCubit extends Cubit<AttributeTypeState> {
       final attributeType = AttributeType(
         id: '',
         name: name,
-        arName: arName,
         status: status,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
@@ -51,7 +49,6 @@ class AttributeTypeCubit extends Cubit<AttributeTypeState> {
   Future<void> updateAttributeType({
     required String id,
     required String name,
-    required String arName,
     bool? status,
   }) async {
     emit(AttributeTypeUpdating());
@@ -61,7 +58,6 @@ class AttributeTypeCubit extends Cubit<AttributeTypeState> {
 
       final updated = current.copyWith(
         name: name,
-        arName: arName,
         status: status ?? current.status,
       );
 

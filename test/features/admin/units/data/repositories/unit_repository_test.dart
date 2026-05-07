@@ -20,7 +20,6 @@ void main() {
           id: '1',
           code: 'pcs',
           name: 'Piece',
-          arName: 'قطعة',
           operator: '*',
           operatorValue: 1.0,
           status: true,
@@ -44,21 +43,18 @@ void main() {
       // Arrange
       when(() => mockRepository.createUnit(
         name: any(named: 'name'),
-        arName: any(named: 'arName'),
         code: any(named: 'code'),
       )).thenAnswer((_) async => {});
 
       // Act
       await mockRepository.createUnit(
         name: 'Kilogram',
-        arName: 'كيلو',
         code: 'kg',
       );
 
       // Assert
       verify(() => mockRepository.createUnit(
         name: 'Kilogram',
-        arName: 'كيلو',
         code: 'kg',
       )).called(1);
     });

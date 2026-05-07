@@ -24,7 +24,6 @@ class UnitFormDialog extends StatefulWidget {
 class _UnitFormDialogState extends State<UnitFormDialog>
     with SingleTickerProviderStateMixin {
   final _nameController = TextEditingController();
-  final _arNameController = TextEditingController();
   final _codeController = TextEditingController();
   final _operatorValueController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -63,7 +62,6 @@ class _UnitFormDialogState extends State<UnitFormDialog>
   void _initializeControllers() {
     if (isEditMode) {
       _nameController.text = widget.unit!.name ?? '';
-      _arNameController.text = widget.unit!.arName ?? '';
       _codeController.text = widget.unit!.code ?? '';
       selectedOperator = widget.unit!.operator;
       _operatorValueController.text = widget.unit!.operatorValue.toString();
@@ -86,7 +84,6 @@ class _UnitFormDialogState extends State<UnitFormDialog>
   @override
   void dispose() {
     _nameController.dispose();
-    _arNameController.dispose();
     _codeController.dispose();
     _operatorValueController.dispose();
     _animationController.dispose();
@@ -145,21 +142,6 @@ class _UnitFormDialogState extends State<UnitFormDialog>
                                       LoginValidator.validateRequired(
                                         v,
                                         LocaleKeys.name_english.tr(),
-                                      ),
-                                ),
-                                SizedBox(
-                                  height: ResponsiveUI.spacing(context, 12),
-                                ),
-                                buildTextField(
-                                  context,
-                                  controller: _arNameController,
-                                  label: LocaleKeys.name_arabic.tr(),
-                                  icon: Icons.straighten_rounded,
-                                  hint: LocaleKeys.enter_unit_name_arabic.tr(),
-                                  validator: (v) =>
-                                      LoginValidator.validateRequired(
-                                        v,
-                                        LocaleKeys.name_arabic.tr(),
                                       ),
                                 ),
                                 SizedBox(
@@ -287,7 +269,6 @@ class _UnitFormDialogState extends State<UnitFormDialog>
         cubit.updateUnit(
           unitId: widget.unit!.id ?? '',
           name: _nameController.text.trim(),
-          arName: _arNameController.text.trim(),
           code: _codeController.text.trim(),
           operator: selectedOperator ?? '*',
           operatorValue: double.parse(_operatorValueController.text.trim()),
@@ -296,7 +277,6 @@ class _UnitFormDialogState extends State<UnitFormDialog>
       } else {
         cubit.createUnit(
           name: _nameController.text.trim(),
-          arName: _arNameController.text.trim(),
           code: _codeController.text.trim(),
           operator: selectedOperator ?? '*',
           operatorValue: double.parse(_operatorValueController.text.trim()),

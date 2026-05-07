@@ -19,13 +19,12 @@ void main() {
   CategoryItem sampleCategory(String id, {String? parentId}) => CategoryItem.fromJson({
         'id': id,
         'name': 'Category $id',
-        'ar_name': 'فئة $id',
         'image': 'cat_$id.jpg',
         'product_quantity': 10,
         'created_at': '2024-01-01',
         'updated_at': '2024-01-01',
         'version': 1,
-        if (parentId != null) 'parent': {'id': parentId, 'name': 'Parent', 'ar_name': 'أب'},
+        if (parentId != null) 'parent': {'id': parentId, 'name': 'Parent'},
       });
 
   group('CategoriesCubit', () {
@@ -90,14 +89,13 @@ void main() {
       build: () {
         when(() => mockRepo.createCategory(
           name: any(named: 'name'),
-          arName: any(named: 'arName'),
           parentId: any(named: 'parentId'),
           imageFile: any(named: 'imageFile'),
         )).thenAnswer((_) async => sampleCategory('new'));
         when(() => mockRepo.getAllCategories()).thenAnswer((_) async => [sampleCategory('cat1')]);
         return CategoriesCubit(mockRepo);
       },
-      act: (c) => c.createCategory(name: 'New', arName: 'جديد'),
+      act: (c) => c.createCategory(name: 'New'),
       expect: () => [
         isA<CreateCategoryLoading>(),
         isA<GetCategoriesLoading>(),

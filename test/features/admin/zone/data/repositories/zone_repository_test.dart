@@ -33,7 +33,6 @@ void main() {
         {
           'id': 'zone-1',
           'name': 'North Zone',
-          'ar_name': 'المنطقة الشمالية',
           'country_id': 'country-1',
           'city_id': 'city-1',
           'cost': 15.0,
@@ -42,7 +41,6 @@ void main() {
         {
           'id': 'zone-2',
           'name': 'South Zone',
-          'ar_name': 'المنطقة الجنوبية',
           'country_id': 'country-1',
           'city_id': 'city-2',
           'cost': 20.0,
@@ -64,7 +62,6 @@ void main() {
       expect(result.length, 2);
       expect(result[0].id, 'zone-1');
       expect(result[0].name, 'North Zone');
-      expect(result[0].arName, 'المنطقة الشمالية');
       expect(result[0].cost, 15.0);
       expect(result[1].name, 'South Zone');
     });
@@ -78,7 +75,6 @@ void main() {
       await expectLater(
         repository.createZone(
           name: 'East Zone',
-          arName: 'المنطقة الشرقية',
           countryId: 'country-1',
           cityId: 'city-1',
           cost: 25,
@@ -98,7 +94,6 @@ void main() {
         repository.updateZone(
           zoneId: 'zone-1',
           name: 'North Zone Updated',
-          arName: 'المنطقة الشمالية',
           countryId: 'country-1',
           cityId: 'city-1',
           cost: '30',

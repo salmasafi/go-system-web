@@ -42,7 +42,6 @@ class BrandById {
   BrandById({
     this.id,
     this.name,
-    this.arName,
     this.logo,
     this.createdAt,
     this.updatedAt,
@@ -52,7 +51,6 @@ class BrandById {
   BrandById.fromJson(dynamic json) {
     id = json['_id'];
     name = json['name'];
-    arName = json['ar_name'];
     logo = json['logo'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
@@ -60,7 +58,6 @@ class BrandById {
   }
   String? id;
   String? name;
-  String? arName;
   String? logo;
   String? createdAt;
   String? updatedAt;

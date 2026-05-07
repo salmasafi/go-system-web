@@ -125,16 +125,6 @@ class _VariationCardState extends State<VariationCard> {
               //     // isLoading: isLoading,
               //   ),
               // ),
-              // SizedBox(height: ResponsiveUI.spacing(context, 4)),
-              // Text(
-              //   variation.arName ?? '',
-              //   style: TextStyle(
-              //     fontSize: ResponsiveUI.fontSize(context, 14),
-              //     fontWeight: FontWeight.w500,
-              //     color: AppColors.darkGray.withValues(alpha: 0.7),
-              //     overflow: TextOverflow.ellipsis,
-              //   ),
-              // ),
             ],
           ),
         ),

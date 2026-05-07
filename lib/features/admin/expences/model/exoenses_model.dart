@@ -44,6 +44,7 @@ class ExpenseModel {
   final String name;
   final double amount;
   final String categoryId;
+  final String? reasonId;
   final String? note;
   final String financialAccountId;
   final DateTime createdAt;
@@ -55,6 +56,7 @@ class ExpenseModel {
     required this.name,
     required this.amount,
     required this.categoryId,
+    this.reasonId,
     this.note,
     required this.financialAccountId,
     required this.createdAt,
@@ -68,8 +70,9 @@ class ExpenseModel {
       name: json['name']?.toString() ?? '',
       amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
       categoryId: (json['category_id'] ?? json['Category_id'] ?? '')?.toString() ?? '',
+      reasonId: (json['reason_id'] ?? '')?.toString(),
       note: json['note'] as String?,
-      financialAccountId: (json['financial_account_id'] ?? json['financial_accountId'] ?? json['financial_account_id'] ?? '')?.toString() ?? '',
+      financialAccountId: (json['bank_account_id'] ?? json['financial_accountId'] ?? json['financial_account_id'] ?? '')?.toString() ?? '',
       createdAt: json['created_at'] != null 
           ? DateTime.parse(json['created_at'] as String)
           : (json['createdAt'] != null ? DateTime.parse(json['createdAt'] as String) : DateTime.now()),
@@ -86,6 +89,7 @@ class ExpenseModel {
       'name': name,
       'amount': amount,
       'Category_id': categoryId,
+      'reason_id': reasonId,
       'note': note,
       'financial_accountId': financialAccountId,
       'createdAt': createdAt.toIso8601String(),

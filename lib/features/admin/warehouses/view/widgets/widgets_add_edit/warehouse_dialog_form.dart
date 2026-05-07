@@ -73,7 +73,6 @@ class WarehouseDialogForm extends StatelessWidget {
                     icon: Icons.phone_outlined,
                     hint: LocaleKeys.enter_phone_number.tr(),
                     keyboardType: TextInputType.phone,
-                    validator: LoginValidator.validatePhone,
                   ),
                   SizedBox(height: spacing20),
                   buildTextField(
@@ -83,7 +82,6 @@ class WarehouseDialogForm extends StatelessWidget {
                     icon: Icons.email_outlined,
                     hint: LocaleKeys.enter_email_address.tr(),
                     keyboardType: TextInputType.emailAddress,
-                    validator: LoginValidator.validateEmail,
                   ),
                 ],
               ),

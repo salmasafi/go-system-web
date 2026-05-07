@@ -36,7 +36,6 @@ void main() {
         {
           'id': 'cur1',
           'name': 'USD',
-          'ar_name': 'usd_ar',
           'exchange_rate': 1.0,
           'is_default': true,
           'version': 1,

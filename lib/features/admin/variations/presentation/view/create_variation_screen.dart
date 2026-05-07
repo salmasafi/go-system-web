@@ -20,7 +20,6 @@ class CreateVariationScreen extends StatefulWidget {
 
 class _CreateVariationScreenState extends State<CreateVariationScreen> {
   final _nameEnController = TextEditingController();
-  final _nameArController = TextEditingController();
 
   final List<Map<String, dynamic>> _options = [];
 
@@ -55,10 +54,6 @@ class _CreateVariationScreenState extends State<CreateVariationScreen> {
       CustomSnackbar.showWarning(context, LocaleKeys.variation_name_en_required.tr(),);
       return;
     }
-    if (_nameArController.text.trim().isEmpty) {
-      CustomSnackbar.showWarning(context, LocaleKeys.variation_name_ar_required.tr(),);
-      return;
-    }
     if (_options.isEmpty) {
       CustomSnackbar.showWarning(context, LocaleKeys.add_at_least_one_option.tr(),);
       return;
@@ -72,7 +67,6 @@ class _CreateVariationScreenState extends State<CreateVariationScreen> {
 
     context.read<VariationCubit>().addVariation(
           name: _nameEnController.text.trim(),
-          arName: _nameArController.text.trim(),
           options: _options,
         );
   }
@@ -196,11 +190,6 @@ class _CreateVariationScreenState extends State<CreateVariationScreen> {
                     title: LocaleKeys.variation_name_en.tr(),
                     hint: LocaleKeys.enter_variation_name_en.tr(),
                   ),
-                  _buildTextField(
-                    controller: _nameArController,
-                    title: LocaleKeys.variation_name_ar.tr(),
-                    hint: LocaleKeys.enter_variation_name_ar.tr(),
-                  ),
                   _buildOptions(),
                   SizedBox(height: ResponsiveUI.spacing(context, 24)),
                   SizedBox(
@@ -237,7 +226,6 @@ class _CreateVariationScreenState extends State<CreateVariationScreen> {
   @override
   void dispose() {
     _nameEnController.dispose();
-    _nameArController.dispose();
     super.dispose();
   }
 }

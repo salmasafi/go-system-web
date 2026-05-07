@@ -50,9 +50,7 @@ class _BundleProductAttributeState {
         attributeTypeId: typeId,
         attributeValueId: valueId,
         attributeTypeName: type.name,
-        attributeTypeArName: type.arName,
         attributeValueName: value.name,
-        attributeValueArName: value.arName,
       );
     }).toList();
   }
@@ -416,16 +414,6 @@ class _BundleAttributeSelectionDialogState
                   color: AppColors.darkGray,
                 ),
               ),
-              if (type.arName.isNotEmpty) ...[
-                SizedBox(width: ResponsiveUI.value(context, 6)),
-                Text(
-                  '(${type.arName})',
-                  style: TextStyle(
-                    fontSize: ResponsiveUI.fontSize(context, 11),
-                    color: AppColors.linkBlue,
-                  ),
-                ),
-              ],
             ],
           ),
           SizedBox(height: ResponsiveUI.value(context, 8)),

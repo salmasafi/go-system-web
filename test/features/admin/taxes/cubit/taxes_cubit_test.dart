@@ -11,7 +11,6 @@ class MockTaxRepository extends Mock implements TaxRepository {}
 TaxModel sampleTax(String id) => TaxModel.fromJson({
       '_id': id,
       'name': 'Tax $id',
-      'ar_name': 'ضريبة $id',
       'amount': 15.0,
       'type': 'percentage',
       'status': true,
@@ -69,7 +68,6 @@ void main() {
       },
       act: (c) => c.createTax(
         name: 'New Tax',
-        arName: 'ضريبة جديدة',
         amount: 10.0,
         taxType: 'percentage',
       ),

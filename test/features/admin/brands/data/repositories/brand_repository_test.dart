@@ -36,7 +36,6 @@ void main() {
         {
           'id': 'brand-1',
           'name': 'Nike',
-          'ar_name': 'نايك',
           'logo': 'nike_logo.jpg',
           'created_at': '2024-01-01',
           'updated_at': '2024-01-01',
@@ -45,7 +44,6 @@ void main() {
         {
           'id': 'brand-2',
           'name': 'Adidas',
-          'ar_name': 'أديداس',
           'logo': 'adidas_logo.jpg',
           'created_at': '2024-01-02',
           'updated_at': '2024-01-02',
@@ -67,7 +65,6 @@ void main() {
       expect(result.length, 2);
       expect(result[0].id, 'brand-1');
       expect(result[0].name, 'Nike');
-      expect(result[0].arName, 'نايك');
       expect(result[1].name, 'Adidas');
     });
 
@@ -75,7 +72,6 @@ void main() {
       final mockData = {
         'id': 'brand-1',
         'name': 'Nike',
-        'ar_name': 'نايك',
         'logo': 'nike_logo.jpg',
         'created_at': '2024-01-01',
         'updated_at': '2024-01-01',
@@ -97,7 +93,6 @@ void main() {
       expect(result, isNotNull);
       expect(result!.id, 'brand-1');
       expect(result.name, 'Nike');
-      expect(result.arName, 'نايك');
     });
 
     test('getBrandById should return null for non-existent id', () async {

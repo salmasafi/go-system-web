@@ -45,7 +45,6 @@ class UnitModel {
   final String? id;
   final String? code;
   final String? name;
-  final String? arName;
   final String? operator;
   final double? operatorValue;
   final bool? status;
@@ -57,7 +56,6 @@ class UnitModel {
     this.id,
     this.code,
     this.name,
-    this.arName,
     this.operator,
     this.operatorValue,
     this.status,
@@ -71,7 +69,6 @@ class UnitModel {
       id: (json['id'] ?? json['_id'])?.toString() ?? '',
       code: json['code']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
-      arName: json['ar_name']?.toString(),
       operator: json['operator']?.toString() ?? '*',
       operatorValue: (json['operator_value'] as num?)?.toDouble() ?? 1.0,
       status: json['status'] as bool? ?? true,
@@ -86,7 +83,6 @@ class UnitModel {
       'id': id,
       'code': code,
       'name': name,
-      'ar_name': arName,
       'operator': operator,
       'operator_value': operatorValue,
       'status': status,

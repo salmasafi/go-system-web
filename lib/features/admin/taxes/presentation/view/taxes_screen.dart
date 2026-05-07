@@ -118,7 +118,10 @@ class _TaxesScreenState extends State<TaxesScreen> {
         title: LocaleKeys.taxes.tr(),
         showActions: true,
         onPressed: () {
-          // TODO: Add Tax functionality
+          showDialog(
+            context: context,
+            builder: (context) => const TaxFormDialog(),
+          );
         },
       ),
       body: SafeArea(

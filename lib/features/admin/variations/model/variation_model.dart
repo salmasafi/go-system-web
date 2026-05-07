@@ -42,7 +42,6 @@ class VariationData {
 class VariationModel {
   final String id;
   final String name;
-  final String? arName;
   final String createdAt;
   final String updatedAt;
   final int version;
@@ -51,7 +50,6 @@ class VariationModel {
   VariationModel({
     required this.id,
     required this.name,
-    this.arName,
     required this.createdAt,
     required this.updatedAt,
     required this.version,
@@ -62,7 +60,6 @@ class VariationModel {
     return VariationModel(
       id: (json['id'] ?? json['_id'])?.toString() ?? '',
       name: json['name'] as String? ?? '',
-      arName: json['ar_name'] as String?,
       createdAt: json['createdAt'] as String,
       updatedAt: json['updatedAt'] as String,
       version: json['__v'] as int,
@@ -76,7 +73,6 @@ class VariationModel {
     return {
       '_id': id,
       'name': name,
-      'ar_name': arName,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       'options': options.map((item) => item.toJson()).toList(),

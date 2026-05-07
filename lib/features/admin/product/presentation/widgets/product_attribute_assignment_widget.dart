@@ -196,7 +196,6 @@ class _ProductAttributeAssignmentWidgetState extends State<ProductAttributeAssig
       margin: const EdgeInsets.only(bottom: 12),
       child: ExpansionTile(
         title: Text(type.name),
-        subtitle: Text(type.arName),
         onExpansionChanged: (expanded) {
           if (expanded) {
             _loadValuesForType(type.id);
@@ -230,7 +229,6 @@ class _ProductAttributeAssignmentWidgetState extends State<ProductAttributeAssig
                     final isSelected = _selectedAttributeValues[type.id]?.contains(value.id) ?? false;
                     return CheckboxListTile(
                       title: Text(value.name),
-                      subtitle: Text(value.arName),
                       value: isSelected,
                       onChanged: (_) => _toggleAttributeValue(type.id, value.id),
                     );

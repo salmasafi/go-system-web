@@ -33,7 +33,6 @@ void main() {
         {
           'id': 'city-1',
           'name': 'Riyadh',
-          'ar_name': 'الرياض',
           'country_id': 'country-1',
           'shipping_cost': 25.0,
           'version': 1,
@@ -41,7 +40,6 @@ void main() {
         {
           'id': 'city-2',
           'name': 'Jeddah',
-          'ar_name': 'جدة',
           'country_id': 'country-1',
           'shipping_cost': 30.0,
           'version': 1,
@@ -52,7 +50,6 @@ void main() {
         {
           'id': 'country-1',
           'name': 'Saudi Arabia',
-          'ar_name': 'المملكة العربية السعودية',
           'is_default': true,
           'version': 1,
         },
@@ -80,7 +77,6 @@ void main() {
 
       expect(result.cities.length, 2);
       expect(result.cities[0].name, 'Riyadh');
-      expect(result.cities[0].arName, 'الرياض');
       expect(result.cities[0].shipingCost, 25.0);
       expect(result.countries.length, 1);
       expect(result.countries[0].name, 'Saudi Arabia');
@@ -95,7 +91,6 @@ void main() {
       await expectLater(
         repository.createCity(
           name: 'Dammam',
-          arName: 'الدمام',
           countryId: 'country-1',
           shipingCost: '20',
         ),
@@ -114,7 +109,6 @@ void main() {
         repository.updateCity(
           cityId: 'city-1',
           name: 'Riyadh Updated',
-          arName: 'الرياض',
           countryId: 'country-1',
           shipingCost: '35',
         ),

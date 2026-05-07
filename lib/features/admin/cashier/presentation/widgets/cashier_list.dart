@@ -170,19 +170,6 @@ class CashierList extends StatelessWidget {
 
               SizedBox(height: ResponsiveUI.spacing(context, 16)),
 
-              // Arabic Name
-              _buildInfoRow(
-                icon: Icons.language,
-                label: LocaleKeys.arabic_name.tr(),
-                value: 
-                // cashier.arName.isNotEmpty 
-                    // ? 
-                    cashier.arName 
-                    // : LocaleKeys.no_arabic_name.tr(),
-              ),
-
-              SizedBox(height: ResponsiveUI.spacing(context, 16)),
-
               // Warehouse Information
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

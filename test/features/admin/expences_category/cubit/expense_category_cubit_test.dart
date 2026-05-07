@@ -18,7 +18,6 @@ void main() {
   ExpenseCategoryModel sampleCategory(String id) => ExpenseCategoryModel.fromJson({
         'id': id,
         'name': 'Category $id',
-        'ar_name': 'فئة $id',
         'status': true,
         'created_at': '2024-01-01',
         'updated_at': '2024-01-01',
@@ -60,7 +59,6 @@ void main() {
       build: () {
         when(() => mockRepo.createExpenseCategory(
           name: any(named: 'name'),
-          arName: any(named: 'arName'),
           status: any(named: 'status'),
         )).thenAnswer((_) async => {});
         when(() => mockRepo.getExpenseCategories()).thenAnswer((_) async => [sampleCategory('c1')]);
@@ -68,7 +66,6 @@ void main() {
       },
       act: (c) => c.createExpenseCategory(
         name: 'New Category',
-        arName: 'فئة جديدة',
         status: true,
       ),
       expect: () => [

@@ -55,7 +55,7 @@ class ProductAttributeCubit extends Cubit<ProductAttributeState> {
           errorStr.contains('constraint') ||
           errorStr.contains('violates')) {
         emit(ProductAttributeError(
-          'Cannot assign attributes: product has price variations enabled',
+          'Cannot assign attributes: product has price attributes enabled',
         ));
       } else {
         emit(ProductAttributeError(e.toString()));

@@ -33,9 +33,7 @@ class AddProductScreen extends StatefulWidget {
 
 class _AddProductScreenState extends State<AddProductScreen> {
   final _nameController = TextEditingController();
-  final _arNameController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _arDescriptionController = TextEditingController();
   final _priceController = TextEditingController();
   final _wholePriceController = TextEditingController();
   final _startQuantityController = TextEditingController();
@@ -49,7 +47,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   List<CategoryItem>? _selectedCategories;
   Brands? _selectedBrand;
-  UnitModel? _selectedProductUnit;
   UnitModel? _selectedSaleUnit;
   UnitModel? _selectedPurchaseUnit;
 
@@ -117,11 +114,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   void _saveProduct() {
     if (_nameController.text.trim().isEmpty) {
-      CustomSnackbar.showError(context, 'الرجاء إدخال اسم المنتج بالإنجليزية');
-      return;
-    }
-    if (_arNameController.text.trim().isEmpty) {
-      CustomSnackbar.showError(context, 'الرجاء إدخال اسم المنتج بالعربية');
+      CustomSnackbar.showError(context, 'الرجاء إدخال اسم المنتج');
       return;
     }
     if (_selectedCategories == null || _selectedCategories!.isEmpty) {
@@ -148,14 +141,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
     context.read<ProductsCubit>().addProductWithData(
           name: _nameController.text.trim(),
-          arName: _arNameController.text.trim(),
           description: _descriptionController.text.trim(),
-          arDescription: _arDescriptionController.text.trim(),
           image: mainImageBase64,
           code: _codeController.text.trim(),
           categoryIds: _selectedCategories!.map((c) => c.id).toList(),
           brandId: _selectedBrand!.id ?? '',
-          productUnit: _selectedProductUnit?.id ?? '',
           saleUnit: _selectedSaleUnit?.id ?? '',
           purchaseUnit: _selectedPurchaseUnit?.id ?? '',
           price: price,
@@ -248,45 +238,20 @@ class _AddProductScreenState extends State<AddProductScreen> {
           readOnly: true,
         ),
         SizedBox(height: ResponsiveUI.spacing(context, 12)),
-        Row(
-          children: [
-            Expanded(
-              child: buildTextField(
-                context,
-                controller: _nameController,
-                label: 'الاسم (EN) *',
-                icon: Icons.label_outline,
-                hint: 'Product name',
-              ),
-            ),
-            SizedBox(width: ResponsiveUI.spacing(context, 12)),
-            Expanded(
-              child: buildTextField(
-                context,
-                controller: _arNameController,
-                label: 'الاسم (AR) *',
-                icon: Icons.label_outline,
-                hint: 'اسم المنتج',
-              ),
-            ),
-          ],
+        buildTextField(
+          context,
+          controller: _nameController,
+          label: 'اسم المنتج *',
+          icon: Icons.label_outline,
+          hint: 'Product name',
         ),
         SizedBox(height: ResponsiveUI.spacing(context, 12)),
         buildTextField(
           context,
           controller: _descriptionController,
-          label: 'الوصف (EN)',
+          label: 'الوصف',
           icon: Icons.description_outlined,
           hint: 'Product description...',
-          maxLines: 3,
-        ),
-        SizedBox(height: ResponsiveUI.spacing(context, 12)),
-        buildTextField(
-          context,
-          controller: _arDescriptionController,
-          label: 'الوصف (AR)',
-          icon: Icons.description_outlined,
-          hint: 'وصف المنتج...',
           maxLines: 3,
         ),
       ],
@@ -364,17 +329,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
             if (state is GetUnitsSuccess) {
               return Column(
                 children: [
-                  buildDropdownField<UnitModel>(
-                    context,
-                    items: state.units,
-                    label: 'وحدة المنتج',
-                    hint: 'اختر وحدة المنتج',
-                    value: _selectedProductUnit,
-                    onChanged: (v) =>
-                        setState(() => _selectedProductUnit = v),
-                    itemLabel: (u) => u.name ?? '',
-                  ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 12)),
                   Row(
                     children: [
                       Expanded(
@@ -583,9 +537,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   @override
   void dispose() {
     _nameController.dispose();
-    _arNameController.dispose();
     _descriptionController.dispose();
-    _arDescriptionController.dispose();
     _priceController.dispose();
     _wholePriceController.dispose();
     _startQuantityController.dispose();

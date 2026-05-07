@@ -26,7 +26,6 @@ class AddCategoryScreen extends StatefulWidget {
 
 class _AddCategoryScreenState extends State<AddCategoryScreen> {
   final _nameController = TextEditingController();
-  final _arNameController = TextEditingController();
   File? _selectedImage;
   CategoryItem? _selectedParentCategory;
   bool _makeParentCategory = true;
@@ -77,14 +76,6 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                   CustomTextField(
                     controller: _nameController,
                     labelText: LocaleKeys.enter_category_name_en.tr(),
-                    hasBoxDecoration: false,
-                    hasBorder: true,
-                    prefixIcon: Icons.category,
-                  ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                  CustomTextField(
-                    controller: _arNameController,
-                    labelText: LocaleKeys.enter_category_name_ar.tr(),
                     hasBoxDecoration: false,
                     hasBorder: true,
                     prefixIcon: Icons.category,
@@ -489,7 +480,6 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                               }
                               cubit.createCategory(
                                 name: _nameController.text.trim(),
-                                arName: _arNameController.text.trim(),
                                 imageFile: _selectedImage, // Made optional
                                 parentId: _makeParentCategory
                                     ? null

@@ -18,7 +18,6 @@ void main() {
   CashierModel sampleCashier(String id) => CashierModel.fromJson({
         'id': id,
         'name': 'Cashier $id',
-        'ar_name': 'كاشير $id',
         'warehouse': {'id': 'w1', 'name': 'Main Warehouse'},
         'status': true,
         'cashier_active': true,
@@ -61,7 +60,6 @@ void main() {
       build: () {
         when(() => mockRepo.createCashier(
           name: any(named: 'name'),
-          arName: any(named: 'arName'),
           warehouseId: any(named: 'warehouseId'),
           status: any(named: 'status'),
         )).thenAnswer((_) async => {});
@@ -70,7 +68,6 @@ void main() {
       },
       act: (c) => c.createCashier(
         name: 'New Cashier',
-        arName: 'كاشير جديد',
         warehouseId: 'w1',
         status: true,
       ),
@@ -88,7 +85,6 @@ void main() {
         when(() => mockRepo.updateCashier(
           id: any(named: 'id'),
           name: any(named: 'name'),
-          arName: any(named: 'arName'),
           warehouseId: any(named: 'warehouseId'),
           status: any(named: 'status'),
         )).thenAnswer((_) async => {});
@@ -98,7 +94,6 @@ void main() {
       act: (c) => c.updateCashier(
         cashierId: 'c1',
         name: 'Updated Cashier',
-        arName: 'كاشير محدث',
         warehouseId: 'w1',
         status: true,
       ),

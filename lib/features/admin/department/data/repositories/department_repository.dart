@@ -10,15 +10,11 @@ abstract class DepartmentRepositoryInterface {
   Future<void> addDepartment({
     required String name,
     required String description,
-    required String arName,
-    required String arDescription,
   });
   Future<void> updateDepartment({
     required String id,
     required String name,
     required String description,
-    required String arName,
-    required String arDescription,
   });
   Future<void> deleteDepartment(String id);
 }
@@ -34,13 +30,9 @@ class DepartmentRepository implements DepartmentRepositoryInterface {
   Future<void> addDepartment({
     required String name,
     required String description,
-    required String arName,
-    required String arDescription,
   }) => _dataSource.addDepartment(
         name: name,
         description: description,
-        arName: arName,
-        arDescription: arDescription,
       );
 
   @override
@@ -48,14 +40,10 @@ class DepartmentRepository implements DepartmentRepositoryInterface {
     required String id,
     required String name,
     required String description,
-    required String arName,
-    required String arDescription,
   }) => _dataSource.updateDepartment(
         id: id,
         name: name,
         description: description,
-        arName: arName,
-        arDescription: arDescription,
       );
 
   @override
@@ -82,16 +70,12 @@ class _DepartmentSupabaseDataSource implements DepartmentRepositoryInterface {
   Future<void> addDepartment({
     required String name,
     required String description,
-    required String arName,
-    required String arDescription,
   }) async {
     try {
       log('DepartmentSupabase: Adding department: $name');
       await _client.from('departments').insert({
         'name': name,
         'description': description,
-        'ar_name': arName,
-        'ar_description': arDescription,
       });
     } catch (e) {
       log('DepartmentSupabase: Error adding department - $e');
@@ -104,16 +88,12 @@ class _DepartmentSupabaseDataSource implements DepartmentRepositoryInterface {
     required String id,
     required String name,
     required String description,
-    required String arName,
-    required String arDescription,
   }) async {
     try {
       log('DepartmentSupabase: Updating department: $id');
       await _client.from('departments').update({
         'name': name,
         'description': description,
-        'ar_name': arName,
-        'ar_description': arDescription,
       }).eq('id', id);
     } catch (e) {
       log('DepartmentSupabase: Error updating department - $e');
@@ -137,8 +117,6 @@ class _DepartmentSupabaseDataSource implements DepartmentRepositoryInterface {
       id: json['id'] ?? '',
       name: json['name'] ?? '',
       description: json['description'] ?? '',
-      arName: json['ar_name'],
-      arDescription: json['ar_description'],
       version: (json['version'] as num?)?.toInt() ?? 1,
       createdAt: json['created_at']?.toString() ?? DateTime.now().toIso8601String(),
       updatedAt: json['updated_at']?.toString() ?? DateTime.now().toIso8601String(),

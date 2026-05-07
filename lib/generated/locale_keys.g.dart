@@ -301,9 +301,6 @@ abstract class  LocaleKeys {
   static const discounts_empty_message = 'discounts_empty_message';
   static const update_discount = 'update_discount';
   static const create_discount = 'create_discount';
-  static const brand_ar_name = 'brand_ar_name';
-  static const enter_brand_ar_name = 'enter_brand_ar_name';
-  static const please_enter_brand_ar_name = 'please_enter_brand_ar_name';
   static const new_popup = 'new_popup';
   static const popup_title_en = 'popup_title_en';
   static const popup_title_ar = 'popup_title_ar';
@@ -1022,4 +1019,6 @@ abstract class  LocaleKeys {
   static const failed_to_update_expense = 'failed_to_update_expense';
   static const failed_to_create_sale = 'failed_to_create_sale';
   static const unknown_error_occurred = 'unknown_error_occurred';
+  static const select_attribute = 'select_attribute';
+  static const different_prices = 'different_prices';
 }

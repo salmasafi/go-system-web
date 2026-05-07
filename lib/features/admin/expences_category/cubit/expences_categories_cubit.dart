@@ -32,14 +32,12 @@ class ExpenseCategoryCubit extends Cubit<ExpenseCategoryState> {
 
   Future<void> createExpenseCategory({
     required String name,
-    required String arName,
     required bool status,
   }) async {
     emit(CreateExpenseCategoryLoading());
     try {
       await _repository.createExpenseCategory(
         name: name,
-        arName: arName,
         status: status,
       );
       emit(
@@ -47,7 +45,7 @@ class ExpenseCategoryCubit extends Cubit<ExpenseCategoryState> {
           LocaleKeys.expense_category_created_success.tr(),
         ),
       );
-      getExpenseCategories();
+      await getExpenseCategories();
     } catch (e) {
       emit(
         CreateExpenseCategoryError(e.toString().replaceAll('Exception: ', '')),
@@ -58,7 +56,6 @@ class ExpenseCategoryCubit extends Cubit<ExpenseCategoryState> {
   Future<void> updateExpenseCategory({
     required String categoryId,
     required String name,
-    required String arName,
     required bool status,
   }) async {
     emit(UpdateExpenseCategoryLoading());
@@ -66,7 +63,6 @@ class ExpenseCategoryCubit extends Cubit<ExpenseCategoryState> {
       await _repository.updateExpenseCategory(
         categoryId: categoryId,
         name: name,
-        arName: arName,
         status: status,
       );
       emit(
@@ -74,7 +70,7 @@ class ExpenseCategoryCubit extends Cubit<ExpenseCategoryState> {
           LocaleKeys.expense_category_updated_success.tr(),
         ),
       );
-      getExpenseCategories();
+      await getExpenseCategories();
     } catch (e) {
       emit(
         UpdateExpenseCategoryError(e.toString().replaceAll('Exception: ', '')),

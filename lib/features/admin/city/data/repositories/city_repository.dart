@@ -10,14 +10,12 @@ abstract class CityRepositoryInterface {
   Future<CityData> getCities();
   Future<void> createCity({
     required String name,
-    required String arName,
     required String countryId,
     required String shipingCost,
   });
   Future<void> updateCity({
     required String cityId,
     required String name,
-    required String arName,
     required String countryId,
     required String shipingCost,
   });
@@ -34,12 +32,10 @@ class CityRepository implements CityRepositoryInterface {
   @override
   Future<void> createCity({
     required String name,
-    required String arName,
     required String countryId,
     required String shipingCost,
   }) => _dataSource.createCity(
         name: name,
-        arName: arName,
         countryId: countryId,
         shipingCost: shipingCost,
       );
@@ -48,13 +44,11 @@ class CityRepository implements CityRepositoryInterface {
   Future<void> updateCity({
     required String cityId,
     required String name,
-    required String arName,
     required String countryId,
     required String shipingCost,
   }) => _dataSource.updateCity(
         cityId: cityId,
         name: name,
-        arName: arName,
         countryId: countryId,
         shipingCost: shipingCost,
       );
@@ -100,7 +94,6 @@ class _CitySupabaseDataSource implements CityRepositoryInterface {
   @override
   Future<void> createCity({
     required String name,
-    required String arName,
     required String countryId,
     required String shipingCost,
   }) async {
@@ -108,7 +101,6 @@ class _CitySupabaseDataSource implements CityRepositoryInterface {
       log('CitySupabase: Creating city: $name');
       await _client.from('cities').insert({
         'name': name,
-        'ar_name': arName,
         'country_id': countryId,
         'shipping_cost': double.tryParse(shipingCost) ?? 0.0,
       });
@@ -122,7 +114,6 @@ class _CitySupabaseDataSource implements CityRepositoryInterface {
   Future<void> updateCity({
     required String cityId,
     required String name,
-    required String arName,
     required String countryId,
     required String shipingCost,
   }) async {
@@ -132,7 +123,6 @@ class _CitySupabaseDataSource implements CityRepositoryInterface {
           .from('cities')
           .update({
             'name': name,
-            'ar_name': arName,
             'country_id': countryId,
             'shipping_cost': double.tryParse(shipingCost) ?? 0.0,
           })
@@ -158,12 +148,10 @@ class _CitySupabaseDataSource implements CityRepositoryInterface {
     return CityModel(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
-      arName: json['ar_name'] ?? '',
       country: json['country_id'] != null
           ? CountryModel(
               id: json['country_id'],
               name: '',
-              arName: '',
               isDefault: false,
               version: 0,
             )
