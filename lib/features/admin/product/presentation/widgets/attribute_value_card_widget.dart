@@ -81,7 +81,7 @@ class AttributeValueCard extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.delete_outline),
                   onPressed: onDelete,
-                  color: Colors.red,
+                  color: AppColors.red,
                 ),
               ],
             ),

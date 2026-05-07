@@ -80,7 +80,7 @@ class _CategorySupabaseDataSource implements CategoryRepositoryInterface {
 
       final response = await _client
           .from('categories')
-          .select('*, parent:parent_id(id, name, ar_name)')
+          .select('*, parent:parent_id(id, name, ar_name), product_categories(count)')
           .order('name');
 
       final categories = (response as List)
@@ -102,7 +102,7 @@ class _CategorySupabaseDataSource implements CategoryRepositoryInterface {
 
       final response = await _client
           .from('categories')
-          .select('*, parent:parent_id(id, name, ar_name)')
+          .select('*, parent:parent_id(id, name, ar_name), product_categories(count)')
           .eq('id', id)
           .maybeSingle();
 
@@ -246,7 +246,9 @@ class _CategorySupabaseDataSource implements CategoryRepositoryInterface {
       name: json['name'] as String,
       arName: json['ar_name'] ?? '',
       image: json['image'] ?? '',
-      productQuantity: json['product_quantity'] ?? 0,
+      productQuantity: ((json['product_categories'] as List?)?.isNotEmpty == true
+          ? (json['product_categories'][0]['count'] as num?)?.toInt()
+          : null) ?? json['product_quantity'] ?? 0,
       createdAt: json['created_at'] ?? '',
       updatedAt: json['updated_at'] ?? '',
       version: json['version'] ?? 1,

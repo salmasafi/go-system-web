@@ -158,8 +158,8 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
                       vertical: ResponsiveUI.padding(context, 6),
                     ),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Colors.red, Colors.redAccent],
+                      gradient: LinearGradient(
+                        colors: [AppColors.red, AppColors.red],
                       ),
                       borderRadius: BorderRadius.circular(
                         ResponsiveUI.borderRadius(context, 16),
@@ -291,7 +291,7 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
                         child: POSActionButton(
                           label: 'Hold',
                           icon: Icons.pause_circle_outline,
-                          color: Colors.orange,
+                          color: AppColors.warningOrange,
                           onTap: () => _holdSale(),
                         ),
                       ),

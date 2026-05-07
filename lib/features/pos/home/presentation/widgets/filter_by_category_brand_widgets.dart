@@ -1,14 +1,7 @@
-// lib/features/pos/home/presentation/widgets/pos_filter_widgets.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
-import 'package:GoSystem/core/widgets/animation/animated_element.dart';
-import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
-import 'package:GoSystem/core/widgets/custom_error/custom_error_state.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:GoSystem/generated/locale_keys.g.dart';
 import 'package:GoSystem/features/pos/home/cubit/pos_home_cubit.dart';
 import 'package:GoSystem/features/pos/home/cubit/pos_home_state.dart';
 import 'package:GoSystem/features/pos/home/model/pos_models.dart';
@@ -22,57 +15,43 @@ class FilterItem {
   FilterItem({required this.id, required this.name, required this.image});
 }
 
-class POSFilterBar extends StatefulWidget {
-  const POSFilterBar({super.key});
-  @override
-  State<POSFilterBar> createState() => _POSFilterBarState();
-}
+// ─── Filter Bar (horizontal chip strip) ──────────────────────────────────────
 
-class _POSFilterBarState extends State<POSFilterBar> {
+class POSFilterBar extends StatelessWidget {
+  const POSFilterBar({super.key});
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PosCubit, PosState>(
       builder: (context, state) {
         final cubit = context.read<PosCubit>();
+        final showCategory = cubit.showCategoryFilters;
+        final showBrand = cubit.showBrandFilters;
 
-        final bool showCategoryFilters = cubit.showCategoryFilters;
-        final bool showBrandFilters = cubit.showBrandFilters;
+        if (!showCategory && !showBrand) return const SizedBox.shrink();
 
-        return AnimatedElement(
-          delay: const Duration(milliseconds: 200),
+        return Container(
+          color: AppColors.white,
+          padding: EdgeInsets.only(
+            top: ResponsiveUI.padding(context, 6),
+            bottom: ResponsiveUI.padding(context, 8),
+          ),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: ResponsiveUI.spacing(context, 12)),
-
-              // CATEGORY PANEL
-              if (showCategoryFilters)
-                AnimatedElement(
-                  delay: Duration.zero,
-                  child: GenericFilterPanel(
-                    filterType: FilterType.categories,
-                    selectedId: cubit.currentCategoryId,
-                    onSelected: (id) => cubit.getProductsByCategory(id),
-                    onClose: () => cubit.hideFilterPanels(
-                      isCategoryRefresh: true,
-                    ), // Only hide
-                    onFilterClear: () => cubit.clearFilter(),
-                  ),
+              if (showCategory)
+                _HorizontalFilterStrip(
+                  filterType: FilterType.categories,
+                  selectedId: cubit.currentCategoryId,
+                  onSelected: (id) => cubit.getProductsByCategory(id),
+                  onClear: () => cubit.clearFilter(),
                 ),
-
-              // BRAND PANEL
-              if (showBrandFilters)
-                AnimatedElement(
-                  delay: Duration.zero,
-                  child: GenericFilterPanel(
-                    filterType: FilterType.brands,
-                    selectedId: cubit.currentBrandId,
-                    onSelected: (id) => cubit.getProductsByBrand(id),
-                    onClose: () => cubit.hideFilterPanels(
-                      isBrandRefresh: true,
-                    ), // Only hide
-                    onFilterClear: () =>
-                        cubit.clearFilter(), // Clear + back to featured
-                  ),
+              if (showBrand)
+                _HorizontalFilterStrip(
+                  filterType: FilterType.brands,
+                  selectedId: cubit.currentBrandId,
+                  onSelected: (id) => cubit.getProductsByBrand(id),
+                  onClear: () => cubit.clearFilter(),
                 ),
             ],
           ),
@@ -82,43 +61,33 @@ class _POSFilterBarState extends State<POSFilterBar> {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Generic Panel
-class GenericFilterPanel extends StatelessWidget {
+// ─── Horizontal scrollable chip strip ────────────────────────────────────────
+
+class _HorizontalFilterStrip extends StatelessWidget {
   final FilterType filterType;
   final String? selectedId;
   final Function(String?) onSelected;
-  final VoidCallback onClose; // Hide panel only
-  final VoidCallback onFilterClear; // Clear filter + go to featured
+  final VoidCallback onClear;
 
-  const GenericFilterPanel({
-    super.key,
+  const _HorizontalFilterStrip({
     required this.filterType,
     required this.selectedId,
     required this.onSelected,
-    required this.onClose,
-    required this.onFilterClear,
+    required this.onClear,
   });
 
-  String _title() =>
-      filterType == FilterType.categories ? LocaleKeys.categories_title.tr() : LocaleKeys.brands_title.tr();
-  IconData _icon() =>
-      filterType == FilterType.categories ? Icons.category : Icons.business;
-
-  List<FilterItem> _items(List<dynamic> list) {
-    return list.map((e) {
-      final item = e as dynamic;
-      return FilterItem(
-        id: filterType == FilterType.categories
-            ? (item as Category).id
-            : (item as Brand).id,
-        name: filterType == FilterType.categories
-            ? (item as Category).name
-            : (item as Brand).name,
-        image: filterType == FilterType.categories
-            ? (item as Category).image ?? ''
-            : (item as Brand).logo ?? '',
-      );
+  List<FilterItem> _buildItems(PosCubit cubit) {
+    final source =
+        filterType == FilterType.categories ? cubit.categories : cubit.brands;
+    return source.map((e) {
+      if (filterType == FilterType.categories) {
+        final cat = e as Category;
+        return FilterItem(id: cat.id, name: cat.name, image: cat.image ?? '');
+      } else {
+        final brand = e as Brand;
+        return FilterItem(
+            id: brand.id, name: brand.name, image: brand.logo ?? '');
+      }
     }).toList();
   }
 
@@ -126,177 +95,126 @@ class GenericFilterPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<PosCubit, PosState>(
       builder: (context, state) {
-        if (state is PosLoading) {
-          return Padding(
-            padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-            child: CustomLoadingState(),
-          );
-        }
+        final cubit = context.read<PosCubit>();
+        final items = _buildItems(cubit);
+        if (items.isEmpty) return const SizedBox.shrink();
 
-        if (state is PosError) {
-          return Padding(
-            padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-            child: CustomErrorState(
-              message: state.message,
-              onRetry: () => context.read<PosCubit>().loadPosData(),
-            ),
-          );
-        }
+        final icon = filterType == FilterType.categories
+            ? Icons.category_rounded
+            : Icons.business_rounded;
 
-        if (state is PosDataLoaded || state is PosInitial) {
-          final cubit = context.read<PosCubit>();
-          final source = filterType == FilterType.categories
-              ? cubit.categories
-              : cubit.brands;
-          if (source.isEmpty) return SizedBox.shrink();
-
-          final items = _items(source);
-
-          return Container(
-            margin: EdgeInsets.symmetric(
-              horizontal: ResponsiveUI.padding(context, 16),
-            ),
+        return SizedBox(
+          height: ResponsiveUI.value(context, 44),
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
             padding: EdgeInsets.symmetric(
               horizontal: ResponsiveUI.padding(context, 16),
-              vertical: ResponsiveUI.padding(context, 10),
             ),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(
-                ResponsiveUI.borderRadius(context, 12),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.black.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                FilterPanelHeader(
-                  title: _title(),
-                  onClose: onClose,
-                  onFilterClear: onFilterClear,
-                ),
-                SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                SizedBox(
-                  height: ResponsiveUI.value(context, 200),
-                  child: GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                    ),
-                    itemCount: items.length,
-                    itemBuilder: (_, i) {
-                      final it = items[i];
-                      final selected = selectedId == it.id;
-                      return GestureDetector(
-                        onTap: () {
-                          onSelected(selected ? null : it.id);
-                        },
-                        child: Container(
-                          margin: EdgeInsets.all(
-                            ResponsiveUI.padding(context, 5),
-                          ),
-                          padding: EdgeInsets.all(
-                            ResponsiveUI.padding(context, 10),
-                          ),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              width: ResponsiveUI.value(context, 1),
-                              color: selected
-                                  ? AppColors.primaryBlue
-                                  : Colors.transparent,
-                            ),
-                            borderRadius: BorderRadius.circular(
-                              ResponsiveUI.borderRadius(context, 16),
-                            ),
-                            color: selected
-                                ? AppColors.lightBlueBackground.withValues(alpha: 0.7)
-                                : AppColors.white,
-                          ),
-                          child: Center(
-                            child: Column(
-                              children: [
-                                it.image.isNotEmpty
-                                    ? CircleAvatar(
-                                        backgroundImage: NetworkImage(it.image),
-                                        onBackgroundImageError: (_, __) =>
-                                            Icon(_icon()),
-                                      )
-                                    : Icon(_icon()),
-                                SizedBox(
-                                  height: ResponsiveUI.value(context, 10),
-                                ),
-                                Text(
-                                  it.name,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-
-        return SizedBox.shrink();
+            itemCount: items.length + 1,
+            separatorBuilder: (_, __) =>
+                SizedBox(width: ResponsiveUI.value(context, 8)),
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return _Chip(
+                  label: 'All',
+                  imageUrl: '',
+                  icon: icon,
+                  isSelected: selectedId == null,
+                  onTap: selectedId != null ? onClear : null,
+                );
+              }
+              final item = items[index - 1];
+              final isSelected = selectedId == item.id;
+              return _Chip(
+                label: item.name,
+                imageUrl: item.image,
+                icon: icon,
+                isSelected: isSelected,
+                onTap: () => onSelected(isSelected ? null : item.id),
+              );
+            },
+          ),
+        );
       },
     );
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-class FilterPanelHeader extends StatelessWidget {
-  final String title;
-  final VoidCallback onClose;
-  final VoidCallback onFilterClear;
+// ─── Single chip ──────────────────────────────────────────────────────────────
 
-  const FilterPanelHeader({
-    super.key,
-    required this.title,
-    required this.onClose,
-    required this.onFilterClear,
+class _Chip extends StatelessWidget {
+  final String label;
+  final String imageUrl;
+  final IconData icon;
+  final bool isSelected;
+  final VoidCallback? onTap;
+
+  const _Chip({
+    required this.label,
+    required this.imageUrl,
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: ResponsiveUI.fontSize(context, 18),
-            fontWeight: FontWeight.w700,
-            color: Colors.black87,
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: EdgeInsets.symmetric(
+          horizontal: ResponsiveUI.padding(context, 12),
+        ),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primaryBlue : AppColors.white,
+          borderRadius: BorderRadius.circular(
+            ResponsiveUI.borderRadius(context, 20),
+          ),
+          border: Border.all(
+            color: isSelected
+                ? AppColors.primaryBlue
+                : AppColors.shadowGray.withValues(alpha: 0.3),
+            width: 1.5,
           ),
         ),
-        const Spacer(),
-        // Clear Filter Button
-        IconButton(
-          icon: Icon(
-            Icons.filter_alt_off,
-            size: ResponsiveUI.iconSize(context, 24),
-          ),
-          onPressed: onFilterClear,
-          tooltip: 'Clear filter',
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (imageUrl.isNotEmpty)
+              Padding(
+                padding: EdgeInsetsDirectional.only(
+                    end: ResponsiveUI.padding(context, 6)),
+                child: CircleAvatar(
+                  radius: ResponsiveUI.value(context, 9),
+                  backgroundImage: NetworkImage(imageUrl),
+                  onBackgroundImageError: (_, __) {},
+                  backgroundColor: isSelected
+                      ? Colors.white.withValues(alpha: 0.3)
+                      : AppColors.lightBlueBackground,
+                ),
+              )
+            else
+              Padding(
+                padding: EdgeInsetsDirectional.only(
+                    end: ResponsiveUI.padding(context, 5)),
+                child: Icon(
+                  icon,
+                  size: ResponsiveUI.iconSize(context, 13),
+                  color: isSelected ? Colors.white : AppColors.primaryBlue,
+                ),
+              ),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? Colors.white : AppColors.darkGray,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                fontSize: ResponsiveUI.fontSize(context, 12),
+              ),
+            ),
+          ],
         ),
-        // Close Panel Button
-        IconButton(
-          icon: Icon(Icons.close, size: ResponsiveUI.iconSize(context, 24)),
-          onPressed: onClose,
-          tooltip: 'Close panel',
-        ),
-      ],
+      ),
     );
   }
 }
-

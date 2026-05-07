@@ -120,10 +120,12 @@ Widget buildMultiSelectDropdownField<T>(
   required String hint,
   required void Function(List<T>)? onChanged,
   required String Function(T) itemLabel,
+  List<T> selectedItems = const [],
 }) {
   return DropdownSearch<T>.multiSelection(
     onChanged: onChanged,
     items: items,
+    selectedItems: selectedItems,
     itemAsString: itemLabel,
     //dropdownButtonProps: DropdownButtonProps(color: AppColors.lightBlueBackground),
     popupProps: PopupPropsMultiSelection.menu(

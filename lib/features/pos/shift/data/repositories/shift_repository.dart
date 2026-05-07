@@ -114,16 +114,26 @@ class ShiftRepository implements ShiftRepositoryInterface {
     try {
       log('ShiftRepository: Fetching all active cashiers directly');
 
-      // Fetch all active cashiers directly from the cashiers table
-      final response = await _client
+      final cashiersResponse = await _client
           .from('cashiers')
           .select('*, warehouse:warehouse_id (*)')
           .eq('status', true)
           .order('name');
-      
-      return (response as List)
-          .map((json) => CashierModel.fromJson(json))
-          .toList();
+
+      // Source of truth: cashier is busy only if it has an open shift in shifts table
+      final openShiftsResponse = await _client
+          .from('shifts')
+          .select('cashier_id')
+          .eq('status', 'open');
+
+      final busyIds = (openShiftsResponse as List)
+          .map((s) => s['cashier_id'] as String)
+          .toSet();
+
+      return (cashiersResponse as List).map((json) {
+        final isBusy = busyIds.contains(json['id'] as String);
+        return CashierModel.fromJson({...json, 'cashier_active': isBusy});
+      }).toList();
     } catch (e) {
       log('ShiftRepository: Error fetching cashiers - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
@@ -150,7 +160,7 @@ class ShiftRepository implements ShiftRepositoryInterface {
       final response = await _client.from(_table).insert({
         'cashier_id': cashierId,
         'cashierman_id': userId,
-        'start_time': DateTime.now().toIso8601String(),
+        'start_time': DateTime.now().toUtc().toIso8601String(),
         'opening_balance': openingAmount,
         'status': 'open',
       }).select().single();
@@ -178,7 +188,7 @@ class ShiftRepository implements ShiftRepositoryInterface {
       if (shift == null) throw Exception('Shift not found');
 
       final response = await _client.from(_table).update({
-        'end_time': DateTime.now().toIso8601String(),
+        'end_time': DateTime.now().toUtc().toIso8601String(),
         'net_cash_in_drawer': actualAmount,
         'status': 'closed',
       }).eq('id', shiftId).select().single();
@@ -209,6 +219,44 @@ class ShiftRepository implements ShiftRepositoryInterface {
     } catch (e) {
       log('ShiftRepository: Error fetching active shift - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
+    }
+  }
+
+  Future<SupabaseShiftModel?> getMyActiveShift() async {
+    try {
+      final userId = _client.auth.currentUser?.id;
+      if (userId == null) return null;
+
+      log('ShiftRepository: Fetching active shift for current user $userId');
+      final response = await _client
+          .from(_table)
+          .select()
+          .eq('cashierman_id', userId)
+          .eq('status', 'open')
+          .maybeSingle();
+
+      if (response == null) return null;
+      return SupabaseShiftModel.fromJson(response);
+    } catch (e) {
+      log('ShiftRepository: Error fetching my active shift - $e');
+      return null;
+    }
+  }
+
+  Future<CashierModel?> getCashierById(String cashierId) async {
+    try {
+      log('ShiftRepository: Fetching cashier $cashierId');
+      final response = await _client
+          .from('cashiers')
+          .select('*, warehouse:warehouse_id (*)')
+          .eq('id', cashierId)
+          .maybeSingle();
+
+      if (response == null) return null;
+      return CashierModel.fromJson(response);
+    } catch (e) {
+      log('ShiftRepository: Error fetching cashier - $e');
+      return null;
     }
   }
 

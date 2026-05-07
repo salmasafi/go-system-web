@@ -1,4 +1,3 @@
-// lib/features/admin/product/presentation/screens/edit_product_screen.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -12,39 +11,19 @@ import 'package:GoSystem/core/widgets/custom_drop_down_menu.dart';
 import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:GoSystem/core/widgets/custom_textfield/build_text_field.dart';
 import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:GoSystem/features/admin/brands/cubit/brand_cubit.dart';
+import 'package:GoSystem/features/admin/brands/cubit/brand_states.dart';
+import 'package:GoSystem/features/admin/brands/model/get_brands_model.dart';
+import 'package:GoSystem/features/admin/categories/cubit/categories_cubit.dart';
+import 'package:GoSystem/features/admin/categories/cubit/categories_states.dart';
+import 'package:GoSystem/features/admin/categories/model/get_categories_model.dart';
 import 'package:GoSystem/features/admin/product/cubit/get_products_cubit/product_cubit.dart';
 import 'package:GoSystem/features/admin/product/cubit/get_products_cubit/product_state.dart';
-import 'package:GoSystem/features/admin/product/cubit/product_filter_state.dart';
-import 'package:GoSystem/features/admin/product/models/filter_models.dart';
+import 'package:GoSystem/features/admin/units/cubit/units_cubit.dart';
+import 'package:GoSystem/features/admin/units/model/unit_model.dart';
 import '../../../../../core/utils/image_handler.dart';
-import '../../cubit/filter_product_cubit/product_filter_cubit.dart';
+import '../../models/product_model.dart';
 import '../widgets/add_product_custom_widgets.dart';
-import '../../models/product_model.dart'; // Updated import for the product model
-
-class PriceVariation {
-  TextEditingController priceController;
-  TextEditingController codeController;
-  TextEditingController quantityController;
-  List<String> selectedOptions;
-  List<File> galleryImages;
-  List<String> galleryUrls;
-
-  PriceVariation({
-    required this.priceController,
-    required this.codeController,
-    required this.quantityController,
-    required this.selectedOptions,
-    List<File>? galleryImages,
-    List<String>? galleryUrls,
-  })  : galleryImages = galleryImages ?? [],
-        galleryUrls = galleryUrls ?? [];
-
-  void dispose() {
-    priceController.dispose();
-    codeController.dispose();
-    quantityController.dispose();
-  }
-}
 
 class EditProductScreen extends StatefulWidget {
   final Product product;
@@ -54,9 +33,7 @@ class EditProductScreen extends StatefulWidget {
   State<EditProductScreen> createState() => _EditProductScreenState();
 }
 
-class _EditProductScreenState extends State<EditProductScreen>
-    with TickerProviderStateMixin {
-  // Controllers
+class _EditProductScreenState extends State<EditProductScreen> {
   final _nameController = TextEditingController();
   final _arNameController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -64,88 +41,75 @@ class _EditProductScreenState extends State<EditProductScreen>
   final _priceController = TextEditingController();
   final _wholePriceController = TextEditingController();
   final _startQuantityController = TextEditingController();
-  final _quantityController = TextEditingController();
   final _lowStockController = TextEditingController();
   final _minQuantityController = TextEditingController();
   final _maxToShowController = TextEditingController();
-  final _unitController = TextEditingController();
   final _codeController = TextEditingController();
 
   // Images
   File? _mainImage;
-  String? mainImageUrl;
+  String? _existingImageUrl;
   List<File> _galleryImages = [];
-  List<String> galleryImageUrls = [];
+  List<String> _existingGalleryUrls = [];
 
-  // Dropdowns
-  List<CategoryFilter>? _selectedCategories;
-  BrandFilter? _selectedBrand;
+  // Selections
+  List<CategoryItem>? _selectedCategories;
+  Brands? _selectedBrand;
+  UnitModel? _selectedProductUnit;
+  UnitModel? _selectedSaleUnit;
+  UnitModel? _selectedPurchaseUnit;
 
-  // Checkboxes
+  // Pre-population flags (each runs once when data loads)
+  bool _categoriesPrePopulated = false;
+  bool _brandPrePopulated = false;
+  bool _unitPrePopulated = false;
+
+  // Settings
   bool _hasExpiry = false;
   bool _hasIMEI = false;
-  bool _differentPrice = false;
   bool _showQuantity = false;
   bool _isFeatured = false;
-
-  // Expiry Date
   DateTime? _expiryDate;
-
-  // Variations & Options (from API)
-  List<VariationFilter> _variations = [];
-  List<VariationFilter> _selectedVariations = [];
-  Map<VariationFilter, List<FilterOption>> _selectedOptionsPerVariation = {};
-  List<PriceVariation> _priceVariations = [];
-
-  bool populated = false;
 
   @override
   void initState() {
     super.initState();
-    context.read<ProductFiltersCubit>().getFilters();
-
-    _nameController.text = widget.product.name;
-    _arNameController.text = widget.product.arName;
-    _descriptionController.text = widget.product.description;
-    _arDescriptionController.text = widget.product.arDescription;
-    _wholePriceController.text = widget.product.wholePrice.toString();
-    _startQuantityController.text = widget.product.startQuantaty.toString();
-    _quantityController.text = widget.product.quantity.toString();
-    _lowStockController.text = widget.product.lowStock.toString();
-    _minQuantityController.text = widget.product.minimumQuantitySale.toString();
-    _maxToShowController.text = widget.product.maximumToShow.toString();
-    _unitController.text = widget.product.unit;
-    _hasExpiry = widget.product.expAbility;
-    _expiryDate = widget.product.dateOfExpiry;
-    _hasIMEI = widget.product.productHasImei;
-    // Note: differentPrice removed in migration 014
-    _differentPrice = false; // Always false now
-    _showQuantity = widget.product.showQuantity;
-    _isFeatured = widget.product.isFeatured ?? false;
-    mainImageUrl = widget.product.image;
-    galleryImageUrls = widget.product.galleryProduct;
-
-    // Always use single price now
-    _priceController.text = widget.product.price.toString();
-    _codeController.text = ''; // Assume no main code, or fetch if available
+    _initFields();
+    context.read<CategoriesCubit>().getCategories();
+    context.read<BrandsCubit>().getBrands();
+    context.read<UnitsCubit>().getUnits();
   }
 
+  void _initFields() {
+    final p = widget.product;
+    _nameController.text = p.name;
+    _arNameController.text = p.arName;
+    _descriptionController.text = p.description;
+    _arDescriptionController.text = p.arDescription;
+    _priceController.text = p.price.toString();
+    _wholePriceController.text = p.wholePrice.toString();
+    _startQuantityController.text = p.startQuantaty.toString();
+    _lowStockController.text = p.lowStock.toString();
+    _minQuantityController.text = p.minimumQuantitySale.toString();
+    _maxToShowController.text = p.maximumToShow.toString();
+    _hasExpiry = p.expAbility;
+    _expiryDate = p.dateOfExpiry;
+    _hasIMEI = p.productHasImei;
+    _showQuantity = p.showQuantity;
+    _isFeatured = p.isFeatured ?? false;
+    _existingImageUrl = p.image.isNotEmpty ? p.image : null;
+    _existingGalleryUrls = List<String>.from(p.galleryProduct);
+  }
 
   Future<void> _pickMainImage() async {
-    final pickedFile = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-    );
-    if (pickedFile != null) {
-      setState(() => _mainImage = File(pickedFile.path));
-    }
+    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (picked != null) setState(() => _mainImage = File(picked.path));
   }
 
   Future<void> _pickGalleryImages() async {
-    final pickedFiles = await ImagePicker().pickMultiImage();
-    if (pickedFiles.isNotEmpty) {
-      setState(() {
-        _galleryImages.addAll(pickedFiles.map((file) => File(file.path)));
-      });
+    final picked = await ImagePicker().pickMultiImage();
+    if (picked.isNotEmpty) {
+      setState(() => _galleryImages.addAll(picked.map((f) => File(f.path))));
     }
   }
 
@@ -155,65 +119,88 @@ class _EditProductScreenState extends State<EditProductScreen>
       initialDate: _expiryDate ?? DateTime.now().add(const Duration(days: 365)),
       firstDate: DateTime.now(),
       lastDate: DateTime(2030),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: AppColors.primaryBlue,
-              onPrimary: AppColors.white,
-              onSurface: AppColors.darkGray,
-            ),
+      builder: (ctx, child) => Theme(
+        data: Theme.of(ctx).copyWith(
+          colorScheme: ColorScheme.light(
+            primary: AppColors.primaryBlue,
+            onPrimary: AppColors.white,
+            onSurface: AppColors.darkGray,
           ),
-          child: child!,
-        );
-      },
+        ),
+        child: child!,
+      ),
     );
-    if (picked != null) {
-      setState(() => _expiryDate = picked);
-    }
+    if (picked != null) setState(() => _expiryDate = picked);
   }
 
-  List<List<String>> _generateOptionCombinations() {
-    if (_selectedVariations.isEmpty) return [];
-
-    List<List<String>> result = [[]];
-
-    for (var variation in _selectedVariations) {
-      final selectedOpts = _selectedOptionsPerVariation[variation] ?? [];
-      if (selectedOpts.isEmpty) continue;
-
-      List<List<String>> newResult = [];
-      for (var combo in result) {
-        for (var option in selectedOpts) {
-          newResult.add([...combo, option.id]);
-        }
-      }
-      result = newResult;
+  void _saveProduct() {
+    if (_nameController.text.trim().isEmpty) {
+      CustomSnackbar.showError(context, 'الرجاء إدخال اسم المنتج بالإنجليزية');
+      return;
+    }
+    if (_arNameController.text.trim().isEmpty) {
+      CustomSnackbar.showError(context, 'الرجاء إدخال اسم المنتج بالعربية');
+      return;
+    }
+    if (_selectedCategories == null || _selectedCategories!.isEmpty) {
+      CustomSnackbar.showError(context, 'الرجاء اختيار قسم واحد على الأقل');
+      return;
+    }
+    if (_selectedBrand == null) {
+      CustomSnackbar.showError(context, 'الرجاء اختيار علامة تجارية');
+      return;
     }
 
-    return result;
-  }
+    final double price = double.tryParse(_priceController.text) ?? 0.0;
+    final double wholePrice = double.tryParse(_wholePriceController.text) ?? 0.0;
+    final int startQty = int.tryParse(_startQuantityController.text) ?? 0;
+    final int minQtySale = int.tryParse(_minQuantityController.text) ?? 1;
+    final int lowStock = int.tryParse(_lowStockController.text) ?? 10;
+    final int maxToShow =
+        _showQuantity ? (int.tryParse(_maxToShowController.text) ?? 100) : 0;
 
-  void _generateVariations() {
-    final combos = _generateOptionCombinations();
-    setState(() {
-      for (var variation in _priceVariations) {
-        variation.dispose();
-      }
-      _priceVariations = combos.map((combo) {
-        return PriceVariation(
-          priceController: TextEditingController(),
-          codeController: TextEditingController(),
-          quantityController: TextEditingController(text: '0'),
-          selectedOptions: combo,
+    // Keep existing image URL if no new file selected
+    final String? mainImage = _mainImage != null
+        ? ImageHelper.encodeImageToBase64(_mainImage!)
+        : _existingImageUrl;
+
+    // Merge existing URLs with newly picked files
+    final List<String> gallery = [
+      ..._existingGalleryUrls,
+      ..._galleryImages.map((img) => ImageHelper.encodeImageToBase64(img)),
+    ];
+
+    context.read<ProductsCubit>().updateProductWithData(
+          id: widget.product.id,
+          name: _nameController.text.trim(),
+          arName: _arNameController.text.trim(),
+          description: _descriptionController.text.trim(),
+          arDescription: _arDescriptionController.text.trim(),
+          image: mainImage,
+          code: _codeController.text.trim(),
+          categoryIds: _selectedCategories!.map((c) => c.id).toList(),
+          brandId: _selectedBrand!.id ?? '',
+          unit: _selectedProductUnit?.id ?? widget.product.unit,
+          price: price,
+          expAbility: _hasExpiry,
+          expiryDate: _expiryDate,
+          minimumQuantitySale: minQtySale,
+          lowStock: lowStock,
+          wholePrice: wholePrice,
+          startQuantity: startQty,
+          quantity: startQty,
+          taxesId: widget.product.taxesId ?? '67056d0a3b233c5c1b36a7ae',
+          productHasImei: _hasIMEI,
+          showQuantity: _showQuantity,
+          isFeatured: _isFeatured,
+          maximumToShow: maxToShow,
+          galleryProduct: gallery,
         );
-      }).toList();
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget screenContent = BlocConsumer<ProductsCubit, ProductsState>(
+    Widget screen = BlocConsumer<ProductsCubit, ProductsState>(
       listener: (context, state) {
         if (state is ProductAddSuccess) {
           CustomSnackbar.showSuccess(context, state.message);
@@ -223,308 +210,35 @@ class _EditProductScreenState extends State<EditProductScreen>
         }
       },
       builder: (context, state) {
-        return BlocListener<ProductFiltersCubit, ProductFiltersState>(
-          listener: (context, filtersState) {
-            if (filtersState is ProductFiltersSuccess) {
-              _variations = filtersState.filters.data!.variations;
-              if (!populated) {
-                populated = true;
-              }
-            }
-          },
-          child: Scaffold(
-            backgroundColor: AppColors.lightBlueBackground,
-            appBar: appBarWithActions(context, title: "تعديل منتج"),
-            body: SafeArea(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(
-                  horizontal: ResponsiveUI.horizontalPadding(context),
-                  vertical: ResponsiveUI.padding(context, 16),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Product Information Section
-                    ProductSectionCard(
-                      title: 'معلومات المنتج',
-                      icon: Icons.inventory_2,
-                      children: [
-                        buildTextField(
-                          context,
-                          controller: _nameController,
-                          label: 'اسم المنتج (EN) *',
-                          icon: Icons.label,
-                          hint: 'أدخل اسم المنتج بالإنجليزية',
-                        ),
-                        SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                        buildTextField(
-                          context,
-                          controller: _arNameController,
-                          label: 'اسم المنتج (AR) *',
-                          icon: Icons.label,
-                          hint: 'أدخل اسم المنتج بالعربية',
-                        ),
-                        SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                        buildTextField(
-                          context,
-                          controller: _descriptionController,
-                          label: 'الوصف (EN) *',
-                          icon: Icons.description,
-                          hint: 'أدخل وصف المنتج بالإنجليزية',
-                          maxLines: 3,
-                        ),
-                        SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                        buildTextField(
-                          context,
-                          controller: _arDescriptionController,
-                          label: 'الوصف (AR) *',
-                          icon: Icons.description,
-                          hint: 'أدخل وصف المنتج بالعربية',
-                          maxLines: 3,
-                        ),
-                      ],
+        final isLoading = state is ProductsLoading;
+        return Scaffold(
+          backgroundColor: AppColors.shadowGray[50],
+          appBar: appBarWithActions(context, title: 'تعديل المنتج'),
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(
+                horizontal: ResponsiveUI.horizontalPadding(context),
+                vertical: ResponsiveUI.padding(context, 16),
+              ),
+              child: Column(
+                children: [
+                  _buildBasicInfoSection(),
+                  _buildClassificationSection(),
+                  _buildUnitsSection(),
+                  _buildPricingSection(),
+                  _buildStockSection(),
+                  _buildSettingsSection(),
+                  _buildImagesSection(),
+                  SizedBox(
+                    width: double.infinity,
+                    height: ResponsiveUI.value(context, 56),
+                    child: CustomElevatedButton(
+                      onPressed: isLoading ? null : _saveProduct,
+                      text: isLoading ? 'جاري التحديث...' : 'تحديث المنتج',
                     ),
-
-                    SizedBox(height: ResponsiveUI.spacing(context, 20)),
-
-                    // Category & Brand Section
-                    ProductSectionCard(
-                      title: 'الفئة والعلامة التجارية',
-                      icon: Icons.category,
-                      children: [
-                        BlocBuilder<ProductFiltersCubit, ProductFiltersState>(
-                          builder: (context, filtersState) {
-                            if (filtersState is ProductFiltersLoading) {
-                              return _buildLoadingDropdown(
-                                'جاري تحميل الفئات...',
-                              );
-                            }
-                            if (filtersState is ProductFiltersSuccess) {
-                              return _buildCategoriesDropdown(
-                                filtersState.filters.data!.categories,
-                              );
-                            }
-                            return EmptyStateWidget(
-                              message: 'لا توجد فئات متاحة',
-                              icon: Icons.category,
-                              color: AppColors.warningOrange,
-                            );
-                          },
-                        ),
-                        BlocBuilder<ProductFiltersCubit, ProductFiltersState>(
-                          builder: (context, filtersState) {
-                            if (filtersState is ProductFiltersLoading) {
-                              return _buildLoadingDropdown('جاري تحميل العلامات التجارية...');
-                            }
-                            if (filtersState is ProductFiltersSuccess) {
-                              return _buildBrandDropdown(
-                                filtersState.filters.data!.brands,
-                              );
-                            }
-                            return EmptyStateWidget(
-                              message: 'لا توجد علامات تجارية متاحة',
-                              icon: Icons.category,
-                              color: AppColors.warningOrange,
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(height: ResponsiveUI.spacing(context, 20)),
-
-                    // Pricing & Stock Section
-                    ProductSectionCard(
-                      title: 'التسعير والمخزون',
-                      icon: Icons.attach_money,
-                      children: [
-                        buildTextField(
-                          context,
-                          controller: _unitController,
-                          label: 'الوحدة *',
-                          icon: Icons.scale,
-                          hint: 'قطعة، كجم، إلخ.',
-                        ),
-                        SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: buildTextField(
-                                context,
-                                controller: _minQuantityController,
-                                label: 'الحد الأدنى لكمية الجملة *',
-                                icon: Icons.shopping_cart,
-                                hint: '1',
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                            SizedBox(width: ResponsiveUI.spacing(context, 12)),
-                            Expanded(
-                              child: buildTextField(
-                                context,
-                                controller: _wholePriceController,
-                                label: 'سعر الجملة',
-                                icon: Icons.money_off,
-                                hint: '0.00',
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: buildTextField(
-                                context,
-                                controller: _startQuantityController,
-                                label: 'الكمية الابتدائية',
-                                icon: Icons.inventory,
-                                hint: '0',
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                            SizedBox(width: ResponsiveUI.spacing(context, 12)),
-                            Expanded(
-                              child: buildTextField(
-                                context,
-                                controller: _lowStockController,
-                                label: 'تنبيه المخزون المنخفض',
-                                icon: Icons.warning,
-                                hint: '10',
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                      ],
-                    ),
-
-                    SizedBox(height: ResponsiveUI.spacing(context, 20)),
-
-                    // Product Settings Section
-                    ProductSectionCard(
-                      title: 'إعدادات المنتج',
-                      icon: Icons.settings,
-                      children: [
-                        AnimatedCheckboxTile(
-                          value: _isFeatured,
-                          title: 'منتج مميز',
-                          onChanged: (value) {
-                            setState(() {
-                              _isFeatured = value ?? false;
-                            });
-                          },
-                        ),
-                        AnimatedCheckboxTile(
-                          value: _hasExpiry,
-                          title: 'له تاريخ انتهاء صلاحية',
-                          onChanged: (value) {
-                            setState(() {
-                              _hasExpiry = value ?? false;
-                              if (!_hasExpiry) _expiryDate = null;
-                            });
-                          },
-                        ),
-                        if (_hasExpiry) ...[
-                          DatePickerCard(
-                            selectedDate: _expiryDate,
-                            onTap: _selectExpiryDate,
-                            label: 'تاريخ انتهاء الصلاحية',
-                          ),
-                        ],
-                        AnimatedCheckboxTile(
-                          value: _hasIMEI,
-                          title: 'المنتج له رقم IMEI/تسلسلي',
-                          onChanged: (value) =>
-                              setState(() => _hasIMEI = value ?? false),
-                        ),
-                        AnimatedCheckboxTile(
-                          value: _showQuantity,
-                          title: 'إظهار الكمية',
-                          onChanged: (value) =>
-                              setState(() => _showQuantity = value ?? true),
-                        ),
-                        if (_showQuantity) ...[
-                          SizedBox(height: ResponsiveUI.spacing(context, 8)),
-                          buildTextField(
-                            context,
-                            controller: _maxToShowController,
-                            label: 'الحد الأقصى للعرض',
-                            icon: Icons.visibility,
-                            hint: '100',
-                            keyboardType: TextInputType.number,
-                          ),
-                          SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                        ],
-                        AnimatedCheckboxTile(
-                          priceController: _priceController,
-                          quantityController: _quantityController,
-                          codeController: _codeController,
-                          value: _differentPrice,
-                          title: 'أسعار مختلفة للتنويعات',
-                          onChanged: (value) {
-                            setState(() {
-                              _differentPrice = value ?? false;
-                              if (!_differentPrice) {
-                                for (var variation in _priceVariations) {
-                                  variation.dispose();
-                                }
-                                _priceVariations.clear();
-                                _selectedVariations.clear();
-                                _selectedOptionsPerVariation.clear();
-                              }
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-
-                    if (_differentPrice) ...[
-                      SizedBox(height: ResponsiveUI.spacing(context, 20)),
-                      _buildPriceVariationsSection(),
-                    ],
-
-                    SizedBox(height: ResponsiveUI.spacing(context, 20)),
-
-                    // Product Images Section
-                    ProductSectionCard(
-                      title: 'صور المنتج',
-                      icon: Icons.image,
-                      children: [
-                        MainImagePicker(
-                          image: _mainImage,
-                          onPick: _pickMainImage,
-                          onRemove: () => setState(() {
-                            _mainImage = null;
-                            mainImageUrl = null;
-                          }),
-                        ),
-                        SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                        GalleryImagesPicker(
-                          images: _galleryImages,
-                          onAdd: _pickGalleryImages, onRemove: (int p1) {  },
-                ),
-                      ],
-                    ),
-
-                    SizedBox(height: ResponsiveUI.spacing(context, 30)),
-
-                    // Save Button
-                    SizedBox(
-                      width: double.infinity,
-                      height: ResponsiveUI.value(context, 56),
-                      child: CustomElevatedButton(
-                        onPressed: state is ProductsLoading ? null : _saveProduct,
-                        text: state is ProductsLoading
-                            ? 'جاري تحديث المنتج...'
-                            : 'تحديث المنتج',
-                      ),
-                    ),
-                    SizedBox(height: ResponsiveUI.spacing(context, 20)),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: ResponsiveUI.spacing(context, 24)),
+                ],
               ),
             ),
           ),
@@ -532,422 +246,657 @@ class _EditProductScreenState extends State<EditProductScreen>
       },
     );
 
-    // Scale down for web
     if (kIsWeb) {
-      screenContent = MediaQuery(
-        data: MediaQuery.of(context).copyWith(
-          textScaler: const TextScaler.linear(0.55),
-        ),
-        child: screenContent,
+      screen = MediaQuery(
+        data: MediaQuery.of(context)
+            .copyWith(textScaler: const TextScaler.linear(0.55)),
+        child: screen,
       );
     }
-    return screenContent;
+    return screen;
   }
 
-  Widget _buildPriceVariationsSection() {
+  // ── Section 1: Basic Info ─────────────────────────────────────────────────
+  Widget _buildBasicInfoSection() {
     return ProductSectionCard(
-      title: 'تنويعات الأسعار',
-      icon: Icons.price_change,
+      title: 'معلومات المنتج',
+      icon: Icons.inventory_2_outlined,
       children: [
-        Text(
-          'اختر التنويعات',
-          style: TextStyle(
-            fontSize: ResponsiveUI.fontSize(context, 16),
-            fontWeight: FontWeight.bold,
-            color: AppColors.darkGray,
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: buildTextField(
+                context,
+                controller: _nameController,
+                label: 'الاسم (EN) *',
+                icon: Icons.label_outline,
+                hint: 'Product name',
+              ),
+            ),
+            SizedBox(width: ResponsiveUI.spacing(context, 12)),
+            Expanded(
+              child: buildTextField(
+                context,
+                controller: _arNameController,
+                label: 'الاسم (AR) *',
+                icon: Icons.label_outline,
+                hint: 'اسم المنتج',
+              ),
+            ),
+          ],
         ),
         SizedBox(height: ResponsiveUI.spacing(context, 12)),
-        buildMultiSelectDropdownField<VariationFilter>(
+        buildTextField(
           context,
-          items: _variations,
-          hint: 'اختر التنويعات...',
-          onChanged: (value) {
-            setState(() {
-              _selectedVariations = value;
-              _selectedOptionsPerVariation.removeWhere(
-                (key, value) => !_selectedVariations.contains(key),
-              );
-            });
-          },
-          itemLabel: (variation) => variation.name,
+          controller: _descriptionController,
+          label: 'الوصف (EN)',
+          icon: Icons.description_outlined,
+          hint: 'Product description...',
+          maxLines: 3,
         ),
-        if (_selectedVariations.isNotEmpty) ...[
-          SizedBox(height: ResponsiveUI.spacing(context, 16)),
-          ..._selectedVariations.map((var variation) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'اختر الخيارات لـ ${variation.name}',
-                  style: TextStyle(
-                    fontSize: ResponsiveUI.fontSize(context, 14),
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.darkGray,
-                  ),
-                ),
-                SizedBox(height: ResponsiveUI.spacing(context, 8)),
-                buildMultiSelectDropdownField<FilterOption>(
-                  context,
-                  items: variation.options,
-                  hint: 'اختر الخيارات...',
-                  onChanged: (selectedOpts) {
-                    setState(() {
-                      _selectedOptionsPerVariation[variation] = selectedOpts;
-                    });
-                  },
-                  itemLabel: (option) => option.name,
-                ),
-                SizedBox(height: ResponsiveUI.spacing(context, 16)),
-              ],
+        SizedBox(height: ResponsiveUI.spacing(context, 12)),
+        buildTextField(
+          context,
+          controller: _arDescriptionController,
+          label: 'الوصف (AR)',
+          icon: Icons.description_outlined,
+          hint: 'وصف المنتج...',
+          maxLines: 3,
+        ),
+      ],
+    );
+  }
+
+  // ── Section 2: Classification ─────────────────────────────────────────────
+  Widget _buildClassificationSection() {
+    return ProductSectionCard(
+      title: 'التصنيف والعلامة التجارية',
+      icon: Icons.category_outlined,
+      children: [
+        BlocConsumer<CategoriesCubit, CategoriesState>(
+          listener: (context, state) {
+            if (!_categoriesPrePopulated && state is GetCategoriesSuccess) {
+              final productCategoryIds =
+                  widget.product.categoryId.map((c) => c.id).toSet();
+              final matched = state.categories
+                  .where((cat) => productCategoryIds.contains(cat.id))
+                  .toList();
+              if (matched.isNotEmpty) {
+                setState(() {
+                  _selectedCategories = matched;
+                  _categoriesPrePopulated = true;
+                });
+              } else {
+                _categoriesPrePopulated = true;
+              }
+            }
+          },
+          builder: (context, state) {
+            if (state is GetCategoriesLoading) {
+              return _loadingWidget('جاري تحميل الأقسام...');
+            }
+            if (state is GetCategoriesSuccess) {
+              return buildMultiSelectDropdownField<CategoryItem>(
+                context,
+                items: state.categories,
+                hint: 'اختر الأقسام...',
+                onChanged: (val) =>
+                    setState(() => _selectedCategories = val),
+                itemLabel: (cat) => cat.name,
+                selectedItems: _selectedCategories ?? const [],
+              );
+            }
+            return EmptyStateWidget(
+              message: 'لا توجد أقسام',
+              icon: Icons.category_outlined,
+              color: AppColors.warningOrange,
             );
-          }),
-          CustomElevatedButton(
-            onPressed:
-                _selectedVariations.every(
-                  (v) => (_selectedOptionsPerVariation[v] ?? []).isNotEmpty,
-                )
-                ? _generateVariations
-                : null,
-            text: 'إنشاء التركيبات',
-          ),
-        ],
-        if (_priceVariations.isNotEmpty) ...[
-          SizedBox(height: ResponsiveUI.spacing(context, 20)),
-          Column(
-            children: List.generate(_priceVariations.length, (index) {
+          },
+        ),
+        SizedBox(height: ResponsiveUI.spacing(context, 12)),
+        BlocConsumer<BrandsCubit, BrandsState>(
+          listener: (context, state) {
+            if (!_brandPrePopulated && state is GetBrandsSuccess) {
+              final brands = state.brands.whereType<Brands>().toList();
+              final matched = brands.firstWhere(
+                (b) => b.id == widget.product.brandId.id,
+                orElse: () => Brands(),
+              );
+              if (matched.id != null && matched.id!.isNotEmpty) {
+                setState(() {
+                  _selectedBrand = matched;
+                  _brandPrePopulated = true;
+                });
+              } else {
+                _brandPrePopulated = true;
+              }
+            }
+          },
+          builder: (context, state) {
+            if (state is GetBrandsLoading) {
+              return _loadingWidget('جاري تحميل العلامات التجارية...');
+            }
+            if (state is GetBrandsSuccess) {
+              final brands = state.brands.whereType<Brands>().toList();
+              return buildDropdownField<Brands>(
+                context,
+                items: brands,
+                label: 'العلامة التجارية *',
+                hint: 'اختر العلامة التجارية',
+                value: _selectedBrand,
+                onChanged: (val) => setState(() => _selectedBrand = val),
+                itemLabel: (b) => b.name ?? '',
+              );
+            }
+            return EmptyStateWidget(
+              message: 'لا توجد علامات تجارية',
+              icon: Icons.branding_watermark_outlined,
+              color: AppColors.warningOrange,
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  // ── Section 3: Units ──────────────────────────────────────────────────────
+  Widget _buildUnitsSection() {
+    return ProductSectionCard(
+      title: 'وحدات القياس',
+      icon: Icons.straighten_outlined,
+      children: [
+        BlocConsumer<UnitsCubit, UnitsState>(
+          listener: (context, state) {
+            if (!_unitPrePopulated && state is GetUnitsSuccess) {
+              final matched = state.units.firstWhere(
+                (u) => u.name == widget.product.unit,
+                orElse: () => UnitModel(),
+              );
+              if (matched.id != null && matched.id!.isNotEmpty) {
+                setState(() {
+                  _selectedProductUnit = matched;
+                  _unitPrePopulated = true;
+                });
+              } else {
+                _unitPrePopulated = true;
+              }
+            }
+          },
+          builder: (context, state) {
+            if (state is GetUnitsLoading) {
+              return _loadingWidget('جاري تحميل الوحدات...');
+            }
+            if (state is GetUnitsSuccess) {
               return Column(
                 children: [
-                  _buildPriceVariationForm(index),
-                  if (index < _priceVariations.length - 1)
-                    Divider(height: ResponsiveUI.spacing(context, 20)),
+                  buildDropdownField<UnitModel>(
+                    context,
+                    items: state.units,
+                    label: 'وحدة المنتج',
+                    hint: 'اختر وحدة المنتج',
+                    value: _selectedProductUnit,
+                    onChanged: (v) =>
+                        setState(() => _selectedProductUnit = v),
+                    itemLabel: (u) => u.name ?? '',
+                  ),
+                  SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: buildDropdownField<UnitModel>(
+                          context,
+                          items: state.units,
+                          label: 'وحدة البيع',
+                          hint: 'وحدة البيع',
+                          value: _selectedSaleUnit,
+                          onChanged: (v) =>
+                              setState(() => _selectedSaleUnit = v),
+                          itemLabel: (u) => u.name ?? '',
+                        ),
+                      ),
+                      SizedBox(width: ResponsiveUI.spacing(context, 12)),
+                      Expanded(
+                        child: buildDropdownField<UnitModel>(
+                          context,
+                          items: state.units,
+                          label: 'وحدة الشراء',
+                          hint: 'وحدة الشراء',
+                          value: _selectedPurchaseUnit,
+                          onChanged: (v) =>
+                              setState(() => _selectedPurchaseUnit = v),
+                          itemLabel: (u) => u.name ?? '',
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               );
-            }),
+            }
+            return EmptyStateWidget(
+              message: 'لا توجد وحدات',
+              icon: Icons.straighten_outlined,
+              color: AppColors.warningOrange,
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  // ── Section 4: Pricing ────────────────────────────────────────────────────
+  Widget _buildPricingSection() {
+    return ProductSectionCard(
+      title: 'التسعير',
+      icon: Icons.payments_outlined,
+      children: [
+        buildTextField(
+          context,
+          controller: _priceController,
+          label: 'سعر البيع *',
+          icon: Icons.sell_outlined,
+          hint: '0.00',
+          keyboardType: TextInputType.number,
+        ),
+        SizedBox(height: ResponsiveUI.spacing(context, 12)),
+        Row(
+          children: [
+            Expanded(
+              child: buildTextField(
+                context,
+                controller: _wholePriceController,
+                label: 'سعر الجملة',
+                icon: Icons.price_change_outlined,
+                hint: '0.00',
+                keyboardType: TextInputType.number,
+              ),
+            ),
+            SizedBox(width: ResponsiveUI.spacing(context, 12)),
+            Expanded(
+              child: buildTextField(
+                context,
+                controller: _minQuantityController,
+                label: 'حد الجملة (كمية)',
+                icon: Icons.shopping_cart_outlined,
+                hint: '50',
+                keyboardType: TextInputType.number,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // ── Section 5: Stock ──────────────────────────────────────────────────────
+  Widget _buildStockSection() {
+    return ProductSectionCard(
+      title: 'المخزون',
+      icon: Icons.inventory_outlined,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: buildTextField(
+                context,
+                controller: _startQuantityController,
+                label: 'الكمية الحالية',
+                icon: Icons.add_box_outlined,
+                hint: '0',
+                keyboardType: TextInputType.number,
+              ),
+            ),
+            SizedBox(width: ResponsiveUI.spacing(context, 12)),
+            Expanded(
+              child: buildTextField(
+                context,
+                controller: _lowStockController,
+                label: 'تنبيه نفاد المخزون',
+                icon: Icons.warning_amber_outlined,
+                hint: '10',
+                keyboardType: TextInputType.number,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // ── Section 6: Settings ───────────────────────────────────────────────────
+  Widget _buildSettingsSection() {
+    return ProductSectionCard(
+      title: 'إعدادات المنتج',
+      icon: Icons.tune_outlined,
+      children: [
+        AnimatedCheckboxTile(
+          value: _isFeatured,
+          title: 'منتج مميز',
+          onChanged: (v) => setState(() => _isFeatured = v ?? false),
+        ),
+        AnimatedCheckboxTile(
+          value: _hasExpiry,
+          title: 'له تاريخ انتهاء صلاحية',
+          onChanged: (v) => setState(() {
+            _hasExpiry = v ?? false;
+            if (!_hasExpiry) _expiryDate = null;
+          }),
+        ),
+        if (_hasExpiry)
+          DatePickerCard(
+            selectedDate: _expiryDate,
+            onTap: _selectExpiryDate,
+            label: 'تاريخ انتهاء الصلاحية',
           ),
+        AnimatedCheckboxTile(
+          value: _hasIMEI,
+          title: 'له رقم IMEI / تسلسلي',
+          onChanged: (v) => setState(() => _hasIMEI = v ?? false),
+        ),
+        AnimatedCheckboxTile(
+          value: _showQuantity,
+          title: 'إظهار الكمية للعملاء',
+          onChanged: (v) => setState(() => _showQuantity = v ?? false),
+        ),
+        if (_showQuantity) ...[
+          SizedBox(height: ResponsiveUI.spacing(context, 8)),
+          buildTextField(
+            context,
+            controller: _maxToShowController,
+            label: 'الحد الأقصى المعروض',
+            icon: Icons.visibility_outlined,
+            hint: '100',
+            keyboardType: TextInputType.number,
+          ),
+          SizedBox(height: ResponsiveUI.spacing(context, 8)),
         ],
       ],
     );
   }
 
-  Widget _buildPriceVariationForm(int index) {
-    final variation = _priceVariations[index];
-    final label = variation.selectedOptions
-        .map((optionId) {
-          for (var v in _variations) {
-            final opt = v.options.firstWhere(
-              (o) => o.id == optionId,
-              orElse: () => FilterOption(
-                id: '',
-                variationId: '',
-                name: 'Unknown',
-                status: false,
-                createdAt: DateTime.now(),
-                updatedAt: DateTime.now(),
-              ),
-            );
-            if (opt.id != '') return opt.name;
-          }
-          return 'Unknown';
-        })
-        .join(' - ');
-
-    return Container(
-      padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(
-          ResponsiveUI.borderRadius(context, 12),
-        ),
-        border: Border.all(color: AppColors.lightGray),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: ResponsiveUI.fontSize(context, 16),
-              fontWeight: FontWeight.bold,
-              color: AppColors.primaryBlue,
-            ),
-          ),
-          SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          buildTextField(
-            context,
-            controller: variation.priceController,
-            label: 'السعر *',
-            icon: Icons.attach_money,
-            hint: '0.00',
-            keyboardType: TextInputType.number,
-          ),
-          SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          buildTextField(
-            context,
-            controller: variation.codeController,
-            label: 'كود المنتج *',
-            icon: Icons.qr_code,
-            hint: 'أدخل كود فريد',
-          ),
-          SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          buildTextField(
-            context,
-            controller: variation.quantityController,
-            label: 'الكمية',
-            icon: Icons.inventory,
-            hint: '0',
-            keyboardType: TextInputType.number,
-          ),
-          SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          _buildVariationGallery(variation),
-        ],
-      ),
+  // ── Section 7: Images ─────────────────────────────────────────────────────
+  Widget _buildImagesSection() {
+    return ProductSectionCard(
+      title: 'صور المنتج',
+      icon: Icons.photo_library_outlined,
+      children: [
+        // Main image — supports existing URL + new file pick
+        _buildMainImagePicker(),
+        SizedBox(height: ResponsiveUI.spacing(context, 16)),
+        // Gallery — existing URLs + new files
+        _buildGalleryPicker(),
+      ],
     );
   }
 
-  Widget _buildVariationGallery(PriceVariation variation) {
-    List<dynamic> allGallery = [...variation.galleryUrls, ...variation.galleryImages];
+  Widget _buildMainImagePicker() {
+    final hasNewImage = _mainImage != null;
+    final hasExistingUrl =
+        _existingImageUrl != null && _existingImageUrl!.isNotEmpty;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'صور التنويع',
-              style: TextStyle(
-                fontSize: ResponsiveUI.fontSize(context, 13),
-                fontWeight: FontWeight.w600,
-                color: AppColors.darkGray,
+            Row(children: [
+              Icon(Icons.image,
+                  size: ResponsiveUI.iconSize(context, 20),
+                  color: AppColors.primaryBlue),
+              SizedBox(width: ResponsiveUI.value(context, 8)),
+              Text(
+                'الصورة الرئيسية',
+                style: TextStyle(
+                  fontSize: ResponsiveUI.fontSize(context, 15),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.darkGray,
+                ),
+              ),
+            ]),
+            if (hasNewImage || hasExistingUrl)
+              TextButton.icon(
+                onPressed: () => setState(() {
+                  _mainImage = null;
+                  _existingImageUrl = null;
+                }),
+                icon: Icon(Icons.delete_outline,
+                    color: AppColors.red,
+                    size: ResponsiveUI.iconSize(context, 18)),
+                label: Text('إزالة',
+                    style: TextStyle(
+                        color: AppColors.red,
+                        fontSize: ResponsiveUI.fontSize(context, 12))),
+              ),
+          ],
+        ),
+        SizedBox(height: ResponsiveUI.value(context, 12)),
+        GestureDetector(
+          onTap: _pickMainImage,
+          child: Container(
+            width: double.infinity,
+            height: ResponsiveUI.value(context, 220),
+            decoration: BoxDecoration(
+              borderRadius:
+                  BorderRadius.circular(ResponsiveUI.borderRadius(context, 16)),
+              border: Border.all(
+                color: AppColors.primaryBlue.withValues(alpha: 0.4),
+                width: ResponsiveUI.value(context, 2),
               ),
             ),
+            child: ClipRRect(
+              borderRadius:
+                  BorderRadius.circular(ResponsiveUI.borderRadius(context, 14)),
+              child: hasNewImage
+                  ? Stack(children: [
+                      Image.file(_mainImage!,
+                          width: double.infinity, fit: BoxFit.cover),
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: _editBadge(),
+                      ),
+                    ])
+                  : hasExistingUrl
+                      ? Stack(children: [
+                          Image.network(_existingImageUrl!,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) =>
+                                  _imagePlaceholder()),
+                          Positioned(
+                            top: 8,
+                            right: 8,
+                            child: _editBadge(),
+                          ),
+                        ])
+                      : _imagePlaceholder(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _editBadge() {
+    return Container(
+      padding: EdgeInsets.all(ResponsiveUI.padding(context, 8)),
+      decoration: BoxDecoration(
+        color: AppColors.white.withValues(alpha: 0.9),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(Icons.edit,
+          size: ResponsiveUI.iconSize(context, 18),
+          color: AppColors.primaryBlue),
+    );
+  }
+
+  Widget _imagePlaceholder() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+          decoration: BoxDecoration(
+            color: AppColors.primaryBlue.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(Icons.add_photo_alternate,
+              size: ResponsiveUI.iconSize(context, 36),
+              color: AppColors.primaryBlue),
+        ),
+        SizedBox(height: ResponsiveUI.value(context, 10)),
+        Text('اضغط لتغيير الصورة',
+            style: TextStyle(
+                color: AppColors.shadowGray,
+                fontSize: ResponsiveUI.fontSize(context, 13))),
+      ],
+    );
+  }
+
+  Widget _buildGalleryPicker() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(children: [
+              Icon(Icons.collections,
+                  size: ResponsiveUI.iconSize(context, 20),
+                  color: AppColors.primaryBlue),
+              SizedBox(width: ResponsiveUI.value(context, 8)),
+              Text(
+                'صور المعرض',
+                style: TextStyle(
+                    fontSize: ResponsiveUI.fontSize(context, 15),
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.darkGray),
+              ),
+            ]),
             TextButton.icon(
-              onPressed: () async {
-                final pickedFiles = await ImagePicker().pickMultiImage();
-                if (pickedFiles.isNotEmpty) {
-                  setState(() {
-                    variation.galleryImages.addAll(
-                      pickedFiles.map((file) => File(file.path)),
-                    );
-                  });
-                }
-              },
-              icon: Icon(Icons.add_photo_alternate, size: ResponsiveUI.iconSize(context, 16)),
-              label: Text('إضافة', style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 12))),
+              onPressed: _pickGalleryImages,
+              icon: Icon(Icons.add_circle,
+                  color: AppColors.primaryBlue,
+                  size: ResponsiveUI.iconSize(context, 20)),
+              label: Text('إضافة',
+                  style: TextStyle(
+                      color: AppColors.primaryBlue,
+                      fontSize: ResponsiveUI.fontSize(context, 13))),
             ),
           ],
         ),
-        if (allGallery.isNotEmpty)
+        SizedBox(height: ResponsiveUI.value(context, 10)),
+        // Existing URL thumbnails
+        if (_existingGalleryUrls.isNotEmpty)
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: List.generate(allGallery.length, (imgIndex) {
-              dynamic img = allGallery[imgIndex];
-              return Stack(
-                children: [
-                  Container(
-                    width: ResponsiveUI.value(context, 60),
-                    height: ResponsiveUI.value(context, 60),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
-                      border: Border.all(color: AppColors.lightGray),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
-                      child: img is String
-                          ? Image.network(img, fit: BoxFit.contain)
-                          : Image.file(img, fit: BoxFit.contain),
-                    ),
-                  ),
-                  Positioned(
-                    top: -8,
-                    right: -8,
-                    child: IconButton(
-                      icon: Container(
-                        padding: EdgeInsets.all(ResponsiveUI.padding(context, 4)),
-                        decoration: BoxDecoration(
-                          color: AppColors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(Icons.close, size: ResponsiveUI.iconSize(context, 12), color: Colors.white),
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          if (imgIndex < variation.galleryUrls.length) {
-                            variation.galleryUrls.removeAt(imgIndex);
-                          } else {
-                            variation.galleryImages.removeAt(
-                              imgIndex - variation.galleryUrls.length,
-                            );
-                          }
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              );
+            spacing: 10,
+            runSpacing: 10,
+            children: List.generate(_existingGalleryUrls.length, (i) {
+              return _networkThumbnail(_existingGalleryUrls[i], () {
+                setState(() => _existingGalleryUrls.removeAt(i));
+              });
             }),
+          ),
+        if (_existingGalleryUrls.isNotEmpty && _galleryImages.isNotEmpty)
+          SizedBox(height: ResponsiveUI.value(context, 10)),
+        // New file thumbnails
+        if (_galleryImages.isNotEmpty)
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: List.generate(_galleryImages.length, (i) {
+              return _fileThumbnail(_galleryImages[i], () {
+                setState(() => _galleryImages.removeAt(i));
+              });
+            }),
+          ),
+        if (_existingGalleryUrls.isEmpty && _galleryImages.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(ResponsiveUI.padding(context, 24)),
+            decoration: BoxDecoration(
+              color: AppColors.lightBlueBackground,
+              borderRadius:
+                  BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
+              border: Border.all(color: AppColors.shadowGray.withValues(alpha: 0.3)),
+            ),
+            child: Column(children: [
+              Icon(Icons.collections_outlined,
+                  size: ResponsiveUI.iconSize(context, 36),
+                  color: AppColors.shadowGray.withValues(alpha: 0.5)),
+              SizedBox(height: ResponsiveUI.value(context, 6)),
+              Text('لا توجد صور معرض',
+                  style: TextStyle(
+                      color: AppColors.shadowGray,
+                      fontSize: ResponsiveUI.fontSize(context, 13))),
+            ]),
           ),
       ],
     );
   }
 
-  Widget _buildLoadingDropdown(String message) {
+  Widget _networkThumbnail(String url, VoidCallback onRemove) {
+    return _thumbnail(
+      child: Image.network(url,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) =>
+              Icon(Icons.broken_image, color: AppColors.shadowGray)),
+      onRemove: onRemove,
+    );
+  }
+
+  Widget _fileThumbnail(File file, VoidCallback onRemove) {
+    return _thumbnail(
+      child: Image.file(file, fit: BoxFit.cover),
+      onRemove: onRemove,
+    );
+  }
+
+  Widget _thumbnail({required Widget child, required VoidCallback onRemove}) {
+    final size = ResponsiveUI.value(context, 90.0);
+    return Stack(
+      children: [
+        Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            borderRadius:
+                BorderRadius.circular(ResponsiveUI.borderRadius(context, 10)),
+            border: Border.all(color: AppColors.lightGray, width: 1.5),
+          ),
+          child: ClipRRect(
+            borderRadius:
+                BorderRadius.circular(ResponsiveUI.borderRadius(context, 9)),
+            child: child,
+          ),
+        ),
+        Positioned(
+          top: -6,
+          right: -6,
+          child: GestureDetector(
+            onTap: onRemove,
+            child: Container(
+              padding: EdgeInsets.all(ResponsiveUI.padding(context, 5)),
+              decoration: BoxDecoration(
+                  color: AppColors.red, shape: BoxShape.circle),
+              child: Icon(Icons.close,
+                  size: ResponsiveUI.iconSize(context, 14),
+                  color: Colors.white),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _loadingWidget(String message) {
     return Container(
-      padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
+      padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
       child: CustomLoadingState(
         message: message,
         color: AppColors.primaryBlue,
-        size: ResponsiveUI.iconSize(context, 40),
+        size: ResponsiveUI.iconSize(context, 36),
       ),
-    );
-  }
-
-  Widget _buildCategoriesDropdown(List<CategoryFilter> categories) {
-    return buildMultiSelectDropdownField<CategoryFilter>(
-      context,
-      items: categories,
-      hint: 'ابحث عن الفئات...',
-      onChanged: (value) {
-        setState(() {
-          _selectedCategories = value;
-        });
-      },
-      itemLabel: (category) => category.name,
-    );
-  }
-
-  Widget _buildBrandDropdown(List<BrandFilter> brands) {
-    return buildDropdownField<BrandFilter>(
-      context,
-      items: brands,
-      hint: 'ابحث عن العلامات التجارية...',
-      onChanged: (value) {
-        setState(() {
-          _selectedBrand = value;
-        });
-      },
-      itemLabel: (brand) => brand.name,
-      value: null,
-      label: '',
-    );
-  }
-
-  void _saveProduct() async {
-    // === Validation ===
-    if (_nameController.text.trim().isEmpty) {
-      CustomSnackbar.showError(context, 'الرجاء إدخال اسم المنتج (EN)');
-      return;
-    }
-    if (_arNameController.text.trim().isEmpty) {
-      CustomSnackbar.showError(context, 'الرجاء إدخال اسم المنتج (AR)');
-      return;
-    }
-    // Image is now optional - removed validation
-    if (_selectedCategories == null || _selectedCategories!.isEmpty) {
-      CustomSnackbar.showError(context, 'الرجاء اختيار فئة واحدة على الأقل');
-      return;
-    }
-    if (_selectedBrand == null) {
-      CustomSnackbar.showError(context, 'الرجاء اختيار علامة تجارية');
-      return;
-    }
-    if (_unitController.text.trim().isEmpty) {
-      CustomSnackbar.showError(context, 'الرجاء إدخال الوحدة (مثل: قطعة)');
-      return;
-    }
-
-    // Parse numeric fields safely
-    final double mainPrice = double.tryParse(_priceController.text) ?? 0.0;
-    final double wholePrice =
-        double.tryParse(_wholePriceController.text) ?? 0.0;
-    final int quantity = int.tryParse(_quantityController.text) ?? 0;
-    final int startQuantity = int.tryParse(_startQuantityController.text) ?? 0;
-    final int minQtySale = int.tryParse(_minQuantityController.text) ?? 1;
-    final int lowStock = int.tryParse(_lowStockController.text) ?? 10;
-    final int maxToShow = _showQuantity
-        ? (int.tryParse(_maxToShowController.text) ?? 100)
-        : 0;
-
-    // === Build Price Variations ===
-    List<Map<String, dynamic>> pricesJson = [];
-
-    if (_differentPrice && _priceVariations.isNotEmpty) {
-      List<String> codes = [];
-      for (int i = 0; i < _priceVariations.length; i++) {
-        final v = _priceVariations[i];
-
-        if (v.priceController.text.trim().isEmpty) {
-          CustomSnackbar.showError(
-            context,
-            'أدخل السعر للتنويع ${i + 1}',
-          );
-          return;
-        }
-
-        if (v.codeController.text.trim().isEmpty) {
-          CustomSnackbar.showError(
-            context,
-            'أدخل كود المنتج للتنويع ${i + 1}',
-          );
-          return;
-        } else {
-          final code = v.codeController.text.trim();
-          if (codes.contains(code)) {
-            CustomSnackbar.showError(
-              context,
-              'لا تدخل نفس الأكواد لتنويعات الأسعار',
-            );
-            return;
-          } else {
-            codes.add(code);
-          }
-        }
-
-        pricesJson.add({
-          "price": double.tryParse(v.priceController.text.trim()) ?? 0.0,
-          "code": v.codeController.text.trim(),
-          "quantity": int.tryParse(v.quantityController.text) ?? 0,
-          "gallery": [...v.galleryUrls, ...v.galleryImages.map((img) => ImageHelper.encodeImageToBase64(img))],
-          "options": v.selectedOptions,
-        });
-      }
-    }
-
-    // === Encode Images ===
-    // If no new image selected, keep the existing URL; otherwise encode new image
-    String? mainImageBase64 = _mainImage != null 
-        ? ImageHelper.encodeImageToBase64(_mainImage!) 
-        : mainImageUrl; // keep existing image URL if no new image picked
-    List<String> galleryBase64 = [...galleryImageUrls, ..._galleryImages.map((img) => ImageHelper.encodeImageToBase64(img))];
-
-    // === Call Cubit ===
-    context.read<ProductsCubit>().updateProductWithData(
-      id: widget.product.id,
-      name: _nameController.text.trim(),
-      arName: _arNameController.text.trim(),
-      description: _descriptionController.text.trim(),
-      arDescription: _arDescriptionController.text.trim(),
-      image: mainImageBase64, // Made optional
-      categoryIds: _selectedCategories!.map((c) => c.id).toList(),
-      brandId: _selectedBrand!.id,
-      unit: _unitController.text.trim(),
-      price: mainPrice, // Always use single price now
-      expAbility: _hasExpiry,
-      code: _codeController.text.trim(),
-      minimumQuantitySale: minQtySale,
-      lowStock: lowStock,
-      wholePrice: wholePrice,
-      startQuantity: startQuantity,
-      quantity: quantity,
-      taxesId: '67056d0a3b233c5c1b36a7ae',
-      productHasImei: _hasIMEI,
-      // Note: differentPrice and prices removed in migration 014
-      showQuantity: _showQuantity,
-      isFeatured: _isFeatured,
-      maximumToShow: maxToShow,
-      galleryProduct: galleryBase64,
-      expiryDate: _expiryDate,
     );
   }
 
@@ -963,11 +912,7 @@ class _EditProductScreenState extends State<EditProductScreen>
     _lowStockController.dispose();
     _minQuantityController.dispose();
     _maxToShowController.dispose();
-    _unitController.dispose();
     _codeController.dispose();
-    for (var variation in _priceVariations) {
-      variation.dispose();
-    }
     super.dispose();
   }
 }

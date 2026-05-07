@@ -46,12 +46,12 @@ class DeleteCategoryDialog extends StatelessWidget {
       width: ResponsiveUI.value(context, 70),
       height: ResponsiveUI.value(context, 70),
       decoration: BoxDecoration(
-        color: Colors.red.withValues(alpha: 0.1),
+        color: AppColors.red.withValues(alpha: 0.1),
         shape: BoxShape.circle,
       ),
       child: Icon(
         Icons.delete_outline,
-        color: Colors.red,
+        color: AppColors.red,
         size: ResponsiveUI.iconSize(context, 40),
       ),
     );
@@ -74,7 +74,7 @@ class DeleteCategoryDialog extends StatelessWidget {
       textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: ResponsiveUI.fontSize(context, 14),
-        color: Colors.grey[600],
+        color: AppColors.greyDark,
         height: ResponsiveUI.value(context, 1.5),
       ),
     );
@@ -101,7 +101,7 @@ class DeleteCategoryDialog extends StatelessWidget {
         padding: EdgeInsets.symmetric(
           vertical: ResponsiveUI.padding(context, 14),
         ),
-        side: BorderSide(color: Colors.grey[300]!),
+        side: BorderSide(color: AppColors.lightGray),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
         ),
@@ -110,7 +110,7 @@ class DeleteCategoryDialog extends StatelessWidget {
         LocaleKeys.cancel.tr(),
         style: TextStyle(
           fontSize: ResponsiveUI.fontSize(context, 15),
-          color: Colors.grey[700],
+          color: AppColors.greyDark,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -121,7 +121,7 @@ class DeleteCategoryDialog extends StatelessWidget {
     return ElevatedButton(
       onPressed: onDelete,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.red,
+        backgroundColor: AppColors.red,
         padding: EdgeInsets.symmetric(
           vertical: ResponsiveUI.padding(context, 14),
         ),

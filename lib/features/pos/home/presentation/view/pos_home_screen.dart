@@ -90,11 +90,13 @@ class _POSHomeScreenState extends State<POSHomeScreen>
     void updateTime() {
       final cubit = context.read<PosShiftCubit>();
       if (cubit.isShiftOpen && cubit.currentShift != null) {
-        // Use the difference directly - Dart handles UTC/Local conversion
-        final duration = DateTime.now().difference(cubit.currentShift!.startTime);
-        
+        final startTime = cubit.currentShift!.startTime;
+        // Normalize both to UTC before computing difference to avoid local/UTC mismatch
+        final nowUtc = DateTime.now().toUtc();
+        final startUtc = startTime.isUtc ? startTime : startTime.toUtc();
+        final duration = nowUtc.difference(startUtc);
+
         if (mounted) {
-          // If duration is negative (client clock behind server), show 00:00:00
           setState(() => _shiftDuration = _formatDuration(
             duration.isNegative ? Duration.zero : duration
           ));
@@ -235,6 +237,10 @@ class _POSHomeScreenState extends State<POSHomeScreen>
         builder: (context, state) {
           final shiftCubit = context.read<PosShiftCubit>();
 
+          if (state is PosRestoringSession) {
+            return const Scaffold(body: CustomLoadingState());
+          }
+
           if (shiftCubit.selectedCashier == null) {
             return const CashierSelectionScreen();
           }
@@ -287,6 +293,12 @@ class _POSHomeScreenState extends State<POSHomeScreen>
                   ),
                   title: Row(
                     children: [
+                      Image.asset(
+                        'assets/images/gosystem_logo.png',
+                        height: ResponsiveUI.value(context, 30),
+                        fit: BoxFit.contain,
+                      ),
+                      SizedBox(width: ResponsiveUI.value(context, 8)),
                       Expanded(
                         child: Text(
                           shiftCubit.selectedCashier?.name ?? "Cashier",
@@ -336,7 +348,7 @@ class _POSHomeScreenState extends State<POSHomeScreen>
                       margin: EdgeInsetsDirectional.only(
                           end: ResponsiveUI.padding(context, 4), top: ResponsiveUI.padding(context, 8), bottom: ResponsiveUI.padding(context, 8)),
                       decoration: BoxDecoration(
-                        color: Colors.orange.withValues(alpha: 0.12),
+                        color: AppColors.warningOrange.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                       ),
                       child: BlocBuilder<HistoryCubit, HistoryState>(
@@ -357,7 +369,7 @@ class _POSHomeScreenState extends State<POSHomeScreen>
                                 ),
                                 icon: Icon(
                                   Icons.pending_actions_rounded,
-                                  color: Colors.orange.shade700,
+                                  color: AppColors.warningOrange,
                                   size: ResponsiveUI.iconSize(context, 24),
                                 ),
                                 padding: EdgeInsets.zero,
@@ -370,7 +382,7 @@ class _POSHomeScreenState extends State<POSHomeScreen>
                                   child: Container(
                                     padding: EdgeInsets.all(ResponsiveUI.padding(context, 4)),
                                     decoration: BoxDecoration(
-                                      color: Colors.orange.shade700,
+                                      color: AppColors.warningOrange,
                                       shape: BoxShape.circle,
                                       border: Border.all(
                                           color: AppColors.white, width: ResponsiveUI.value(context, 1.5)),

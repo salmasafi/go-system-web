@@ -93,7 +93,10 @@ class POSDrawer extends StatelessWidget {
             // ── Header ──────────────────────────────────────────
             Container(
               width: double.infinity,
-              padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
+              padding: EdgeInsets.symmetric(
+                horizontal: ResponsiveUI.padding(context, 20),
+                vertical: ResponsiveUI.padding(context, 16),
+              ),
               decoration: BoxDecoration(
                 color: AppColors.white,
                 border: Border(
@@ -103,39 +106,57 @@ class POSDrawer extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: ResponsiveUI.value(context, 48),
-                    height: ResponsiveUI.value(context, 48),
-                    decoration: BoxDecoration(
-                      color: AppColors.lightBlueBackground,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.person_outline,
-                      color: AppColors.primaryBlue,
-                      size: ResponsiveUI.iconSize(context, 26),
-                    ),
+                  Image.asset(
+                    'assets/images/gosystem_logo.png',
+                    height: ResponsiveUI.value(context, 52),
+                    fit: BoxFit.contain,
+                    alignment: Alignment.centerLeft,
                   ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 10)),
-                  Text(
-                    'AUTHENTICATED AS',
-                    style: TextStyle(
-                      fontSize: ResponsiveUI.fontSize(context, 11),
-                      color: AppColors.shadowGray,
-                      letterSpacing: 0.8,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  SizedBox(height: ResponsiveUI.spacing(context, 14)),
+                  Row(
+                    children: [
+                      Container(
+                        width: ResponsiveUI.value(context, 36),
+                        height: ResponsiveUI.value(context, 36),
+                        decoration: BoxDecoration(
+                          color: AppColors.lightBlueBackground,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.person_outline,
+                          color: AppColors.primaryBlue,
+                          size: ResponsiveUI.iconSize(context, 20),
+                        ),
+                      ),
+                      SizedBox(width: ResponsiveUI.value(context, 10)),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'AUTHENTICATED AS',
+                              style: TextStyle(
+                                fontSize: ResponsiveUI.fontSize(context, 10),
+                                color: AppColors.shadowGray,
+                                letterSpacing: 0.8,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Text(
+                              user?.username ?? cashier?.name ?? 'User',
+                              style: TextStyle(
+                                fontSize: ResponsiveUI.fontSize(context, 15),
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.darkGray,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 2)),
-                  Text(
-                    user?.username ?? cashier?.name ?? 'User',
-                    style: TextStyle(
-                      fontSize: ResponsiveUI.fontSize(context, 18),
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.darkGray,
-                    ),
-                  ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 4)),
+                  SizedBox(height: ResponsiveUI.spacing(context, 8)),
                   Row(
                     children: [
                       Icon(Icons.timer_outlined, size: ResponsiveUI.iconSize(context, 14), color: AppColors.successGreen),

@@ -29,8 +29,8 @@ class POSBundlesGrid extends StatelessWidget {
         top: ResponsiveUI.padding(context, 16),
         bottom: ResponsiveUI.padding(context, 75),
       ),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: ResponsiveUI.isMobile(context) ? 2 : 4,
         childAspectRatio: 0.65,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,

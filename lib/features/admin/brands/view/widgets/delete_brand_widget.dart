@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/generated/locale_keys.g.dart';
 
@@ -20,7 +21,7 @@ class DeleteBrandDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
       ),
       elevation: ResponsiveUI.value(context, 8),
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       child: Padding(
         padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
         child: Column(
@@ -44,12 +45,12 @@ class DeleteBrandDialog extends StatelessWidget {
       width: ResponsiveUI.value(context, 70),
       height: ResponsiveUI.value(context, 70),
       decoration: BoxDecoration(
-        color: Colors.red.withValues(alpha: 0.1),
+        color: AppColors.red.withValues(alpha: 0.1),
         shape: BoxShape.circle,
       ),
       child: Icon(
         Icons.delete_outline,
-        color: Colors.red,
+        color: AppColors.red,
         size: ResponsiveUI.iconSize(context, 40),
       ),
     );
@@ -72,7 +73,7 @@ class DeleteBrandDialog extends StatelessWidget {
       textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: ResponsiveUI.fontSize(context, 14),
-        color: Colors.grey[600],
+        color: AppColors.greyDark,
         height: ResponsiveUI.value(context, 1.5),
       ),
     );
@@ -99,7 +100,7 @@ class DeleteBrandDialog extends StatelessWidget {
         padding: EdgeInsets.symmetric(
           vertical: ResponsiveUI.padding(context, 14),
         ),
-        side: BorderSide(color: Colors.grey[300]!),
+        side: BorderSide(color: AppColors.lightGray),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
         ),

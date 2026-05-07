@@ -67,12 +67,7 @@ class _POSProductGridState extends State<POSProductGrid> {
           return const CustomLoadingState();
         }
 
-        // 2. إذا كان الفلتر مفتوحاً، اخفِ الشبكة (اختياري)
-        if (cubit.showBrandFilters || cubit.showCategoryFilters) {
-          return SizedBox();
-        }
-
-        // 3. عرض البيانات
+        // 2. عرض البيانات
         if (state is PosDataLoaded) {
           // نستخدم القائمة الممررة من البحث إذا وجدت، وإلا نستخدم القائمة من الـ state
           final productsToShow =
@@ -95,8 +90,9 @@ class _POSProductGridState extends State<POSProductGrid> {
                       ), // مساحة للـ FAB/Bottom Sheet
                     ),
                     gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
+                        SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount:
+                              ResponsiveUI.isMobile(context) ? 2 : 4,
                           childAspectRatio:
                               0.8, // تم تحديد النسبة لتحسين التناسب
                           crossAxisSpacing: 12,
@@ -129,7 +125,7 @@ class _POSProductGridState extends State<POSProductGrid> {
           }
         }
 
-        // 4. الحالة الافتراضية
+        // 3. الحالة الافتراضية
         return const CustomEmptyState(
           icon: Icons.inventory_2_outlined,
           title: 'No Products Found',

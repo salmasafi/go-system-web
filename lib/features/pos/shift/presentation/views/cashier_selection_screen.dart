@@ -51,7 +51,7 @@ class _CashierSelectionScreenState extends State<CashierSelectionScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: ResponsiveUI.iconSize(context, 60), color: Colors.red),
+                  Icon(Icons.error_outline, size: ResponsiveUI.iconSize(context, 60), color: AppColors.red),
                   SizedBox(height: ResponsiveUI.value(context, 10)),
                   Text(state.message),
                   TextButton(
@@ -76,14 +76,14 @@ class _CashierSelectionScreenState extends State<CashierSelectionScreen> {
 
               return Card(
                 elevation: isBusy ? 0 : 4,
-                color: isBusy ? Colors.grey.shade200 : Colors.white,
+                color: isBusy ? AppColors.greyLight : Colors.white,
                 margin: EdgeInsets.only(bottom: ResponsiveUI.padding(context, 12)),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12))),
                 child: ListTile(
                   contentPadding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 16), vertical: ResponsiveUI.padding(context, 8)),
                   enabled: !isBusy,
                   leading: CircleAvatar(
-                    backgroundColor: isBusy ? Colors.grey : AppColors.primaryBlue,
+                    backgroundColor: isBusy ? AppColors.greyMedium : AppColors.primaryBlue,
                     child: Icon(
                       isBusy ? Icons.lock_clock : Icons.point_of_sale,
                       color: Colors.white,
@@ -94,14 +94,14 @@ class _CashierSelectionScreenState extends State<CashierSelectionScreen> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       decoration: isBusy ? TextDecoration.lineThrough : null,
-                      color: isBusy ? Colors.grey : Colors.black,
+                      color: isBusy ? AppColors.greyMedium : Colors.black,
                     ),
                   ),
                   subtitle: isBusy
-                      ? const Text("Occupied", style: TextStyle(color: Colors.red))
+                      ? const Text("Occupied", style: TextStyle(color: AppColors.red))
                       : Text(cashier.arName),
                   trailing: isBusy
-                      ? Icon(Icons.block, color: Colors.red)
+                      ? Icon(Icons.block, color: AppColors.red)
                       : Icon(Icons.arrow_forward_ios, size: ResponsiveUI.iconSize(context, 16), color: AppColors.primaryBlue),
                   onTap: isBusy ? null : () => cubit.selectCashier(cashier),
                 ),

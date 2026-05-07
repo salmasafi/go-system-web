@@ -102,7 +102,7 @@ class RedeemPointsCard extends StatelessWidget {
                         onPressed: () => _showDeleteConfirmation(context),
                         icon: Icon(
                           Icons.delete_rounded,
-                          color: Colors.red,
+                          color: AppColors.red,
                           size: ResponsiveUI.iconSize(context, 20),
                         ),
                         tooltip: 'Delete',
@@ -175,7 +175,7 @@ class RedeemPointsCard extends StatelessWidget {
               Navigator.pop(context);
               context.read<RedeemPointsCubit>().deleteRedeemPoints(redeemPoint.id);
             },
-            child: Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text('Delete', style: TextStyle(color: AppColors.red)),
           ),
         ],
       ),

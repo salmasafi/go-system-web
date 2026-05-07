@@ -23,8 +23,8 @@ class PosShiftCubit extends Cubit<PosShiftState> {
   ShiftModel? currentShift;
   bool isShiftOpen = false;
 
-  // استعادة الجلسة من الكاش عند فتح التطبيق
-  void _restoreSession() {
+  // استعادة الجلسة - أولاً من الكاش، ثم من قاعدة البيانات لو الكاش فاضي
+  Future<void> _restoreSession() async {
     final cashier = CacheHelper.getModel<CashierModel>(
       key: _cashierKey,
       fromJson: CashierModel.fromJson,
@@ -39,6 +39,32 @@ class PosShiftCubit extends Cubit<PosShiftState> {
       currentShift = shift;
       isShiftOpen = true;
       emit(PosShiftStarted(shift));
+      return;
+    }
+
+    // الكاش فاضي (مثلاً بعد تسجيل خروج) - نبحث في DB عن شيفت مفتوح للمستخدم الحالي
+    emit(PosRestoringSession());
+    try {
+      final activeShift = await _repository.getMyActiveShift();
+      if (activeShift == null) {
+        emit(PosShiftInitial());
+        return;
+      }
+
+      final cashierData = await _repository.getCashierById(activeShift.cashierId);
+      if (cashierData == null) {
+        emit(PosShiftInitial());
+        return;
+      }
+
+      selectedCashier = cashierData;
+      currentShift = activeShift.toLegacyModel();
+      isShiftOpen = true;
+      await _saveSession();
+      emit(PosShiftStarted(currentShift!));
+    } catch (e) {
+      log('Restore session from server failed: $e');
+      emit(PosShiftInitial());
     }
   }
 

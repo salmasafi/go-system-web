@@ -83,7 +83,7 @@ class CashierList extends StatelessWidget {
         Icon(
           icon,
           size: 20,
-          color: Colors.grey[600],
+          color: AppColors.greyDark,
         ),
         SizedBox(width: 12),
         Expanded(
@@ -95,7 +95,7 @@ class CashierList extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Colors.grey[700],
+                  color: AppColors.greyDark,
                 ),
               ),
               SizedBox(height: 4),
@@ -150,8 +150,8 @@ class CashierList extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: cashier.status
-                          ? Colors.green.withValues(alpha: 0.1)
-                          : Colors.red.withValues(alpha: 0.1),
+                          ? AppColors.successGreen.withValues(alpha: 0.1)
+                          : AppColors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 16)),
                     ),
                     child: Text(
@@ -161,7 +161,7 @@ class CashierList extends StatelessWidget {
                       style: TextStyle(
                         fontSize: ResponsiveUI.fontSize(context, 12),
                         fontWeight: FontWeight.bold,
-                        color: cashier.status ? Colors.green : Colors.red,
+                        color: cashier.status ? AppColors.successGreen : AppColors.red,
                       ),
                     ),
                   ),
@@ -199,13 +199,13 @@ class CashierList extends StatelessWidget {
                   Container(
                     padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
                     decoration: BoxDecoration(
-                      color: Colors.grey[50],
+                      color: AppColors.greyLight,
                       borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
                       border: Border.all(color: AppColors.lightGray),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.store, size: ResponsiveUI.iconSize(context, 20), color: Colors.red),
+                        Icon(Icons.store, size: ResponsiveUI.iconSize(context, 20), color: AppColors.red),
                         SizedBox(width: ResponsiveUI.spacing(context, 8)),
                         Expanded(
                           child: Text(
@@ -236,17 +236,17 @@ class CashierList extends StatelessWidget {
                           style: TextStyle(
                             fontSize: ResponsiveUI.fontSize(context, 14),
                             fontWeight: FontWeight.w600,
-                            color: Colors.grey[700],
+                            color: AppColors.greyDark,
                           ),
                         ),
                         Text(
-                          cashier.status 
-                              ? LocaleKeys.active.tr() 
+                          cashier.status
+                              ? LocaleKeys.active.tr()
                               : LocaleKeys.inactive.tr(),
                           style: TextStyle(
                             fontSize: ResponsiveUI.fontSize(context, 16),
                             fontWeight: FontWeight.bold,
-                            color: cashier.status ? Colors.green : Colors.red,
+                            color: cashier.status ? AppColors.successGreen : AppColors.red,
                           ),
                         ),
                       ],
@@ -261,17 +261,17 @@ class CashierList extends StatelessWidget {
                           style: TextStyle(
                             fontSize: ResponsiveUI.fontSize(context, 14),
                             fontWeight: FontWeight.w600,
-                            color: Colors.grey[700],
+                            color: AppColors.greyDark,
                           ),
                         ),
                         Text(
-                          cashier.cashierActive 
-                              ? LocaleKeys.yes.tr() 
+                          cashier.cashierActive
+                              ? LocaleKeys.yes.tr()
                               : LocaleKeys.no.tr(),
                           style: TextStyle(
                             fontSize: ResponsiveUI.fontSize(context, 16),
                             fontWeight: FontWeight.bold,
-                            color: cashier.cashierActive ? Colors.green : Colors.red,
+                            color: cashier.cashierActive ? AppColors.successGreen : AppColors.red,
                           ),
                         ),
                       ],
@@ -289,7 +289,7 @@ class CashierList extends StatelessWidget {
                   style: TextStyle(
                     fontSize: ResponsiveUI.fontSize(context, 14),
                     fontWeight: FontWeight.w600,
-                    color: Colors.grey[700],
+                    color: AppColors.greyDark,
                   ),
                 ),
                 SizedBox(height: ResponsiveUI.spacing(context, 8)),
@@ -298,7 +298,7 @@ class CashierList extends StatelessWidget {
                     margin: EdgeInsets.only(bottom: ResponsiveUI.spacing(context, 8)),
                     padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
                     decoration: BoxDecoration(
-                      color: Colors.grey[50],
+                      color: AppColors.greyLight,
                       borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
                       border: Border.all(color: AppColors.lightGray),
                     ),
@@ -317,7 +317,7 @@ class CashierList extends StatelessWidget {
                           user.email,
                           style: TextStyle(
                             fontSize: ResponsiveUI.fontSize(context, 14),
-                            color: Colors.grey[600],
+                            color: AppColors.greyDark,
                           ),
                         ),
                         SizedBox(height: ResponsiveUI.spacing(context, 4)),
@@ -348,16 +348,16 @@ class CashierList extends StatelessWidget {
                                 vertical: ResponsiveUI.padding(context, 4),
                               ),
                               decoration: BoxDecoration(
-                                color: user.status == 'active' 
-                                    ? Colors.green.withValues(alpha: 0.1)
-                                    : Colors.red.withValues(alpha: 0.1),
+                                color: user.status == 'active'
+                                    ? AppColors.successGreen.withValues(alpha: 0.1)
+                                    : AppColors.red.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 4)),
                               ),
                               child: Text(
                                 user.status,
                                 style: TextStyle(
                                   fontSize: ResponsiveUI.fontSize(context, 12),
-                                  color: user.status == 'active' ? Colors.green : Colors.red,
+                                  color: user.status == 'active' ? AppColors.successGreen : AppColors.red,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -378,7 +378,7 @@ class CashierList extends StatelessWidget {
                   style: TextStyle(
                     fontSize: ResponsiveUI.fontSize(context, 14),
                     fontWeight: FontWeight.w600,
-                    color: Colors.grey[700],
+                    color: AppColors.greyDark,
                   ),
                 ),
                 SizedBox(height: ResponsiveUI.spacing(context, 8)),
@@ -387,7 +387,7 @@ class CashierList extends StatelessWidget {
                     margin: EdgeInsets.only(bottom: ResponsiveUI.spacing(context, 8)),
                     padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
                     decoration: BoxDecoration(
-                      color: Colors.grey[50],
+                      color: AppColors.greyLight,
                       borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
                       border: Border.all(color: AppColors.lightGray),
                     ),
@@ -413,18 +413,18 @@ class CashierList extends StatelessWidget {
                                 vertical: ResponsiveUI.padding(context, 4),
                               ),
                               decoration: BoxDecoration(
-                                color: account.status 
-                                    ? Colors.green.withValues(alpha: 0.1)
-                                    : Colors.red.withValues(alpha: 0.1),
+                                color: account.status
+                                    ? AppColors.successGreen.withValues(alpha: 0.1)
+                                    : AppColors.red.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 4)),
                               ),
                               child: Text(
-                                account.status 
-                                    ? LocaleKeys.active.tr() 
+                                account.status
+                                    ? LocaleKeys.active.tr()
                                     : LocaleKeys.inactive.tr(),
                                 style: TextStyle(
                                   fontSize: ResponsiveUI.fontSize(context, 12),
-                                  color: account.status ? Colors.green : Colors.red,
+                                  color: account.status ? AppColors.successGreen : AppColors.red,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -439,7 +439,7 @@ class CashierList extends StatelessWidget {
                               LocaleKeys.balance.tr(),
                               style: TextStyle(
                                 fontSize: ResponsiveUI.fontSize(context, 14),
-                                color: Colors.grey[600],
+                                color: AppColors.greyDark,
                               ),
                             ),
                             Text(
@@ -447,7 +447,7 @@ class CashierList extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: ResponsiveUI.fontSize(context, 16),
                                 fontWeight: FontWeight.bold,
-                                color: account.balance >= 0 ? Colors.green : Colors.red,
+                                color: account.balance >= 0 ? AppColors.successGreen : AppColors.red,
                               ),
                             ),
                           ],
@@ -460,7 +460,7 @@ class CashierList extends StatelessWidget {
                               LocaleKeys.in_pos.tr(),
                               style: TextStyle(
                                 fontSize: ResponsiveUI.fontSize(context, 14),
-                                color: Colors.grey[600],
+                                color: AppColors.greyDark,
                               ),
                             ),
                             Text(
@@ -468,7 +468,7 @@ class CashierList extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: ResponsiveUI.fontSize(context, 16),
                                 fontWeight: FontWeight.bold,
-                                color: account.inPOS ? Colors.red : Colors.grey,
+                                color: account.inPOS ? AppColors.red : AppColors.greyMedium,
                               ),
                             ),
                           ],
@@ -489,7 +489,7 @@ class CashierList extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
+                    backgroundColor: AppColors.red,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                     ),
@@ -518,13 +518,13 @@ class CashierList extends StatelessWidget {
   Color _getRoleColor(String role) {
     switch (role.toLowerCase()) {
       case 'admin':
-        return Colors.red;
+        return AppColors.red;
       case 'manager':
-        return Colors.orange;
+        return AppColors.warningOrange;
       case 'cashier':
-        return Colors.red;
+        return AppColors.red;
       default:
-        return Colors.grey;
+        return AppColors.greyMedium;
     }
   }
 }

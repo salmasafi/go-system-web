@@ -313,7 +313,7 @@ class _AddRedeemPointsDialogState extends State<AddRedeemPointsDialog> {
                 context.read<RedeemPointsCubit>().deleteRedeemPoints(widget.redeemPoint!.id);
               }
             },
-            child: Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text('Delete', style: TextStyle(color: AppColors.red)),
           ),
         ],
       ),

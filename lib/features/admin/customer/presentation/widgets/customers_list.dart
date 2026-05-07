@@ -59,7 +59,7 @@ class _CustomersListState extends State<CustomersList> {
             Icon(
               Icons.people_outline,
               size: ResponsiveUI.iconSize(context, 64),
-              color: Colors.grey[400],
+              color: AppColors.greyMedium,
             ),
             SizedBox(height: ResponsiveUI.spacing(context, 16)),
             Text(
@@ -67,7 +67,7 @@ class _CustomersListState extends State<CustomersList> {
               style: TextStyle(
                 fontSize: ResponsiveUI.fontSize(context, 18),
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[600],
+                color: AppColors.greyDark,
               ),
               textAlign: TextAlign.center,
             ),
@@ -76,7 +76,7 @@ class _CustomersListState extends State<CustomersList> {
               LocaleKeys.create_first_customer.tr(),
               style: TextStyle(
                 fontSize: ResponsiveUI.fontSize(context, 14),
-                color: Colors.grey[500],
+                color: AppColors.greyMedium,
               ),
               textAlign: TextAlign.center,
             ),
@@ -144,8 +144,8 @@ class _CustomersListState extends State<CustomersList> {
                     ),
                     decoration: BoxDecoration(
                       color: customer.isDue
-                          ? Colors.red.withValues(alpha: 0.1)
-                          : Colors.green.withValues(alpha: 0.1),
+                          ? AppColors.red.withValues(alpha: 0.1)
+                          : AppColors.successGreen.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 16)),
                     ),
                     child: Text(
@@ -155,7 +155,7 @@ class _CustomersListState extends State<CustomersList> {
                       style: TextStyle(
                         fontSize: ResponsiveUI.fontSize(context, 12),
                         fontWeight: FontWeight.bold,
-                        color: customer.isDue ? Colors.red : Colors.green,
+                        color: customer.isDue ? AppColors.red : AppColors.successGreen,
                       ),
                     ),
                   ),
@@ -195,13 +195,13 @@ class _CustomersListState extends State<CustomersList> {
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 14),
                       fontWeight: FontWeight.w600,
-                      color: Colors.grey[700],
+                      color: AppColors.greyDark,
                     ),
                   ),
                   SizedBox(height: ResponsiveUI.spacing(context, 4)),
                   Text(
-                    customer.address.isNotEmpty 
-                        ? customer.address 
+                    customer.address.isNotEmpty
+                        ? customer.address
                         : LocaleKeys.no_address.tr(),
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 16),
@@ -219,7 +219,7 @@ class _CustomersListState extends State<CustomersList> {
                               LocaleKeys.country.tr(),
                               style: TextStyle(
                                 fontSize: ResponsiveUI.fontSize(context, 12),
-                                color: Colors.grey[600],
+                                color: AppColors.greyDark,
                               ),
                             ),
                             Text(
@@ -241,7 +241,7 @@ class _CustomersListState extends State<CustomersList> {
                               LocaleKeys.city.tr(),
                               style: TextStyle(
                                 fontSize: ResponsiveUI.fontSize(context, 12),
-                                color: Colors.grey[600],
+                                color: AppColors.greyDark,
                               ),
                             ),
                             Text(
@@ -266,7 +266,7 @@ class _CustomersListState extends State<CustomersList> {
               Container(
                 padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
                 decoration: BoxDecoration(
-                  color: Colors.grey[50],
+                  color: AppColors.greyLight,
                   borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                   border: Border.all(color: AppColors.lightGray),
                 ),
@@ -280,7 +280,7 @@ class _CustomersListState extends State<CustomersList> {
                           style: TextStyle(
                             fontSize: ResponsiveUI.fontSize(context, 14),
                             fontWeight: FontWeight.w600,
-                            color: Colors.grey[700],
+                            color: AppColors.greyDark,
                           ),
                         ),
                         Text(
@@ -288,7 +288,7 @@ class _CustomersListState extends State<CustomersList> {
                           style: TextStyle(
                             fontSize: ResponsiveUI.fontSize(context, 16),
                             fontWeight: FontWeight.bold,
-                            color: customer.isDue ? Colors.red : Colors.green,
+                            color: customer.isDue ? AppColors.red : AppColors.successGreen,
                           ),
                         ),
                       ],
@@ -302,7 +302,7 @@ class _CustomersListState extends State<CustomersList> {
                           style: TextStyle(
                             fontSize: ResponsiveUI.fontSize(context, 14),
                             fontWeight: FontWeight.w600,
-                            color: Colors.grey[700],
+                            color: AppColors.greyDark,
                           ),
                         ),
                         Text(
@@ -310,7 +310,7 @@ class _CustomersListState extends State<CustomersList> {
                           style: TextStyle(
                             fontSize: ResponsiveUI.fontSize(context, 16),
                             fontWeight: FontWeight.bold,
-                            color: Colors.red,
+                            color: AppColors.red,
                           ),
                         ),
                       ],
@@ -347,7 +347,7 @@ class _CustomersListState extends State<CustomersList> {
                             Icon(
                               Icons.calendar_today,
                               size: ResponsiveUI.iconSize(context, 16),
-                              color: Colors.grey[600],
+                              color: AppColors.greyDark,
                             ),
                             SizedBox(width: ResponsiveUI.spacing(context, 8)),
                             Text(
@@ -383,7 +383,7 @@ class _CustomersListState extends State<CustomersList> {
                             Icon(
                               Icons.update,
                               size: ResponsiveUI.iconSize(context, 16),
-                              color: Colors.grey[600],
+                              color: AppColors.greyDark,
                             ),
                             SizedBox(width: ResponsiveUI.spacing(context, 8)),
                             Text(

@@ -46,3 +46,5 @@ class PosShiftActionError extends PosShiftState {
   final String message;
   PosShiftActionError(this.message);
 }
+
+class PosRestoringSession extends PosShiftState {}

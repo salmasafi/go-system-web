@@ -243,7 +243,7 @@ class _PendingCard extends StatelessWidget {
         return AppColors.successGreen;
       case 'pending':
       default:
-        return Colors.orange;
+        return AppColors.warningOrange;
     }
   }
 }

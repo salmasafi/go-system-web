@@ -81,7 +81,17 @@ AppBar appBarWithActions(
                   padding: EdgeInsets.zero,
                 ),
               )
-            : null,
+            : Padding(
+                padding: EdgeInsetsDirectional.only(
+                  start: ResponsiveUI.padding(context, 12),
+                  top: ResponsiveUI.padding(context, 6),
+                  bottom: ResponsiveUI.padding(context, 6),
+                ),
+                child: Image.asset(
+                  'assets/images/gosystem_logo.png',
+                  fit: BoxFit.contain,
+                ),
+              ),
     actions: showActions
         ? [
             Container(

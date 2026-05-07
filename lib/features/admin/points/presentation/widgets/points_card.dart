@@ -138,7 +138,7 @@ class PointsCard extends StatelessWidget {
           context: context,
           icon: Icons.calculate_rounded,
           label: 'Ratio: 1 EGP = ${(point.amount / point.points).toStringAsFixed(2)} pts',
-          color: Colors.orange,
+          color: AppColors.warningOrange,
         ),
       ],
     );

@@ -293,7 +293,7 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
           style: TextStyle(
             fontSize: fontSize14,
             fontWeight: FontWeight.w600,
-            color: Colors.grey[800],
+            color: AppColors.darkGray,
           ),
         ),
         SizedBox(height: spacing8),
@@ -324,7 +324,7 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
                   child: Container(
                     padding: EdgeInsets.all(padding8),
                     decoration: BoxDecoration(
-                      color: Colors.red,
+                      color: AppColors.red,
                       borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
                     ),
                     child: Icon(
@@ -407,7 +407,7 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(borderRadius12),
 
-                      border: Border.all(color: Colors.grey[300]!, width: ResponsiveUI.value(context, 2)),
+                      border: Border.all(color: AppColors.lightGray, width: ResponsiveUI.value(context, 2)),
                     ),
 
                     child: ClipRRect(
@@ -425,7 +425,7 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
                       child: Container(
                         padding: EdgeInsets.all(padding8),
                         decoration: BoxDecoration(
-                          color: Colors.grey,
+                          color: AppColors.greyMedium,
                           borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
                         ),
                         child: Icon(
@@ -448,8 +448,8 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
               height: height120,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(borderRadius12),
-                border: Border.all(color: Colors.grey[300]!, width: ResponsiveUI.value(context, 2)),
-                color: Colors.grey[50],
+                border: Border.all(color: AppColors.lightGray, width: ResponsiveUI.value(context, 2)),
+                color: AppColors.greyLight,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -464,7 +464,7 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
                     LocaleKeys.tap_to_select_image.tr(),
                     style: TextStyle(
                       fontSize: fontSize14,
-                      color: Colors.grey[600],
+                      color: AppColors.greyDark,
                     ),
                   ),
                 ],
@@ -482,17 +482,17 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
       width: double.infinity,
       height: height120,
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: AppColors.greyLight,
         borderRadius: BorderRadius.circular(borderRadius12),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.broken_image_outlined, size: ResponsiveUI.iconSize(context, 40), color: Colors.grey[400]),
+          Icon(Icons.broken_image_outlined, size: ResponsiveUI.iconSize(context, 40), color: AppColors.greyMedium),
           SizedBox(height: ResponsiveUI.value(context, 8)),
           Text(
             LocaleKeys.failed_to_load_image.tr(),
-            style: TextStyle(color: Colors.grey[500], fontSize: ResponsiveUI.fontSize(context, 12)),
+            style: TextStyle(color: AppColors.greyMedium, fontSize: ResponsiveUI.fontSize(context, 12)),
           ),
         ],
       ),

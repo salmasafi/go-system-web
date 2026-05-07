@@ -59,7 +59,7 @@ class _PandelsListState extends State<PandelsList> {
             Icon(
               Icons.collections_bookmark,
               size: ResponsiveUI.iconSize(context, 64),
-              color: Colors.grey[400],
+              color: AppColors.greyMedium,
             ),
             SizedBox(height: ResponsiveUI.spacing(context, 16)),
             Text(
@@ -67,7 +67,7 @@ class _PandelsListState extends State<PandelsList> {
               style: TextStyle(
                 fontSize: ResponsiveUI.fontSize(context, 18),
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[600],
+                color: AppColors.greyDark,
               ),
               textAlign: TextAlign.center,
             ),
@@ -76,7 +76,7 @@ class _PandelsListState extends State<PandelsList> {
               LocaleKeys.create_first_pandel.tr(),
               style: TextStyle(
                 fontSize: ResponsiveUI.fontSize(context, 14),
-                color: Colors.grey[500],
+                color: AppColors.greyMedium,
               ),
               textAlign: TextAlign.center,
             ),
@@ -147,7 +147,7 @@ class _PandelsListState extends State<PandelsList> {
                       style: TextStyle(
                         fontSize: ResponsiveUI.fontSize(context, 20),
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        color: AppColors.darkGray,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -160,10 +160,10 @@ class _PandelsListState extends State<PandelsList> {
                     ),
                     decoration: BoxDecoration(
                       color: pandel.status
-                          ? Colors.green.withValues(alpha: 0.1)
+                          ? AppColors.successGreen.withValues(alpha: 0.1)
                           // : isUpcoming
                           //   ? Colors.orange.withValues(alpha: 0.1)
-                          : Colors.red.withValues(alpha: 0.1),
+                          : AppColors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 16)),
                     ),
                     child: Text(
@@ -176,10 +176,10 @@ class _PandelsListState extends State<PandelsList> {
                         fontSize: ResponsiveUI.fontSize(context, 12),
                         fontWeight: FontWeight.bold,
                         color: pandel.status
-                            ? Colors.green
+                            ? AppColors.successGreen
                             // : isUpcoming
                             //   ? Colors.orange
-                            : Colors.red,
+                            : AppColors.red,
                       ),
                     ),
                   ),
@@ -194,7 +194,7 @@ class _PandelsListState extends State<PandelsList> {
                   Icon(
                     Icons.attach_money,
                     size: ResponsiveUI.iconSize(context, 18),
-                    color: Colors.grey[600],
+                    color: AppColors.greyDark,
                   ),
                   SizedBox(width: ResponsiveUI.spacing(context, 8)),
                   Text(
@@ -202,7 +202,7 @@ class _PandelsListState extends State<PandelsList> {
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 18),
                       fontWeight: FontWeight.bold,
-                      color: Colors.red,
+                      color: AppColors.red,
                     ),
                   ),
                 ],
@@ -219,7 +219,7 @@ class _PandelsListState extends State<PandelsList> {
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 14),
                       fontWeight: FontWeight.w600,
-                      color: Colors.grey[700],
+                      color: AppColors.greyDark,
                     ),
                   ),
                   SizedBox(height: ResponsiveUI.spacing(context, 10)),
@@ -236,7 +236,7 @@ class _PandelsListState extends State<PandelsList> {
                         vertical: ResponsiveUI.padding(context, 8),
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.grey[50],
+                        color: AppColors.greyLight,
                         borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 10)),
                         border: Border.all(color: AppColors.lightGray),
                       ),
@@ -315,7 +315,7 @@ class _PandelsListState extends State<PandelsList> {
                         '${LocaleKeys.and_more.tr()} ${pandel.products.length - 10} ${LocaleKeys.more.tr()}',
                         style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 12),
-                          color: Colors.grey[500],
+                          color: AppColors.greyMedium,
                           fontStyle: FontStyle.italic,
                         ),
                       ),
@@ -337,7 +337,7 @@ class _PandelsListState extends State<PandelsList> {
                             Icon(
                               Icons.calendar_today,
                               size: ResponsiveUI.iconSize(context, 16),
-                              color: Colors.grey[600],
+                              color: AppColors.greyDark,
                             ),
                             SizedBox(width: ResponsiveUI.spacing(context, 8)),
                             Text(
@@ -345,7 +345,7 @@ class _PandelsListState extends State<PandelsList> {
                               style: TextStyle(
                                 fontSize: ResponsiveUI.fontSize(context, 14),
                                 fontWeight: FontWeight.w600,
-                                color: Colors.grey[700],
+                                color: AppColors.greyDark,
                               ),
                             ),
                           ],
@@ -355,7 +355,7 @@ class _PandelsListState extends State<PandelsList> {
                           _formatDate(pandel.startDate),
                           style: TextStyle(
                             fontSize: ResponsiveUI.fontSize(context, 16),
-                            color: Colors.black87,
+                            color: AppColors.darkGray,
                           ),
                         ),
                       ],
@@ -373,7 +373,7 @@ class _PandelsListState extends State<PandelsList> {
                             Icon(
                               Icons.event,
                               size: ResponsiveUI.iconSize(context, 16),
-                              color: Colors.grey[600],
+                              color: AppColors.greyDark,
                             ),
                             SizedBox(width: ResponsiveUI.spacing(context, 8)),
                             Text(
@@ -381,7 +381,7 @@ class _PandelsListState extends State<PandelsList> {
                               style: TextStyle(
                                 fontSize: ResponsiveUI.fontSize(context, 14),
                                 fontWeight: FontWeight.w600,
-                                color: Colors.grey[700],
+                                color: AppColors.greyDark,
                               ),
                             ),
                           ],
@@ -391,7 +391,7 @@ class _PandelsListState extends State<PandelsList> {
                           _formatDate(pandel.endDate),
                           style: TextStyle(
                             fontSize: ResponsiveUI.fontSize(context, 16),
-                            color: Colors.black87,
+                            color: AppColors.darkGray,
                           ),
                         ),
                       ],
@@ -412,7 +412,7 @@ class _PandelsListState extends State<PandelsList> {
                       style: TextStyle(
                         fontSize: ResponsiveUI.fontSize(context, 14),
                         fontWeight: FontWeight.w600,
-                        color: Colors.grey[700],
+                        color: AppColors.greyDark,
                       ),
                     ),
                     SizedBox(height: ResponsiveUI.spacing(context, 12)),
@@ -456,10 +456,10 @@ class _PandelsListState extends State<PandelsList> {
                                   },
                               errorBuilder: (context, error, stackTrace) {
                                 return Container(
-                                  color: Colors.grey[100],
+                                  color: AppColors.greyLight,
                                   child: Icon(
                                     Icons.broken_image,
-                                    color: Colors.grey[400],
+                                    color: AppColors.greyMedium,
                                     size: ResponsiveUI.iconSize(context, 24),
                                   ),
                                 );
@@ -480,7 +480,7 @@ class _PandelsListState extends State<PandelsList> {
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
+                    backgroundColor: AppColors.red,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                     ),

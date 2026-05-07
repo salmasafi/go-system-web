@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:GoSystem/core/constants/app_colors.dart';
 import '../../cubit/attribute_type_cubit/attribute_type_cubit.dart';
 import '../../cubit/attribute_type_cubit/attribute_type_state.dart';
 
@@ -30,7 +31,7 @@ class DeleteAttributeTypeDialog extends StatelessWidget {
           const SizedBox(height: 12),
           const Text(
             'تحذير: سيؤدي هذا أيضاً إلى حذف جميع قيم الخصائص المرتبطة وإزالتها من المنتجات.',
-            style: TextStyle(color: Colors.orange, fontSize: 12),
+            style: TextStyle(color: AppColors.warningOrange, fontSize: 12),
           ),
         ],
       ),
@@ -44,7 +45,7 @@ class DeleteAttributeTypeDialog extends StatelessWidget {
             final isLoading = state is AttributeTypeDeleting;
             return ElevatedButton(
               onPressed: isLoading ? null : onDelete,
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
               child: isLoading
                   ? const SizedBox(
                       width: 20,

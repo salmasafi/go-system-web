@@ -23,15 +23,38 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  // Tabs: 0=Dashboard, 1=OnlineOrders, 2=POS (center), 3=Settings, 4=Logout
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   int currentIndex = 0;
+  late AnimationController _fadeController;
+  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 220),
+      vsync: this,
+      value: 1.0,
+    );
+    _fadeAnimation =
+        CurvedAnimation(parent: _fadeController, curve: Curves.easeIn);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<NotificationsCubit>().getNotifications();
+    });
+  }
+
+  @override
+  void dispose() {
+    _fadeController.dispose();
+    super.dispose();
+  }
+
+  void _switchTab(int index) {
+    if (index == currentIndex) return;
+    _fadeController.forward(from: 0.0);
+    setState(() {
+      currentIndex = index;
     });
   }
 
@@ -65,9 +88,12 @@ class _HomeScreenState extends State<HomeScreen> {
       const SettingsScreen(showBackButton: false),
     ];
 
-    Widget bodyContent = IndexedStack(
-      index: currentIndex,
-      children: screens,
+    Widget bodyContent = FadeTransition(
+      opacity: _fadeAnimation,
+      child: IndexedStack(
+        index: currentIndex,
+        children: screens,
+      ),
     );
 
     // For web: scale down by using smaller MediaQuery
@@ -85,11 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: CustomBottomAppBar(
         key: ValueKey(context.locale.languageCode),
         currentIndex: currentIndex,
-        onTap: (index) {
-          setState(() {
-            currentIndex = index;
-          });
-        },
+        onTap: _switchTab,
       ),
     );
   }

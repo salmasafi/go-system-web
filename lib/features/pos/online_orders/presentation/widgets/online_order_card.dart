@@ -16,7 +16,7 @@ class OnlineOrderCard extends StatelessWidget {
       case 'delivered':
         return AppColors.successGreen;
       case 'pending':
-        return Colors.orange;
+        return AppColors.warningOrange;
       case 'confirmed':
         return AppColors.primaryBlue;
       case 'processing':
@@ -28,7 +28,7 @@ class OnlineOrderCard extends StatelessWidget {
         return AppColors.red;
       case 'returned':
       case 'refund':
-        return Colors.deepOrange;
+        return AppColors.warningOrange;
       case 'scheduled':
         return const Color(0xFF546E7A);
       default:

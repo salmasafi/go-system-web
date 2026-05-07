@@ -54,8 +54,6 @@ class _DuesScreenState extends State<DuesScreen> {
         buildWhen: (prev, curr) =>
             curr is DuesLoading ||
             curr is DuesLoaded ||
-            curr is DuesPayLoading ||
-            curr is DuesPaySuccess ||
             curr is HistoryError,
         builder: (context, state) {
           if (state is DuesLoading) {

@@ -861,7 +861,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             actionIcon: Icons.notifications,
             showActions: true,
             showBackButton: false,
-            showSettingsIcon: true,
             title: LocaleKeys.dashboard.tr(),
             notificationCount: unreadCount,
             onPressed: () {

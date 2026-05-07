@@ -273,57 +273,12 @@ class SaleRepository implements SaleRepositoryInterface {
     try {
       log('SaleRepository: Processing due payment for sale: $saleId, amount: $amount');
 
-      // 1. Get current sale data
-      final sale = await _client
-          .from('sales')
-          .select('paid_amount, remaining_amount, grand_total')
-          .eq('id', saleId)
-          .single();
-
-      final currentPaid = (sale['paid_amount'] as num?)?.toDouble() ?? 0.0;
-      final currentRemaining = (sale['remaining_amount'] as num?)?.toDouble() ?? 0.0;
-
-      if (amount > currentRemaining) {
-        throw Exception('Payment amount exceeds remaining due');
-      }
-
-      final newPaid = currentPaid + amount;
-      final newRemaining = currentRemaining - amount;
-      final isDue = newRemaining > 0;
-
-      // 2. Record the payment in due_payments table
-      await _client.from('due_payments').insert({
-        'sale_id': saleId,
-        'amount': amount,
-        'date': DateTime.now().toIso8601String().substring(0, 10),
-        'financial_account_id': bankAccountId,
+      await _client.rpc('process_sale_payment', params: {
+        'p_sale_id': saleId,
+        'p_customer_id': customerId,
+        'p_amount': amount,
+        'p_financial_account_id': bankAccountId,
       });
-
-      // 3. Update the sale record
-      await _client.from('sales').update({
-        'paid_amount': newPaid,
-        'remaining_amount': newRemaining,
-        'is_due': isDue,
-      }).eq('id', saleId);
-
-      // 4. Update customer due status if fully paid
-      if (!isDue) {
-        // Check if customer has any other dues
-        final otherDues = await _client
-            .from('sales')
-            .select('id')
-            .eq('customer_id', customerId)
-            .gt('remaining_amount', 0)
-            .neq('id', saleId)
-            .limit(1);
-
-        if ((otherDues as List).isEmpty) {
-          await _client.from('customers').update({
-            'is_due': false,
-            'amount_due': 0,
-          }).eq('id', customerId);
-        }
-      }
 
       log('SaleRepository: Due payment processed successfully');
       return true;

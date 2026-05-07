@@ -120,7 +120,7 @@ class _PayDueDialogState extends State<PayDueDialog> {
                           style: TextStyle(
                             fontSize: ResponsiveUI.fontSize(context, 14),
                             fontWeight: FontWeight.w600,
-                            color: Colors.grey[800],
+                            color: AppColors.darkGray,
                           ),
                         ),
                         SizedBox(height: ResponsiveUI.value(context, 8)),
@@ -174,7 +174,7 @@ class _PayDueDialogState extends State<PayDueDialog> {
                           style: TextStyle(
                             fontSize: ResponsiveUI.fontSize(context, 14),
                             fontWeight: FontWeight.w600,
-                            color: Colors.grey[800],
+                            color: AppColors.darkGray,
                           ),
                         ),
                         SizedBox(height: ResponsiveUI.value(context, 8)),

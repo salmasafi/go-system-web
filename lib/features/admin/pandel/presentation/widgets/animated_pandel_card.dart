@@ -261,10 +261,10 @@ class _AnimatedPandelCardState extends State<AnimatedPandelCard> {
                           },
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
-                              color: Colors.grey[100],
+                              color: AppColors.greyLight,
                               child: Icon(
                                 Icons.broken_image,
-                                color: Colors.grey[400],
+                                color: AppColors.greyMedium,
                               ),
                             );
                           },

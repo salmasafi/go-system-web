@@ -289,7 +289,7 @@ class _AddPointsDialogState extends State<AddPointsDialog> {
                 context.read<PointsCubit>().deletePoints(widget.point!.id);
               }
             },
-            child: Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text('Delete', style: TextStyle(color: AppColors.red)),
           ),
         ],
       ),

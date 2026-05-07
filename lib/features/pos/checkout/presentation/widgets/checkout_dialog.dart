@@ -46,7 +46,7 @@ Widget buildDropdownField<T>(
         style: TextStyle(
           fontSize: fontSizeLabel,
           fontWeight: FontWeight.w600,
-          color: Colors.grey[800],
+          color: AppColors.darkGray,
         ),
       ),
       SizedBox(height: spacing8),
@@ -118,7 +118,7 @@ Widget buildDropdownField<T>(
         style: TextStyle(
           fontSize: fontSizeHint,
           fontFamily: 'Rubik',
-          color: Colors.grey[800],
+          color: AppColors.darkGray,
         ),
         dropdownColor: AppColors.white,
         isExpanded: true,
@@ -439,7 +439,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
         _row(
           'Remaining Due',
           _remainingDue,
-          _remainingDue > 0 ? AppColors.red : Colors.green,
+          _remainingDue > 0 ? AppColors.red : AppColors.successGreen,
           bold: true,
         ),
       ],
@@ -507,7 +507,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
             ),
             label: Text('Hold', overflow: TextOverflow.ellipsis),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
+              backgroundColor: AppColors.warningOrange,
               foregroundColor: Colors.white,
               padding: EdgeInsets.symmetric(
                 vertical: ResponsiveUI.padding(context, 14),
@@ -541,12 +541,12 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _remainingDue > 0
-                      ? Colors.redAccent
+                      ? AppColors.red
                       : AppColors.mediumBlue700,
                   foregroundColor: AppColors.white,
                   disabledBackgroundColor:
                       (_remainingDue > 0
-                              ? Colors.redAccent
+                              ? AppColors.red
                               : AppColors.mediumBlue700)
                           .withValues(alpha: 0.6),
                   padding: EdgeInsets.symmetric(

@@ -176,7 +176,7 @@ class _ProductAttributeAssignmentWidgetState extends State<ProductAttributeAssig
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.delete_outline, color: Colors.red),
+              icon: const Icon(Icons.delete_outline, color: AppColors.red),
               onPressed: () => _removeAttribute(attr.id),
             ),
           ],
