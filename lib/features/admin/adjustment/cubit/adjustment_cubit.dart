@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/features/admin/adjustment/model/adjustment_model.dart';
 import 'package:GoSystem/features/admin/reason/model/reason_model.dart';
@@ -60,7 +61,7 @@ class AdjustmentCubit extends Cubit<AdjustmentState> {
     try {
       await _repository.createAdjustment(
         warehouseId: warehouseId,
-        type: 'addition', // Default type or inferred from reason
+        type: 'increase', // Matches DB CHECK constraint: 'increase' or 'decrease'
         reason: reasonId,
         items: [
           {'product_id': productId, 'quantity': int.tryParse(quantity) ?? 0}
@@ -68,7 +69,8 @@ class AdjustmentCubit extends Cubit<AdjustmentState> {
         note: note,
         attachmentFile: image,
       );
-      emit(CreateAdjustmentSuccess('Adjustment is created successfully'));
+      emit(CreateAdjustmentSuccess('adjustment_dialog_add_new'.tr()));
+      await getAdjustments();
     } catch (e) {
       emit(CreateAdjustmentError(e.toString().replaceAll('Exception: ', '')));
     }
@@ -94,7 +96,8 @@ class AdjustmentCubit extends Cubit<AdjustmentState> {
         note: note,
         imageFile: image,
       );
-      emit(UpdateAdjustmentSuccess('Adjustment updated successfully'));
+      emit(UpdateAdjustmentSuccess('update_adjustment'.tr()));
+      await getAdjustments();
     } catch (e) {
       emit(UpdateAdjustmentError(e.toString().replaceAll('Exception: ', '')));
     }
@@ -105,10 +108,10 @@ class AdjustmentCubit extends Cubit<AdjustmentState> {
     try {
       final success = await _repository.reverseAdjustment(adjustmentId);
       if (success) {
-        adjustments.removeWhere((adjustment) => adjustment.id == adjustmentId);
-        emit(DeleteAdjustmentSuccess('Adjustment deleted successfully'));
+        emit(DeleteAdjustmentSuccess('delete_adjustment'.tr()));
+        await getAdjustments();
       } else {
-        emit(DeleteAdjustmentError('Failed to delete adjustment'));
+        emit(DeleteAdjustmentError('delete_adjustment'.tr()));
       }
     } catch (e) {
       emit(DeleteAdjustmentError(e.toString().replaceAll('Exception: ', '')));

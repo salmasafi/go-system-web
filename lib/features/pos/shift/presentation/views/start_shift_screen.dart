@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 // lib/features/pos/shift/ui/start_shift_screen.dart
 
@@ -6,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:GoSystem/features/pos/shift/cubit/pos_shift_cubit.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 
 class StartShiftScreen extends StatelessWidget {
   const StartShiftScreen({super.key});
@@ -30,7 +32,7 @@ class StartShiftScreen extends StatelessWidget {
               ),
               SizedBox(height: ResponsiveUI.value(context, 30)),
               Text(
-                "Welcome, ${cashier?.name ?? 'User'}",
+                LocaleKeys.welcome_cashier.tr(namedArgs: {'name': cashier?.name ?? LocaleKeys.cashier.tr()}),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 24),
                   fontWeight: FontWeight.bold,
@@ -38,7 +40,7 @@ class StartShiftScreen extends StatelessWidget {
               ),
               SizedBox(height: ResponsiveUI.value(context, 10)),
               Text(
-                "You are ready to start your shift.",
+                LocaleKeys.ready_to_start_shift.tr(),
                 style: TextStyle(color: AppColors.shadowGray, fontSize: ResponsiveUI.fontSize(context, 16)),
               ),
               SizedBox(height: ResponsiveUI.value(context, 25)),
@@ -57,7 +59,7 @@ class StartShiftScreen extends StatelessWidget {
                       onPressed: () => cubit.startShift(),
                       icon: Icon(Icons.play_circle_fill),
                       label: Text(
-                        "START SHIFT",
+                        LocaleKeys.start_shift_btn.tr(),
                         style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 18)),
                       ),
                       style: ElevatedButton.styleFrom(
@@ -81,9 +83,9 @@ class StartShiftScreen extends StatelessWidget {
                   cubit.selectedCashier = null;
                   cubit.getCashiers(); // تحديث القائمة
                 },
-                child: const Text(
-                  "Change Cashier",
-                  style: TextStyle(color: AppColors.shadowGray),
+                child: Text(
+                  LocaleKeys.change_cashier.tr(),
+                  style: const TextStyle(color: AppColors.shadowGray),
                 ),
               ),
             ],

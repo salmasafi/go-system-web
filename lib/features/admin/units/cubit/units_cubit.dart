@@ -100,7 +100,8 @@ class UnitsCubit extends Cubit<UnitsState> {
     try {
       await _repository.deleteUnit(unitId);
       allUnits.removeWhere((unit) => unit.id == unitId);
-      emit(DeleteUnitSuccess('Unit deleted successfully'));
+      emit(DeleteUnitSuccess('unit_deleted_successfully'.tr()));
+      emit(GetUnitsSuccess(List.from(allUnits)));
     } catch (e) {
       emit(DeleteUnitError(e.toString().replaceAll('Exception: ', '')));
     }

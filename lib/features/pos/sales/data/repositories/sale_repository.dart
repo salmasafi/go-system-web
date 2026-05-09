@@ -13,7 +13,7 @@ abstract class SaleRepositoryInterface {
   Future<PendingSaleDetailsModel?> getPendingSaleDetails(String id);
   Future<List<DueSaleModel>> getDueSales();
   Future<SaleDetailModel> createSale({
-    required String customerId,
+    String? customerId,
     required String warehouseId,
     String? shiftId,
     String? cashierId,
@@ -167,7 +167,7 @@ class SaleRepository implements SaleRepositoryInterface {
 
   @override
   Future<SaleDetailModel> createSale({
-    required String customerId,
+    String? customerId,
     required String warehouseId,
     String? shiftId,
     String? cashierId,

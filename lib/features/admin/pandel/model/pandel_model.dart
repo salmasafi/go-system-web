@@ -39,6 +39,7 @@ class PandelModel {
   final double price;
   final bool allWarehouses;
   final List<String>? warehouseIds;
+  final String? discountId;
   final DateTime createdAt;
   final DateTime updatedAt;
   final int version;
@@ -54,6 +55,7 @@ class PandelModel {
     required this.price,
     required this.allWarehouses,
     this.warehouseIds,
+    this.discountId,
     required this.createdAt,
     required this.updatedAt,
     required this.version,
@@ -72,9 +74,10 @@ class PandelModel {
       products: rawProducts.map((e) => PandelProduct.fromJson(e)).toList(),
       price: (json['price'] as num).toDouble(),
       allWarehouses: json['all_warehouses'] ?? true,
-      warehouseIds: json['all_warehouses'] == false 
+      warehouseIds: json['all_warehouses'] == false
           ? List<String>.from(json['warehouse_ids'] ?? [])
           : null,
+      discountId: json['discount_id'],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
       version: json['__v'] ?? 0,

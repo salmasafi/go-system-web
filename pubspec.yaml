@@ -65,4 +65,6 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/gosystem_logo.jpeg"
+  image_path: "assets/images/gosystem_logo.png"
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "assets/images/gosystem_logo.png"

@@ -373,13 +373,26 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        LocaleKeys.category_image.tr(),
-                        style: TextStyle(
-                          fontSize: ResponsiveUI.fontSize(context, 14),
-                          color: AppColors.darkGray,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            LocaleKeys.category_image.tr(),
+                            style: TextStyle(
+                              fontSize: ResponsiveUI.fontSize(context, 14),
+                              color: AppColors.darkGray,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          SizedBox(width: ResponsiveUI.spacing(context, 6)),
+                          Text(
+                            '(اختياري)',
+                            style: TextStyle(
+                              fontSize: ResponsiveUI.fontSize(context, 12),
+                              color: AppColors.darkGray.withValues(alpha: 0.5),
+                            ),
+                          ),
+                        ],
                       ),
                       if (_selectedImage != null)
                         TextButton.icon(

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
@@ -24,6 +25,7 @@ import 'package:GoSystem/features/admin/units/model/unit_model.dart';
 import '../../../../../core/utils/image_handler.dart';
 import '../../models/product_model.dart';
 import '../widgets/add_product_custom_widgets.dart';
+import 'barcode_scanner_screen.dart';
 
 class EditProductScreen extends StatefulWidget {
   final Product product;
@@ -96,9 +98,109 @@ class _EditProductScreenState extends State<EditProductScreen> {
     _existingGalleryUrls = List<String>.from(p.galleryProduct);
   }
 
-  Future<void> _pickMainImage() async {
-    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+  Future<void> _scanBarcode() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const BarcodeScannerScreen()),
+    );
+    if (result != null && result != '-1' && mounted) {
+      setState(() => _codeController.text = result);
+    }
+  }
+
+  Future<void> _pickMainImage(ImageSource source) async {
+    final picked = await ImagePicker().pickImage(source: source);
     if (picked != null) setState(() => _mainImage = File(picked.path));
+  }
+
+  void _showImageSourceSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        margin: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(
+            ResponsiveUI.borderRadius(context, 20),
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: ResponsiveUI.padding(context, 8)),
+              Container(
+                width: ResponsiveUI.value(context, 40),
+                height: ResponsiveUI.value(context, 4),
+                decoration: BoxDecoration(
+                  color: AppColors.shadowGray.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              SizedBox(height: ResponsiveUI.padding(context, 16)),
+              ListTile(
+                leading: Container(
+                  padding: EdgeInsets.all(ResponsiveUI.padding(context, 10)),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryBlue.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(
+                      ResponsiveUI.borderRadius(context, 12),
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.camera_alt_rounded,
+                    color: AppColors.primaryBlue,
+                    size: ResponsiveUI.iconSize(context, 24),
+                  ),
+                ),
+                title: Text(
+                  'take_photo'.tr(),
+                  style: TextStyle(
+                    fontSize: ResponsiveUI.fontSize(context, 15),
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.darkGray,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _pickMainImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: Container(
+                  padding: EdgeInsets.all(ResponsiveUI.padding(context, 10)),
+                  decoration: BoxDecoration(
+                    color: AppColors.successGreen.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(
+                      ResponsiveUI.borderRadius(context, 12),
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.photo_library_rounded,
+                    color: AppColors.successGreen,
+                    size: ResponsiveUI.iconSize(context, 24),
+                  ),
+                ),
+                title: Text(
+                  'pick_from_gallery'.tr(),
+                  style: TextStyle(
+                    fontSize: ResponsiveUI.fontSize(context, 15),
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.darkGray,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _pickMainImage(ImageSource.gallery);
+                },
+              ),
+              SizedBox(height: ResponsiveUI.padding(context, 8)),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _pickGalleryImages() async {
@@ -252,6 +354,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
       title: 'معلومات المنتج',
       icon: Icons.inventory_2_outlined,
       children: [
+        buildTextField(
+          context,
+          controller: _codeController,
+          label: 'كود المنتج',
+          icon: Icons.qr_code_rounded,
+          hint: 'أدخل الكود أو امسح الباركود',
+          suffixIcon: Icons.qr_code_scanner,
+          suffixOnPressed: _scanBarcode,
+        ),
+        SizedBox(height: ResponsiveUI.spacing(context, 12)),
         buildTextField(
           context,
           controller: _nameController,
@@ -576,7 +688,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   // ── Section 7: Images ─────────────────────────────────────────────────────
   Widget _buildImagesSection() {
     return ProductSectionCard(
-      title: 'صور المنتج',
+      title: 'product_images'.tr(),
       icon: Icons.photo_library_outlined,
       children: [
         // Main image — supports existing URL + new file pick
@@ -605,7 +717,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   color: AppColors.primaryBlue),
               SizedBox(width: ResponsiveUI.value(context, 8)),
               Text(
-                'الصورة الرئيسية',
+                'main_image'.tr(),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 15),
                   fontWeight: FontWeight.bold,
@@ -622,7 +734,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 icon: Icon(Icons.delete_outline,
                     color: AppColors.red,
                     size: ResponsiveUI.iconSize(context, 18)),
-                label: Text('إزالة',
+                label: Text('remove'.tr(),
                     style: TextStyle(
                         color: AppColors.red,
                         fontSize: ResponsiveUI.fontSize(context, 12))),
@@ -631,7 +743,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
         ),
         SizedBox(height: ResponsiveUI.value(context, 12)),
         GestureDetector(
-          onTap: _pickMainImage,
+          onTap: _showImageSourceSheet,
           child: Container(
             width: double.infinity,
             height: ResponsiveUI.value(context, 220),
@@ -705,7 +817,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
               color: AppColors.primaryBlue),
         ),
         SizedBox(height: ResponsiveUI.value(context, 10)),
-        Text('اضغط لتغيير الصورة',
+        Text('pick_from_gallery'.tr(),
             style: TextStyle(
                 color: AppColors.shadowGray,
                 fontSize: ResponsiveUI.fontSize(context, 13))),

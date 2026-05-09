@@ -137,7 +137,7 @@ class _AddProductToWarehouseScreenState extends State<AddProductToWarehouseScree
     // Scale down for web
     Widget screenContent = Scaffold(
       backgroundColor: AppColors.lightBlueBackground,
-      appBar: appBarWithActions(context, title: "إضافة منتج للمستودع"),
+      appBar: appBarWithActions(context, title: "إضافة منتج للمخزن"),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),

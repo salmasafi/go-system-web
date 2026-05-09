@@ -54,6 +54,8 @@ class User {
     this.roles,
     this.actions,
     this.hasOpenShift = false,
+    this.warehouseId,
+    this.warehouseName,
   });
 
   User.fromJson(dynamic json) {
@@ -63,12 +65,11 @@ class User {
     position = json['position'];
     status = json['status'];
     role = json['role'];
-    // Fix: Convert dynamic lists to List<dynamic>
     roles = json['roles'] != null ? List<dynamic>.from(json['roles']) : null;
-    actions = json['actions'] != null
-        ? List<dynamic>.from(json['actions'])
-        : null;
+    actions = json['actions'] != null ? List<dynamic>.from(json['actions']) : null;
     hasOpenShift = json['hasOpenShift'] ?? false;
+    warehouseId = json['warehouse_id'] ?? json['warehouseId'];
+    warehouseName = json['warehouse_name'] ?? json['warehouseName'];
   }
 
   String? id;
@@ -80,6 +81,18 @@ class User {
   List<dynamic>? roles;
   List<dynamic>? actions;
   bool? hasOpenShift;
+  /// UUID of the warehouse this user is assigned to (non-null → cashier/branch user)
+  String? warehouseId;
+  String? warehouseName;
+
+  /// True when this user is a cashier (has a warehouse assignment)
+  bool get isCashier =>
+      warehouseId != null && warehouseId!.isNotEmpty && role == 'cashier';
+
+  /// True when this user is admin/owner (can see all branches)
+  bool get isAdmin =>
+      role == 'admin' || role == 'owner' || role == 'super_admin' ||
+      (warehouseId == null || warehouseId!.isEmpty);
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -92,6 +105,8 @@ class User {
     map['roles'] = roles;
     map['actions'] = actions;
     map['hasOpenShift'] = hasOpenShift;
+    map['warehouse_id'] = warehouseId;
+    map['warehouse_name'] = warehouseName;
     return map;
   }
 }

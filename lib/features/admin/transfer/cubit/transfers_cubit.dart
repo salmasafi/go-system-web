@@ -74,7 +74,7 @@ class TransfersCubit extends Cubit<TransfersState> {
       final success = await _repository.approveTransfer(transferId);
       if (success) {
         emit(UpdateTransferStatusSuccess(LocaleKeys.transfer_received_success.tr()));
-        getAllTransfers();
+        await getAllTransfers();
       } else {
         emit(UpdateTransferStatusError('Failed to approve transfer'));
       }

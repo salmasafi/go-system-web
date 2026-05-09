@@ -87,7 +87,7 @@ class _InventoryReportScreenState extends State<InventoryReportScreen> {
             child: Row(
               children: [
                 _buildTabButton(0, 'الحركات'.tr()),
-                _buildTabButton(1, 'المستودعات'.tr()),
+                _buildTabButton(1, 'المخازن'.tr()),
               ],
             ),
           ),
@@ -162,16 +162,28 @@ class _InventoryReportScreenState extends State<InventoryReportScreen> {
           color: AppColors.successGreen,
         ),
         ReportSummaryCard(
+          title: 'المشتريات'.tr(),
+          value: summary.totalPurchases.toString(),
+          icon: Icons.shopping_bag,
+          color: AppColors.primaryBlue,
+        ),
+        ReportSummaryCard(
+          title: 'المرتجعات'.tr(),
+          value: summary.totalReturns.toString(),
+          icon: Icons.keyboard_return,
+          color: AppColors.warningOrange,
+        ),
+        ReportSummaryCard(
           title: 'الوارد'.tr(),
           value: summary.stockIn.toString(),
           icon: Icons.arrow_downward,
-          color: AppColors.primaryBlue,
+          color: AppColors.successGreen,
         ),
         ReportSummaryCard(
           title: 'الصادر'.tr(),
           value: summary.stockOut.toString(),
           icon: Icons.arrow_upward,
-          color: AppColors.warningOrange,
+          color: AppColors.red,
         ),
       ],
     );
@@ -186,7 +198,7 @@ class _InventoryReportScreenState extends State<InventoryReportScreen> {
         DataColumn(label: Text('النوع'.tr())),
         DataColumn(label: Text('المنتج'.tr())),
         DataColumn(label: Text('الكمية'.tr()), numeric: true),
-        DataColumn(label: Text('المستودع'.tr())),
+        DataColumn(label: Text('المخزن'.tr())),
       ],
       rows: state.movements.map((movement) {
         return DataRow(
@@ -212,7 +224,7 @@ class _InventoryReportScreenState extends State<InventoryReportScreen> {
       return CustomEmptyState(
         icon: Icons.warehouse_outlined,
         title: 'لا توجد بيانات'.tr(),
-        message: 'لا توجد مستودعات لعرضها'.tr(),
+        message: 'لا توجد مخازن لعرضها'.tr(),
       );
     }
 
@@ -306,11 +318,11 @@ class _InventoryReportScreenState extends State<InventoryReportScreen> {
     String label;
 
     switch (type.toLowerCase()) {
-      case 'addition':
+      case 'increase':
         color = AppColors.successGreen;
         label = 'إضافة';
         break;
-      case 'subtraction':
+      case 'decrease':
         color = AppColors.red;
         label = 'خصم';
         break;

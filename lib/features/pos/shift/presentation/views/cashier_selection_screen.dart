@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 // lib/features/pos/shift/ui/cashier_selection_screen.dart
 
@@ -6,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:GoSystem/features/pos/shift/cubit/pos_shift_cubit.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 
 class CashierSelectionScreen extends StatefulWidget {
   const CashierSelectionScreen({super.key});
@@ -27,7 +29,7 @@ class _CashierSelectionScreenState extends State<CashierSelectionScreen> {
     return Scaffold(
       backgroundColor: AppColors.lightBlueBackground,
       appBar: AppBar(
-        title: const Text("Select Cashier Counter"),
+        title: Text(LocaleKeys.select_cashier_counter.tr()),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -56,7 +58,7 @@ class _CashierSelectionScreenState extends State<CashierSelectionScreen> {
                   Text(state.message),
                   TextButton(
                     onPressed: () => cubit.getCashiers(),
-                    child: const Text("Retry"),
+                    child: Text(LocaleKeys.retry.tr()),
                   )
                 ],
               ),
@@ -64,7 +66,7 @@ class _CashierSelectionScreenState extends State<CashierSelectionScreen> {
           }
 
           if (cubit.cashiersList.isEmpty) {
-            return Center(child: Text("No Cashiers Found"));
+            return Center(child: Text(LocaleKeys.no_cashiers_found.tr()));
           }
 
           return ListView.builder(
@@ -98,7 +100,7 @@ class _CashierSelectionScreenState extends State<CashierSelectionScreen> {
                     ),
                   ),
                   subtitle: isBusy
-                      ? const Text("Occupied", style: TextStyle(color: AppColors.red))
+                      ? Text(LocaleKeys.occupied.tr(), style: const TextStyle(color: AppColors.red))
                       : Text(cashier.name),
                   trailing: isBusy
                       ? Icon(Icons.block, color: AppColors.red)

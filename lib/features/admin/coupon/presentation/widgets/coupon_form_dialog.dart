@@ -140,7 +140,9 @@ class _CouponFormDialogState extends State<CouponFormDialog>
                                   label: LocaleKeys.coupon_type.tr(),
                                   icon: Icons.price_change_rounded,
                                   hint: LocaleKeys.select_coupon_type.tr(),
-                                  itemLabel: (item) => item,
+                                  itemLabel: (item) => item == "Flat"
+                                      ? LocaleKeys.coupon_type_flat.tr()
+                                      : LocaleKeys.coupon_type_percentage.tr(),
                                   onChanged: (val) {
                                     setState(() => selectedType = val);
                                   },

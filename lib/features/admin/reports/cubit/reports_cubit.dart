@@ -168,6 +168,54 @@ class ReportsCubit extends Cubit<ReportsState> {
     }
   }
 
+  // ==================== CASHIER DAILY REVENUE ====================
+
+  /// Load cashier daily revenue breakdown by payment method
+  Future<void> loadCashierDailyRevenue({DateTime? date}) async {
+    emit(ReportsLoading());
+    final targetDate = date ?? DateTime.now();
+    try {
+      log('ReportsCubit: Loading cashier daily revenue for $targetDate');
+      final client = _repository.client;
+
+      // Breakdown by payment method
+      final rawEntries = await client.rpc(
+        'get_cashier_daily_revenue',
+        params: {'p_date': targetDate.toIso8601String().split('T')[0]},
+      );
+
+      final entries = (rawEntries as List).map((r) => CashierRevenueEntry(
+            cashierId: r['cashier_id'].toString(),
+            cashierName: r['cashier_name'].toString(),
+            paymentType: r['payment_type'].toString(),
+            totalAmount: (r['total_amount'] as num?)?.toDouble() ?? 0.0,
+          )).toList();
+
+      // Grand totals per cashier
+      final rawTotals = await client.rpc(
+        'get_cashier_daily_total',
+        params: {'p_date': targetDate.toIso8601String().split('T')[0]},
+      );
+
+      final totals = (rawTotals as List).map((r) => CashierDailyTotal(
+            cashierId: r['cashier_id'].toString(),
+            cashierName: r['cashier_name'].toString(),
+            totalAmount: (r['total_amount'] as num?)?.toDouble() ?? 0.0,
+            saleCount: (r['sale_count'] as num?)?.toInt() ?? 0,
+          )).toList();
+
+      emit(CashierDailyRevenueLoaded(
+        date: targetDate,
+        entries: entries,
+        totals: totals,
+      ));
+      log('ReportsCubit: Cashier revenue loaded - ${totals.length} cashiers');
+    } catch (e) {
+      log('ReportsCubit: Error loading cashier revenue - $e');
+      emit(ReportsError(e.toString()));
+    }
+  }
+
   /// Refresh current report based on state
   Future<void> refresh() async {
     final currentState = state;

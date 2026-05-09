@@ -80,34 +80,34 @@ class CouponModel {
   factory CouponModel.fromJson(Map<String, dynamic> json) {
     return CouponModel(
       id: (json['id'] ?? json['_id'])?.toString() ?? '',
-      couponCode: json['coupon_code']?.toString() ?? '',
-      type: json['type']?.toString() ?? '',
-      amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
-      minimumAmount: (json['minimum_amount'] as num?)?.toDouble() ?? 0.0,
-      quantity: json['quantity'] as int? ?? 0,
-      available: json['available'] as int? ?? 0,
-      expiredDate: json['expired_date']?.toString() ?? '',
-      status: json['status'] as bool? ?? true,
-      createdAt: json['createdAt']?.toString() ?? '',
-      updatedAt: json['updatedAt']?.toString() ?? '',
-      version: json['__v'] as int? ?? 0,
+      couponCode: (json['code'] ?? json['coupon_code'] ?? '').toString(),
+      type: (json['discount_type'] ?? json['type'] ?? '').toString(),
+      amount: ((json['discount_value'] ?? json['amount']) as num?)?.toDouble() ?? 0.0,
+      minimumAmount: ((json['min_purchase'] ?? json['minimum_amount']) as num?)?.toDouble() ?? 0.0,
+      quantity: (json['usage_limit'] ?? json['quantity']) as int? ?? 0,
+      available: (json['available'] ?? ((json['usage_limit'] ?? json['quantity'] ?? 0) as int) - ((json['usage_count'] ?? 0) as int)) as int? ?? 0,
+      expiredDate: (json['end_date'] ?? json['expired_date'] ?? '').toString(),
+      status: json['status'] as bool? ?? json['is_active'] as bool? ?? true,
+      createdAt: (json['created_at'] ?? json['createdAt'] ?? '').toString(),
+      updatedAt: (json['updated_at'] ?? json['updatedAt'] ?? '').toString(),
+      version: (json['__v'] ?? json['version']) as int? ?? 0,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      '_id': id,
-      'coupon_code': couponCode,
-      'type': type,
-      'amount': amount,
-      'minimum_amount': minimumAmount,
-      'quantity': quantity,
+      'id': id,
+      'code': couponCode,
+      'discount_type': type,
+      'discount_value': amount,
+      'min_purchase': minimumAmount,
+      'usage_limit': quantity,
       'available': available,
-      'expired_date': expiredDate,
+      'end_date': expiredDate,
       'status': status,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
-      '__v': version,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+      'version': version,
     };
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/core/widgets/custom_textfield/build_text_field.dart';
@@ -7,10 +8,12 @@ import 'package:GoSystem/features/pos/checkout/model/reciept_data.dart';
 import 'package:GoSystem/features/pos/home/cubit/pos_home_cubit.dart';
 import 'package:GoSystem/features/pos/home/model/pos_models.dart';
 import 'package:GoSystem/features/admin/discount/model/discount_model.dart';
+import 'package:GoSystem/features/admin/coupon/model/coupon_model.dart';
 import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:GoSystem/features/pos/checkout/cubit/checkout_cubit/checkout_cubit.dart';
 import 'package:GoSystem/features/pos/checkout/model/checkout_models.dart';
 import 'package:GoSystem/features/pos/shift/cubit/pos_shift_cubit.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import 'receipt_dialog.dart';
 
 // --------------------------------------------------------------
@@ -135,14 +138,14 @@ class POSCheckoutDialog extends StatefulWidget {
   final double totalAmount; // This is the Subtotal
   final List<CartItem> cartItems;
   final PaymentMethod? selectedPaymentMethod;
-  final String customerId;
+  final String? customerId;
 
   const POSCheckoutDialog({
     super.key,
     required this.totalAmount,
     required this.cartItems,
     this.selectedPaymentMethod,
-    required this.customerId,
+    this.customerId,
   });
 
   @override
@@ -151,6 +154,7 @@ class POSCheckoutDialog extends StatefulWidget {
 
 class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   final _formKey = GlobalKey<FormState>();
+  String? _checkoutError;
 
   // ---------- Controllers ----------
   final _totalPayingCtrl = TextEditingController();
@@ -175,6 +179,9 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   List<DiscountModel> _discounts = [];
   late DiscountModel? _selectedDiscount;
 
+  List<CouponModel> _coupons = [];
+  CouponModel? _selectedCoupon;
+
   List<BankAccount> _accounts = [];
   BankAccount? _selectedAccount;
 
@@ -183,6 +190,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
 
   double currentTaxAmount = 0;
   double currentDiscountAmount = 0;
+  double currentCouponAmount = 0;
   late PosCubit posCubit;
   bool _autoSyncAmountField = true;
   bool _isProgrammaticAmountUpdate = false;
@@ -208,6 +216,8 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     _selectedDiscount =
         posCubit.selectedDiscount ??
         (_discounts.isNotEmpty ? _discounts.first : null);
+    _coupons = posCubit.coupons;
+    _selectedCoupon = posCubit.selectedCoupon ?? (_coupons.isNotEmpty ? _coupons.first : null);
     _selectedAccount =
         posCubit.selectedAccount ??
         (_accounts.isNotEmpty ? _accounts.first : null);
@@ -241,8 +251,19 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
       }
       currentDiscountAmount = discountVal;
 
+      // 1b. Coupon
+      double couponVal = 0.0;
+      if (_selectedCoupon != null && _selectedCoupon!.id != 'null') {
+        if (_selectedCoupon!.type == 'percentage') {
+          couponVal = _subTotal * _selectedCoupon!.amount;
+        } else {
+          couponVal = _selectedCoupon!.amount;
+        }
+      }
+      currentCouponAmount = couponVal;
+
       // 2. Tax Base
-      double taxableAmount = _subTotal - currentDiscountAmount;
+      double taxableAmount = _subTotal - currentDiscountAmount - currentCouponAmount;
       if (taxableAmount < 0) taxableAmount = 0;
 
       // 3. Tax
@@ -311,6 +332,8 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   // --------------------------------------------------------------
   //  UI BUILD
   // --------------------------------------------------------------
+  bool get _isWideScreen => MediaQuery.of(context).size.width > 600;
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -319,46 +342,153 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
         horizontal: ResponsiveUI.padding(context, 16),
         vertical: ResponsiveUI.padding(context, 24),
       ),
-      child: Container(
-        constraints: BoxConstraints(
-          maxHeight: ResponsiveUI.screenHeight(context) * 0.9,
-        ),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(
-            ResponsiveUI.borderRadius(context, 20),
+      child: BlocListener<CheckoutCubit, CheckoutState>(
+        listener: (context, state) {
+          if (state is CheckoutError) {
+            setState(() => _checkoutError = state.message);
+          }
+        },
+        child: Container(
+          constraints: BoxConstraints(
+            maxHeight: ResponsiveUI.screenHeight(context) * 0.9,
           ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _header(),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(
+              ResponsiveUI.borderRadius(context, 20),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _header(),
+              if (_checkoutError != null)
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: ResponsiveUI.padding(context, 16),
+                    vertical: ResponsiveUI.padding(context, 10),
+                  ),
+                  color: Colors.red.shade50,
+                  child: Row(
                     children: [
-                      _paymentMethodDropdown(),
-                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                      _dynamicFields(),
-                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                      _taxDropdown(),
-                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                      _discountDropdown(),
-                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                      _accountDropdown(),
-                      SizedBox(height: ResponsiveUI.spacing(context, 16)),
-                      _notesSection(),
+                      Icon(Icons.error_outline, color: Colors.red.shade700, size: 20),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _checkoutError!,
+                          style: TextStyle(
+                            color: Colors.red.shade700,
+                            fontSize: ResponsiveUI.fontSize(context, 13),
+                            fontFamily: 'Rubik',
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => setState(() => _checkoutError = null),
+                        child: Icon(Icons.close, color: Colors.red.shade700, size: 18),
+                      ),
                     ],
                   ),
                 ),
+              Expanded(
+                child: _isWideScreen ? _wideLayout() : _narrowLayout(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Wide screen: two-column layout (form left, summary right)
+  Widget _wideLayout() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Left column: form fields
+        Expanded(
+          flex: 3,
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _paymentMethodDropdown(),
+                  SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                  _dynamicFields(),
+                  SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                  Row(
+                    children: [
+                      Expanded(child: _taxDropdown()),
+                      SizedBox(width: ResponsiveUI.spacing(context, 12)),
+                      Expanded(child: _discountDropdown()),
+                    ],
+                  ),
+                  SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                  Row(
+                    children: [
+                      Expanded(child: _couponDropdown()),
+                      SizedBox(width: ResponsiveUI.spacing(context, 12)),
+                      Expanded(child: _notesSection()),
+                    ],
+                  ),
+                  SizedBox(height: ResponsiveUI.spacing(context, 12)),
+                  _accountDropdown(),
+                ],
               ),
             ),
+          ),
+        ),
+        // Vertical divider
+        Container(width: 1, color: AppColors.shadowGray[200]),
+        // Right column: summary + footer
+        Expanded(
+          flex: 2,
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+                  child: _summaryPanel(),
+                ),
+              ),
+              _footer(),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Narrow/tall screen: original single-column layout
+  Widget _narrowLayout() {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _paymentMethodDropdown(),
+            SizedBox(height: ResponsiveUI.spacing(context, 10)),
+            _dynamicFields(),
+            SizedBox(height: ResponsiveUI.spacing(context, 10)),
+            _taxDropdown(),
+            SizedBox(height: ResponsiveUI.spacing(context, 10)),
+            _discountDropdown(),
+            SizedBox(height: ResponsiveUI.spacing(context, 10)),
+            _couponDropdown(),
+            SizedBox(height: ResponsiveUI.spacing(context, 10)),
+            _accountDropdown(),
+            SizedBox(height: ResponsiveUI.spacing(context, 10)),
+            _notesSection(),
+            SizedBox(height: ResponsiveUI.spacing(context, 10)),
             _summaryPanel(),
-            _footer(), // الأزرار هنا (Hold, Complete, Cancel)
+            SizedBox(height: ResponsiveUI.spacing(context, 8)),
+            _footer(),
           ],
         ),
       ),
@@ -385,7 +515,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
         SizedBox(width: ResponsiveUI.value(context, 15)),
         Expanded(
           child: Text(
-            'Complete payment',
+            LocaleKeys.complete_payment.tr(),
             style: TextStyle(
               color: AppColors.white,
               fontSize: ResponsiveUI.fontSize(context, 20),
@@ -404,8 +534,8 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     context,
     value: _selectedPaymentMethod,
     items: _paymentMethods,
-    label: 'Payment Method',
-    hint: 'Select Method',
+    label: LocaleKeys.payment_method.tr(),
+    hint: LocaleKeys.select_method.tr(),
     icon: Icons.payment,
     onChanged: (v) {
       if (v != null) setState(() => _selectedPaymentMethod = v);
@@ -414,30 +544,33 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   );
 
   Widget _summaryPanel() => Container(
-    margin: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 20)),
-    padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+    padding: EdgeInsets.all(ResponsiveUI.padding(context, 12)),
     decoration: BoxDecoration(
       color: AppColors.shadowGray[50],
       borderRadius: BorderRadius.circular(
-        ResponsiveUI.borderRadius(context, 16),
+        ResponsiveUI.borderRadius(context, 12),
       ),
       border: Border.all(color: AppColors.primaryBlue.withValues(alpha: 0.3)),
     ),
     child: Column(
       children: [
-        _row('Grand Total', _grandTotal, AppColors.darkGray, bold: true),
-        Divider(),
-        _row('Subtotal', _subTotal, AppColors.categoryPurple),
-        SizedBox(height: ResponsiveUI.value(context, 5)),
-        _row('Tax (+)', currentTaxAmount, AppColors.warningOrange),
-        SizedBox(height: ResponsiveUI.value(context, 5)),
-        _row('Discount (-)', currentDiscountAmount, AppColors.successGreen),
-        Divider(),
-        _row('Paid Amount', _totalPaying, Colors.black),
-        _row('Change', _change, AppColors.clearPink),
-        SizedBox(height: ResponsiveUI.value(context, 5)),
+        _row(LocaleKeys.grand_total.tr(), _grandTotal, AppColors.darkGray, bold: true),
+        Divider(height: ResponsiveUI.value(context, 8)),
+        _row(LocaleKeys.subtotal.tr(), _subTotal, AppColors.categoryPurple),
+        SizedBox(height: ResponsiveUI.value(context, 2)),
+        _row('(+) ${LocaleKeys.tax.tr()}', currentTaxAmount, AppColors.warningOrange),
+        SizedBox(height: ResponsiveUI.value(context, 2)),
+        _row('(-) ${LocaleKeys.discount.tr()}', currentDiscountAmount, AppColors.successGreen),
+        if (currentCouponAmount > 0) ...[
+          SizedBox(height: ResponsiveUI.value(context, 2)),
+          _row(LocaleKeys.coupon_minus.tr(), currentCouponAmount, AppColors.successGreen),
+        ],
+        Divider(height: ResponsiveUI.value(context, 8)),
+        _row(LocaleKeys.paid_amount.tr(), _totalPaying, Colors.black),
+        _row(LocaleKeys.change_label.tr(), _change, AppColors.clearPink),
+        SizedBox(height: ResponsiveUI.value(context, 2)),
         _row(
-          'Remaining Due',
+          LocaleKeys.remaining_due.tr(),
           _remainingDue,
           _remainingDue > 0 ? AppColors.red : AppColors.successGreen,
           bold: true,
@@ -449,25 +582,31 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   Widget _row(String label, double amount, Color color, {bool bold = false}) =>
       Padding(
         padding: EdgeInsets.symmetric(
-          vertical: ResponsiveUI.padding(context, 2),
+          vertical: ResponsiveUI.padding(context, 1),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: bold ? 16 : 14,
-                fontWeight: bold ? FontWeight.bold : FontWeight.w600,
-                color: AppColors.darkGray,
+            Flexible(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: ResponsiveUI.fontSize(context, bold ? 14 : 12),
+                  fontWeight: bold ? FontWeight.bold : FontWeight.w600,
+                  color: AppColors.darkGray,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-            Text(
-              '\$${amount.toStringAsFixed(2)}',
-              style: TextStyle(
-                fontSize: bold ? 18 : 16,
-                fontWeight: FontWeight.bold,
-                color: color,
+            Flexible(
+              child: Text(
+                '\$${amount.toStringAsFixed(2)}',
+                style: TextStyle(
+                  fontSize: ResponsiveUI.fontSize(context, bold ? 15 : 13),
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -478,7 +617,10 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   //  FOOTER with HOLD & COMPLETE
   // --------------------------------------------------------------
   Widget _footer() => Container(
-    padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
+    padding: EdgeInsets.symmetric(
+      horizontal: ResponsiveUI.padding(context, 16),
+      vertical: ResponsiveUI.padding(context, 12),
+    ),
     child: Row(
       children: [
         // زر الإلغاء (صغير)
@@ -488,13 +630,13 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
             onPressed: () => Navigator.pop(context),
             style: OutlinedButton.styleFrom(
               padding: EdgeInsets.symmetric(
-                vertical: ResponsiveUI.padding(context, 14),
+                vertical: ResponsiveUI.padding(context, 10),
               ),
             ),
-            child: Text('Cancel', style: TextStyle(color: AppColors.darkGray)),
+            child: Text(LocaleKeys.cancel.tr(), style: TextStyle(color: AppColors.darkGray)),
           ),
         ),
-        SizedBox(width: ResponsiveUI.value(context, 8)),
+        SizedBox(width: ResponsiveUI.value(context, 6)),
 
         // زر الإيقاف المؤقت (Hold)
         Expanded(
@@ -503,19 +645,19 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
             onPressed: _hold, // استدعاء دالة الإيقاف
             icon: Icon(
               Icons.pause_circle_outline,
-              size: ResponsiveUI.iconSize(context, 20),
+              size: ResponsiveUI.iconSize(context, 18),
             ),
-            label: Text('Hold', overflow: TextOverflow.ellipsis),
+            label: Text(LocaleKeys.hold.tr(), overflow: TextOverflow.ellipsis),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.warningOrange,
               foregroundColor: Colors.white,
               padding: EdgeInsets.symmetric(
-                vertical: ResponsiveUI.padding(context, 14),
+                vertical: ResponsiveUI.padding(context, 10),
               ),
             ),
           ),
         ),
-        SizedBox(width: ResponsiveUI.value(context, 8)),
+        SizedBox(width: ResponsiveUI.value(context, 6)),
 
         // زر إتمام البيع (Complete / Due)
         Expanded(
@@ -527,16 +669,16 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
                 onPressed: isLoading ? null : _submit,
                 icon: isLoading
                     ? SizedBox(
-                        width: ResponsiveUI.iconSize(context, 18),
-                        height: ResponsiveUI.iconSize(context, 18),
+                        width: ResponsiveUI.iconSize(context, 16),
+                        height: ResponsiveUI.iconSize(context, 16),
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
                           color: AppColors.white,
                         ),
                       )
-                    : Icon(Icons.check_circle_outline),
+                    : Icon(Icons.check_circle_outline, size: ResponsiveUI.iconSize(context, 18)),
                 label: Text(
-                  _remainingDue > 0 ? 'Pay & Due' : 'Complete',
+                  _remainingDue > 0 ? LocaleKeys.pay_and_due.tr() : LocaleKeys.complete.tr(),
                   overflow: TextOverflow.ellipsis,
                 ),
                 style: ElevatedButton.styleFrom(
@@ -550,7 +692,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
                               : AppColors.mediumBlue700)
                           .withValues(alpha: 0.6),
                   padding: EdgeInsets.symmetric(
-                    vertical: ResponsiveUI.padding(context, 14),
+                    vertical: ResponsiveUI.padding(context, 10),
                   ),
                 ),
               );
@@ -564,9 +706,9 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   Widget _notesSection() => buildTextField(
     context,
     controller: _saleNoteCtrl,
-    label: 'Sale Note',
+    label: LocaleKeys.sale_note.tr(),
     icon: Icons.note_alt_outlined,
-    hint: 'Type a sale note',
+    hint: LocaleKeys.type_a_sale_note.tr(),
     keyboardType: TextInputType.numberWithOptions(decimal: true),
   );
 
@@ -579,10 +721,10 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
           buildTextField(
             context,
             controller: _cardNumberCtrl,
-            label: 'Card Number',
+            label: LocaleKeys.card_number.tr(),
             icon: Icons.credit_card,
             keyboardType: TextInputType.number,
-            hint: 'Enter Card Number',
+            hint: LocaleKeys.enter_card_number.tr(),
           ),
           SizedBox(height: ResponsiveUI.value(context, 12)),
           _cardTypeDropdown(),
@@ -592,7 +734,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     return buildTextField(
       context,
       controller: _totalPayingCtrl,
-      label: 'Amount Received',
+      label: LocaleKeys.amount_received.tr(),
       icon: Icons.attach_money,
       hint: _grandTotal.toStringAsFixed(2),
       keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -603,8 +745,8 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     context,
     value: _selectedCardType,
     items: _cardTypes,
-    label: 'Card Type',
-    hint: 'Select Type',
+    label: LocaleKeys.card_type.tr(),
+    hint: LocaleKeys.select_card_type.tr(),
     icon: Icons.credit_card_outlined,
     onChanged: (v) {
       if (v != null) setState(() => _selectedCardType = v);
@@ -616,8 +758,8 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     context,
     value: _selectedTax,
     items: _taxes,
-    label: 'Tax',
-    hint: 'Select Tax',
+    label: LocaleKeys.tax.tr(),
+    hint: LocaleKeys.select_tax.tr(),
     icon: Icons.percent,
     onChanged: (v) {
       if (v != null) {
@@ -634,8 +776,8 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     context,
     value: _selectedDiscount,
     items: _discounts,
-    label: 'Discount',
-    hint: 'Select Discount',
+    label: LocaleKeys.discount.tr(),
+    hint: LocaleKeys.select_discount.tr(),
     icon: Icons.discount_outlined,
     onChanged: (v) {
       if (v != null) {
@@ -648,12 +790,31 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
         '${d.name} (${d.type == 'fixed' ? d.amount : '${d.amount * 100}%'})',
   );
 
+  Widget _couponDropdown() => buildDropdownField<CouponModel>(
+    context,
+    value: _selectedCoupon,
+    items: _coupons,
+    label: LocaleKeys.coupon_code.tr(),
+    hint: LocaleKeys.select_coupon.tr(),
+    icon: Icons.confirmation_number_outlined,
+    onChanged: (v) {
+      if (v != null) {
+        _selectedCoupon = v;
+        _autoSyncAmountField = true;
+        _calculateValues();
+      }
+    },
+    itemLabel: (c) => c.id == 'null'
+        ? 'No Coupon (0.0)'
+        : '${c.couponCode} (${c.type == 'fixed' ? c.amount : '${c.amount * 100}%'})',
+  );
+
   Widget _accountDropdown() => buildDropdownField<BankAccount>(
     context,
     value: _selectedAccount,
     items: _accounts,
-    label: 'Payment Account',
-    hint: 'Select Account',
+    label: LocaleKeys.payment_account.tr(),
+    hint: LocaleKeys.select_account.tr(),
     icon: Icons.account_balance_outlined,
     onChanged: (v) => setState(() => _selectedAccount = v),
     itemLabel: (a) => a.name,
@@ -667,15 +828,10 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     final checkOutCubit = context.read<CheckoutCubit>();
     final shiftCubit = context.read<PosShiftCubit>();
 
-    if (widget.customerId.isEmpty) {
-      CustomSnackbar.showError(context, "Please select a customer first");
-      return;
-    }
-
     final success = await checkOutCubit.createSale(
       totalAmount: _grandTotal,
       paidAmount: 0,
-      note: _saleNoteCtrl.text.isEmpty ? "Sale on Hold" : _saleNoteCtrl.text,
+      note: _saleNoteCtrl.text.isEmpty ? LocaleKeys.hold.tr() : _saleNoteCtrl.text,
       isPending: true,
       customerId: widget.customerId,
       warehouseId: posCubit.selectedWarhouse?.id,
@@ -683,14 +839,17 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
       shiftId: shiftCubit.currentShift?.id,
       cashierId: shiftCubit.selectedCashier?.id,
       taxAmount: currentTaxAmount,
-      discountAmount: currentDiscountAmount,
+      discountAmount: currentDiscountAmount + currentCouponAmount,
       taxId: _normalizeSelectionId(_selectedTax?.id),
       discountId: _normalizeSelectionId(_selectedDiscount?.id),
+      couponCode: (_selectedCoupon != null && _selectedCoupon!.id != 'null')
+          ? _selectedCoupon!.couponCode
+          : null,
     );
 
     if (success && mounted) {
       Navigator.pop(context);
-      CustomSnackbar.showSuccess(context, "Sale put on hold successfully");
+      CustomSnackbar.showSuccess(context, LocaleKeys.sale_put_on_hold.tr());
     }
   }
 
@@ -718,9 +877,12 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
       shiftId: shiftCubit.currentShift?.id,
       cashierId: shiftCubit.selectedCashier?.id,
       taxAmount: currentTaxAmount,
-      discountAmount: currentDiscountAmount,
+      discountAmount: currentDiscountAmount + currentCouponAmount,
       taxId: _normalizeSelectionId(_selectedTax?.id),
       discountId: _normalizeSelectionId(_selectedDiscount?.id),
+      couponCode: (_selectedCoupon != null && _selectedCoupon!.id != 'null')
+          ? _selectedCoupon!.couponCode
+          : null,
     );
 
     if (success && mounted) {

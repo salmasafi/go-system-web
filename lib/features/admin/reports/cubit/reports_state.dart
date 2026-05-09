@@ -82,6 +82,55 @@ class FinancialReportLoaded extends ReportsState {
   });
 }
 
+// ==================== CASHIER DAILY REVENUE STATES ====================
+
+class CashierRevenueEntry {
+  final String cashierId;
+  final String cashierName;
+  final String paymentType;
+  final double totalAmount;
+  CashierRevenueEntry({
+    required this.cashierId,
+    required this.cashierName,
+    required this.paymentType,
+    required this.totalAmount,
+  });
+}
+
+class CashierDailyTotal {
+  final String cashierId;
+  final String cashierName;
+  final double totalAmount;
+  final int saleCount;
+  CashierDailyTotal({
+    required this.cashierId,
+    required this.cashierName,
+    required this.totalAmount,
+    required this.saleCount,
+  });
+}
+
+class CashierDailyRevenueLoaded extends ReportsState {
+  final DateTime date;
+  final List<CashierRevenueEntry> entries;
+  final List<CashierDailyTotal> totals;
+
+  CashierDailyRevenueLoaded({
+    required this.date,
+    required this.entries,
+    required this.totals,
+  });
+
+  /// Groups entries by cashier for easy display
+  Map<String, List<CashierRevenueEntry>> get byCashier {
+    final map = <String, List<CashierRevenueEntry>>{};
+    for (final e in entries) {
+      map.putIfAbsent(e.cashierId, () => []).add(e);
+    }
+    return map;
+  }
+}
+
 // ==================== SHIFT REPORT STATES ====================
 
 /// Shift report loaded state

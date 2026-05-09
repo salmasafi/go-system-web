@@ -357,7 +357,6 @@ CREATE TABLE public.expenses (
   amount numeric NOT NULL,
   category_id uuid,
   bank_account_id uuid NOT NULL,
-  reason_id uuid,
   shift_id uuid,
   note text,
   created_by uuid,
@@ -367,6 +366,7 @@ CREATE TABLE public.expenses (
   date date DEFAULT CURRENT_DATE,
   receipt_image text,
   status boolean DEFAULT true,
+  reason_id uuid,
   CONSTRAINT expenses_pkey PRIMARY KEY (id),
   CONSTRAINT expenses_bank_account_id_fkey FOREIGN KEY (bank_account_id) REFERENCES public.bank_accounts(id),
   CONSTRAINT expenses_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.admins(id),
@@ -762,8 +762,8 @@ CREATE TABLE public.sale_items (
 CREATE TABLE public.sale_payments (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   sale_id uuid NOT NULL,
-  payment_method_id uuid NOT NULL,
-  bank_account_id uuid NOT NULL,
+  payment_method_id uuid,
+  bank_account_id uuid,
   amount numeric NOT NULL,
   created_by uuid,
   created_at timestamp with time zone DEFAULT now(),
@@ -812,8 +812,8 @@ CREATE TABLE public.sale_returns (
 );
 CREATE TABLE public.sales (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
-  reference text NOT NULL UNIQUE,
-  date date NOT NULL,
+  reference text UNIQUE,
+  date date,
   customer_id uuid,
   warehouse_id uuid NOT NULL,
   shift_id uuid,

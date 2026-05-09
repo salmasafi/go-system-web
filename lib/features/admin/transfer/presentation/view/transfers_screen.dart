@@ -397,29 +397,7 @@ class TransfersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Scale down for web
-    Widget screenContent = Scaffold(
-      backgroundColor: AppColors.lightBlueBackground,
-      appBar: appBarWithActions(
-        context,
-        title: LocaleKeys.transfers_title.tr(),
-        showActions: true,
-        onPressed: () {
-          // TODO: Add Transfer functionality
-        },
-      ),
-      body: SafeArea(
-        child: Center(
-          child: Text(
-            'Transfers Screen - Under Development',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ),
-    );
+    Widget screenContent = const TransfersView();
     if (kIsWeb) {
       screenContent = MediaQuery(
         data: MediaQuery.of(context).copyWith(

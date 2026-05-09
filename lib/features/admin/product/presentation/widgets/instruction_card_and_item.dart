@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
 
@@ -44,7 +45,7 @@ class InstructionsCard extends StatelessWidget {
               ),
               SizedBox(width: ResponsiveUI.spacing(context, 12)),
               Text(
-                'التعليمات',
+                'instructions'.tr(),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 16),
                   fontWeight: FontWeight.bold,
@@ -54,13 +55,13 @@ class InstructionsCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: ResponsiveUI.spacing(context, 16)),
-          InstructionItem(number: '1', text: 'اضغط على زر "بدء المسح"'),
+          InstructionItem(number: '1', text: 'instruction_step_1'.tr()),
           SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          InstructionItem(number: '2', text: 'وجه الكاميرا نحو الباركود'),
+          InstructionItem(number: '2', text: 'instruction_step_2'.tr()),
           SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          InstructionItem(number: '3', text: 'انتظر الكشف التلقائي'),
+          InstructionItem(number: '3', text: 'instruction_step_3'.tr()),
           SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          InstructionItem(number: '4', text: 'اعرض تفاصيل المنتج فوراً'),
+          InstructionItem(number: '4', text: 'instruction_step_4'.tr()),
         ],
       ),
     );

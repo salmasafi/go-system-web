@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/services/cache_helper.dart';
+import '../../../../core/services/session_helper.dart';
 import '../../../../core/supabase/supabase_client.dart';
 import '../../../../generated/locale_keys.g.dart';
 import '../model/user_model.dart';
@@ -85,6 +86,8 @@ class LoginCubit extends Cubit<LoginState> {
           log('User saved: ${data.user!.username}');
         }
 
+        // Reset session expiry flag so future expirations are handled properly
+        SessionManager.resetExpiryFlag();
         emit(LoginSuccess());
       } else {
         final errorMsg = userModel?.data?.message ?? LocaleKeys.login_failed.tr();

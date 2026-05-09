@@ -2,6 +2,7 @@
 /// Represents cashier shift data and performance
 class ShiftReportModel {
   final String id;
+  final String cashierId;
   final String cashierName;
   final String? cashiermanName;
   final String? bankAccountName;
@@ -19,6 +20,7 @@ class ShiftReportModel {
 
   ShiftReportModel({
     required this.id,
+    required this.cashierId,
     required this.cashierName,
     this.cashiermanName,
     this.bankAccountName,
@@ -43,14 +45,15 @@ class ShiftReportModel {
 
     return ShiftReportModel(
       id: json['id'] ?? '',
+      cashierId: json['cashier_id'] ?? '',
       cashierName: json['cashiers']?['name'] ?? '',
       cashiermanName: json['admins']?['username'],
       bankAccountName: json['bank_accounts']?['name'],
-      startTime: json['start_time'] != null 
-          ? DateTime.parse(json['start_time']) 
+      startTime: json['start_time'] != null
+          ? DateTime.parse(json['start_time'])
           : DateTime.now(),
-      endTime: json['end_time'] != null 
-          ? DateTime.parse(json['end_time']) 
+      endTime: json['end_time'] != null
+          ? DateTime.parse(json['end_time'])
           : null,
       status: json['status'] ?? 'open',
       openingBalance: opening,

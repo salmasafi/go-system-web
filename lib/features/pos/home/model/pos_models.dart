@@ -83,7 +83,33 @@ class Product {
   final int? startQuantity;
   final List<ProductAttribute> attributes;
 
+  // ── Inventory display fields ───────────────────────────────────────────────
+  /// Actual stock in the selected warehouse (merged from warehouse_products)
+  final int warehouseQuantity;
+  /// If false, cashier never sees any quantity indicator
+  final bool showQuantity;
+  /// Cap on what's shown to cashier (0 = no cap, show actual)
+  final int maximumToShow;
+  /// Low-stock alert threshold (from products.low_stock)
+  final int lowStockAlert;
+
   bool get hasAttributes => attributes.isNotEmpty;
+
+  /// True when no stock is available — sale must be blocked
+  bool get isOutOfStock => warehouseQuantity <= 0;
+
+  /// True when stock is at or below the alert threshold
+  bool get isLowStock =>
+      !isOutOfStock && lowStockAlert > 0 && warehouseQuantity <= lowStockAlert;
+
+  /// The quantity number to show on the card (null = don't show anything)
+  int? get displayQuantity {
+    if (!showQuantity) return null;
+    if (maximumToShow > 0 && warehouseQuantity > maximumToShow) {
+      return maximumToShow; // cap: store has more, but show the configured max
+    }
+    return warehouseQuantity;
+  }
 
   Product({
     required this.id,
@@ -96,7 +122,29 @@ class Product {
     this.wholePrice,
     this.startQuantity,
     this.attributes = const [],
+    this.warehouseQuantity = 0,
+    this.showQuantity = true,
+    this.maximumToShow = 0,
+    this.lowStockAlert = 0,
   });
+
+  /// Returns a copy with updated warehouse stock (called after bulk-fetch)
+  Product copyWithWarehouseQuantity(int qty) => Product(
+        id: id,
+        name: name,
+        image: image,
+        code: code,
+        price: price,
+        description: description,
+        quantity: quantity,
+        wholePrice: wholePrice,
+        startQuantity: startQuantity,
+        attributes: attributes,
+        warehouseQuantity: qty,
+        showQuantity: showQuantity,
+        maximumToShow: maximumToShow,
+        lowStockAlert: lowStockAlert,
+      );
 
   factory Product.fromList(Map<String, dynamic> json) {
     return Product(
@@ -109,11 +157,13 @@ class Product {
       quantity: (json['quantity'] as num?)?.toInt() ?? 0,
       wholePrice: _readWholePrice(json),
       startQuantity: _readStartQuantity(json),
-      attributes:
-          (json['attributes'] as List<dynamic>?)
+      attributes: (json['attributes'] as List<dynamic>?)
               ?.map((e) => ProductAttribute.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
+      showQuantity: json['show_quantity'] as bool? ?? true,
+      maximumToShow: (json['maximum_to_show'] as num?)?.toInt() ?? 0,
+      lowStockAlert: (json['low_stock'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -135,11 +185,13 @@ class Product {
       quantity: (json['quantity'] as num?)?.toInt() ?? 0,
       wholePrice: _readWholePrice(json),
       startQuantity: _readStartQuantity(json),
-      attributes:
-          (json['attributes'] as List<dynamic>?)
+      attributes: (json['attributes'] as List<dynamic>?)
               ?.map((e) => ProductAttribute.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
+      showQuantity: json['show_quantity'] as bool? ?? true,
+      maximumToShow: (json['maximum_to_show'] as num?)?.toInt() ?? 0,
+      lowStockAlert: (json['low_stock'] as num?)?.toInt() ?? 0,
     );
   }
 }
@@ -288,6 +340,10 @@ class BundleModel {
   final String startDate;
   final String endDate;
   final List<BundleProduct> products;
+  /// true → bundle is available in ALL warehouses
+  final bool allWarehouses;
+  /// specific warehouse IDs (used when allWarehouses = false)
+  final List<String> warehouseIds;
 
   BundleModel({
     required this.id,
@@ -300,6 +356,8 @@ class BundleModel {
     required this.startDate,
     required this.endDate,
     required this.products,
+    this.allWarehouses = true,
+    this.warehouseIds = const [],
   });
 
   factory BundleModel.fromJson(Map<String, dynamic> json) {
@@ -341,6 +399,11 @@ class BundleModel {
       startDate: json['startdate']?.toString() ?? json['start_date']?.toString() ?? '',
       endDate: json['enddate']?.toString() ?? json['end_date']?.toString() ?? '',
       products: productsList,
+      allWarehouses: json['all_warehouses'] as bool? ?? true,
+      warehouseIds: (json['warehouse_ids'] as List?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
     );
   }
 }

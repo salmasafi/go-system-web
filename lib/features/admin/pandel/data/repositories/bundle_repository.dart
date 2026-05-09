@@ -65,6 +65,7 @@ class _BundleSupabaseDataSource implements BundleRepositoryInterface {
         'price': bundle.price,
         'all_warehouses': bundle.allWarehouses,
         'images': bundle.images,
+        'discount_id': bundle.discountId,
       };
       
       final bundleResponse = await _client.from('bundles').insert(bundleData).select().single();
@@ -121,6 +122,7 @@ class _BundleSupabaseDataSource implements BundleRepositoryInterface {
         'price': bundle.price,
         'all_warehouses': bundle.allWarehouses,
         'images': bundle.images,
+        'discount_id': bundle.discountId,
       }).eq('id', bundle.id);
 
       // 2. Sync products (Delete and Recreate for simplicity in migration)
@@ -201,6 +203,7 @@ class _BundleSupabaseDataSource implements BundleRepositoryInterface {
       price: (json['price'] as num).toDouble(),
       allWarehouses: json['all_warehouses'] ?? true,
       warehouseIds: warehouses.isEmpty ? null : warehouses,
+      discountId: json['discount_id'],
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
       version: 0,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import '../../../../../core/constants/app_colors.dart';
 
@@ -99,7 +100,7 @@ class ScanButton extends StatelessWidget {
                 ),
                 SizedBox(width: ResponsiveUI.spacing(context, 12)),
                 Text(
-                  'Start Scanning',
+                  'start_scanning'.tr(),
                   style: TextStyle(
                     fontSize: ResponsiveUI.fontSize(context, 18),
                     fontWeight: FontWeight.bold,

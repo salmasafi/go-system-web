@@ -10,6 +10,8 @@ import 'package:GoSystem/core/widgets/custom_button_widget.dart';
 import 'package:GoSystem/core/widgets/custom_error/custom_error_state.dart';
 import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:GoSystem/core/widgets/custom_textfield/custom_text_field_widget.dart';
+import 'package:GoSystem/features/admin/discount/cubit/discount_cubit.dart';
+import 'package:GoSystem/features/admin/discount/model/discount_model.dart';
 import 'package:GoSystem/features/admin/pandel/cubit/pandel_cubit.dart';
 import 'package:GoSystem/features/admin/pandel/model/pandel_model.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -36,15 +38,35 @@ class _CreatePandelScreenState extends State<CreatePandelScreen> {
   final Map<String, int> _selectedProducts = {};
   // Map of productId -> productPriceId (for variations)
   final Map<String, String> _selectedProductPriceIds = {};
+  // Map of productId -> product price (for discount calculation)
+  final Map<String, double> _selectedProductPrices = {};
   bool _allWarehouses = true;
   var _selectedWarehouseIds = <String>[];
+
+  DiscountModel? _selectedDiscount;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ProductsCubit>().getProducts();
+      context.read<DiscountsCubit>().getDiscounts();
     });
+  }
+
+  void _applyDiscountToPrice() {
+    if (_selectedDiscount == null || _selectedProductPrices.isEmpty) return;
+    double total = 0;
+    for (final entry in _selectedProducts.entries) {
+      total += (_selectedProductPrices[entry.key] ?? 0) * entry.value;
+    }
+    final double finalPrice;
+    if (_selectedDiscount!.type == 'percentage') {
+      finalPrice = total * (1 - _selectedDiscount!.amount);
+    } else {
+      finalPrice = (total - _selectedDiscount!.amount).clamp(0.0, double.infinity);
+    }
+    _priceController.text = finalPrice.toStringAsFixed(2);
   }
 
   Future<void> _pickImages() async {
@@ -146,7 +168,6 @@ class _CreatePandelScreenState extends State<CreatePandelScreen> {
                           final p = products[i];
                           final isSelected = tempSelected.containsKey(p.id);
                           final qty = tempSelected[p.id] ?? 1;
-                          final selectedPriceId = tempPriceIds[p.id];
                           return ListTile(
                             leading: Checkbox(
                               value: isSelected,
@@ -161,24 +182,6 @@ class _CreatePandelScreenState extends State<CreatePandelScreen> {
                               }),
                             ),
                             title: Text(p.name),
-                            subtitle: p.variations.isNotEmpty && isSelected
-                                ? DropdownButton<String>(
-                                    hint: Text('Select attribute'),
-                                    value: selectedPriceId,
-                                    isExpanded: true,
-                                    onChanged: (value) => setModal(() {
-                                      if (value != null) {
-                                        tempPriceIds[p.id] = value;
-                                      }
-                                    }),
-                                    items: p.variations.map((variation) {
-                                      return DropdownMenuItem<String>(
-                                        value: variation.id,
-                                        child: Text('${variation.name} - \$${variation.price}'),
-                                      );
-                                    }).toList(),
-                                  )
-                                : null,
                             trailing: isSelected
                                 ? Row(
                                     mainAxisSize: MainAxisSize.min,
@@ -221,7 +224,16 @@ class _CreatePandelScreenState extends State<CreatePandelScreen> {
                               _selectedProductPriceIds
                                 ..clear()
                                 ..addAll(tempPriceIds);
+                              // Update prices map for discount calculation
+                              for (final p in products) {
+                                if (tempSelected.containsKey(p.id)) {
+                                  _selectedProductPrices[p.id] = (p.price as num).toDouble();
+                                }
+                              }
+                              _selectedProductPrices.removeWhere(
+                                  (k, _) => !tempSelected.containsKey(k));
                             });
+                            if (_selectedDiscount != null) _applyDiscountToPrice();
                             Navigator.pop(ctx);
                           },
                           child: Text(LocaleKeys.done.tr()),
@@ -249,7 +261,7 @@ class _CreatePandelScreenState extends State<CreatePandelScreen> {
       CustomSnackbar.showWarning(context, LocaleKeys.warning_enter_pandel_name.tr());
       return;
     }
-    if (_selectedProducts.length < 2) {
+    if (_selectedProducts.isEmpty) {
       CustomSnackbar.showWarning(
           context, LocaleKeys.warning_select_at_least_two_products.tr());
       return;
@@ -295,7 +307,75 @@ class _CreatePandelScreenState extends State<CreatePandelScreen> {
           price: price,
           allWarehouses: _allWarehouses,
           warehouseIds: _allWarehouses ? null : _selectedWarehouseIds,
+          discountId: _selectedDiscount?.id,
         );
+  }
+
+  Widget _buildDiscountSelector() {
+    return BlocBuilder<DiscountsCubit, DiscountsState>(
+      builder: (context, state) {
+        final discounts = state is GetDiscountsSuccess
+            ? state.discounts.where((d) => d.status).toList()
+            : <DiscountModel>[];
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: ResponsiveUI.spacing(context, 16)),
+            Text(
+              'الخصم (اختياري)',
+              style: TextStyle(
+                fontSize: ResponsiveUI.fontSize(context, 14),
+                color: AppColors.darkGray,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(height: ResponsiveUI.spacing(context, 8)),
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: ResponsiveUI.padding(context, 12),
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
+                border: Border.all(color: AppColors.lightGray),
+              ),
+              child: DropdownButton<DiscountModel?>(
+                isExpanded: true,
+                underline: const SizedBox(),
+                value: _selectedDiscount,
+                hint: Text(
+                  'اختر خصم...',
+                  style: TextStyle(
+                    fontSize: ResponsiveUI.fontSize(context, 14),
+                    color: AppColors.darkGray.withValues(alpha: 0.5),
+                  ),
+                ),
+                items: [
+                  DropdownMenuItem<DiscountModel?>(
+                    value: null,
+                    child: Text(
+                      'بدون خصم',
+                      style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14)),
+                    ),
+                  ),
+                  ...discounts.map((d) => DropdownMenuItem<DiscountModel?>(
+                        value: d,
+                        child: Text(
+                          '${d.name}  (${d.type == 'percentage' ? '${(d.amount * 100).toStringAsFixed(0)}%' : '${d.amount.toStringAsFixed(2)} ثابت'})',
+                          style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14)),
+                        ),
+                      )),
+                ],
+                onChanged: (discount) {
+                  setState(() => _selectedDiscount = discount);
+                  if (discount != null) _applyDiscountToPrice();
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget _buildTextField({
@@ -397,13 +477,26 @@ class _CreatePandelScreenState extends State<CreatePandelScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              LocaleKeys.pandel_images.tr(),
-              style: TextStyle(
-                fontSize: ResponsiveUI.fontSize(context, 14),
-                color: AppColors.darkGray,
-                fontWeight: FontWeight.w500,
-              ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  LocaleKeys.pandel_images.tr(),
+                  style: TextStyle(
+                    fontSize: ResponsiveUI.fontSize(context, 14),
+                    color: AppColors.darkGray,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(width: ResponsiveUI.spacing(context, 6)),
+                Text(
+                  '(اختياري)',
+                  style: TextStyle(
+                    fontSize: ResponsiveUI.fontSize(context, 12),
+                    color: AppColors.darkGray.withValues(alpha: 0.5),
+                  ),
+                ),
+              ],
             ),
             if (_selectedImages.isNotEmpty)
               TextButton.icon(
@@ -550,6 +643,7 @@ class _CreatePandelScreenState extends State<CreatePandelScreen> {
                             title: LocaleKeys.pandel_name.tr(),
                             hint: LocaleKeys.enter_pandel_name.tr(),
                           ),
+                          _buildDiscountSelector(),
                           _buildTextField(
                             controller: _priceController,
                             title: LocaleKeys.price.tr(),

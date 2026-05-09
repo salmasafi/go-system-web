@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/services/dio_helper.dart';
 import 'package:GoSystem/core/services/endpoints.dart';
@@ -38,7 +39,7 @@ class RedeemPointsCubit extends Cubit<RedeemPointsState> {
         RedeemPointsModel(id: '', amount: amount, points: points),
       );
       await getRedeemPoints(); // Refresh the list
-      emit(CreateRedeemPointsSuccess('Redeem points created successfully'));
+      emit(CreateRedeemPointsSuccess('redeem_points_title'.tr()));
     } catch (e) {
       emit(GetRedeemPointsError(e.toString().replaceAll('Exception: ', '')));
     }
@@ -56,7 +57,7 @@ class RedeemPointsCubit extends Cubit<RedeemPointsState> {
         RedeemPointsModel(id: id, amount: amount, points: points),
       );
       await getRedeemPoints(); // Refresh the list
-      emit(UpdateRedeemPointsSuccess('Redeem points updated successfully'));
+      emit(UpdateRedeemPointsSuccess('success'.tr()));
     } catch (e) {
       emit(UpdateRedeemPointsError(e.toString().replaceAll('Exception: ', '')));
     }
@@ -68,7 +69,7 @@ class RedeemPointsCubit extends Cubit<RedeemPointsState> {
     try {
       await _repository.deleteRedeemRule(id);
       await getRedeemPoints(); // Refresh the list
-      emit(DeleteRedeemPointsSuccess('Redeem points deleted successfully'));
+      emit(DeleteRedeemPointsSuccess('success'.tr()));
     } catch (e) {
       emit(DeleteRedeemPointsError(e.toString().replaceAll('Exception: ', '')));
     }

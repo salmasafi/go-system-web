@@ -62,27 +62,27 @@ class DiscountModel {
 
   factory DiscountModel.fromJson(Map<String, dynamic> json) {
     return DiscountModel(
-      id: json['_id'],
-      name: json['name'],
-      amount: (json['amount'] as num).toDouble(),
-      type: json['type'],
-      status: json['status'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
-      version: json['__v'],
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      name: (json['name'] ?? '').toString(),
+      amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
+      type: (json['type'] ?? 'fixed').toString(),
+      status: json['status'] as bool? ?? true,
+      createdAt: (json['created_at'] ?? json['createdAt'] ?? '').toString(),
+      updatedAt: (json['updated_at'] ?? json['updatedAt'] ?? '').toString(),
+      version: json['version'] ?? json['__v'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      '_id': id,
+      'id': id,
       'name': name,
       'amount': amount,
       'type': type,
       'status': status,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
-      '__v': version,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+      'version': version,
     };
   }
 }

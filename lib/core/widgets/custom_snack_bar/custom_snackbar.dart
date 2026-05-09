@@ -74,10 +74,6 @@ class CustomSnackbar {
     final languageCode = context.locale.languageCode;
     final textDirection = languageCode == 'ar' ? ui.TextDirection.rtl : ui.TextDirection.ltr;
 
-    // Convert string keys to translated values
-    final translatedTitle = title.tr();
-    final translatedMessage = message.tr();
-
     final snackBar = SnackBar(
       elevation: 0,
       behavior: SnackBarBehavior.floating,
@@ -86,8 +82,8 @@ class CustomSnackbar {
       content: Directionality(
         textDirection: textDirection,
         child: AwesomeSnackbarContent(
-          title: translatedTitle,
-          message: translatedMessage,
+          title: title,
+          message: message,
           contentType: contentType,
         ),
       ),

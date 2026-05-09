@@ -110,14 +110,10 @@ class _PointsScreenState extends State<PointsScreen> {
           if (points.isEmpty) {
             return CustomEmptyState(
               icon: Icons.stars_rounded,
-              title: _searchController.text.isNotEmpty
-                  ? LocaleKeys.no_matching_brands.tr() // Reusing available key
-                  : LocaleKeys.no_brands_available.tr(), // Reusing available key
-              message: _searchController.text.isNotEmpty
-                  ? LocaleKeys.try_adjusting_search.tr()
-                  : 'No points configurations found',
+              title: LocaleKeys.points_title.tr(),
+              message: LocaleKeys.empty_message_connection.tr(),
               onRefresh: _refresh,
-              actionLabel: 'Retry',
+              actionLabel: LocaleKeys.retry.tr(),
               onAction: _refresh,
             );
           }
@@ -141,10 +137,10 @@ class _PointsScreenState extends State<PointsScreen> {
 
         return CustomEmptyState(
           icon: Icons.stars_rounded,
-          title: LocaleKeys.no_brands_available.tr(),
-          message: 'Pull to refresh or check your connection',
+          title: LocaleKeys.points_title.tr(),
+          message: LocaleKeys.pull_to_refresh_or_check_connection.tr(),
           onRefresh: _refresh,
-          actionLabel: 'Retry',
+          actionLabel: LocaleKeys.retry.tr(),
           onAction: _refresh,
         );
       },

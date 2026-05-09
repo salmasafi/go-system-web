@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:GoSystem/core/utils/error_handler.dart';
 import 'package:GoSystem/features/admin/product/models/selected_attribute_model.dart';
 import 'package:GoSystem/features/pos/home/model/pos_models.dart';
 import 'package:GoSystem/features/pos/checkout/model/checkout_models.dart';
@@ -94,7 +93,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     double paidAmount = 0.0,
     String? note,
     bool isPending = false,
-    required String customerId,
+    String? customerId,
     String? accountId,
     String? paymentMethodId,
     String? warehouseId,
@@ -104,6 +103,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     double discountAmount = 0.0,
     String? taxId,
     String? discountId,
+    String? couponCode,
   }) async {
     emit(CheckoutLoading());
 
@@ -142,6 +142,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
         taxAmount: taxAmount,
         discount: discountAmount,
         note: note,
+        couponCode: couponCode,
         payments: payments,
         isPending: isPending,
       );
@@ -154,7 +155,10 @@ class CheckoutCubit extends Cubit<CheckoutState> {
       return true;
     } catch (e) {
       log("Create Sale Error: $e");
-      emit(CheckoutError(ErrorHandler.handleError(e)));
+      // SaleRepository already formats the error via SupabaseErrorHandler.
+      // Extract message directly — don't pass through the old DioException handler.
+      final msg = e.toString().replaceFirst('Exception: ', '');
+      emit(CheckoutError(msg));
       return false;
     }
   }

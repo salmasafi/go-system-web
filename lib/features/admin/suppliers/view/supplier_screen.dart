@@ -31,6 +31,14 @@ class _SupplierScreenState extends State<SupplierScreen> {
   String? _selectedCity;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SupplierCubit>().getSuppliers();
+    });
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
@@ -51,12 +59,7 @@ class _SupplierScreenState extends State<SupplierScreen> {
       ),
       body: BlocConsumer<SupplierCubit, SupplierStates>(
         listener: (context, state) {
-          if (state is SupplierSuccess) {
-            CustomSnackbar.showSuccess(
-              context,
-              LocaleKeys.success.tr(),
-            );
-          } else if (state is SupplierError) {
+          if (state is SupplierError) {
             CustomSnackbar.showError(context, state.message);
           }
         },

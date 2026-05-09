@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/services/dio_helper.dart';
 import 'package:GoSystem/core/services/endpoints.dart';
@@ -40,7 +41,7 @@ class PointsCubit extends Cubit<PointsState> {
         amount: amount,
         points: points,
       ));
-      emit(CreatePointsSuccess('Points created successfully'));
+      emit(CreatePointsSuccess('success'.tr()));
       await getPoints();
     } catch (e) {
       emit(CreatePointsError(e.toString().replaceAll('Exception: ', '')));
@@ -59,7 +60,7 @@ class PointsCubit extends Cubit<PointsState> {
         amount: amount,
         points: points,
       ));
-      emit(UpdatePointsSuccess('Points updated successfully'));
+      emit(UpdatePointsSuccess('success'.tr()));
       await getPoints();
     } catch (e) {
       emit(UpdatePointsError(e.toString().replaceAll('Exception: ', '')));
@@ -70,7 +71,7 @@ class PointsCubit extends Cubit<PointsState> {
     emit(DeletePointsLoading());
     try {
       await _repository.deletePointsRule(id);
-      emit(DeletePointsSuccess('Points deleted successfully'));
+      emit(DeletePointsSuccess('success'.tr()));
       await getPoints();
     } catch (e) {
       emit(DeletePointsError(e.toString().replaceAll('Exception: ', '')));

@@ -54,17 +54,20 @@ class _UnitsScreenState extends State<UnitsScreen> {
           CustomSnackbar.showSuccess(context, state.message);
           unitsInit();
         } else if (state is CreateUnitSuccess) {
-          CustomSnackbar.showSuccess(context, state.message);
-          unitsInit();
+          // Handled in UnitFormDialog
         } else if (state is UpdateUnitSuccess) {
-          CustomSnackbar.showSuccess(context, state.message);
-          unitsInit();
+          // Handled in UnitFormDialog
         }
       },
       builder: (context, state) {
+        final cubit = context.read<UnitsCubit>();
+        final units = cubit.allUnits;
+
         if (state is GetUnitsLoading ||
             state is DeleteUnitLoading ||
-            state is ChangeUnitStatusLoading) {
+            state is ChangeUnitStatusLoading ||
+            state is CreateUnitLoading ||
+            state is UpdateUnitLoading) {
           return RefreshIndicator(
             onRefresh: _refresh,
             color: AppColors.primaryBlue,
@@ -72,10 +75,10 @@ class _UnitsScreenState extends State<UnitsScreen> {
               padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
             ),
           );
-        } else if (state is GetUnitsSuccess) {
-          final units = state.units;
+        } else if (state is GetUnitsSuccess || units.isNotEmpty) {
+          final displayUnits = state is GetUnitsSuccess ? state.units : units;
 
-          if (units.isEmpty) {
+          if (displayUnits.isEmpty) {
             return CustomEmptyState(
               icon: Icons.straighten_rounded,
               title: 'No Units',
@@ -88,7 +91,7 @@ class _UnitsScreenState extends State<UnitsScreen> {
             return RefreshIndicator(
               onRefresh: _refresh,
               color: AppColors.primaryBlue,
-              child: UnitsList(units: units),
+              child: UnitsList(units: displayUnits),
             );
           }
         } else {

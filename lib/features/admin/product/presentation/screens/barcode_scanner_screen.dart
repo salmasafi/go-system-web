@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/core/widgets/animation/animated_element.dart';
@@ -18,18 +19,17 @@ class BarcodeScannerScreen extends StatefulWidget {
 
 class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
   String _currentInput = ''; // لتجميع إدخال القارئ الخارجي
-  bool _isListeningForExternal = false; // جديد: التحكم في وضع الاستماع للخارجي
+  bool _isListeningForExternal = false;
 
   Future<void> _startScanning() async {
-    // مسح بالكاميرا الخلفية
     String? result = await SimpleBarcodeScanner.scanBarcode(
       context,
-      cameraFace: CameraFace.back, // ضمان الكاميرا الخلفية
+      cameraFace: CameraFace.back,
       isShowFlashIcon: true,
     );
 
     if (result != null) {
-      log('Camera scanned: $result'); // Debug
+      log('Camera scanned: $result');
       if (mounted) {
         Navigator.pop(context, result);
       }
@@ -39,16 +39,16 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
   void _startExternalScanning() {
     setState(() {
       _isListeningForExternal = true;
-      _currentInput = ''; // مسح أي إدخال سابق
+      _currentInput = '';
     });
-    log('External scanner mode activated'); // Debug
+    log('External scanner mode activated');
   }
 
   @override
   Widget build(BuildContext context) {
     Widget screenContent = Scaffold(
       backgroundColor: AppColors.lightBlueBackground,
-      appBar: appBarWithActions(context, title: "ماسح الباركود"),
+      appBar: appBarWithActions(context, title: 'barcode_scanner'.tr()),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),
@@ -56,7 +56,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Scanner Icon
-              ScannerIconContainer(),
+              const ScannerIconContainer(),
               SizedBox(height: ResponsiveUI.spacing(context, 30)),
               
               // Camera Scanner Section
@@ -95,7 +95,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                           ),
                           SizedBox(width: ResponsiveUI.spacing(context, 12)),
                           Text(
-                            'قارئ خارجي',
+                            'external_reader'.tr(),
                             style: TextStyle(
                               fontSize: ResponsiveUI.fontSize(context, 18),
                               fontWeight: FontWeight.bold,
@@ -127,7 +127,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                       ),
                       SizedBox(height: ResponsiveUI.spacing(context, 12)),
                       Text(
-                        "وضع الاستماع للقارئ الخارجي مفعل",
+                        'external_listening_active'.tr(),
                         style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 16),
                           fontWeight: FontWeight.bold,
@@ -137,7 +137,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                       ),
                       SizedBox(height: ResponsiveUI.spacing(context, 8)),
                       Text(
-                        "يرجى مسح الباركود باستخدام القارئ الخارجي",
+                        'scan_barcode_external'.tr(),
                         style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 14),
                           color: AppColors.darkGray,
@@ -154,7 +154,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                             border: Border.all(color: AppColors.lightGray),
                           ),
                           child: Text(
-                            "الإدخال الحالي: $_currentInput",
+                            '${'current_input'.tr()}: $_currentInput',
                             style: TextStyle(
                               fontSize: ResponsiveUI.fontSize(context, 14),
                               fontFamily: 'monospace',

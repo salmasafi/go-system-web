@@ -60,8 +60,8 @@ class ReasonCubit extends Cubit<ReasonState> {
     emit(DeleteReasonLoading());
     try {
       await _repository.deleteReason(reasonId);
-      reasons.removeWhere((reason) => reason.id == reasonId);
       emit(DeleteReasonSuccess(LocaleKeys.reason_deleted_success.tr()));
+      await getReasons();
     } catch (e) {
       emit(DeleteReasonError(e.toString().replaceAll('Exception: ', '')));
     }

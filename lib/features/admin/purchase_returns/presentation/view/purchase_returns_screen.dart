@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -60,8 +61,8 @@ class _PurchaseReturnsScreenState extends State<PurchaseReturnsScreen> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => CustomDeleteDialog(
-        title: 'Delete Return',
-        message: 'Are you sure you want to delete return #${r.reference}?',
+        title: 'return_deleted_success'.tr(),
+        message: '${'delete_confirmation'.tr()} #${r.reference}?',
         onDelete: () {
           Navigator.pop(ctx);
           context.read<PurchaseReturnCubit>().deleteReturn(r.id);
@@ -77,7 +78,7 @@ class _PurchaseReturnsScreenState extends State<PurchaseReturnsScreen> {
       backgroundColor: AppColors.lightBlueBackground,
       appBar: appBarWithActions(
         context,
-        title: 'Purchase Returns',
+        title: 'returns_title'.tr(),
         showActions: true,
         actionIcon: Icons.add,
         onPressed: _showAddDialog,
@@ -123,10 +124,10 @@ class _PurchaseReturnsScreenState extends State<PurchaseReturnsScreen> {
                   Expanded(
                     child: CustomEmptyState(
                       icon: Icons.assignment_return_rounded,
-                      title: 'No Returns',
-                      message: 'No purchase returns found.',
+                      title: 'no_returns_title'.tr(),
+                      message: 'no_returns_message'.tr(),
                       onRefresh: () => context.read<PurchaseReturnCubit>().getReturns(),
-                      actionLabel: 'Retry',
+                      actionLabel: 'retry'.tr(),
                       onAction: _init,
                     ),
                   ),
@@ -172,10 +173,10 @@ class _PurchaseReturnsScreenState extends State<PurchaseReturnsScreen> {
 
           return CustomEmptyState(
             icon: Icons.assignment_return_rounded,
-            title: 'No Returns',
-            message: 'Could not load returns.',
+            title: 'no_returns_title'.tr(),
+            message: 'could_not_load_returns'.tr(),
             onRefresh: () => context.read<PurchaseReturnCubit>().getReturns(),
-            actionLabel: 'Retry',
+            actionLabel: 'retry'.tr(),
             onAction: _init,
           );
         },
@@ -241,7 +242,7 @@ class _SummaryBanner extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('$totalReturns Returns',
+                Text('returns_count'.tr(namedArgs: {'count': '$totalReturns'}),
                     style: TextStyle(
                         color: Colors.white70,
                         fontSize: ResponsiveUI.fontSize(context, 12),

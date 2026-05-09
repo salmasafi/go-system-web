@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/services/dio_helper.dart';
 import 'package:GoSystem/core/services/endpoints.dart';
@@ -45,7 +46,7 @@ class ExpenseAdminCubit extends Cubit<ExpenseAdminState> {
         financialAccountId: financialAccountId,
         note: note,
       );
-      emit(CreateExpenseAdminSuccess('Expense created successfully'));
+      emit(CreateExpenseAdminSuccess('success'.tr()));
       await getExpenses();
     } catch (e) {
       emit(CreateExpenseAdminError(e.toString().replaceAll('Exception: ', '')));

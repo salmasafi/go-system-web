@@ -117,7 +117,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
               DataColumn(label: Text('التاريخ'.tr())),
               DataColumn(label: Text('المرجع'.tr())),
               DataColumn(label: Text('العميل'.tr())),
-              DataColumn(label: Text('المستودع'.tr())),
+              DataColumn(label: Text('المخزن'.tr())),
               DataColumn(label: Text('الإجمالي'.tr()), numeric: true),
               DataColumn(label: Text('الحالة'.tr())),
             ],

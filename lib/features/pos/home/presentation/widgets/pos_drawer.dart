@@ -110,7 +110,7 @@ class POSDrawer extends StatelessWidget {
                     'assets/images/gosystem_logo.png',
                     height: ResponsiveUI.value(context, 52),
                     fit: BoxFit.contain,
-                    alignment: Alignment.centerLeft,
+                    alignment: AlignmentDirectional.centerStart,
                   ),
                   SizedBox(height: ResponsiveUI.spacing(context, 14)),
                   Row(
@@ -134,7 +134,7 @@ class POSDrawer extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'AUTHENTICATED AS',
+                              LocaleKeys.authenticated_as.tr(),
                               style: TextStyle(
                                 fontSize: ResponsiveUI.fontSize(context, 10),
                                 color: AppColors.shadowGray,
@@ -184,7 +184,7 @@ class POSDrawer extends StatelessWidget {
                 children: [
                   _DrawerItem(
                     icon: Icons.person_outline,
-                    label: 'Profile',
+                    label: LocaleKeys.profile.tr(),
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
@@ -195,7 +195,7 @@ class POSDrawer extends StatelessWidget {
                   ),
                   _DrawerItem(
                     icon: Icons.translate_rounded,
-                    label: 'تغيير للعربية',
+                    label: LocaleKeys.switch_to_arabic.tr(),
                     onTap: () {
                       Navigator.pop(context);
                       _showComingSoon(context, 'Language');
@@ -203,7 +203,7 @@ class POSDrawer extends StatelessWidget {
                   ),
                   _DrawerItem(
                     icon: Icons.format_list_bulleted_rounded,
-                    label: 'All Orders',
+                    label: LocaleKeys.all_orders.tr(),
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
@@ -214,7 +214,7 @@ class POSDrawer extends StatelessWidget {
                   ),
                   _DrawerItem(
                     icon: Icons.assignment_return_outlined,
-                    label: 'Return Sale',
+                    label: LocaleKeys.return_sale.tr(),
                     onTap: () {
                       Navigator.pop(context);
                       showDialog(
@@ -225,7 +225,7 @@ class POSDrawer extends StatelessWidget {
                   ),
                   _DrawerItem(
                     icon: Icons.group_outlined,
-                    label: 'Due Users',
+                    label: LocaleKeys.due_users.tr(),
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
@@ -236,7 +236,7 @@ class POSDrawer extends StatelessWidget {
                   ),
                   _DrawerItem(
                     icon: Icons.attach_money_rounded,
-                    label: 'Expenses',
+                    label: LocaleKeys.expenses_title.tr(),
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(

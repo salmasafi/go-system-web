@@ -59,13 +59,12 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
             body: CustomErrorState(
               message: state.error,
               onRetry: () {
-                if (_nameController.text.trim().isEmpty ||
-                    _selectedImage == null) {
+                if (_nameController.text.trim().isEmpty) {
                   return;
                 }
                 BrandsCubit.get(context).createBrand(
                   name: _nameController.text.trim(),
-                  logoFile: _selectedImage!,
+                  logoFile: _selectedImage,
                 );
               },
             ),
@@ -105,13 +104,26 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        LocaleKeys.brand_logo.tr(),
-                        style: TextStyle(
-                          fontSize: ResponsiveUI.fontSize(context, 14),
-                          color: AppColors.darkGray,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            LocaleKeys.brand_logo.tr(),
+                            style: TextStyle(
+                              fontSize: ResponsiveUI.fontSize(context, 14),
+                              color: AppColors.darkGray,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          SizedBox(width: ResponsiveUI.spacing(context, 6)),
+                          Text(
+                            '(اختياري)',
+                            style: TextStyle(
+                              fontSize: ResponsiveUI.fontSize(context, 12),
+                              color: AppColors.darkGray.withValues(alpha: 0.5),
+                            ),
+                          ),
+                        ],
                       ),
                       if (_selectedImage != null)
                         TextButton.icon(

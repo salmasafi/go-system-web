@@ -3,6 +3,8 @@ import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import 'package:intl/intl.dart';
 import 'package:GoSystem/features/pos/checkout/cubit/checkout_cubit/checkout_cubit.dart';
 import 'package:GoSystem/features/pos/checkout/model/reciept_data.dart';
@@ -633,7 +635,7 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Change:', style: TextStyle(color: AppColors.shadowGray)),
+                Text(LocaleKeys.change_label.tr(), style: TextStyle(color: AppColors.shadowGray)),
                 Text(
                   '\$${widget.recieptData.change.toStringAsFixed(2)}',
                   style: TextStyle(
@@ -752,7 +754,7 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
                 );
               },
               icon: Icon(Icons.print),
-              label: Text('Print'),
+              label: Text(LocaleKeys.print.tr()),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.primaryBlue,
                 side: BorderSide(

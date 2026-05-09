@@ -38,12 +38,39 @@ class AuthRepository implements AuthRepositoryInterface {
         throw Exception('Login failed: Invalid credentials');
       }
 
-      // Map Supabase user to legacy User model
+      // Fetch real profile from user_profiles (role + warehouse)
+      String realRole = 'cashier';
+      String? warehouseId;
+      String? warehouseName;
+      String displayName = user.email ?? 'User';
+
+      try {
+        final profile = await _client
+            .from('user_profiles')
+            .select('role, warehouse_id, full_name, warehouses(name)')
+            .eq('id', user.id)
+            .maybeSingle();
+
+        if (profile != null) {
+          realRole = profile['role'] as String? ?? 'cashier';
+          warehouseId = profile['warehouse_id'] as String?;
+          displayName = profile['full_name'] as String? ?? displayName;
+          final wh = profile['warehouses'];
+          if (wh is Map) {
+            warehouseName = wh['name'] as String?;
+          }
+        }
+      } catch (e) {
+        log('AuthRepository: Could not fetch user_profiles — $e');
+      }
+
       final legacyUser = User(
         id: user.id,
-        username: user.email ?? 'User',
+        username: displayName,
         email: user.email ?? '',
-        role: 'admin', // Default role
+        role: realRole,
+        warehouseId: warehouseId,
+        warehouseName: warehouseName,
       );
 
       final data = Data(

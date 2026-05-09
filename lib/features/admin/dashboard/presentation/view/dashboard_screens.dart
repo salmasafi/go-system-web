@@ -43,6 +43,8 @@ import 'package:GoSystem/features/admin/revenue/presentation/view/revenue_screen
 import 'package:GoSystem/features/admin/customer_group/presentation/view/customers_group_screen.dart';
 import 'package:GoSystem/features/admin/customer/presentation/view/customers_screens.dart';
 import 'package:GoSystem/features/admin/roloes_and_permissions/presentation/view/roles_screen.dart';
+import 'package:GoSystem/features/pos/history/cubit/history_cubit.dart';
+import 'package:GoSystem/features/pos/history/presentation/views/dues_screen.dart';
 import 'package:GoSystem/features/admin/pandel/presentation/view/pandel_screen.dart';
 import 'package:GoSystem/features/admin/bank_account/cubit/bank_account_cubit.dart';
 import 'package:GoSystem/features/admin/purchase_returns/cubit/purchase_return_cubit.dart';
@@ -113,6 +115,9 @@ import 'package:GoSystem/features/admin/expences/data/repositories/expense_repos
 import 'package:GoSystem/features/admin/reports/presentation/view/sales_report_screen.dart';
 import 'package:GoSystem/features/admin/reports/presentation/view/product_report_screen.dart';
 import 'package:GoSystem/features/admin/reports/presentation/view/inventory_report_screen.dart';
+import 'package:GoSystem/features/admin/reports/presentation/view/financial_report_screen.dart';
+import 'package:GoSystem/features/admin/reports/presentation/view/shift_report_screen.dart';
+import 'package:GoSystem/features/admin/reports/presentation/view/cashier_revenue_report_screen.dart';
 import 'package:GoSystem/features/admin/reports/cubit/reports_cubit.dart';
 
 // ─── Data Models ─────────────────────────────────────────────
@@ -165,6 +170,7 @@ enum DashboardItem {
   admins,
   cashiers,
   roles,
+  dueUsers,
   departments,
   // Reports
   salesReport,
@@ -174,6 +180,8 @@ enum DashboardItem {
   productReport,
   expensesReport,
   revenueReport,
+  cashierRevenueReport,
+  shiftReport,
 }
 
 class _ModuleItem {
@@ -224,7 +232,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   static const _comingSoonItems = <DashboardItem>{
     DashboardItem.payments,
-    DashboardItem.barcode,
+    // DashboardItem.barcode, // temporarily hidden
     DashboardItem.departments,
     DashboardItem.decimalSettings,
     DashboardItem.serviceFees,
@@ -327,21 +335,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
         title: LocaleKeys.marketing_group.tr(),
         accentColor: const Color(0xFFE65100),
         modules: [
-          _ModuleItem(
-            icon: Icons.open_in_new_rounded,
-            label: LocaleKeys.popups_title.tr(),
-            id: DashboardItem.popups,
-          ),
-          _ModuleItem(
-            icon: Icons.stars_rounded,
-            label: LocaleKeys.points_title.tr(),
-            id: DashboardItem.points,
-          ),
-          _ModuleItem(
-            icon: Icons.redeem_rounded,
-            label: LocaleKeys.redeem_points_title.tr(),
-            id: DashboardItem.redeemPoints,
-          ),
+          // Hidden from dashboard per request
+          // _ModuleItem(
+          //   icon: Icons.open_in_new_rounded,
+          //   label: LocaleKeys.popups_title.tr(),
+          //   id: DashboardItem.popups,
+          // ),
+          // _ModuleItem(
+          //   icon: Icons.stars_rounded,
+          //   label: LocaleKeys.points_title.tr(),
+          //   id: DashboardItem.points,
+          // ),
+          // _ModuleItem(
+          //   icon: Icons.redeem_rounded,
+          //   label: LocaleKeys.redeem_points_title.tr(),
+          //   id: DashboardItem.redeemPoints,
+          // ),
           _ModuleItem(
             icon: Icons.inventory_rounded,
             label: LocaleKeys.bundles_title.tr(),
@@ -359,12 +368,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
         title: LocaleKeys.settings_group.tr(),
         accentColor: const Color(0xFF546E7A),
         modules: [
-          _ModuleItem(
-            icon: Icons.qr_code_scanner_rounded,
-            label: LocaleKeys.barcode_title.tr(),
-            id: DashboardItem.barcode,
-            comingSoon: true,
-          ),
+          // Barcode - temporarily hidden
+          // _ModuleItem(
+          //   icon: Icons.qr_code_scanner_rounded,
+          //   label: LocaleKeys.barcode_title.tr(),
+          //   id: DashboardItem.barcode,
+          //   comingSoon: true,
+          // ),
           _ModuleItem(
             icon: Icons.location_city_rounded,
             label: LocaleKeys.cities_title.tr(),
@@ -471,6 +481,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             label: LocaleKeys.roles_title.tr(),
             id: DashboardItem.roles,
           ),
+          _ModuleItem(
+            icon: Icons.money_off_csred_rounded,
+            label: LocaleKeys.due_users.tr(),
+            id: DashboardItem.dueUsers,
+          ),
         ],
       ),
       _DashboardGroup(
@@ -478,12 +493,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         title: LocaleKeys.reports_group.tr(),
         accentColor: const Color(0xFFFF8F00),
         modules: [
-          _ModuleItem(
-            icon: Icons.point_of_sale_rounded,
-            label: LocaleKeys.cashier_shifts.tr(),
-            id: DashboardItem.cashiers,
-            comingSoon: true,
-          ),
           _ModuleItem(
             icon: Icons.shopping_cart_rounded,
             label: LocaleKeys.orders_report.tr(),
@@ -503,6 +512,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
             icon: Icons.inventory_rounded,
             label: LocaleKeys.product_movement_report.tr(),
             id: DashboardItem.inventoryReport,
+          ),
+          _ModuleItem(
+            icon: Icons.schedule_rounded,
+            label: LocaleKeys.cashier_shifts.tr(),
+            id: DashboardItem.shiftReport,
+          ),
+          _ModuleItem(
+            icon: Icons.point_of_sale_rounded,
+            label: 'إيرادات الكاشير اليومية',
+            id: DashboardItem.cashierRevenueReport,
           ),
         ],
       ),
@@ -722,6 +741,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: const RolesScreen(),
         );
         break;
+      case DashboardItem.dueUsers:
+        screen = BlocProvider(
+          create: (_) => HistoryCubit(),
+          child: const DuesScreen(),
+        );
+        break;
       case DashboardItem.points:
         screen = BlocProvider(
           create: (_) => PointsCubit(PointsRepository()),
@@ -754,10 +779,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
         );
         break;
       case DashboardItem.financialReport:
-        // Financial report can reuse the same cubit with different method
         screen = BlocProvider(
           create: (_) => ReportsCubit(),
-          child: const SalesReportScreen(), // Placeholder - create FinancialReportScreen later
+          child: const FinancialReportScreen(),
+        );
+        break;
+      case DashboardItem.shiftReport:
+        screen = BlocProvider(
+          create: (_) => ReportsCubit(),
+          child: const ShiftReportScreen(),
+        );
+        break;
+      case DashboardItem.cashierRevenueReport:
+        screen = BlocProvider(
+          create: (_) => ReportsCubit(),
+          child: const CashierRevenueReportScreen(),
         );
         break;
       default:

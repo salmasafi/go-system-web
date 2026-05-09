@@ -1,7 +1,9 @@
 // ── Cart summary (bottom sheet) ───────────────────────────────────────────
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/features/pos/checkout/cubit/checkout_cubit/checkout_cubit.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
 
@@ -44,7 +46,7 @@ class _POSCartSummaryState extends State<POSCartSummary> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Items: ${context.read<CheckoutCubit>().cartItems.length} '
+                      '${LocaleKeys.cart_items.tr()}: ${context.read<CheckoutCubit>().cartItems.length} '
                       '(${context.read<CheckoutCubit>().cartItems.fold(0, (s, i) => s + i.quantity)})',
                       style: TextStyle(
                         fontSize: ResponsiveUI.fontSize(context, 14),
@@ -53,7 +55,7 @@ class _POSCartSummaryState extends State<POSCartSummary> {
                     ),
                     SizedBox(height: ResponsiveUI.spacing(context, 4)),
                     Text(
-                      'Grand Total',
+                      LocaleKeys.grand_total.tr(),
                       style: TextStyle(
                         fontSize: ResponsiveUI.fontSize(context, 16),
                         fontWeight: FontWeight.bold,

@@ -22,7 +22,7 @@
         android:usesPermissionFlags="neverForLocation" />
 
     <application
-        android:label="systego"
+        android:label="GoSystem"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

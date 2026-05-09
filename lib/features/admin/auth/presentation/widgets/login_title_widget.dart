@@ -14,7 +14,7 @@ class LoginTitleWidget extends StatelessWidget {
     return FadeInAnimation(
       delay: const Duration(milliseconds: 400),
       child: Align(
-        alignment: Alignment.centerLeft,
+        alignment: AlignmentDirectional.centerStart,
         child: Text(
           LocaleKeys.login.tr(),
           style: TextStyle(

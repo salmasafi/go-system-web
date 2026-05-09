@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/core/widgets/custom_error/custom_empty_state.dart';
 import 'package:GoSystem/features/pos/checkout/cubit/checkout_cubit/checkout_cubit.dart';
 import 'package:GoSystem/features/pos/home/model/pos_models.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import 'bundle_card.dart';
 import 'bundle_attribute_selection_dialog.dart';
 import 'bundle_details_dialog.dart';
@@ -16,9 +18,9 @@ class POSBundlesGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (bundles.isEmpty) {
-      return const CustomEmptyState(
+      return CustomEmptyState(
         icon: Icons.card_giftcard,
-        title: 'No Bundles Available',
+        title: LocaleKeys.no_pandels_title.tr(),
       );
     }
 
@@ -27,7 +29,8 @@ class POSBundlesGrid extends StatelessWidget {
         right: ResponsiveUI.padding(context, 16),
         left: ResponsiveUI.padding(context, 16),
         top: ResponsiveUI.padding(context, 16),
-        bottom: ResponsiveUI.padding(context, 75),
+        bottom: ResponsiveUI.padding(
+            context, ResponsiveUI.isMobile(context) ? 75 : 16),
       ),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: ResponsiveUI.isMobile(context) ? 2 : 4,

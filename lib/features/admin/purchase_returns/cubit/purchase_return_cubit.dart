@@ -1,7 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/services/dio_helper.dart';
 import 'package:GoSystem/core/services/endpoints.dart';
 import 'package:GoSystem/core/utils/error_handler.dart';
+
 import '../model/purchase_return_model.dart';
 
 import 'package:GoSystem/features/admin/purchase_returns/data/repositories/purchase_return_repository.dart';
@@ -57,7 +59,7 @@ class PurchaseReturnCubit extends Cubit<PurchaseReturnState> {
         refundAccountId: refundAccountId,
         items: items,
       );
-      emit(CreateReturnSuccess('Return created successfully'));
+      emit(CreateReturnSuccess('return_created_success'.tr()));
       await getReturns();
     } catch (e) {
       emit(CreateReturnError(e.toString().replaceAll('Exception: ', '')));
@@ -76,7 +78,7 @@ class PurchaseReturnCubit extends Cubit<PurchaseReturnState> {
         note: note,
         refundMethod: refundMethod,
       );
-      emit(UpdateReturnSuccess('Return updated successfully'));
+      emit(UpdateReturnSuccess('return_updated_success'.tr()));
       await getReturns();
     } catch (e) {
       emit(UpdateReturnError(e.toString().replaceAll('Exception: ', '')));
@@ -88,7 +90,7 @@ class PurchaseReturnCubit extends Cubit<PurchaseReturnState> {
     try {
       await _repository.deleteReturn(id);
       returns.removeWhere((r) => r.id == id);
-      emit(DeleteReturnSuccess('Return deleted successfully'));
+      emit(DeleteReturnSuccess('return_deleted_success'.tr()));
       await getReturns();
     } catch (e) {
       emit(DeleteReturnError(e.toString().replaceAll('Exception: ', '')));

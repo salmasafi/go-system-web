@@ -1,6 +1,7 @@
 // lib/features/admin/product/presentation/widgets/add_product_widgets.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 
@@ -303,7 +304,7 @@ class DatePickerCard extends StatelessWidget {
                       Text(
                         selectedDate != null
                             ? '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}'
-                            : 'اضغط لاختيار التاريخ',
+                            : 'tap_to_select_date'.tr(),
                         style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 15),
                           fontWeight: FontWeight.w600,
@@ -334,15 +335,110 @@ class DatePickerCard extends StatelessWidget {
 // ═══════════════════════════════════════════════════════════════════════════
 class MainImagePicker extends StatelessWidget {
   final File? image;
-  final VoidCallback onPick;
+  final VoidCallback onPickFromGallery;
+  final VoidCallback? onPickFromCamera;
   final VoidCallback? onRemove;
 
   const MainImagePicker({
     super.key,
     required this.image,
-    required this.onPick,
+    required this.onPickFromGallery,
+    this.onPickFromCamera,
     this.onRemove,
   });
+
+  void _showImageSourceSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        margin: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(
+            ResponsiveUI.borderRadius(context, 20),
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: ResponsiveUI.padding(context, 8)),
+              Container(
+                width: ResponsiveUI.value(context, 40),
+                height: ResponsiveUI.value(context, 4),
+                decoration: BoxDecoration(
+                  color: AppColors.shadowGray.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              SizedBox(height: ResponsiveUI.padding(context, 16)),
+              // Camera option
+              if (onPickFromCamera != null)
+                ListTile(
+                  leading: Container(
+                    padding: EdgeInsets.all(ResponsiveUI.padding(context, 10)),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryBlue.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(
+                        ResponsiveUI.borderRadius(context, 12),
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.camera_alt_rounded,
+                      color: AppColors.primaryBlue,
+                      size: ResponsiveUI.iconSize(context, 24),
+                    ),
+                  ),
+                  title: Text(
+                    'take_photo'.tr(),
+                    style: TextStyle(
+                      fontSize: ResponsiveUI.fontSize(context, 15),
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.darkGray,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    onPickFromCamera!();
+                  },
+                ),
+              // Gallery option
+              ListTile(
+                leading: Container(
+                  padding: EdgeInsets.all(ResponsiveUI.padding(context, 10)),
+                  decoration: BoxDecoration(
+                    color: AppColors.successGreen.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(
+                      ResponsiveUI.borderRadius(context, 12),
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.photo_library_rounded,
+                    color: AppColors.successGreen,
+                    size: ResponsiveUI.iconSize(context, 24),
+                  ),
+                ),
+                title: Text(
+                  'pick_from_gallery'.tr(),
+                  style: TextStyle(
+                    fontSize: ResponsiveUI.fontSize(context, 15),
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.darkGray,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  onPickFromGallery();
+                },
+              ),
+              SizedBox(height: ResponsiveUI.padding(context, 8)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -357,11 +453,20 @@ class MainImagePicker extends StatelessWidget {
                 Icon(Icons.image, size: ResponsiveUI.iconSize(context, 20), color: AppColors.primaryBlue),
                 SizedBox(width: ResponsiveUI.value(context, 8)),
                 Text(
-                  'الصورة الرئيسية *',
+                  'main_image'.tr(),
                   style: TextStyle(
                     fontSize: ResponsiveUI.fontSize(context, 15),
                     fontWeight: FontWeight.bold,
                     color: AppColors.darkGray,
+                  ),
+                ),
+                SizedBox(width: ResponsiveUI.value(context, 6)),
+                Text(
+                  'optional'.tr(),
+                  style: TextStyle(
+                    fontSize: ResponsiveUI.fontSize(context, 12),
+                    color: AppColors.darkGray.withValues(alpha: 0.5),
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ],
@@ -375,7 +480,7 @@ class MainImagePicker extends StatelessWidget {
                   size: ResponsiveUI.iconSize(context, 18),
                 ),
                 label: Text(
-                  'إزالة',
+                  'remove'.tr(),
                   style: TextStyle(color: AppColors.red, fontSize: ResponsiveUI.fontSize(context, 12)),
                 ),
               ),
@@ -383,7 +488,7 @@ class MainImagePicker extends StatelessWidget {
         ),
         SizedBox(height: ResponsiveUI.value(context, 12)),
         GestureDetector(
-          onTap: onPick,
+          onTap: () => _showImageSourceSheet(context),
           child: Container(
             width: double.infinity,
             height: ResponsiveUI.value(context, 400),
@@ -452,21 +557,13 @@ class MainImagePicker extends StatelessWidget {
                       ),
                       SizedBox(height: ResponsiveUI.value(context, 12)),
                       Text(
-                        'اضغط لرفع الصورة الرئيسية',
+                        'pick_from_gallery'.tr(),
                         style: TextStyle(
                           color: AppColors.shadowGray,
                           fontSize: ResponsiveUI.fontSize(context, 14),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      // SizedBox(height: ResponsiveUI.value(context, 4)),
-                      // Text(
-                      //   'Recommended: 1000x1000px',
-                      //   style: TextStyle(
-                      //     color: AppColors.shadowGray.withValues(alpha: 0.7),
-                      //     fontSize: ResponsiveUI.fontSize(context, 11),
-                      //   ),
-                      // ),
                     ],
                   ),
           ),
@@ -504,11 +601,20 @@ class GalleryImagesPicker extends StatelessWidget {
                 Icon(Icons.collections, size: ResponsiveUI.iconSize(context, 20), color: AppColors.primaryBlue),
                 SizedBox(width: ResponsiveUI.value(context, 8)),
                 Text(
-                  'صور المعرض',
+                  'gallery_images'.tr(),
                   style: TextStyle(
                     fontSize: ResponsiveUI.fontSize(context, 15),
                     fontWeight: FontWeight.bold,
                     color: AppColors.darkGray,
+                  ),
+                ),
+                SizedBox(width: ResponsiveUI.value(context, 6)),
+                Text(
+                  'optional'.tr(),
+                  style: TextStyle(
+                    fontSize: ResponsiveUI.fontSize(context, 12),
+                    color: AppColors.darkGray.withValues(alpha: 0.5),
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ],

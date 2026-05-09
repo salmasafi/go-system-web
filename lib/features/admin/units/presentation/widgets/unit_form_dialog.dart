@@ -250,7 +250,11 @@ class _UnitFormDialogState extends State<UnitFormDialog>
   }
 
   void _handleStateChanges(BuildContext context, UnitsState state) {
-    if (state is CreateUnitSuccess || state is UpdateUnitSuccess) {
+    if (state is CreateUnitSuccess) {
+      CustomSnackbar.showSuccess(context, state.message);
+      Navigator.of(context).pop();
+    } else if (state is UpdateUnitSuccess) {
+      CustomSnackbar.showSuccess(context, state.message);
       Navigator.of(context).pop();
     }
 

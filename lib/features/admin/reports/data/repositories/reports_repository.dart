@@ -37,6 +37,9 @@ abstract class ReportsRepositoryInterface {
 class ReportsRepository implements ReportsRepositoryInterface {
   final SupabaseClient _client = SupabaseClientWrapper.instance;
 
+  /// Exposed for cubit-level RPC calls
+  SupabaseClient get client => _client;
+
   // ==================== SALES REPORTS ====================
   
   @override
@@ -132,7 +135,7 @@ class ReportsRepository implements ReportsRepositoryInterface {
           .from('products')
           .select('''
             *,
-            product_warehouses(quantity),
+            warehouse_products(quantity),
             sale_items(quantity, subtotal),
             product_categories(categories(name)),
             brands(name)
@@ -259,7 +262,7 @@ class ReportsRepository implements ReportsRepositoryInterface {
         
         // Get stock for this warehouse
         final stockResponse = await _client
-            .from('product_warehouses')
+            .from('warehouse_products')
             .select('''
               *,
               products(id, name, code, cost, low_stock)
@@ -322,40 +325,49 @@ class ReportsRepository implements ReportsRepositoryInterface {
       // Get recent movements
       final recentAdjustments = await _client
           .from('adjustments')
-          .select('date, type, quantity, reference')
-          .order('date', ascending: false)
+          .select('created_at, type, reference')
+          .order('created_at', ascending: false)
           .limit(20);
-      
-      final recentMovements = (recentAdjustments as List).map((json) => MovementData(
-        date: DateTime.parse(json['date']),
-        type: json['type'] ?? 'adjustment',
-        quantity: json['quantity'] ?? 0,
-        reference: json['reference'] ?? '',
-      )).toList();
-      
-      // Calculate stock in/out
-      final adjustments = await _client
-          .from('adjustments')
-          .select('type, quantity');
-      
+
+      final recentMovements = (recentAdjustments as List).map((json) {
+        final dateStr = json['created_at'] ?? json['date'] ?? '';
+        return MovementData(
+          date: DateTime.tryParse(dateStr) ?? DateTime.now(),
+          type: json['type'] ?? 'adjustment',
+          quantity: 0,
+          reference: json['reference'] ?? '',
+        );
+      }).toList();
+
+      // Calculate stock in/out from adjustment_items
+      // type 'increase' → stock in, type 'decrease' → stock out
+      final adjustmentItems = await _client
+          .from('adjustment_items')
+          .select('quantity, adjustments!inner(type)');
+
       int stockIn = 0;
       int stockOut = 0;
-      
-      for (final adj in adjustments as List) {
-        final type = adj['type'] as String?;
-        final qty = (adj['quantity'] ?? 0) as int;
-        if (type == 'addition') {
-          stockIn += qty;
-        } else if (type == 'subtraction') {
-          stockOut += qty;
-        }
+
+      for (final item in adjustmentItems as List) {
+        final type = (item['adjustments'] as Map?)?['type'] as String? ?? '';
+        final qty = (item['quantity'] ?? 0) as int;
+        if (type == 'increase') stockIn += qty;
+        if (type == 'decrease') stockOut += qty;
       }
-      
+
+      // Count purchases and returns
+      final purchasesCountResponse = await _client
+          .from('purchases')
+          .select('id');
+      final returnsCountResponse = await _client
+          .from('sale_returns')
+          .select('id');
+
       return InventoryMovementSummary(
         totalAdjustments: adjustmentsResponse.length,
         totalTransfers: transfersResponse.length,
-        totalPurchases: 0, // Will need separate query
-        totalReturns: 0, // Will need separate query
+        totalPurchases: (purchasesCountResponse as List).length,
+        totalReturns: (returnsCountResponse as List).length,
         stockIn: stockIn,
         stockOut: stockOut,
         recentMovements: recentMovements,
@@ -455,13 +467,63 @@ class ReportsRepository implements ReportsRepositoryInterface {
         accountType: json['account_type'],
       )).toList();
       
+      // Include actual sales from POS
+      var salesQuery = _client.from('sales')
+          .select('grand_total, tax_amount, date')
+          .eq('sale_status', 'completed');
+      if (startDate != null) {
+        salesQuery = salesQuery.gte('date', startDate.toIso8601String().split('T')[0]);
+      }
+      if (endDate != null) {
+        salesQuery = salesQuery.lte('date', endDate.toIso8601String().split('T')[0]);
+      }
+      final salesData = await salesQuery;
+      final totalSalesIncome = (salesData as List)
+          .fold<double>(0, (s, r) => s + ((r['grand_total'] as num?)?.toDouble() ?? 0));
+      final totalTaxCollected = salesData
+          .fold<double>(0, (s, r) => s + ((r['tax_amount'] as num?)?.toDouble() ?? 0));
+
+      // Group all income/expenses by month (key = 'YYYY-MM')
+      final monthlyRevMap = <String, double>{};
+      final monthlyExpMap = <String, double>{};
+
+      // POS Sales
+      for (final sale in salesData) {
+        final dt = DateTime.tryParse(sale['date'] ?? '') ?? DateTime.now();
+        final key = '${dt.year}-${dt.month.toString().padLeft(2, '0')}';
+        final amount = (sale['grand_total'] as num?)?.toDouble() ?? 0;
+        monthlyRevMap[key] = (monthlyRevMap[key] ?? 0) + amount;
+      }
+      // Manual revenues
+      for (final t in revenues) {
+        final key = '${t.date.year}-${t.date.month.toString().padLeft(2, '0')}';
+        monthlyRevMap[key] = (monthlyRevMap[key] ?? 0) + t.amount;
+      }
+      // Expenses
+      for (final t in expenses) {
+        final key = '${t.date.year}-${t.date.month.toString().padLeft(2, '0')}';
+        monthlyExpMap[key] = (monthlyExpMap[key] ?? 0) + t.amount;
+      }
+
+      final allKeys = {...monthlyRevMap.keys, ...monthlyExpMap.keys}.toList()..sort();
+      final monthlyData = allKeys.map((key) {
+        final rev = monthlyRevMap[key] ?? 0;
+        final exp = monthlyExpMap[key] ?? 0;
+        return MonthlyFinancialData(
+          month: key,
+          revenue: rev,
+          expenses: exp,
+          profit: rev - exp,
+        );
+      }).toList();
+
       return FinancialSummary(
-        totalRevenue: totalRevenue,
+        totalRevenue: totalRevenue + totalSalesIncome,
         totalExpenses: totalExpenses,
-        netIncome: totalRevenue - totalExpenses,
-        totalTaxCollected: 0, // Will need separate query
+        netIncome: totalRevenue + totalSalesIncome - totalExpenses,
+        totalTaxCollected: totalTaxCollected,
         bankAccounts: bankAccounts,
-        monthlyData: [], // Will implement grouping by month
+        monthlyData: monthlyData,
       );
     } catch (e) {
       log('ReportsRepository: Error fetching financial summary - $e');
@@ -494,9 +556,34 @@ class ReportsRepository implements ReportsRepositoryInterface {
       
       final response = await query.order('start_time', ascending: false);
       
-      final reports = (response as List)
-          .map((json) => ShiftReportModel.fromJson(json))
+      // Calculate totalTransactions per shift from sales table
+      final shiftIds = (response as List)
+          .map((json) => json['id'] as String)
           .toList();
+      
+      final Map<String, int> shiftTxCounts = {};
+      if (shiftIds.isNotEmpty) {
+        // Fetch sale counts grouped by shift_id
+        final salesResponse = await _client
+            .from('sales')
+            .select('shift_id');
+        
+        for (final sale in salesResponse as List) {
+          final shiftId = sale['shift_id'] as String?;
+          if (shiftId != null && shiftIds.contains(shiftId)) {
+            shiftTxCounts[shiftId] = (shiftTxCounts[shiftId] ?? 0) + 1;
+          }
+        }
+      }
+      
+      final reports = response.map((json) {
+        // Inject total_transactions calculated from sales
+        final shiftId = json['id'] as String;
+        final txCount = shiftTxCounts[shiftId] ?? 0;
+        final mutableJson = Map<String, dynamic>.from(json);
+        mutableJson['total_transactions'] = txCount;
+        return ShiftReportModel.fromJson(mutableJson);
+      }).toList();
       
       log('ReportsRepository: Fetched ${reports.length} shifts');
       return reports;
@@ -527,39 +614,51 @@ class ReportsRepository implements ReportsRepositoryInterface {
       
       final shifts = await getShiftReport(startDate: startDate, endDate: endDate);
       
-      // Group by cashier
-      final cashierMap = <String, List<ShiftReportModel>>{};
+      // Group by cashier ID to avoid duplicates
+      final cashierMap = <String, _CashierAccum>{};
       for (final shift in shifts) {
-        if (!cashierMap.containsKey(shift.cashierName)) {
-          cashierMap[shift.cashierName] = [];
-        }
-        cashierMap[shift.cashierName]!.add(shift);
+        final key = shift.cashierId;
+        cashierMap.putIfAbsent(key, () => _CashierAccum(shift.cashierId, shift.cashierName));
+        cashierMap[key]!.add(shift);
       }
-      
-      // Calculate performance for each cashier
-      final performance = cashierMap.entries.map((entry) {
-        final name = entry.key;
-        final shiftsList = entry.value;
-        final totalSales = shiftsList.fold<double>(0, (sum, s) => sum + s.totalSaleAmount);
-        
+
+      final performance = cashierMap.values.map((acc) {
+        final totalTx = acc.totalTransactions;
         return CashierPerformance(
-          cashierId: '', // Would need to fetch actual ID
-          cashierName: name,
-          totalShifts: shiftsList.length,
-          totalSales: totalSales,
-          averageSalesPerShift: shiftsList.isEmpty ? 0 : totalSales / shiftsList.length,
-          totalTransactions: shiftsList.fold<int>(0, (sum, s) => sum + s.totalTransactions),
-          averageTransactionValue: 0, // Would need transaction count
+          cashierId: acc.cashierId,
+          cashierName: acc.cashierName,
+          totalShifts: acc.shifts.length,
+          totalSales: acc.totalSales,
+          averageSalesPerShift:
+              acc.shifts.isEmpty ? 0 : acc.totalSales / acc.shifts.length,
+          totalTransactions: totalTx,
+          averageTransactionValue:
+              totalTx == 0 ? 0 : acc.totalSales / totalTx,
         );
-      }).toList();
-      
-      // Sort by total sales
-      performance.sort((a, b) => b.totalSales.compareTo(a.totalSales));
-      
+      }).toList()
+        ..sort((a, b) => b.totalSales.compareTo(a.totalSales));
+
       return performance;
     } catch (e) {
       log('ReportsRepository: Error fetching cashier performance - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
+}
+
+// ── Helper accumulator for cashier performance grouping ──────────────────────
+class _CashierAccum {
+  final String cashierId;
+  final String cashierName;
+  final List<ShiftReportModel> shifts = [];
+
+  _CashierAccum(this.cashierId, this.cashierName);
+
+  void add(ShiftReportModel shift) => shifts.add(shift);
+
+  double get totalSales =>
+      shifts.fold(0, (s, sh) => s + sh.totalSaleAmount);
+
+  int get totalTransactions =>
+      shifts.fold(0, (s, sh) => s + sh.totalTransactions);
 }

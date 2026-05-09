@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/error_handler.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:GoSystem/features/pos/history/cubit/history_cubit.dart';
@@ -38,6 +40,7 @@ import '../widgets/product_details_dialog.dart';
 import '../widgets/product_grid.dart';
 import '../widgets/tab_bar.dart';
 import '../widgets/bundles_grid.dart';
+import '../../../checkout/presentation/widgets/cart_side_panel.dart';
 
 class POSHomeScreen extends StatefulWidget {
   const POSHomeScreen({super.key});
@@ -261,6 +264,7 @@ class _POSHomeScreenState extends State<POSHomeScreen>
         final checkoutCubit = context.read<CheckoutCubit>();
         final cartItems = checkoutCubit.cartItems;
         final bool hasItems = cartItems.isNotEmpty;
+        final bool isWide = !ResponsiveUI.isMobile(context);
 
         return Scaffold(
           key: _scaffoldKey,
@@ -301,7 +305,7 @@ class _POSHomeScreenState extends State<POSHomeScreen>
                       SizedBox(width: ResponsiveUI.value(context, 8)),
                       Expanded(
                         child: Text(
-                          shiftCubit.selectedCashier?.name ?? "Cashier",
+                          shiftCubit.selectedCashier?.name ?? LocaleKeys.cashier.tr(),
                           style: TextStyle(
                             color: AppColors.darkGray,
                             fontWeight: FontWeight.bold,
@@ -373,7 +377,7 @@ class _POSHomeScreenState extends State<POSHomeScreen>
                                   size: ResponsiveUI.iconSize(context, 24),
                                 ),
                                 padding: EdgeInsets.zero,
-                                tooltip: 'Pending Orders',
+                                tooltip: LocaleKeys.pending_orders.tr(),
                               ),
                               if (count > 0)
                                 Positioned(
@@ -475,9 +479,27 @@ class _POSHomeScreenState extends State<POSHomeScreen>
               },
             ),
           ),
-          body: _buildPosBody(context.read<PosCubit>()),
-          bottomSheet: hasItems ? POSCartSummary(total: _total) : null,
-          floatingActionButton: hasItems
+          body: isWide
+              ? Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(child: _buildPosBody(context.read<PosCubit>(), showCustomerSelector: false)),
+                    POSCartSidePanel(
+                      onQuantityChanged: (index, delta) {
+                        checkoutCubit.updateQuantity(index, delta);
+                        context.read<PosCubit>().refreshCartProducts();
+                      },
+                      onRemove: (index) {
+                        checkoutCubit.removeFromCart(index);
+                        context.read<PosCubit>().refreshCartProducts();
+                      },
+                    ),
+                  ],
+                )
+              : _buildPosBody(context.read<PosCubit>()),
+          bottomSheet:
+              (!isWide && hasItems) ? POSCartSummary(total: _total) : null,
+          floatingActionButton: (!isWide && hasItems)
               ? AnimatedOpacity(
                   opacity: 1.0,
                   duration: const Duration(milliseconds: 200),
@@ -493,7 +515,7 @@ class _POSHomeScreenState extends State<POSHomeScreen>
     );
   }
 
-  Widget _buildPosBody(PosCubit homeCubit) {
+  Widget _buildPosBody(PosCubit homeCubit, {bool showCustomerSelector = true}) {
     return BlocBuilder<PosCubit, PosState>(
       builder: (context, state) {
         if (state is PosLoading) {
@@ -504,6 +526,7 @@ class _POSHomeScreenState extends State<POSHomeScreen>
           children: [
             POSHeaderSection(
               searchController: _searchController,
+              showCustomerSelector: showCustomerSelector,
               onChanged: (query) => setState(() => _searchQuery = query),
               onTap: () async {
                 final result = await Navigator.push(

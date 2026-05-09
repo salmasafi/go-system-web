@@ -12,7 +12,10 @@ Widget buildTextField(
   TextInputType? keyboardType,
   int maxLines = 1,
   bool readOnly = false,
+  bool autofocus = false,
   void Function()? onTap,
+  IconData? suffixIcon,
+  void Function()? suffixOnPressed,
 }) {
   final fontSizeLabel = ResponsiveUI.fontSize(context, 14);
   final spacing8 = ResponsiveUI.spacing(context, 8);
@@ -40,6 +43,7 @@ Widget buildTextField(
         readOnly: readOnly,
         onTap: onTap,
         controller: controller,
+        autofocus: autofocus,
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: TextStyle(
@@ -51,6 +55,13 @@ Widget buildTextField(
             color: AppColors.primaryBlue,
             size: iconSize22,
           ),
+          suffixIcon: suffixIcon != null
+              ? IconButton(
+                  icon: Icon(suffixIcon,
+                      color: AppColors.primaryBlue, size: iconSize22),
+                  onPressed: suffixOnPressed,
+                )
+              : null,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(borderRadius12),
             borderSide: BorderSide(

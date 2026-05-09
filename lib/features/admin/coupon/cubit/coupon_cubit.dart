@@ -53,7 +53,6 @@ class CouponsCubit extends Cubit<CouponsState> {
 
       await _repository.createCoupon(coupon);
       emit(CreateCouponSuccess(LocaleKeys.coupon_created_success.tr()));
-      await getCoupons();
     } catch (e) {
       emit(CreateCouponError(e.toString().replaceAll('Exception: ', '')));
     }
@@ -89,7 +88,6 @@ class CouponsCubit extends Cubit<CouponsState> {
 
       await _repository.updateCoupon(coupon);
       emit(UpdateCouponSuccess(LocaleKeys.coupon_updated_success.tr()));
-      await getCoupons();
     } catch (e) {
       emit(UpdateCouponError(e.toString().replaceAll('Exception: ', '')));
     }
@@ -101,7 +99,6 @@ class CouponsCubit extends Cubit<CouponsState> {
       final success = await _repository.deleteCoupon(couponId);
       if (success) {
         emit(DeleteCouponSuccess(LocaleKeys.coupon_deleted_success.tr()));
-        await getCoupons();
       } else {
         emit(DeleteCouponError('Failed to delete coupon'));
       }
@@ -123,7 +120,6 @@ class CouponsCubit extends Cubit<CouponsState> {
           ? LocaleKeys.coupon_activated_success.tr()
           : LocaleKeys.coupon_deactivated_success.tr()
       ));
-      await getCoupons();
     } catch (e) {
       emit(ChangeCouponStatusError(e.toString().replaceAll('Exception: ', '')));
     }

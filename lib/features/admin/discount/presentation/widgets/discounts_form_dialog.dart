@@ -133,7 +133,9 @@ class _DiscountFormDialogState extends State<DiscountFormDialog>
                                   label: LocaleKeys.discount_type.tr(),
                                   icon: Icons.price_change_rounded,
                                   hint: LocaleKeys.select_discount_type.tr(),
-                                  itemLabel: (item) => item,
+                                  itemLabel: (item) => item == "Fixed"
+                                      ? LocaleKeys.discount_type_fixed.tr()
+                                      : LocaleKeys.discount_type_percentage.tr(),
                                   onChanged: (val) {
                                     setState(() => selectedType = val);
                                   },

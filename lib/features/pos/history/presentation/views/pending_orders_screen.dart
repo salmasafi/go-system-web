@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +8,7 @@ import 'package:GoSystem/features/pos/history/cubit/history_cubit.dart';
 import 'package:GoSystem/features/pos/history/cubit/history_state.dart';
 import 'package:GoSystem/features/pos/history/model/sale_model.dart';
 import 'package:GoSystem/features/pos/history/presentation/views/pending_sale_details_screen.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 
 class PendingOrdersScreen extends StatefulWidget {
   const PendingOrdersScreen({super.key});
@@ -33,7 +35,7 @@ class _PendingOrdersScreenState extends State<PendingOrdersScreen> {
             Icon(Icons.access_time_rounded, color: AppColors.primaryBlue, size: ResponsiveUI.iconSize(context, 22)),
             SizedBox(width: ResponsiveUI.value(context, 8)),
             Text(
-              'Pending Orders',
+              LocaleKeys.pending_orders.tr(),
               style: TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: ResponsiveUI.fontSize(context, 18),
@@ -141,7 +143,7 @@ class _PendingCard extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  'Order #${sale.reference}',
+                  LocaleKeys.order_number.tr(namedArgs: {'number': sale.reference}),
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: ResponsiveUI.fontSize(context, 15),
@@ -177,17 +179,17 @@ class _PendingCard extends StatelessWidget {
             SizedBox(height: ResponsiveUI.value(context, 12)),
 
             // ── Info rows ──
-            _InfoRow(label: 'Customer:', value: sale.customerName),
+            _InfoRow(label: LocaleKeys.customer_label.tr(), value: sale.customerName),
             SizedBox(height: ResponsiveUI.value(context, 4)),
             if (sale.warehouseName.isNotEmpty) ...[
-              _InfoRow(label: 'Warehouse:', value: sale.warehouseName),
+              _InfoRow(label: LocaleKeys.warehouse_label.tr(), value: sale.warehouseName),
               SizedBox(height: ResponsiveUI.value(context, 4)),
             ],
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Total:',
+                  LocaleKeys.total_label.tr(),
                   style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 13), color: AppColors.shadowGray),
                 ),
                 Text(
@@ -223,15 +225,15 @@ class _PendingCard extends StatelessWidget {
   String _statusLabel(String status) {
     switch (status.toLowerCase()) {
       case 'processed':
-        return 'Processed';
+        return LocaleKeys.status_processed.tr();
       case 'pending':
-        return 'Pending';
+        return LocaleKeys.status_pending.tr();
       case 'completed':
-        return 'Completed';
+        return LocaleKeys.status_completed.tr();
       default:
         return status.isNotEmpty
             ? '${status[0].toUpperCase()}${status.substring(1)}'
-            : 'Pending';
+            : LocaleKeys.status_pending.tr();
     }
   }
 
@@ -294,7 +296,7 @@ class _EmptyView extends StatelessWidget {
           ),
           SizedBox(height: ResponsiveUI.value(context, 20)),
           Text(
-            'No Pending Orders',
+            LocaleKeys.no_pending_orders.tr(),
             style: TextStyle(
                 fontSize: ResponsiveUI.fontSize(context, 18),
                 fontWeight: FontWeight.w700,
@@ -302,7 +304,7 @@ class _EmptyView extends StatelessWidget {
           ),
           SizedBox(height: ResponsiveUI.value(context, 8)),
           Text(
-            'All orders have been processed',
+            LocaleKeys.all_orders_processed.tr(),
             style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14), color: AppColors.shadowGray),
           ),
         ],
@@ -333,7 +335,7 @@ class _ErrorView extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: onRetry,
             icon: Icon(Icons.refresh),
-            label: const Text('Retry'),
+            label: Text(LocaleKeys.retry.tr()),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryBlue,
               foregroundColor: Colors.white,

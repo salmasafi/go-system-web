@@ -1,12 +1,13 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
+import 'package:GoSystem/core/supabase/supabase_client.dart';
 import 'package:GoSystem/features/pos/history/cubit/history_cubit.dart';
 import 'package:GoSystem/features/pos/history/cubit/history_state.dart';
 import 'package:GoSystem/features/pos/history/model/sale_model.dart';
-import 'package:GoSystem/features/pos/home/cubit/pos_home_cubit.dart';
 import 'package:GoSystem/features/pos/home/model/pos_models.dart';
 
 // ─── Entry point ─────────────────────────────────────────────────────────────
@@ -21,22 +22,48 @@ class PayDueDialog extends StatefulWidget {
 }
 
 class _PayDueDialogState extends State<PayDueDialog> {
-  late List<BankAccount> _accounts;
+  List<BankAccount> _accounts = [];
   BankAccount? _selectedAccount;
   late TextEditingController _amountCtrl;
+  bool _isLoadingAccounts = true;
 
   static const _purple = AppColors.primaryBlue;
 
   @override
   void initState() {
     super.initState();
-    _accounts = context.read<PosCubit>().accounts;
-    _selectedAccount = _accounts.isNotEmpty ? _accounts.first : null;
-    
     // Pre-fill with the remaining due amount
     _amountCtrl = TextEditingController(
       text: widget.due.remainingAmount.toStringAsFixed(2),
     );
+    _loadBankAccounts();
+  }
+
+  Future<void> _loadBankAccounts() async {
+    try {
+      final client = SupabaseClientWrapper.instance;
+      final response = await client
+          .from('bank_accounts')
+          .select()
+          .eq('status', true);
+      final loaded = (response as List)
+          .map((e) => BankAccount.fromJson(e))
+          .toList();
+      if (mounted) {
+        setState(() {
+          _accounts = loaded;
+          _selectedAccount = _accounts.isNotEmpty ? _accounts.first : null;
+          _isLoadingAccounts = false;
+        });
+      }
+    } catch (e) {
+      log('PayDueDialog: Error loading bank accounts - $e');
+      if (mounted) {
+        setState(() {
+          _isLoadingAccounts = false;
+        });
+      }
+    }
   }
 
   @override
@@ -112,7 +139,9 @@ class _PayDueDialogState extends State<PayDueDialog> {
                       SizedBox(height: ResponsiveUI.value(context, 20)),
 
                       // ── Account dropdown ──
-                      if (_accounts.isEmpty)
+                      if (_isLoadingAccounts)
+                        const _LoadingAccountsHint()
+                      else if (_accounts.isEmpty)
                         const _NoAccountsHint()
                       else ...[
                         Text(
@@ -266,7 +295,7 @@ class _PayDueDialogState extends State<PayDueDialog> {
                               builder: (context, state) {
                                 final isLoading = state is DuesPayLoading;
                                 return ElevatedButton(
-                                  onPressed: (_paidNow > 0 && !isLoading) ? _confirm : null,
+                                  onPressed: (_paidNow > 0 && !isLoading && !_isLoadingAccounts) ? _confirm : null,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: _purple,
                                     foregroundColor: Colors.white,
@@ -524,6 +553,45 @@ class _NoAccountsHint extends StatelessWidget {
           Expanded(
             child: Text(
               'No financial accounts found. Please add accounts first.',
+              style: TextStyle(
+                fontSize: ResponsiveUI.fontSize(context, 13),
+                color: AppColors.darkGray,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LoadingAccountsHint extends StatelessWidget {
+  const _LoadingAccountsHint();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(ResponsiveUI.padding(context, 14)),
+      decoration: BoxDecoration(
+        color: AppColors.lightBlueBackground,
+        borderRadius: BorderRadius.circular(
+          ResponsiveUI.borderRadius(context, 10),
+        ),
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            width: ResponsiveUI.iconSize(context, 18),
+            height: ResponsiveUI.iconSize(context, 18),
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: AppColors.primaryBlue,
+            ),
+          ),
+          SizedBox(width: ResponsiveUI.value(context, 8)),
+          Expanded(
+            child: Text(
+              'Loading payment accounts...',
               style: TextStyle(
                 fontSize: ResponsiveUI.fontSize(context, 13),
                 color: AppColors.darkGray,

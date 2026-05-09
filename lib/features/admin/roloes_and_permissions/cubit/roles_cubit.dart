@@ -50,7 +50,7 @@ class RolesCubit extends Cubit<RolesState> {
         permissions: permissions,
       );
       emit(RolesUpdateSuccess(LocaleKeys.role_updated.tr()));
-      getAllRoles();
+      await getAllRoles();
     } catch (e) {
       emit(RolesUpdateError(e.toString().replaceAll('Exception: ', '')));
     }
@@ -70,7 +70,7 @@ class RolesCubit extends Cubit<RolesState> {
         permissions: permissions,
       );
       emit(RolesCreateSuccess(LocaleKeys.role_created.tr()));
-      getAllRoles();
+      await getAllRoles();
     } catch (e) {
       emit(RolesCreateError(e.toString().replaceAll('Exception: ', '')));
     }
@@ -84,7 +84,7 @@ class RolesCubit extends Cubit<RolesState> {
     try {
       await _repository.deleteRole(roleId);
       emit(RolesDeleteSuccess(LocaleKeys.role_deleted.tr()));
-      getAllRoles();
+      await getAllRoles();
     } catch (e) {
       emit(RolesDeleteError(e.toString().replaceAll('Exception: ', '')));
     }

@@ -1,5 +1,6 @@
 // cubit/product_cubit.dart
 import 'dart:developer';
+import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -61,6 +62,7 @@ class ProductsCubit extends Cubit<ProductsState> {
     required bool isFeatured,
     required int maximumToShow,
     required List<String> galleryProduct,
+    List<File>? images,
   }) async {
     emit(ProductsLoading());
     try {
@@ -108,7 +110,7 @@ class ProductsCubit extends Cubit<ProductsState> {
         updatedAt: DateTime.now(),
       );
 
-      await _repository.createProduct(product);
+      await _repository.createProduct(product, images: images);
       emit(ProductAddSuccess('Product added successfully'.tr()));
       await getProducts();
     } catch (error) {
@@ -199,7 +201,7 @@ class ProductsCubit extends Cubit<ProductsState> {
     emit(ProductsLoading());
     try {
       await _repository.deleteProduct(productId);
-      emit(ProductDeleteSuccess('Product deleted successfully'));
+      emit(ProductDeleteSuccess('success'.tr()));
       await getProducts();
     } catch (error) {
       emit(ProductsError(error.toString().replaceAll('Exception: ', '')));

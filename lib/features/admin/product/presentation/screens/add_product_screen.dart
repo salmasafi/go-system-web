@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
@@ -23,6 +24,7 @@ import 'package:GoSystem/features/admin/units/cubit/units_cubit.dart';
 import 'package:GoSystem/features/admin/units/model/unit_model.dart';
 import '../../../../../core/utils/image_handler.dart';
 import '../widgets/add_product_custom_widgets.dart';
+import 'barcode_scanner_screen.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -56,18 +58,48 @@ class _AddProductScreenState extends State<AddProductScreen> {
   bool _isFeatured = false;
   DateTime? _expiryDate;
 
+  void _resetSelectedImages() {
+    _mainImage = null;
+    _galleryImages = [];
+  }
+
   @override
   void initState() {
     super.initState();
     context.read<CategoriesCubit>().getCategories();
     context.read<BrandsCubit>().getBrands();
     context.read<UnitsCubit>().getUnits();
-    _minQuantityController.text = '50';
+    _minQuantityController.text = '1';
     _lowStockController.text = '10';
     _maxToShowController.text = '100';
     _startQuantityController.text = '0';
     _wholePriceController.text = '0';
     _generateCodeAsync();
+  }
+
+  @override
+  void dispose() {
+    _resetSelectedImages();
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _priceController.dispose();
+    _wholePriceController.dispose();
+    _startQuantityController.dispose();
+    _lowStockController.dispose();
+    _minQuantityController.dispose();
+    _maxToShowController.dispose();
+    _codeController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _scanBarcode() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const BarcodeScannerScreen()),
+    );
+    if (result != null && result != '-1' && mounted) {
+      setState(() => _codeController.text = result);
+    }
   }
 
   Future<void> _generateCodeAsync() async {
@@ -80,8 +112,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
   }
 
-  Future<void> _pickMainImage() async {
+  Future<void> _pickMainImageFromGallery() async {
     final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (picked != null) setState(() => _mainImage = File(picked.path));
+  }
+
+  Future<void> _pickMainImageFromCamera() async {
+    final picked = await ImagePicker().pickImage(source: ImageSource.camera);
     if (picked != null) setState(() => _mainImage = File(picked.path));
   }
 
@@ -90,6 +127,31 @@ class _AddProductScreenState extends State<AddProductScreen> {
     if (picked.isNotEmpty) {
       setState(() => _galleryImages.addAll(picked.map((f) => File(f.path))));
     }
+  }
+
+  bool _validateSelectedImages() {
+    if (_mainImage != null) {
+      if (!ImageHelper.isValidImage(_mainImage!)) {
+        CustomSnackbar.showError(context, 'صيغة الصورة غير مدعومة');
+        return false;
+      }
+      if (!ImageHelper.isFileSizeValid(_mainImage!)) {
+        CustomSnackbar.showError(context, 'حجم الصورة كبير جداً');
+        return false;
+      }
+    }
+
+    for (final img in _galleryImages) {
+      if (!ImageHelper.isValidImage(img)) {
+        CustomSnackbar.showError(context, 'صيغة صورة من صور المعرض غير مدعومة');
+        return false;
+      }
+      if (!ImageHelper.isFileSizeValid(img)) {
+        CustomSnackbar.showError(context, 'حجم صورة من صور المعرض كبير جداً');
+        return false;
+      }
+    }
+    return true;
   }
 
   Future<void> _selectExpiryDate() async {
@@ -126,6 +188,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
       return;
     }
 
+    if (!_validateSelectedImages()) {
+      return;
+    }
+
     final double price = double.tryParse(_priceController.text) ?? 0.0;
     final double wholePrice = double.tryParse(_wholePriceController.text) ?? 0.0;
     final int startQty = int.tryParse(_startQuantityController.text) ?? 0;
@@ -134,15 +200,15 @@ class _AddProductScreenState extends State<AddProductScreen> {
     final int maxToShow =
         _showQuantity ? (int.tryParse(_maxToShowController.text) ?? 100) : 0;
 
-    final String? mainImageBase64 =
-        _mainImage != null ? ImageHelper.encodeImageToBase64(_mainImage!) : null;
-    final List<String> galleryBase64 =
-        _galleryImages.map((img) => ImageHelper.encodeImageToBase64(img)).toList();
+    final List<File> imagesToUpload = [
+      if (_mainImage != null) _mainImage!,
+      ..._galleryImages,
+    ];
 
     context.read<ProductsCubit>().addProductWithData(
           name: _nameController.text.trim(),
           description: _descriptionController.text.trim(),
-          image: mainImageBase64,
+          image: null,
           code: _codeController.text.trim(),
           categoryIds: _selectedCategories!.map((c) => c.id).toList(),
           brandId: _selectedBrand!.id ?? '',
@@ -156,12 +222,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
           wholePrice: wholePrice,
           startQuantity: startQty,
           quantity: startQty,
-          taxesId: '67056d0a3b233c5c1b36a7ae',
+          taxesId: '',
           productHasImei: _hasIMEI,
           showQuantity: _showQuantity,
           isFeatured: _isFeatured,
           maximumToShow: maxToShow,
-          galleryProduct: galleryBase64,
+          galleryProduct: const [],
+          images: imagesToUpload.isEmpty ? null : imagesToUpload,
         );
   }
 
@@ -171,6 +238,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       listener: (context, state) {
         if (state is ProductAddSuccess) {
           CustomSnackbar.showSuccess(context, state.message);
+          setState(_resetSelectedImages);
           Navigator.pop(context, true);
         } else if (state is ProductsError) {
           CustomSnackbar.showError(context, state.message);
@@ -234,8 +302,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
           controller: _codeController,
           label: 'كود المنتج',
           icon: Icons.qr_code_rounded,
-          hint: 'يتم إنشاؤه تلقائياً',
+          hint: 'يتم إنشاؤه تلقائياً أو امسح الباركود',
           readOnly: true,
+          autofocus: true,
+          suffixIcon: Icons.qr_code_scanner,
+          suffixOnPressed: _scanBarcode,
         ),
         SizedBox(height: ResponsiveUI.spacing(context, 12)),
         buildTextField(
@@ -404,9 +475,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
               child: buildTextField(
                 context,
                 controller: _minQuantityController,
-                label: 'حد الجملة (كمية)',
+                label: 'الحد الأدنى للبيعة الواحدة',
                 icon: Icons.shopping_cart_outlined,
-                hint: '50',
+                hint: '1',
                 keyboardType: TextInputType.number,
               ),
             ),
@@ -505,12 +576,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
   // ── Section 7: Images ─────────────────────────────────────────────────────
   Widget _buildImagesSection() {
     return ProductSectionCard(
-      title: 'صور المنتج',
+      title: 'product_images'.tr(),
       icon: Icons.photo_library_outlined,
       children: [
         MainImagePicker(
           image: _mainImage,
-          onPick: _pickMainImage,
+          onPickFromGallery: _pickMainImageFromGallery,
+          onPickFromCamera: _pickMainImageFromCamera,
           onRemove: () => setState(() => _mainImage = null),
         ),
         SizedBox(height: ResponsiveUI.spacing(context, 16)),
@@ -532,19 +604,5 @@ class _AddProductScreenState extends State<AddProductScreen> {
         size: ResponsiveUI.iconSize(context, 36),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _descriptionController.dispose();
-    _priceController.dispose();
-    _wholePriceController.dispose();
-    _startQuantityController.dispose();
-    _lowStockController.dispose();
-    _minQuantityController.dispose();
-    _maxToShowController.dispose();
-    _codeController.dispose();
-    super.dispose();
   }
 }

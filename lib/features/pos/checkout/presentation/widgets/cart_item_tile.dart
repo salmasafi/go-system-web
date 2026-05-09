@@ -1,7 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/features/pos/checkout/model/checkout_models.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import 'cart_item_attribute_display.dart';
 import 'cart_item_details_dialog.dart';
 
@@ -220,7 +222,7 @@ class CartItemTile extends StatelessWidget {
           ),
           SizedBox(height: ResponsiveUI.value(context, 2)),
           Text(
-            'Wholesale price active (≥ ${item.startQuantity})',
+            LocaleKeys.wholesale_price_active.tr(namedArgs: {'qty': item.startQuantity.toString()}),
             style: TextStyle(
               fontSize: ResponsiveUI.fontSize(context, 10),
               color: AppColors.primaryBlue.withValues(alpha: 0.7),

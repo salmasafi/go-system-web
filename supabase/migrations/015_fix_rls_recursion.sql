@@ -250,7 +250,11 @@ CREATE POLICY "Only admins and managers can modify warehouses" ON warehouses
 DROP POLICY IF EXISTS "Only admins and managers can modify inventory" ON warehouse_products;
 
 CREATE POLICY "Only admins and managers can modify inventory" ON warehouse_products
-    FOR ALL TO authenticated USING (
+    FOR ALL TO authenticated
+    USING (
+        has_any_role(auth.uid(), ARRAY['admin', 'manager', 'warehouse'])
+    )
+    WITH CHECK (
         has_any_role(auth.uid(), ARRAY['admin', 'manager', 'warehouse'])
     );
 

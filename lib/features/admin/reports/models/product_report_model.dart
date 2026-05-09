@@ -30,7 +30,7 @@ class ProductReportModel {
   });
 
   factory ProductReportModel.fromJson(Map<String, dynamic> json) {
-    final productWarehouses = json['product_warehouses'] as List? ?? [];
+    final productWarehouses = json['warehouse_products'] as List? ?? [];
     final totalQty = productWarehouses.fold<int>(
       0, 
       (sum, pw) => sum + ((pw['quantity'] ?? 0) as int),

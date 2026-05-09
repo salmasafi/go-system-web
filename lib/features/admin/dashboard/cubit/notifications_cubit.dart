@@ -18,7 +18,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
   void _initRealtime() {
     _repository.subscribeToNotifications(
       onNewNotification: (notification) {
-        log('NotificationsCubit: Real-time notification received: ${notification.title}');
+        if (isClosed) return;
         _unreadCount++;
         _cachedNotifications.insert(0, notification);
         _emitUpdatedState();
@@ -27,69 +27,50 @@ class NotificationsCubit extends Cubit<NotificationsState> {
   }
 
   Future<void> getNotifications() async {
-    emit(NotificationsLoading());
-
     try {
-      log('NotificationsCubit: Fetching notifications...');
-      
+      emit(NotificationsLoading());
       final notifications = await _repository.getAllNotifications();
-      _unreadCount = await _repository.getUnreadCount();
       _cachedNotifications = notifications;
-
-      log('NotificationsCubit: Fetch successful. Unread: $_unreadCount');
-      emit(
-        NotificationsSuccess(
-          notifications: _cachedNotifications,
-          unreadCount: _unreadCount,
-        ),
-      );
-    } catch (error) {
-      log('NotificationsCubit: Fetch error: $error');
-      emit(NotificationsError(error.toString()));
+      _unreadCount = notifications.where((n) => !n.isRead).length;
+      _emitUpdatedState();
+    } catch (e) {
+      log('NotificationsCubit: getNotifications error - $e');
+      emit(NotificationsError(e.toString()));
     }
   }
 
   Future<void> markAsRead(String notificationId) async {
-    // Optimistic update
-    final index = _cachedNotifications.indexWhere((n) => n.id == notificationId);
-    if (index != -1 && !_cachedNotifications[index].isRead) {
-      _unreadCount = (_unreadCount - 1).clamp(0, 999);
-      // Create updated notification model if needed, but for now we just refetch after API call
-    }
-
     try {
-      log('NotificationsCubit: Marking as read: $notificationId');
       await _repository.markAsRead(notificationId);
-      
-      // Refetch to ensure data consistency
-      await getNotifications();
-    } catch (error) {
-      log('NotificationsCubit: Mark as read error: $error');
-      emit(NotificationsError(error.toString()));
+      final idx = _cachedNotifications.indexWhere((n) => n.id == notificationId);
+      if (idx != -1) {
+        _cachedNotifications[idx] = _cachedNotifications[idx].copyWith(isRead: true);
+        _unreadCount = _cachedNotifications.where((n) => !n.isRead).length;
+        _emitUpdatedState();
+      }
+    } catch (e) {
+      log('NotificationsCubit: markAsRead error - $e');
     }
   }
 
   Future<void> markAllAsRead() async {
-    emit(NotificationsLoading());
     try {
-      log('NotificationsCubit: Marking all as read');
       await _repository.markAllAsRead();
-      await getNotifications();
-    } catch (error) {
-      log('NotificationsCubit: Mark all as read error: $error');
-      emit(NotificationsError(error.toString()));
+      _cachedNotifications = _cachedNotifications
+          .map((n) => n.copyWith(isRead: true))
+          .toList();
+      _unreadCount = 0;
+      _emitUpdatedState();
+    } catch (e) {
+      log('NotificationsCubit: markAllAsRead error - $e');
     }
   }
 
   void _emitUpdatedState() {
-    if (state is NotificationsSuccess) {
-      emit(
-        NotificationsSuccess(
-          notifications: List.from(_cachedNotifications),
-          unreadCount: _unreadCount,
-        ),
-      );
-    }
+    emit(NotificationsSuccess(
+      notifications: List.from(_cachedNotifications),
+      unreadCount: _unreadCount,
+    ));
   }
 
   @override

@@ -1,4 +1,4 @@
-package com.example.systego
+package com.example.gosystem
 
 import io.flutter.embedding.android.FlutterActivity
 

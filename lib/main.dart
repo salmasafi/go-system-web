@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:GoSystem/core/config/app_config.dart';
 import 'package:GoSystem/core/services/session_helper.dart';
 import 'package:GoSystem/core/supabase/supabase_client.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:GoSystem/features/pos/history/cubit/history_cubit.dart';
 import 'package:GoSystem/features/admin/adjustment/cubit/adjustment_cubit.dart';
 import 'package:GoSystem/features/admin/admins_screen/cubit/admins_cubit.dart';
@@ -158,12 +159,34 @@ class _MainAppState extends State<MainApp> {
   @override
   void initState() {
     super.initState();
-    SessionManager.onSessionExpired.listen((_) {
-      log('🔁 Session expired — navigating to login');
-      navigatorKey.currentState?.pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-        (route) => false,
-      );
+    SupabaseClientWrapper.instance.auth.onAuthStateChange.listen((data) {
+      if (data.event == AuthChangeEvent.signedOut) {
+        // Skip if we're already handling an expiry to prevent infinite loop:
+        // signOut() → signedOut event → notifySessionExpired() → signOut() → ...
+        if (SessionManager.isHandlingExpiry) {
+          log('🔁 Supabase signedOut event — already handling expiry, skipping');
+          return;
+        }
+        log('🔁 Supabase JWT expired — navigating to login');
+        SessionManager.notifySessionExpired();
+      }
+    });
+
+    SessionManager.onSessionExpired.listen((_) async {
+      log('🔁 Session expired — clearing cache and navigating to login');
+      await CacheHelper.clearAllData();
+      // Don't call signOut() here — the session is already expired/invalid.
+      // Calling signOut() would trigger another signedOut event → infinite loop.
+      try {
+        // Only sign out locally without triggering auth state change events
+        await SupabaseClientWrapper.instance.auth.signOut(scope: SignOutScope.local);
+      } catch (_) {}
+      if (mounted) {
+        navigatorKey.currentState?.pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+          (route) => false,
+        );
+      }
     });
   }
 
@@ -269,9 +292,6 @@ class _MainAppState extends State<MainApp> {
         ),
         BlocProvider<PandelCubit>(
           create: (context) => PandelCubit(BundleRepository()),
-        ),
-        BlocProvider<TransfersCubit>(
-          create: (context) => TransfersCubit(TransferRepository()),
         ),
         BlocProvider<ExpenseCategoryCubit>(
           create: (context) => ExpenseCategoryCubit(ExpenseCategoryRepository()),

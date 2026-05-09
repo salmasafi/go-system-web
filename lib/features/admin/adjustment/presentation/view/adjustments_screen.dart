@@ -51,9 +51,13 @@ class _AdjustmentsScreenState extends State<AdjustmentsScreen> {
         } else if (state is CreateAdjustmentSuccess) {
           CustomSnackbar.showSuccess(context, state.message);
           adjustmentsInit();
+        } else if (state is CreateAdjustmentError) {
+          CustomSnackbar.showError(context, state.error);
         } else if (state is UpdateAdjustmentSuccess) {
           CustomSnackbar.showSuccess(context, state.message);
           adjustmentsInit();
+        } else if (state is UpdateAdjustmentError) {
+          CustomSnackbar.showError(context, state.error);
         }
       },
       builder: (context, state) {

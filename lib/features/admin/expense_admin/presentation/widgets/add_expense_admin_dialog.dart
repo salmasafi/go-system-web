@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import 'package:GoSystem/core/services/dio_helper.dart';
 import 'package:GoSystem/core/services/endpoints.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
@@ -79,11 +81,11 @@ class _AddExpenseAdminDialogState extends State<AddExpenseAdminDialog> {
   void _submit() {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     if (_selectedCategory == null) {
-      CustomSnackbar.showError(context, 'Please select a category');
+      CustomSnackbar.showError(context, LocaleKeys.please_select_category.tr());
       return;
     }
     if (_selectedAccount == null) {
-      CustomSnackbar.showError(context, 'Please select a financial account');
+      CustomSnackbar.showError(context, LocaleKeys.please_select_financial_account.tr());
       return;
     }
 
@@ -144,11 +146,11 @@ class _AddExpenseAdminDialogState extends State<AddExpenseAdminDialog> {
                               Expanded(
                                 child: _buildField(
                                   context,
-                                  label: 'Expenses Name *',
+                                  label: '${LocaleKeys.revenue_name.tr()} *',
                                   controller: _nameCtrl,
-                                  hint: 'e.g. Robabicia',
+                                  hint: LocaleKeys.hint_revenue_name.tr(),
                                   validator: (v) => v == null || v.trim().isEmpty
-                                      ? 'Required'
+                                      ? LocaleKeys.field_required.tr()
                                       : null,
                                 ),
                               ),
@@ -156,13 +158,13 @@ class _AddExpenseAdminDialogState extends State<AddExpenseAdminDialog> {
                               Expanded(
                                 child: _buildField(
                                   context,
-                                  label: 'Amount *',
+                                  label: '${LocaleKeys.amount.tr()} *',
                                   controller: _amountCtrl,
-                                  hint: 'e.g. 500',
+                                  hint: LocaleKeys.amount_hint.tr(),
                                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                                   validator: (v) {
-                                    if (v == null || v.trim().isEmpty) return 'Required';
-                                    if (double.tryParse(v.trim()) == null) return 'Invalid number';
+                                    if (v == null || v.trim().isEmpty) return LocaleKeys.field_required.tr();
+                                    if (double.tryParse(v.trim()) == null) return LocaleKeys.invalid_number.tr();
                                     return null;
                                   },
                                 ),
@@ -177,8 +179,8 @@ class _AddExpenseAdminDialogState extends State<AddExpenseAdminDialog> {
                               Expanded(
                                 child: _buildDropdownField(
                                   context,
-                                  label: 'Categories *',
-                                  hint: 'Select category',
+                                  label: '${LocaleKeys.select_category.tr()} *',
+                                  hint: LocaleKeys.select_category.tr(),
                                   value: _selectedCategory,
                                   items: _categories
                                       .map((c) => DropdownMenuItem(
@@ -198,8 +200,8 @@ class _AddExpenseAdminDialogState extends State<AddExpenseAdminDialog> {
                               Expanded(
                                 child: _buildDropdownField(
                                   context,
-                                  label: 'Financial Account *',
-                                  hint: 'Select account',
+                                  label: '${LocaleKeys.financial_account.tr()} *',
+                                  hint: LocaleKeys.select_financial_account.tr(),
                                   value: _selectedAccount,
                                   items: _accounts
                                       .map((a) => DropdownMenuItem(
@@ -219,12 +221,11 @@ class _AddExpenseAdminDialogState extends State<AddExpenseAdminDialog> {
                           ),
                           SizedBox(height: ResponsiveUI.spacing(context, 16)),
 
-                          // Note
                           _buildField(
                             context,
-                            label: 'Note',
+                            label: LocaleKeys.note.tr(),
                             controller: _noteCtrl,
-                            hint: 'Monthly payment',
+                            hint: LocaleKeys.enter_note.tr(),
                           ),
                         ],
                       ),
@@ -264,7 +265,7 @@ class _AddExpenseAdminDialogState extends State<AddExpenseAdminDialog> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Add New Expense',
+                LocaleKeys.expenses_title.tr(),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 17),
                   fontWeight: FontWeight.w800,
@@ -272,7 +273,7 @@ class _AddExpenseAdminDialogState extends State<AddExpenseAdminDialog> {
                 ),
               ),
               Text(
-                'Create a new expense entry',
+                LocaleKeys.expenses_title.tr(),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 12),
                   color: AppColors.shadowGray,
@@ -435,8 +436,8 @@ class _AddExpenseAdminDialogState extends State<AddExpenseAdminDialog> {
                     ),
                   ),
                 ),
-                child: const Text('Cancel',
-                    style: TextStyle(fontWeight: FontWeight.w600)),
+                child: Text(LocaleKeys.cancel.tr(),
+                    style: const TextStyle(fontWeight: FontWeight.w600)),
               ),
               SizedBox(width: ResponsiveUI.spacing(context, 12)),
               ElevatedButton.icon(
@@ -450,7 +451,7 @@ class _AddExpenseAdminDialogState extends State<AddExpenseAdminDialog> {
                       )
                     : Icon(Icons.add_rounded, size: ResponsiveUI.iconSize(context, 18)),
                 label: Text(
-                  isLoading ? 'Creating...' : 'Create Expense',
+                  isLoading ? LocaleKeys.loading.tr() : LocaleKeys.expenses_title.tr(),
                   style: TextStyle(
                       fontWeight: FontWeight.w700, fontSize: ResponsiveUI.fontSize(context, 14)),
                 ),

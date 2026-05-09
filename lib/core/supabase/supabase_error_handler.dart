@@ -1,4 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:GoSystem/core/services/session_helper.dart';
+import 'package:GoSystem/core/services/cache_helper.dart';
 
 /// Unified error handler for Supabase-related exceptions
 /// Provides user-friendly error messages in both Arabic and English
@@ -6,6 +8,10 @@ class SupabaseErrorHandler {
   /// Handle any Supabase-related error and return a user-friendly message
   static String handleError(dynamic error, {String? context}) {
     if (error is PostgrestException) {
+      // JWT expired — force logout immediately regardless of Supabase auth events
+      if (error.code == 'PGRST301' || error.code == 'PGRST303') {
+        _triggerSessionExpiry();
+      }
       return _handlePostgrestError(error);
     } else if (error is AuthException) {
       return _handleAuthError(error);
@@ -17,6 +23,12 @@ class SupabaseErrorHandler {
       return error.toString();
     }
     return 'حدث خطأ غير متوقع | An unexpected error occurred';
+  }
+
+  /// Clears cache and notifies session expiry — called on JWT expired errors
+  static void _triggerSessionExpiry() {
+    CacheHelper.clearAllData();
+    SessionManager.notifySessionExpired();
   }
 
   /// Handle PostgreSQL/Postgrest errors
@@ -64,10 +76,53 @@ class SupabaseErrorHandler {
         }
         return 'خطأ في هيكل قاعدة البيانات | Database schema error. Please contact support.';
 
+      // Custom PL/pgSQL RAISE EXCEPTION
+      case 'P0001':
+        return _handleCustomDbError(message);
+
       // Default - return the original message
       default:
         return 'خطأ في قاعدة البيانات | Database error: $message';
     }
+  }
+
+  /// Handle custom PL/pgSQL RAISE EXCEPTION messages (code P0001)
+  static String _handleCustomDbError(String message) {
+    final msg = message.toLowerCase();
+
+    if (msg.contains('insufficient inventory')) {
+      // Extract available/requested quantities if present in new format
+      final availMatch = RegExp(r'available:\s*(\d+)').firstMatch(message);
+      final reqMatch = RegExp(r'requested:\s*(\d+)').firstMatch(message);
+      if (availMatch != null && reqMatch != null) {
+        final available = availMatch.group(1);
+        final requested = reqMatch.group(1);
+        return 'الكمية المطلوبة ($requested) أكبر من المخزون المتاح ($available).\n'
+            'يرجى مراجعة المخزون أو تقليل الكمية.';
+      }
+      return 'الكمية المطلوبة غير متوفرة في المخزون.\n'
+          'يرجى إضافة مخزون أولاً عبر لوحة التحكم → تعديلات المخزون.';
+    }
+
+    if (msg.contains('not registered in this warehouse')) {
+      return 'هذا المنتج غير مسجّل في المخزن المحدد.\n'
+          'يرجى إضافته عبر لوحة التحكم → تعديلات المخزون.';
+    }
+
+    if (msg.contains('insufficient stock')) {
+      return 'الكمية في المخزون غير كافية لإتمام هذه العملية.';
+    }
+
+    if (msg.contains('invalid adjustment type')) {
+      return 'نوع التعديل غير صالح. يجب أن يكون زيادة أو نقصان.';
+    }
+
+    // Fallback: return cleaned message without UUIDs
+    final cleaned = message.replaceAll(
+        RegExp(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',
+            caseSensitive: false),
+        '');
+    return 'خطأ في قاعدة البيانات: $cleaned';
   }
 
   /// Handle authentication errors

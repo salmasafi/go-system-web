@@ -198,7 +198,11 @@ CREATE POLICY "Authenticated users can view warehouse inventory" ON warehouse_pr
     FOR SELECT TO authenticated USING (true);
 
 CREATE POLICY "Only admins and managers can modify inventory" ON warehouse_products
-    FOR ALL TO authenticated USING (
+    FOR ALL TO authenticated
+    USING (
+        EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND role IN ('admin', 'manager', 'warehouse'))
+    )
+    WITH CHECK (
         EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND role IN ('admin', 'manager', 'warehouse'))
     );
 

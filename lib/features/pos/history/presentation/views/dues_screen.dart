@@ -8,7 +8,6 @@ import 'package:GoSystem/features/pos/history/cubit/history_cubit.dart';
 import 'package:GoSystem/features/pos/history/cubit/history_state.dart';
 import 'package:GoSystem/features/pos/history/model/sale_model.dart';
 import 'package:GoSystem/features/pos/history/presentation/widgets/pay_due_dialog.dart';
-import 'package:GoSystem/features/pos/home/cubit/pos_home_cubit.dart';
 
 class DuesScreen extends StatefulWidget {
   const DuesScreen({super.key});
@@ -361,11 +360,8 @@ class _CustomerDueCard extends StatelessWidget {
 
     showDialog(
       context: context,
-      builder: (_) => MultiBlocProvider(
-        providers: [
-          BlocProvider.value(value: context.read<HistoryCubit>()),
-          BlocProvider.value(value: context.read<PosCubit>()),
-        ],
+      builder: (_) => BlocProvider.value(
+        value: context.read<HistoryCubit>(),
         child: PayDueDialog(due: due),
       ),
     );

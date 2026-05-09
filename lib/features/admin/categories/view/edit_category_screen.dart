@@ -306,13 +306,26 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                         ),
                       ),
                       SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                      Text(
-                        LocaleKeys.category_image.tr(),
-                        style: TextStyle(
-                          fontSize: ResponsiveUI.fontSize(context, 14),
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.shadowGray[700],
-                        ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            LocaleKeys.category_image.tr(),
+                            style: TextStyle(
+                              fontSize: ResponsiveUI.fontSize(context, 14),
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.shadowGray[700],
+                            ),
+                          ),
+                          SizedBox(width: ResponsiveUI.spacing(context, 6)),
+                          Text(
+                            '(اختياري)',
+                            style: TextStyle(
+                              fontSize: ResponsiveUI.fontSize(context, 12),
+                              color: AppColors.darkGray.withValues(alpha: 0.5),
+                            ),
+                          ),
+                        ],
                       ),
                       SizedBox(height: ResponsiveUI.spacing(context, 8)),
                       GestureDetector(

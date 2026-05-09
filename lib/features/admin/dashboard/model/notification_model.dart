@@ -42,6 +42,17 @@ class NotificationModel {
     );
   }
 
+  NotificationModel copyWith({bool? isRead}) => NotificationModel(
+        id: id,
+        type: type,
+        productId: productId,
+        message: message,
+        title: title,
+        isRead: isRead ?? this.isRead,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      );
+
   Map<String, dynamic> toJson() {
     return {
       '_id': id,

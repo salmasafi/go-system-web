@@ -50,6 +50,7 @@ class PandelCubit extends Cubit<PandelState> {
     required double price,
     bool allWarehouses = true,
     List<String>? warehouseIds,
+    String? discountId,
   }) async {
     emit(CreatePandelLoading());
 
@@ -73,6 +74,7 @@ class PandelCubit extends Cubit<PandelState> {
         status: true,
         allWarehouses: allWarehouses,
         warehouseIds: warehouseIds,
+        discountId: discountId,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
         version: 0,
@@ -99,6 +101,7 @@ class PandelCubit extends Cubit<PandelState> {
     bool? status,
     bool allWarehouses = true,
     List<String>? warehouseIds,
+    String? discountId,
   }) async {
     emit(UpdatePandelLoading());
 
@@ -123,6 +126,7 @@ class PandelCubit extends Cubit<PandelState> {
         status: status ?? true,
         allWarehouses: allWarehouses,
         warehouseIds: warehouseIds,
+        discountId: discountId,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
         version: 0,

@@ -70,13 +70,13 @@ class CityModel {
 
   factory CityModel.fromJson(Map<String, dynamic> json) {
     return CityModel(
-      id: json['_id'] as String,
-      shipingCost: json['shipingCost'] as num,
-      name: json['name'] as String,
+      id: (json['_id'] ?? json['id'] ?? '') as String,
+      shipingCost: (json['shipingCost'] ?? json['shipping_cost'] ?? 0) as num,
+      name: (json['name'] ?? '') as String,
       country: json['country'] != null
           ? CountryModel.fromJson(json['country'] as Map<String, dynamic>)
           : null,
-      version: json['__v'] as int,
+      version: (json['__v'] ?? json['version'] ?? 0) as int,
     );
   }
 

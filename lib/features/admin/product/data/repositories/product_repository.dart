@@ -86,7 +86,7 @@ class ProductRepository implements ProductRepositoryInterface {
             *,
             categories:product_categories(category:category_id(*)),
             brand:brand_id(*),
-            warehouses:product_warehouses(warehouse:warehouse_id(*), quantity)
+            warehouses:warehouse_products(warehouse:warehouse_id(*), quantity)
           ''')
           .eq('id', id)
           .maybeSingle();
@@ -133,7 +133,7 @@ class ProductRepository implements ProductRepositoryInterface {
       log('ProductRepository: Fetching products for warehouse: $warehouseId');
 
       final response = await _client
-          .from('product_warehouses')
+          .from('warehouse_products')
           .select('''
             quantity,
             product:product_id(*, categories:product_categories(category:category_id(*)), brand:brand_id(*))
@@ -193,19 +193,18 @@ class ProductRepository implements ProductRepositoryInterface {
             'name': product.name,
             'code': await generateProductCode(),
             'description': product.description,
-            'image': mainImageUrl ?? product.image,
+            'image': mainImageUrl ?? (product.image.isNotEmpty ? product.image : null),
             'brand_id': product.brandId.id.isNotEmpty ? product.brandId.id : null,
             'sale_unit': product.saleUnit,
             'purchase_unit': product.purchaseUnit,
             'price': product.price,
-            'quantity': product.quantity,
+            'start_quantity': product.startQuantaty,
             'exp_ability': product.expAbility,
             'date_of_expiry': product.dateOfExpiry?.toIso8601String(),
             'minimum_quantity_sale': product.minimumQuantitySale,
             'low_stock': product.lowStock,
             'whole_price': product.wholePrice,
-            'start_quantaty': product.startQuantaty,
-            'taxes_id': product.taxesId,
+            'tax_id': product.taxesId?.isNotEmpty == true ? product.taxesId : null,
             'product_has_imei': product.productHasImei,
             'show_quantity': product.showQuantity,
             'maximum_to_show': product.maximumToShow,
@@ -225,7 +224,18 @@ class ProductRepository implements ProductRepositoryInterface {
         });
       }
 
-      log('ProductRepository: Created product successfully');
+      // Initialize warehouse_products for all warehouses using start_quantaty
+      // Without this, the sale inventory check will always fail for new products
+      final List warehouses = await _client.from('warehouses').select('id');
+      for (final w in warehouses) {
+        await _client.from('warehouse_products').upsert({
+          'warehouse_id': w['id'],
+          'product_id': productId,
+          'quantity': product.startQuantaty,
+        }, onConflict: 'warehouse_id,product_id');
+      }
+
+      log('ProductRepository: Created product successfully with inventory in ${warehouses.length} warehouses');
       return _mapSupabaseToProduct(productResponse);
     } catch (e) {
       log('ProductRepository: Error creating product - $e');
@@ -284,14 +294,13 @@ class ProductRepository implements ProductRepositoryInterface {
         'sale_unit': product.saleUnit,
         'purchase_unit': product.purchaseUnit,
         'price': product.price,
-        'quantity': product.quantity,
+        'start_quantity': product.startQuantaty,
         'exp_ability': product.expAbility,
         'date_of_expiry': product.dateOfExpiry?.toIso8601String(),
         'minimum_quantity_sale': product.minimumQuantitySale,
         'low_stock': product.lowStock,
         'whole_price': product.wholePrice,
-        'start_quantaty': product.startQuantaty,
-        'taxes_id': product.taxesId,
+        'tax_id': product.taxesId?.isNotEmpty == true ? product.taxesId : null,
         'product_has_imei': product.productHasImei,
         'show_quantity': product.showQuantity,
         'maximum_to_show': product.maximumToShow,
@@ -322,6 +331,8 @@ class ProductRepository implements ProductRepositoryInterface {
 
       // Get product to delete images
       final product = await getProductById(id);
+
+      // Delete images from storage (non-blocking)
       if (product?.image != null && product!.image.isNotEmpty) {
         try {
           final imagePath = product.image.split('/').last;
@@ -330,8 +341,6 @@ class ProductRepository implements ProductRepositoryInterface {
           log('ProductRepository: Failed to delete image - $e');
         }
       }
-
-      // Delete gallery images
       if (product?.galleryProduct != null) {
         for (final imageUrl in product!.galleryProduct) {
           try {
@@ -343,11 +352,34 @@ class ProductRepository implements ProductRepositoryInterface {
         }
       }
 
+      // Delete related records first to avoid FK constraint violations
+      try {
+        await _client.from('product_categories').delete().eq('product_id', id);
+        log('ProductRepository: Deleted product_categories for $id');
+      } catch (e) {
+        log('ProductRepository: product_categories delete failed (may not exist) - $e');
+      }
+
+      try {
+        await _client.from('warehouse_products').delete().eq('product_id', id);
+        log('ProductRepository: Deleted warehouse_products for $id');
+      } catch (e) {
+        log('ProductRepository: warehouse_products delete failed (may not exist) - $e');
+      }
+
+      // Delete the product
       await _client.from('products').delete().eq('id', id);
 
       log('ProductRepository: Deleted product successfully');
     } catch (e) {
       log('ProductRepository: Error deleting product - $e');
+      // Provide a clear error message if FK constraint blocks deletion
+      final errStr = e.toString();
+      if (errStr.contains('23503') || errStr.contains('foreign key') || errStr.contains('violates')) {
+        throw Exception(
+          'لا يمكن حذف هذا المنتج لأنه مرتبط بسجلات مشتريات أو مبيعات | Cannot delete: product is linked to purchases or sales records',
+        );
+      }
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }
@@ -414,7 +446,7 @@ class ProductRepository implements ProductRepositoryInterface {
       lowStock: json['low_stock'] ?? 0,
       wholePrice: (json['whole_price'] as num?)?.toDouble() ?? 0.0,
       startQuantaty: json['start_quantaty'] ?? 0,
-      taxesId: json['taxes_id'],
+      taxesId: json['tax_id'] ?? json['taxes_id'],
       productHasImei: json['product_has_imei'] ?? false,
       showQuantity: json['show_quantity'] ?? false,
       maximumToShow: json['maximum_to_show'] ?? 0,

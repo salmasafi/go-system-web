@@ -598,7 +598,7 @@ class _AdjustmentFormDialogState extends State<AdjustmentFormDialog>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Image",
+          LocaleKeys.image.tr(),
           style: TextStyle(
             fontSize: fontSize14,
             fontWeight: FontWeight.w600,

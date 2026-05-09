@@ -17,7 +17,6 @@ class PurchaseCubit extends Cubit<PurchaseState> {
 
   PurchaseData? purchaseData;
 
-  // ---------------------- Get All Purchases ----------------------
   Future<void> getAllPurchases() async {
     emit(GetPurchasesLoading());
     try {
@@ -29,6 +28,69 @@ class PurchaseCubit extends Cubit<PurchaseState> {
     }
   }
 
-  // Other methods if needed
+  Future<void> createPurchase({
+    required String warehouseId,
+    required String supplierId,
+    required List<Map<String, dynamic>> items,
+    required double grandTotal,
+    double? taxAmount,
+    double? discount,
+    double? shippingCost,
+    String? note,
+    File? receiptImageFile,
+    List<Map<String, dynamic>>? payments,
+  }) async {
+    emit(CreatePurchaseLoading());
+    try {
+      await _repository.createPurchase(
+        warehouseId: warehouseId,
+        supplierId: supplierId,
+        items: items,
+        grandTotal: grandTotal,
+        taxAmount: taxAmount,
+        discount: discount,
+        shippingCost: shippingCost,
+        note: note,
+        receiptImageFile: receiptImageFile,
+        payments: payments,
+      );
+      emit(CreatePurchaseSuccess(LocaleKeys.success.tr()));
+      await getAllPurchases();
+    } catch (e) {
+      emit(CreatePurchaseError(e.toString().replaceAll('Exception: ', '')));
+    }
+  }
+
+  Future<void> deletePurchase(String id) async {
+    emit(DeletePurchaseLoading());
+    try {
+      await _repository.deletePurchase(id);
+      emit(DeletePurchaseSuccess(LocaleKeys.success.tr()));
+      await getAllPurchases();
+    } catch (e) {
+      emit(DeletePurchaseError(e.toString().replaceAll('Exception: ', '')));
+    }
+  }
+
+  Future<void> updatePurchase({
+    required String id,
+    String? note,
+    double? discount,
+    double? shippingCost,
+  }) async {
+    emit(UpdatePurchaseLoading());
+    try {
+      await _repository.updatePurchase(
+        id: id,
+        note: note,
+        discount: discount,
+        shippingCost: shippingCost,
+      );
+      emit(UpdatePurchaseSuccess(LocaleKeys.success.tr()));
+      await getAllPurchases();
+    } catch (e) {
+      emit(UpdatePurchaseError(e.toString().replaceAll('Exception: ', '')));
+    }
+  }
 }
 

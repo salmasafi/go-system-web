@@ -1,4 +1,5 @@
 // lib/features/pos/home/presentation/widgets/cart_bottom_sheet.dart
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
@@ -9,6 +10,7 @@ import 'package:GoSystem/features/pos/customer/cubit/pos_customer_cubit.dart';
 import 'package:GoSystem/features/pos/home/cubit/pos_home_cubit.dart';
 import 'package:GoSystem/features/pos/shift/cubit/pos_shift_cubit.dart';
 import 'package:GoSystem/features/pos/checkout/model/checkout_models.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import 'action_botton.dart';
 import 'cart_item_tile.dart';
 import 'checkout_dialog.dart';
@@ -106,7 +108,7 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Cart (${cartItems.length})',
+                        '${LocaleKeys.cart.tr()} (${cartItems.length})',
                         style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 20),
                           fontWeight: FontWeight.bold,
@@ -120,7 +122,7 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
                           _refresh();
                         },
                         child: Text(
-                          'Clear All',
+                          LocaleKeys.clear_all.tr(),
                           style: TextStyle(
                             color: AppColors.red,
                             fontWeight: FontWeight.w800,
@@ -179,7 +181,7 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
                         ),
                         SizedBox(height: ResponsiveUI.value(context, 4)),
                         Text(
-                          'Remove',
+                          LocaleKeys.remove.tr(),
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -253,7 +255,7 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Total',
+                        LocaleKeys.total.tr(),
                         style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 22),
                           fontWeight: FontWeight.bold,
@@ -278,7 +280,7 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
                       // Back Button
                       Expanded(
                         child: POSActionButton(
-                          label: 'Back',
+                          label: LocaleKeys.back.tr(),
                           icon: Icons.arrow_back_ios_new_rounded,
                           color: AppColors.red,
                           onTap: () => Navigator.pop(context),
@@ -289,7 +291,7 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
                       // Hold Button
                       Expanded(
                         child: POSActionButton(
-                          label: 'Hold',
+                          label: LocaleKeys.hold.tr(),
                           icon: Icons.pause_circle_outline,
                           color: AppColors.warningOrange,
                           onTap: () => _holdSale(),
@@ -301,7 +303,7 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
                       Expanded(
                         flex: 2,
                         child: POSActionButton(
-                          label: 'Checkout',
+                          label: LocaleKeys.checkout.tr(),
                           icon: Icons.payment_rounded,
                           color: AppColors.primaryBlue,
                           onTap: () => _showCheckoutDialog(),
@@ -329,13 +331,13 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
             ResponsiveUI.borderRadius(context, 16),
           ),
         ),
-        title: const Text('Edit Quantity'),
+        title: Text(LocaleKeys.edit_quantity_title.tr()),
         content: TextField(
           controller: controller,
           keyboardType: TextInputType.number,
           autofocus: true,
           decoration: InputDecoration(
-            hintText: 'Enter new quantity',
+            hintText: LocaleKeys.enter_new_quantity.tr(),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(
                 ResponsiveUI.borderRadius(context, 12),
@@ -359,10 +361,7 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.black),
-            ),
+            child: Text(LocaleKeys.cancel.tr(), style: const TextStyle(color: AppColors.black)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -372,7 +371,7 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryBlue,
             ),
-            child: const Text('OK', style: TextStyle(color: AppColors.white)),
+            child: Text(LocaleKeys.ok.tr(), style: const TextStyle(color: AppColors.white)),
           ),
         ],
       ),
@@ -383,17 +382,12 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
     final shiftCubit = context.read<PosShiftCubit>();
     final customerCubit = context.read<PosCustomerCubit>();
     
-    if (customerCubit.selectedCustomer == null) {
-      CustomSnackbar.showError(context, "Please select a customer first");
-      return;
-    }
-
     final success = await cubit.createSale(
       totalAmount: total,
       paidAmount: 0,
-      note: "Sale on Hold",
+      note: LocaleKeys.sale_on_hold_note.tr(),
       isPending: true,
-      customerId: customerCubit.selectedCustomer!.id,
+      customerId: customerCubit.selectedCustomer?.id,
       warehouseId: posCubit.selectedWarhouse?.id,
       shiftId: shiftCubit.currentShift?.id,
       cashierId: shiftCubit.selectedCashier?.id,
@@ -401,7 +395,7 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
 
     if (success && mounted) {
       Navigator.pop(context);
-      CustomSnackbar.showSuccess(context, "Sale put on hold successfully");
+      CustomSnackbar.showSuccess(context, LocaleKeys.sale_put_on_hold.tr());
     }
   }
 
@@ -409,18 +403,13 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
     final customerCubit = context.read<PosCustomerCubit>();
     final selectedCustomer = customerCubit.selectedCustomer;
 
-    if (selectedCustomer == null) {
-      CustomSnackbar.showError(context, "Please select a customer first");
-      return;
-    }
-
     showDialog(
       context: context,
       builder: (_) => POSCheckoutDialog(
         totalAmount: total,
         cartItems: cartItems,
         selectedPaymentMethod: posCubit.selectedPaymentMethod,
-        customerId: selectedCustomer.id,
+        customerId: selectedCustomer?.id,
       ),
     );
   }

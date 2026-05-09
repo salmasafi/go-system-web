@@ -122,7 +122,10 @@ class _RevenueScreenState extends State<RevenueScreen> {
         title: LocaleKeys.revenues_title.tr(),
         showActions: true,
         onPressed: () {
-          // TODO: Add Revenue functionality
+          showDialog(
+            context: context,
+            builder: (context) => const RevenueFormDialog(),
+          );
         },
       ),
       body: SafeArea(

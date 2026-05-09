@@ -54,10 +54,10 @@ class CountryModel {
 
   factory CountryModel.fromJson(Map json) {
     return CountryModel(
-      id: json['_id'] as String,
-      name: json['name'] as String,
-      isDefault: json['isDefault'] as bool,
-      version: json['__v'] as int,
+      id: (json['_id'] ?? json['id'] ?? '') as String,
+      name: (json['name'] ?? '') as String,
+      isDefault: (json['isDefault'] ?? json['is_default'] ?? false) as bool,
+      version: (json['__v'] ?? json['version'] ?? 0) as int,
     );
   }
 
