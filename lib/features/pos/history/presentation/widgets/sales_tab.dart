@@ -1,6 +1,7 @@
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:intl/intl.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
@@ -109,7 +110,7 @@ class _SalesTabState extends State<SalesTab> {
             TextButton.icon(
               onPressed: () => context.read<HistoryCubit>().getAllSales(),
               icon: Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text('retry'.tr()),
             ),
           ],
         ),
@@ -126,8 +127,8 @@ class _SalesTabState extends State<SalesTab> {
               SizedBox(height: ResponsiveUI.value(context, 12)),
               Text(
                 _selectedDate != null || _searchQuery.isNotEmpty
-                    ? 'No orders found for this filter.'
-                    : 'No orders yet.',
+                    ? 'no_orders_filter'.tr()
+                    : 'no_orders_yet'.tr(),
                 style: TextStyle(color: AppColors.shadowGray, fontSize: ResponsiveUI.fontSize(context, 14)),
               ),
             ],
@@ -181,7 +182,7 @@ class _FilterBar extends StatelessWidget {
                 onChanged: onSearchChanged,
                 style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 13)),
                 decoration: InputDecoration(
-                  hintText: 'Search by order #, name...',
+                  hintText: 'search_orders_hint'.tr(),
                   hintStyle: TextStyle(fontSize: ResponsiveUI.fontSize(context, 12), color: AppColors.shadowGray),
                   prefixIcon: Icon(Icons.search, size: ResponsiveUI.iconSize(context, 18), color: AppColors.shadowGray),
                   contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: ResponsiveUI.padding(context, 8)),
@@ -234,7 +235,7 @@ class _FilterBar extends StatelessWidget {
                   Text(
                     selectedDate != null
                         ? DateFormat('MM/dd/yyyy').format(selectedDate!)
-                        : 'Date',
+                        : 'date'.tr(),
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 12),
                       color: selectedDate != null ? AppColors.primaryBlue : AppColors.shadowGray,
@@ -268,10 +269,10 @@ class _TableHeader extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 16), vertical: ResponsiveUI.padding(context, 10)),
       child: Row(
         children: [
-          Expanded(flex: 3, child: _HeaderCell('Order #')),
-          Expanded(flex: 2, child: _HeaderCell('Amount')),
-          Expanded(flex: 3, child: _HeaderCell('Date/Time')),
-          SizedBox(width: ResponsiveUI.value(context, 36), child: _HeaderCell('Print', center: true)),
+          Expanded(flex: 3, child: _HeaderCell('order_number_label'.tr())),
+          Expanded(flex: 2, child: _HeaderCell('amount'.tr())),
+          Expanded(flex: 3, child: _HeaderCell('date_time_label'.tr())),
+          SizedBox(width: ResponsiveUI.value(context, 36), child: _HeaderCell('print'.tr(), center: true)),
         ],
       ),
     );
@@ -355,7 +356,7 @@ class _OrderRow extends StatelessWidget {
             Expanded(
               flex: 2,
               child: Text(
-                '${sale.grandTotal.toStringAsFixed(2)}\nEGP',
+                '${sale.grandTotal.toStringAsFixed(2)}\n${'currency_symbol'.tr()}',
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: ResponsiveUI.fontSize(context, 13),

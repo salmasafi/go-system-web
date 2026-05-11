@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import '../../cubit/attribute_value_cubit/attribute_value_cubit.dart';
 import '../../cubit/attribute_value_cubit/attribute_value_state.dart';
@@ -17,28 +18,28 @@ class DeleteAttributeValueDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Delete Attribute Value'),
+      title: Text('delete_attribute_value_title'.tr()),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Are you sure you want to delete this attribute value?'),
+          Text('delete_attribute_value_msg'.tr()),
           const SizedBox(height: 8),
           Text(
-            'Value: $attributeValueName',
+            'value_label'.tr(namedArgs: {'value': attributeValueName}),
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Warning: This will remove the value from all products that use it.',
-            style: TextStyle(color: AppColors.warningOrange, fontSize: 12),
+          Text(
+            'delete_attribute_value_warning'.tr(),
+            style: const TextStyle(color: AppColors.warningOrange, fontSize: 12),
           ),
         ],
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text('cancel'.tr()),
         ),
         BlocBuilder<AttributeValueCubit, AttributeValueState>(
           builder: (context, state) {
@@ -55,7 +56,7 @@ class DeleteAttributeValueDialog extends StatelessWidget {
                         color: Colors.white,
                       ),
                     )
-                  : const Text('Delete'),
+                  : Text('delete'.tr()),
             );
           },
         ),

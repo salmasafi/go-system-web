@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/features/admin/auth/cubit/login_cubit.dart';
@@ -17,7 +18,7 @@ class ProfileScreen extends StatelessWidget {
       backgroundColor: Color(0xFFF4F6FB),
       appBar: AppBar(
         title: Text(
-          'Profile',
+          'profile'.tr(),
           style: TextStyle(fontWeight: FontWeight.w700, fontSize: ResponsiveUI.fontSize(context, 18)),
         ),
         backgroundColor: AppColors.white,
@@ -52,7 +53,7 @@ class _ProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = user?.username ?? 'No Name';
+    final name = user?.username ?? 'no_name'.tr();
     final status = user?.status ?? 'inactive';
     final isActive = status.toLowerCase() == 'active';
     final initial = name.isNotEmpty ? name[0].toUpperCase() : 'U';
@@ -115,7 +116,7 @@ class _ProfileCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
             ),
             child: Text(
-              isActive ? 'Active' : 'Inactive',
+              isActive ? 'active'.tr() : 'inactive'.tr(),
               style: TextStyle(
                 fontSize: ResponsiveUI.fontSize(context, 13),
                 fontWeight: FontWeight.w600,
@@ -132,7 +133,7 @@ class _ProfileCard extends StatelessWidget {
               onPressed: () => _showEditDialog(context, user),
               icon: Icon(Icons.edit_rounded, size: ResponsiveUI.iconSize(context, 16)),
               label: Text(
-                'Edit Profile',
+                'edit_profile'.tr(),
                 style: TextStyle(fontWeight: FontWeight.w700, fontSize: ResponsiveUI.fontSize(context, 14)),
               ),
               style: ElevatedButton.styleFrom(
@@ -185,7 +186,7 @@ class _InfoSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Account Info',
+            'account_info'.tr(),
             style: TextStyle(
               fontSize: ResponsiveUI.fontSize(context, 15),
               fontWeight: FontWeight.w700,
@@ -194,16 +195,16 @@ class _InfoSection extends StatelessWidget {
           ),
           SizedBox(height: ResponsiveUI.value(context, 16)),
           if (user.email != null && user.email!.isNotEmpty)
-            _InfoRow(icon: Icons.email_outlined, label: 'Email', value: user.email!),
+            _InfoRow(icon: Icons.email_outlined, label: 'email'.tr(), value: user.email!),
           if (user.role != null && user.role!.isNotEmpty) ...[
             Divider(height: ResponsiveUI.value(context, 20), color: Color(0xFFF0F0F0)),
-            _InfoRow(icon: Icons.shield_outlined, label: 'Role', value: user.role!),
+            _InfoRow(icon: Icons.shield_outlined, label: 'role'.tr(), value: user.role!),
           ],
           if (user.position != null && user.position.toString().isNotEmpty) ...[
             Divider(height: ResponsiveUI.value(context, 20), color: Color(0xFFF0F0F0)),
             _InfoRow(
               icon: Icons.work_outline_rounded,
-              label: 'Position',
+              label: 'position'.tr(),
               value: user.position.toString(),
             ),
           ],
@@ -318,7 +319,7 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
               child: Row(
                 children: [
                   Text(
-                    'Edit Profile',
+                    'edit_profile'.tr(),
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 18),
                       fontWeight: FontWeight.w800,
@@ -343,15 +344,15 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _FieldLabel('Username'),
+                    _FieldLabel('username'.tr()),
                     SizedBox(height: ResponsiveUI.value(context, 6)),
                     _StyledTextField(
                       controller: _usernameCtrl,
-                      hint: 'Enter username',
+                      hint: 'enter_username'.tr(),
                     ),
                     SizedBox(height: ResponsiveUI.value(context, 16)),
 
-                    _FieldLabel('Password'),
+                    _FieldLabel('password'.tr()),
                     SizedBox(height: ResponsiveUI.value(context, 6)),
                     _StyledTextField(
                       controller: _passwordCtrl,
@@ -368,7 +369,7 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
                     ),
                     SizedBox(height: ResponsiveUI.value(context, 16)),
 
-                    _FieldLabel('Status'),
+                    _FieldLabel('status'.tr()),
                     SizedBox(height: ResponsiveUI.value(context, 6)),
                     _StatusDropdown(
                       value: _status,
@@ -376,7 +377,7 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
                     ),
                     SizedBox(height: ResponsiveUI.value(context, 16)),
 
-                    _FieldLabel('Profile Image'),
+                    _FieldLabel('profile_image'.tr()),
                     SizedBox(height: ResponsiveUI.value(context, 6)),
                     _ImagePickerField(
                       fileName: _pickedFileName,
@@ -404,7 +405,7 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
                           borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                         ),
                       ),
-                      child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
+                      child: Text('cancel'.tr(), style: const TextStyle(fontWeight: FontWeight.w600)),
                     ),
                   ),
                   SizedBox(width: ResponsiveUI.value(context, 12)),
@@ -423,7 +424,7 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
                           borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
                         ),
                       ),
-                      child: Text('Save', style: TextStyle(fontWeight: FontWeight.w700, fontSize: ResponsiveUI.fontSize(context, 15))),
+                      child: Text('save'.tr(), style: TextStyle(fontWeight: FontWeight.w700, fontSize: ResponsiveUI.fontSize(context, 15))),
                     ),
                   ),
                 ],
@@ -524,9 +525,9 @@ class _StatusDropdown extends StatelessWidget {
         fillColor: const Color(0xFFFAFAFA),
       ),
       style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14), color: AppColors.darkGray),
-      items: const [
-        DropdownMenuItem(value: 'active', child: Text('Active')),
-        DropdownMenuItem(value: 'inactive', child: Text('Inactive')),
+      items: [
+        DropdownMenuItem(value: 'active', child: Text('active'.tr())),
+        DropdownMenuItem(value: 'inactive', child: Text('inactive'.tr())),
       ],
     );
   }
@@ -551,13 +552,13 @@ class _ImagePickerField extends StatelessWidget {
         child: Row(
           children: [
             Text(
-              'Choose file',
+              'choose_file'.tr(),
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: ResponsiveUI.fontSize(context, 14), color: AppColors.darkGray),
             ),
             SizedBox(width: ResponsiveUI.value(context, 8)),
             Expanded(
               child: Text(
-                fileName ?? 'No file chosen',
+                fileName ?? 'no_file_chosen'.tr(),
                 style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14), color: Color(0xFFAAAAAA)),
                 overflow: TextOverflow.ellipsis,
               ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
@@ -54,7 +55,7 @@ class _ExpensesScreenContent extends StatelessWidget {
         backgroundColor: Color(0xFFF4F6FB),
         appBar: AppBar(
           title: Text(
-            'Expenses',
+            'expenses_title'.tr(),
             style: TextStyle(fontWeight: FontWeight.w700, fontSize: ResponsiveUI.fontSize(context, 18)),
           ),
           backgroundColor: AppColors.white,
@@ -166,25 +167,25 @@ class _ExpenseCard extends StatelessWidget {
                   SizedBox(height: ResponsiveUI.value(context, 6)),
                   _InfoRow(
                       icon: Icons.attach_money_rounded,
-                      label: 'Price',
-                      value: '${expense.amount.toStringAsFixed(2)} EGP'),
+                      label: 'price'.tr(),
+                      value: '${expense.amount.toStringAsFixed(2)} ${'currency_symbol'.tr()}'),
                   _InfoRow(
                       icon: Icons.category_outlined,
-                      label: 'Category',
+                      label: 'category'.tr(),
                       value: expense.categoryName),
                   if (expense.reasonName.isNotEmpty)
                     _InfoRow(
                         icon: Icons.rule_rounded,
-                        label: 'Reason',
+                        label: 'reason'.tr(),
                         value: expense.reasonName),
                   _InfoRow(
                       icon: Icons.account_balance_outlined,
-                      label: 'Financial Account',
+                      label: 'financial_account'.tr(),
                       value: expense.financialAccountName),
                   if (expense.note.isNotEmpty)
                     _InfoRow(
                         icon: Icons.notes_rounded,
-                        label: 'Note',
+                        label: 'note'.tr(),
                         value: expense.note),
                 ],
               ),
@@ -269,13 +270,13 @@ class _EmptyView extends StatelessWidget {
                 size: ResponsiveUI.iconSize(context, 52), color: _purple),
           ),
           SizedBox(height: ResponsiveUI.value(context, 20)),
-          Text('No Expenses',
+          Text('no_expenses'.tr(),
               style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 20),
                   fontWeight: FontWeight.w700,
                   color: AppColors.darkGray)),
           SizedBox(height: ResponsiveUI.value(context, 8)),
-          Text('Tap + to add your first expense',
+          Text('add_first_expense_message'.tr(),
               style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14), color: AppColors.shadowGray)),
         ],
       ),

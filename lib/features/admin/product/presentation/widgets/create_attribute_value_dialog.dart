@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../cubit/attribute_value_cubit/attribute_value_cubit.dart';
@@ -67,7 +68,7 @@ class _CreateAttributeValueDialogState
 
     return AlertDialog(
       title: Text(
-        isEditing ? 'Edit Attribute Value' : 'Create Attribute Value',
+        isEditing ? 'edit_attribute_value'.tr() : 'create_attribute_value'.tr(),
       ),
       content: Form(
         key: _formKey,
@@ -76,13 +77,13 @@ class _CreateAttributeValueDialogState
           children: [
             TextFormField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Value',
+              decoration: InputDecoration(
+                labelText: 'value_label_form'.tr(),
                 border: OutlineInputBorder(),
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Please enter a value';
+                  return 'please_enter_value'.tr();
                 }
                 return null;
               },
@@ -90,7 +91,7 @@ class _CreateAttributeValueDialogState
             const SizedBox(height: 16),
             Row(
               children: [
-                const Text('Status:'),
+                Text('${'status_label'.tr()}:'),
                 const Spacer(),
                 Switch(
                   value: _status,
@@ -109,7 +110,7 @@ class _CreateAttributeValueDialogState
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text('cancel'.tr()),
         ),
         BlocBuilder<AttributeValueCubit, AttributeValueState>(
           builder: (context, state) {
@@ -130,7 +131,7 @@ class _CreateAttributeValueDialogState
                         color: Colors.white,
                       ),
                     )
-                  : Text(isEditing ? 'Update' : 'Create'),
+                  : Text(isEditing ? 'update'.tr() : 'create'.tr()),
             );
           },
         ),

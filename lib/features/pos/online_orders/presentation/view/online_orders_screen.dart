@@ -296,9 +296,9 @@ class _StatusFilter extends StatelessWidget {
         ),
       ),
       items: [
-        const DropdownMenuItem(
+        DropdownMenuItem(
           value: '',
-          child: Text('All Statuses'),
+          child: Text('all_statuses'.tr()),
         ),
         ...OnlineOrdersCubit.statuses.map(
           (s) => DropdownMenuItem(

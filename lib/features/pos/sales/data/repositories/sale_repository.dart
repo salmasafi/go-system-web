@@ -1,9 +1,12 @@
 import 'dart:developer';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide User;
+import '../../../../../core/services/cache_helper.dart';
 import '../../../../../core/supabase/supabase_client.dart';
 import '../../../../../core/supabase/supabase_error_handler.dart';
+import '../../../../admin/auth/model/user_model.dart';
 import '../../../history/model/sale_model.dart';
 import '../../../history/model/pending_sale_details_model.dart';
+import '../../../shift/model/cashier_model.dart';
 
 /// Interface for sale data operations
 abstract class SaleRepositoryInterface {
@@ -37,6 +40,48 @@ abstract class SaleRepositoryInterface {
 class SaleRepository implements SaleRepositoryInterface {
   final SupabaseClient _client = SupabaseClientWrapper.instance;
 
+  static const String _cashierKey = 'pos_selected_cashier';
+
+  User? get _currentUser {
+    try {
+      return CacheHelper.getModel<User>(
+        key: 'user',
+        fromJson: (json) => User.fromJson(json),
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  CashierModel? get _selectedCashier {
+    try {
+      return CacheHelper.getModel<CashierModel>(
+        key: _cashierKey,
+        fromJson: CashierModel.fromJson,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  String? get _filterWarehouseId {
+    final user = _currentUser;
+    if (user == null) return null;
+    if (!user.isCashier) return null;
+    final cachedCashier = _selectedCashier;
+    return (cachedCashier?.warehouseId.isNotEmpty == true)
+        ? cachedCashier!.warehouseId
+        : (user.warehouseId?.isNotEmpty == true ? user.warehouseId : null);
+  }
+
+  String? get _filterCashierId {
+    final user = _currentUser;
+    if (user == null) return null;
+    if (!user.isCashier) return null;
+    final cachedCashier = _selectedCashier;
+    return (cachedCashier?.id.isNotEmpty == true) ? cachedCashier!.id : null;
+  }
+
   @override
   Future<List<SaleItemModel>> getAllSales({int? page, int? limit}) async {
     try {
@@ -48,14 +93,22 @@ class SaleRepository implements SaleRepositoryInterface {
             *,
             customer:customer_id(id, name)
           ''')
-          .eq('sale_status', 'completed')
-          .order('created_at', ascending: false);
+          .eq('sale_status', 'completed');
 
-      if (page != null && limit != null) {
-        query = query.range((page - 1) * limit, page * limit - 1);
+      final filterWarehouseId = _filterWarehouseId;
+      if (filterWarehouseId != null && filterWarehouseId.isNotEmpty) {
+        query = query.eq('warehouse_id', filterWarehouseId);
       }
 
-      final response = await query;
+      final filterCashierId = _filterCashierId;
+      if (filterCashierId != null && filterCashierId.isNotEmpty) {
+        query = query.eq('cashier_id', filterCashierId);
+      }
+
+      final ordered = query.order('created_at', ascending: false);
+      final response = (page != null && limit != null)
+          ? await ordered.range((page - 1) * limit, page * limit - 1)
+          : await ordered;
 
       return (response as List)
           .map((json) => _mapSupabaseToSaleItemModel(json))
@@ -71,7 +124,7 @@ class SaleRepository implements SaleRepositoryInterface {
     try {
       log('SaleRepository: Fetching sale by id: $id');
 
-      final saleResponse = await _client
+      var query = _client
           .from('sales')
           .select('''
             *,
@@ -80,8 +133,19 @@ class SaleRepository implements SaleRepositoryInterface {
             items:sale_items(*, product:product_id(id, name, image)),
             payments:sale_payments(*)
           ''')
-          .eq('id', id)
-          .maybeSingle();
+          .eq('id', id);
+
+      final filterWarehouseId = _filterWarehouseId;
+      if (filterWarehouseId != null && filterWarehouseId.isNotEmpty) {
+        query = query.eq('warehouse_id', filterWarehouseId);
+      }
+
+      final filterCashierId = _filterCashierId;
+      if (filterCashierId != null && filterCashierId.isNotEmpty) {
+        query = query.eq('cashier_id', filterCashierId);
+      }
+
+      final saleResponse = await query.maybeSingle();
 
       if (saleResponse == null) return null;
 
@@ -97,15 +161,26 @@ class SaleRepository implements SaleRepositoryInterface {
     try {
       log('SaleRepository: Fetching pending sales');
 
-      final response = await _client
+      var query = _client
           .from('sales')
           .select('''
             *,
             customer:customer_id(id, name),
             warehouse:warehouse_id(id, name)
           ''')
-          .eq('sale_status', 'pending')
-          .order('created_at', ascending: false);
+          .eq('sale_status', 'pending');
+
+      final filterWarehouseId = _filterWarehouseId;
+      if (filterWarehouseId != null && filterWarehouseId.isNotEmpty) {
+        query = query.eq('warehouse_id', filterWarehouseId);
+      }
+
+      final filterCashierId = _filterCashierId;
+      if (filterCashierId != null && filterCashierId.isNotEmpty) {
+        query = query.eq('cashier_id', filterCashierId);
+      }
+
+      final response = await query.order('created_at', ascending: false);
 
       return (response as List)
           .map((json) => _mapSupabaseToPendingSaleModel(json))
@@ -121,7 +196,7 @@ class SaleRepository implements SaleRepositoryInterface {
     try {
       log('SaleRepository: Fetching pending sale details: $id');
 
-      final response = await _client
+      var query = _client
           .from('sales')
           .select('''
             *,
@@ -130,8 +205,19 @@ class SaleRepository implements SaleRepositoryInterface {
             items:sale_items(*, product:product_id(id, name, code, image))
           ''')
           .eq('id', id)
-          .eq('sale_status', 'pending')
-          .maybeSingle();
+          .eq('sale_status', 'pending');
+
+      final filterWarehouseId = _filterWarehouseId;
+      if (filterWarehouseId != null && filterWarehouseId.isNotEmpty) {
+        query = query.eq('warehouse_id', filterWarehouseId);
+      }
+
+      final filterCashierId = _filterCashierId;
+      if (filterCashierId != null && filterCashierId.isNotEmpty) {
+        query = query.eq('cashier_id', filterCashierId);
+      }
+
+      final response = await query.maybeSingle();
 
       if (response == null) return null;
 
@@ -147,14 +233,25 @@ class SaleRepository implements SaleRepositoryInterface {
     try {
       log('SaleRepository: Fetching due sales');
 
-      final response = await _client
+      var query = _client
           .from('sales')
           .select('''
             *,
             customer:customer_id(id, name, phone_number)
           ''')
-          .gt('remaining_amount', 0)
-          .order('created_at', ascending: false);
+          .gt('remaining_amount', 0);
+
+      final filterWarehouseId = _filterWarehouseId;
+      if (filterWarehouseId != null && filterWarehouseId.isNotEmpty) {
+        query = query.eq('warehouse_id', filterWarehouseId);
+      }
+
+      final filterCashierId = _filterCashierId;
+      if (filterCashierId != null && filterCashierId.isNotEmpty) {
+        query = query.eq('cashier_id', filterCashierId);
+      }
+
+      final response = await query.order('created_at', ascending: false);
 
       return (response as List)
           .map((json) => _mapSupabaseToDueSaleModel(json))
@@ -294,7 +391,7 @@ class SaleRepository implements SaleRepositoryInterface {
     return SaleItemModel(
       id: json['id'] ?? '',
       reference: json['reference'] ?? 'N/A',
-      customerName: customer?['name'] ?? 'Walk-in Customer',
+      customerName: customer?['name'] ?? 'No Customer',
       grandTotal: (json['grand_total'] as num?)?.toDouble() ?? 0.0,
       status: json['sale_status'] ?? 'completed',
       date: json['created_at'] ?? '',
@@ -303,14 +400,8 @@ class SaleRepository implements SaleRepositoryInterface {
 
   SaleDetailModel _mapSupabaseToSaleDetailModel(Map<String, dynamic> json) {
     final items = (json['items'] as List? ?? [])
-        .map((item) => SaleDetailItem(
-              productId: item['product']?['id'] ?? item['product_id'] ?? '',
-              productName: item['product']?['name'] ?? 'Unknown',
-              quantity: (item['quantity'] as num?)?.toInt() ?? 0,
-              price: (item['price'] as num?)?.toDouble() ?? 0.0,
-              subtotal: (item['subtotal'] as num?)?.toDouble() ?? 0.0,
-              image: item['product']?['image'],
-            ))
+        .whereType<Map<String, dynamic>>()
+        .map(SaleDetailItem.fromJson)
         .toList();
 
     return SaleDetailModel(

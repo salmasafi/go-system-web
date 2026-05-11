@@ -34,6 +34,7 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
   late PosCubit posCubit;
   late List<CartItem> cartItems;
   late double total;
+  late CartSummary summary;
 
   @override
   void initState() {
@@ -47,7 +48,12 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
   }
 
   void _calculateTotal() {
-    total = cartItems.fold(0.0, (sum, item) => sum + item.subtotal);
+    summary = cubit.calculateSummary(
+      selectedTax: posCubit.selectedTax,
+      selectedDiscount: posCubit.selectedDiscount,
+      selectedCoupon: posCubit.selectedCoupon,
+    );
+    total = summary.grandTotal;
   }
 
   void _refresh() {
@@ -383,7 +389,7 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
     final customerCubit = context.read<PosCustomerCubit>();
     
     final success = await cubit.createSale(
-      totalAmount: total,
+      totalAmount: summary.grandTotal,
       paidAmount: 0,
       note: LocaleKeys.sale_on_hold_note.tr(),
       isPending: true,
@@ -391,6 +397,13 @@ class _POSCartBottomSheetState extends State<POSCartBottomSheet> {
       warehouseId: posCubit.selectedWarhouse?.id,
       shiftId: shiftCubit.currentShift?.id,
       cashierId: shiftCubit.selectedCashier?.id,
+      taxAmount: summary.taxAmount,
+      discountAmount: summary.discountAmount + summary.couponAmount,
+      taxId: posCubit.selectedTax?.id == 'null' ? null : posCubit.selectedTax?.id,
+      discountId: posCubit.selectedDiscount?.id == 'null' ? null : posCubit.selectedDiscount?.id,
+      couponCode: (posCubit.selectedCoupon != null && posCubit.selectedCoupon!.id != 'null')
+          ? posCubit.selectedCoupon!.couponCode
+          : null,
     );
 
     if (success && mounted) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../cubit/attribute_type_cubit/attribute_type_cubit.dart';
 import '../../cubit/attribute_type_cubit/attribute_type_state.dart';
@@ -59,7 +60,7 @@ class _CreateAttributeTypeDialogState extends State<CreateAttributeTypeDialog> {
     final isEditing = widget.attributeType != null;
 
     return AlertDialog(
-      title: Text(isEditing ? 'تعديل نوع الخاصية' : 'إنشاء نوع خاصية'),
+      title: Text(isEditing ? 'edit_attribute_type'.tr() : 'create_attribute_type'.tr()),
       content: Form(
         key: _formKey,
         child: Column(
@@ -67,13 +68,13 @@ class _CreateAttributeTypeDialogState extends State<CreateAttributeTypeDialog> {
           children: [
             TextFormField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Name',
+              decoration: InputDecoration(
+                labelText: 'name'.tr(),
                 border: OutlineInputBorder(),
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Please enter a name';
+                  return 'please_enter_name'.tr();
                 }
                 return null;
               },
@@ -81,7 +82,7 @@ class _CreateAttributeTypeDialogState extends State<CreateAttributeTypeDialog> {
             const SizedBox(height: 16),
             Row(
               children: [
-                const Text('الحالة:'),
+                Text('${'status_label'.tr()}:'),
                 const Spacer(),
                 Switch(
                   value: _status,
@@ -100,7 +101,7 @@ class _CreateAttributeTypeDialogState extends State<CreateAttributeTypeDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('إلغاء'),
+          child: Text('cancel'.tr()),
         ),
         BlocBuilder<AttributeTypeCubit, AttributeTypeState>(
           builder: (context, state) {
@@ -121,7 +122,7 @@ class _CreateAttributeTypeDialogState extends State<CreateAttributeTypeDialog> {
                         color: Colors.white,
                       ),
                     )
-                  : Text(isEditing ? 'تحديث' : 'إنشاء'),
+                  : Text(isEditing ? 'update'.tr() : 'create'.tr()),
             );
           },
         ),

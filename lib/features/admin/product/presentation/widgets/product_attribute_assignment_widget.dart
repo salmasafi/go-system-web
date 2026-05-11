@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import '../../cubit/attribute_type_cubit/attribute_type_cubit.dart';
@@ -87,7 +88,7 @@ class _ProductAttributeAssignmentWidgetState extends State<ProductAttributeAssig
               children: [
                 if (currentAttributes.isNotEmpty) ...[
                   Text(
-                    'Current Attributes',
+                    'current_attributes'.tr(),
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 18),
                       fontWeight: FontWeight.bold,
@@ -99,7 +100,7 @@ class _ProductAttributeAssignmentWidgetState extends State<ProductAttributeAssig
                   const SizedBox(height: 24),
                 ],
                 Text(
-                  'Assign New Attributes',
+                  'assign_new_attributes'.tr(),
                   style: TextStyle(
                     fontSize: ResponsiveUI.fontSize(context, 18),
                     fontWeight: FontWeight.bold,
@@ -118,7 +119,7 @@ class _ProductAttributeAssignmentWidgetState extends State<ProductAttributeAssig
                           : <AttributeType>[];
 
                       if (attributeTypes.isEmpty) {
-                        return const Text('No attribute types available. Create some first.');
+                        return Text('no_attribute_types_available'.tr());
                       }
 
                       return Column(
@@ -136,7 +137,7 @@ class _ProductAttributeAssignmentWidgetState extends State<ProductAttributeAssig
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryBlue,
                     ),
-                    child: const Text('Save Attributes'),
+                    child: Text('save_attributes'.tr()),
                   ),
                 ],
               );
@@ -158,7 +159,7 @@ class _ProductAttributeAssignmentWidgetState extends State<ProductAttributeAssig
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    attr.attributeType?.name ?? 'Unknown',
+                    attr.attributeType?.name ?? 'unknown'.tr(),
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 16),
                       fontWeight: FontWeight.w600,
@@ -166,7 +167,7 @@ class _ProductAttributeAssignmentWidgetState extends State<ProductAttributeAssig
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Values: ${attr.attributeValueIds.length} selected',
+                    'values_selected_count'.tr(namedArgs: {'count': attr.attributeValueIds.length.toString()}),
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 14),
                       color: AppColors.linkBlue,
@@ -216,9 +217,9 @@ class _ProductAttributeAssignmentWidgetState extends State<ProductAttributeAssig
                   : <AttributeValue>[];
 
               if (values.isEmpty) {
-                return const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Text('No values available for this attribute type.'),
+                return Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text('no_values_for_attribute_type'.tr()),
                 );
               }
 

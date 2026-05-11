@@ -80,7 +80,7 @@ class _AddRedeemPointsDialogState extends State<AddRedeemPointsDialog> {
               
               // Title
               Text(
-                isEditing ? 'Edit Redeem Points' : 'Add New Redeem Points',
+                isEditing ? 'edit_redeem_points'.tr() : 'add_new_redeem_points'.tr(),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 20),
                   fontWeight: FontWeight.bold,
@@ -89,7 +89,7 @@ class _AddRedeemPointsDialogState extends State<AddRedeemPointsDialog> {
               ),
               SizedBox(height: ResponsiveUI.spacing(context, 8)),
               Text(
-                'Configure the exchange rate between amount and points',
+                'exchange_rate_config_msg'.tr(),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 14),
                   color: AppColors.shadowGray,
@@ -99,7 +99,7 @@ class _AddRedeemPointsDialogState extends State<AddRedeemPointsDialog> {
 
               // Amount Field
               Text(
-                'Amount (\$)',
+                '${'amount'.tr()} (${'currency_symbol'.tr()})',
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 14),
                   fontWeight: FontWeight.w600,
@@ -111,8 +111,8 @@ class _AddRedeemPointsDialogState extends State<AddRedeemPointsDialog> {
                 controller: _amountController,
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(
-                  hintText: 'Enter amount',
-                  prefixText: '\$ ',
+                  hintText: 'enter_amount'.tr(),
+                  prefixText: '${'currency_symbol'.tr()} ',
                   filled: true,
                   fillColor: AppColors.white,
                   border: OutlineInputBorder(
@@ -143,11 +143,11 @@ class _AddRedeemPointsDialogState extends State<AddRedeemPointsDialog> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter an amount';
+                    return 'please_enter_amount'.tr();
                   }
                   final amount = double.tryParse(value);
                   if (amount == null || amount <= 0) {
-                    return 'Please enter a valid amount greater than 0';
+                    return 'please_enter_valid_amount'.tr();
                   }
                   return null;
                 },
@@ -156,7 +156,7 @@ class _AddRedeemPointsDialogState extends State<AddRedeemPointsDialog> {
 
               // Points Field
               Text(
-                'Points',
+                'points'.tr(),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 14),
                   fontWeight: FontWeight.w600,
@@ -168,7 +168,7 @@ class _AddRedeemPointsDialogState extends State<AddRedeemPointsDialog> {
                 controller: _pointsController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  hintText: 'Enter points',
+                  hintText: 'enter_points'.tr(),
                   filled: true,
                   fillColor: AppColors.white,
                   border: OutlineInputBorder(
@@ -199,11 +199,11 @@ class _AddRedeemPointsDialogState extends State<AddRedeemPointsDialog> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter points';
+                    return 'please_enter_points'.tr();
                   }
                   final points = int.tryParse(value);
                   if (points == null || points <= 0) {
-                    return 'Please enter valid points greater than 0';
+                    return 'please_enter_valid_points'.tr();
                   }
                   return null;
                 },
@@ -230,7 +230,7 @@ class _AddRedeemPointsDialogState extends State<AddRedeemPointsDialog> {
                       SizedBox(width: ResponsiveUI.spacing(context, 8)),
                       Expanded(
                         child: Text(
-                          'Exchange Rate: 1 point = \$${_calculateExchangeRate()}',
+                          'exchange_rate_preview'.tr(namedArgs: {'amount': '${'currency_symbol'.tr()}${_calculateExchangeRate()}'}),
                           style: TextStyle(
                             fontSize: ResponsiveUI.fontSize(context, 12),
                             color: AppColors.darkGray,
@@ -255,7 +255,7 @@ class _AddRedeemPointsDialogState extends State<AddRedeemPointsDialog> {
                       state is UpdateRedeemPointsLoading;
 
                   return CustomElevatedButton(
-                    text: isEditing ? 'Update' : 'Create',
+                    text: isEditing ? 'update'.tr() : 'create'.tr(),
                     onPressed: isLoading ? null : _submit,
                     isLoading: isLoading,
                   );
@@ -299,12 +299,12 @@ class _AddRedeemPointsDialogState extends State<AddRedeemPointsDialog> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete Redeem Points Configuration'),
-        content: Text('Are you sure you want to delete this redeem points configuration?'),
+        title: Text('delete_redeem_points_title'.tr()),
+        content: Text('delete_redeem_points_msg'.tr()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel'),
+            child: Text('cancel'.tr()),
           ),
           TextButton(
             onPressed: () {
@@ -313,7 +313,7 @@ class _AddRedeemPointsDialogState extends State<AddRedeemPointsDialog> {
                 context.read<RedeemPointsCubit>().deleteRedeemPoints(widget.redeemPoint!.id);
               }
             },
-            child: Text('Delete', style: TextStyle(color: AppColors.red)),
+            child: Text('delete'.tr(), style: TextStyle(color: AppColors.red)),
           ),
         ],
       ),

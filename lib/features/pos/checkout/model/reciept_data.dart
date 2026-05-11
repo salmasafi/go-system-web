@@ -1,4 +1,5 @@
 import 'package:GoSystem/features/admin/discount/model/discount_model.dart';
+import 'package:GoSystem/features/admin/coupon/model/coupon_model.dart';
 import 'package:GoSystem/features/pos/home/model/pos_models.dart';
 import 'checkout_models.dart';
 
@@ -9,6 +10,8 @@ class RecieptData {
   Tax? selectedTax;
   double discountAmount;
   DiscountModel? selectedDiscount;
+  double couponAmount;
+  CouponModel? selectedCoupon;
   double paidAmount;
   double change;
   String reference;
@@ -23,6 +26,8 @@ class RecieptData {
     this.selectedTax,
     required this.discountAmount,
     this.selectedDiscount,
+    this.couponAmount = 0.0,
+    this.selectedCoupon,
     required this.paidAmount,
     required this.change,
     required this.reference,

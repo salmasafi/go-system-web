@@ -1,9 +1,13 @@
 import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/features/admin/product/models/selected_attribute_model.dart';
 import 'package:GoSystem/features/pos/home/model/pos_models.dart';
 import 'package:GoSystem/features/pos/checkout/model/checkout_models.dart';
+import 'package:GoSystem/features/admin/discount/model/discount_model.dart';
+import 'package:GoSystem/features/admin/coupon/model/coupon_model.dart';
 import 'package:GoSystem/features/pos/sales/data/repositories/sale_repository.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 
 part 'checkout_state.dart';
 
@@ -11,6 +15,13 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   final SaleRepository _saleRepository = SaleRepository();
 
   CheckoutCubit() : super(CheckoutInitial());
+
+  String? _nullIfEmpty(String? value) {
+    if (value == null) return null;
+    final v = value.trim();
+    if (v.isEmpty || v == 'null') return null;
+    return v;
+  }
 
   String? reference;
   int? pointsEarned;
@@ -88,6 +99,54 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     emit(PosCartUpdated([]));
   }
 
+  CartSummary calculateSummary({
+    Tax? selectedTax,
+    DiscountModel? selectedDiscount,
+    CouponModel? selectedCoupon,
+  }) {
+    final subtotal = cartItems.fold(0.0, (sum, item) => sum + item.subtotal);
+
+    // 1. Discount
+    double discountVal = 0.0;
+    if (selectedDiscount != null && selectedDiscount.id != 'null') {
+      if (selectedDiscount.type == 'percentage') {
+        discountVal = subtotal * selectedDiscount.amount;
+      } else {
+        discountVal = selectedDiscount.amount;
+      }
+    }
+
+    // 2. Coupon
+    double couponVal = 0.0;
+    if (selectedCoupon != null && selectedCoupon.id != 'null') {
+      if (selectedCoupon.type == 'percentage') {
+        couponVal = subtotal * selectedCoupon.amount;
+      } else {
+        couponVal = selectedCoupon.amount;
+      }
+    }
+
+    // 3. Tax (calculated on full subtotal as per user request)
+    double taxVal = 0.0;
+    if (selectedTax != null && selectedTax.id != 'null') {
+      if (selectedTax.type == 'percentage') {
+        taxVal = subtotal * selectedTax.amount;
+      } else {
+        taxVal = selectedTax.amount;
+      }
+    }
+
+    final grandTotal = (subtotal + taxVal - discountVal - couponVal).clamp(0.0, double.infinity);
+
+    return CartSummary(
+      subtotal: subtotal,
+      taxAmount: taxVal,
+      discountAmount: discountVal,
+      couponAmount: couponVal,
+      grandTotal: grandTotal,
+    );
+  }
+
   Future<bool> createSale({
     required double totalAmount,
     double paidAmount = 0.0,
@@ -106,6 +165,12 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     String? couponCode,
   }) async {
     emit(CheckoutLoading());
+
+    final normalizedWarehouseId = _nullIfEmpty(warehouseId);
+    if (normalizedWarehouseId == null) {
+      emit(CheckoutError(LocaleKeys.please_select_warehouse.tr()));
+      return false;
+    }
 
     // 1. Prepare items for Supabase
     final items = cartItems.map((item) {
@@ -133,10 +198,10 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
     try {
       final saleDetail = await _saleRepository.createSale(
-        customerId: customerId,
-        warehouseId: warehouseId ?? '',
-        shiftId: shiftId,
-        cashierId: cashierId,
+        customerId: _nullIfEmpty(customerId),
+        warehouseId: normalizedWarehouseId,
+        shiftId: _nullIfEmpty(shiftId),
+        cashierId: _nullIfEmpty(cashierId),
         items: items,
         grandTotal: totalAmount,
         taxAmount: taxAmount,

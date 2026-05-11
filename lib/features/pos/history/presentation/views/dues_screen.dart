@@ -1,6 +1,7 @@
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
@@ -29,7 +30,7 @@ class _DuesScreenState extends State<DuesScreen> {
       backgroundColor: AppColors.lightBlueBackground,
       appBar: AppBar(
         title: Text(
-          'Due Users',
+          'due_users_title'.tr(),
           style: TextStyle(fontWeight: FontWeight.w700, fontSize: ResponsiveUI.fontSize(context, 18)),
         ),
         backgroundColor: AppColors.white,
@@ -44,7 +45,7 @@ class _DuesScreenState extends State<DuesScreen> {
       body: BlocConsumer<HistoryCubit, HistoryState>(
         listener: (context, state) {
           if (state is DuesPaySuccess) {
-            CustomSnackbar.showSuccess(context, 'Payment recorded successfully');
+            CustomSnackbar.showSuccess(context, 'payment_recorded_success'.tr());
             context.read<HistoryCubit>().getAllDues();
           } else if (state is DuesPayError) {
             CustomSnackbar.showError(context, state.message);
@@ -156,12 +157,12 @@ class _TotalBanner extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Total Outstanding',
+                  'total_outstanding'.tr(),
                   style: TextStyle(color: Colors.white70, fontSize: ResponsiveUI.fontSize(context, 12), fontWeight: FontWeight.w500),
                 ),
                 SizedBox(height: ResponsiveUI.value(context, 2)),
                 Text(
-                  '${totalDue.toStringAsFixed(2)} EGP',
+                  '${totalDue.toStringAsFixed(2)} ${'currency_symbol'.tr()}',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: ResponsiveUI.fontSize(context, 22),
@@ -283,7 +284,7 @@ class _CustomerDueCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
                       ),
                       child: Text(
-                        '${customer.sales.length} sale${customer.sales.length > 1 ? 's' : ''}',
+                        'sales_count'.tr(namedArgs: {'count': customer.sales.length.toString()}),
                         style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 11),
                           fontWeight: FontWeight.w600,
@@ -301,12 +302,12 @@ class _CustomerDueCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Total Due:',
+                      'total_due_label'.tr(),
                       style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 14), color: AppColors.shadowGray),
                     ),
                     Text(
-                      '${customer.totalDue.toStringAsFixed(2)} EGP',
+                      '${customer.totalDue.toStringAsFixed(2)} ${'currency_symbol'.tr()}',
                       style: TextStyle(
                         fontSize: ResponsiveUI.fontSize(context, 16),
                         fontWeight: FontWeight.w800,
@@ -332,7 +333,7 @@ class _CustomerDueCard extends StatelessWidget {
                           )
                         : Icon(Icons.payment_rounded, size: ResponsiveUI.iconSize(context, 18)),
                     label: Text(
-                      isPaying ? 'Processing...' : 'Pay Now',
+                      isPaying ? 'processing'.tr() : 'pay_now'.tr(),
                       style: TextStyle(
                           fontWeight: FontWeight.w700, fontSize: ResponsiveUI.fontSize(context, 14)),
                     ),
@@ -389,12 +390,12 @@ class _EmptyView extends StatelessWidget {
           ),
           SizedBox(height: ResponsiveUI.value(context, 20)),
           Text(
-            'No Dues',
+            'no_dues'.tr(),
             style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 20), fontWeight: FontWeight.w700, color: AppColors.darkGray),
           ),
           SizedBox(height: ResponsiveUI.value(context, 8)),
           Text(
-            'All customers are up to date',
+            'all_customers_up_to_date'.tr(),
             style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14), color: AppColors.shadowGray),
           ),
         ],
@@ -423,7 +424,7 @@ class _ErrorView extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: onRetry,
             icon: Icon(Icons.refresh),
-            label: const Text('Retry'),
+            label: Text('retry'.tr()),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryBlue,
               foregroundColor: Colors.white,

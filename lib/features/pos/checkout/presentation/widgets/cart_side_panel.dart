@@ -32,7 +32,12 @@ class POSCartSidePanel extends StatelessWidget {
         final cubit = context.read<CheckoutCubit>();
         final posCubit = context.read<PosCubit>();
         final cartItems = cubit.cartItems;
-        final total = cartItems.fold(0.0, (sum, item) => sum + item.subtotal);
+        final summary = cubit.calculateSummary(
+          selectedTax: posCubit.selectedTax,
+          selectedDiscount: posCubit.selectedDiscount,
+          selectedCoupon: posCubit.selectedCoupon,
+        );
+        final total = summary.grandTotal;
 
         return Container(
           width: 340,
@@ -60,7 +65,7 @@ class POSCartSidePanel extends StatelessWidget {
                     ? _buildEmptyState(context)
                     : _buildCartList(context, cartItems),
               ),
-              if (cartItems.isNotEmpty) _buildFooter(context, total, cartItems),
+              if (cartItems.isNotEmpty) _buildFooter(context, summary, cartItems),
             ],
           ),
         );
@@ -245,7 +250,8 @@ class POSCartSidePanel extends StatelessWidget {
   }
 
   Widget _buildFooter(
-      BuildContext context, double total, List<CartItem> cartItems) {
+      BuildContext context, CartSummary summary, List<CartItem> cartItems) {
+    final total = summary.grandTotal;
     return Container(
       padding: EdgeInsets.all(ResponsiveUI.padding(context, 14)),
       decoration: BoxDecoration(
@@ -297,7 +303,7 @@ class POSCartSidePanel extends StatelessWidget {
                     ],
                   ),
                   Text(
-                    '\$${total.toStringAsFixed(2)}',
+                    '${total.toStringAsFixed(2)} ${'currency_symbol'.tr()}',
                     style: TextStyle(
                       fontSize: ResponsiveUI.fontSize(context, 24),
                       fontWeight: FontWeight.bold,
@@ -315,7 +321,7 @@ class POSCartSidePanel extends StatelessWidget {
                     label: LocaleKeys.hold.tr(),
                     icon: Icons.pause_circle_outline,
                     color: AppColors.warningOrange,
-                    onTap: () => _holdSale(context, total),
+                    onTap: () => _holdSale(context, summary),
                   ),
                 ),
                 SizedBox(width: ResponsiveUI.spacing(context, 8)),
@@ -385,14 +391,14 @@ class POSCartSidePanel extends StatelessWidget {
     );
   }
 
-  void _holdSale(BuildContext context, double total) async {
+  void _holdSale(BuildContext context, CartSummary summary) async {
     final cubit = context.read<CheckoutCubit>();
     final posCubit = context.read<PosCubit>();
     final shiftCubit = context.read<PosShiftCubit>();
     final customerCubit = context.read<PosCustomerCubit>();
 
     final success = await cubit.createSale(
-      totalAmount: total,
+      totalAmount: summary.grandTotal,
       paidAmount: 0,
       note: LocaleKeys.sale_on_hold_note.tr(),
       isPending: true,
@@ -400,6 +406,13 @@ class POSCartSidePanel extends StatelessWidget {
       warehouseId: posCubit.selectedWarhouse?.id,
       shiftId: shiftCubit.currentShift?.id,
       cashierId: shiftCubit.selectedCashier?.id,
+      taxAmount: summary.taxAmount,
+      discountAmount: summary.discountAmount + summary.couponAmount,
+      taxId: posCubit.selectedTax?.id == 'null' ? null : posCubit.selectedTax?.id,
+      discountId: posCubit.selectedDiscount?.id == 'null' ? null : posCubit.selectedDiscount?.id,
+      couponCode: (posCubit.selectedCoupon != null && posCubit.selectedCoupon!.id != 'null')
+          ? posCubit.selectedCoupon!.couponCode
+          : null,
     );
 
     if (success && context.mounted) {

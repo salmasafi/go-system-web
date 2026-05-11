@@ -2,6 +2,7 @@ import 'package:GoSystem/core/utils/responsive_ui.dart';
 // lib/features/History/ui/tabs/pending_tab.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/features/pos/history/presentation/views/pending_sale_details_screen.dart';
 import '../../../../../core/widgets/custom_loading/custom_loading_state.dart';
@@ -35,7 +36,7 @@ class _PendingTabState extends State<PendingTab> {
         if (state is HistoryError) return Center(child: Text(state.message));
         if (state is PendingLoaded) {
           if (state.pendingSales.isEmpty) {
-            return Center(child: Text("No pending sales"));
+            return Center(child: Text("no_pending_sales".tr()));
           }
 
           return ListView.builder(
@@ -78,7 +79,7 @@ class _PendingTabState extends State<PendingTab> {
                         ),
                       ),
                       Text(
-                        "Tap to resume",
+                        "tap_to_resume".tr(),
                         style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 10),
                           color: AppColors.shadowGray,

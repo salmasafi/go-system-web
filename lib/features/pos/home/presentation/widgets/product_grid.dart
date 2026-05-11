@@ -72,6 +72,7 @@ class _POSProductGridState extends State<POSProductGrid> {
                   (p) => p.image != null && p.image!.isNotEmpty,
                 );
                 final isMobile = ResponsiveUI.isMobile(context);
+                final compactMode = !hasAnyImage;
                 return AnimatedElement(
                   delay: const Duration(milliseconds: 100),
                   child: Container(
@@ -89,8 +90,10 @@ class _POSProductGridState extends State<POSProductGrid> {
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: hasAnyImage
                             ? (isMobile ? 2 : 4)
-                            : (isMobile ? 1 : 3),
-                        childAspectRatio: hasAnyImage ? 0.78 : 3.8,
+                            : (isMobile ? 1 : 2),
+                        childAspectRatio: hasAnyImage
+                            ? 0.78
+                            : (isMobile ? 3.8 : 3.2),
                         crossAxisSpacing: hasAnyImage ? 14 : 10,
                         mainAxisSpacing: hasAnyImage ? 14 : 8,
                       ),
@@ -104,7 +107,7 @@ class _POSProductGridState extends State<POSProductGrid> {
                           product: product,
                           onTap: () => _addToCart(product),
                           cartQuantity: quantityInCart,
-                          compactMode: !hasAnyImage,
+                          compactMode: compactMode,
                         );
                       },
                     ),

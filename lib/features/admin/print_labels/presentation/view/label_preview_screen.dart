@@ -3,6 +3,7 @@ import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
 import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
@@ -44,7 +45,7 @@ class _LabelPreviewContent extends StatelessWidget {
       backgroundColor: AppColors.lightBlueBackground,
       appBar: appBarWithActions(
         context,
-        title: 'Label Configuration',
+        title: 'label_configuration'.tr(),
       ),
       body: BlocConsumer<LabelCubit, LabelState>(
         listener: (context, state) {
@@ -59,7 +60,7 @@ class _LabelPreviewContent extends StatelessWidget {
           final cubit = context.read<LabelCubit>();
           
           if (cubit.selectedProducts.isEmpty) {
-            return Center(child: Text("No items selected"));
+            return Center(child: Text("no_items_selected".tr()));
           }
 
           return Column(
@@ -92,27 +93,27 @@ class _LabelPreviewContent extends StatelessWidget {
     return Container(
       color: Colors.white,
       child: ExpansionTile(
-        title: const Text(
-          "Label Settings",
-          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.darkBlue),
+        title: Text(
+          "label_settings".tr(),
+          style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.darkBlue),
         ),
-        subtitle: const Text("Customize what appears on the label"),
+        subtitle: Text("customize_label".tr()),
         initiallyExpanded: true,
         children: [
           SwitchListTile(
-            title: const Text("Show Product Name"),
+            title: Text("show_product_name".tr()),
             value: cubit.labelConfig.showProductName,
             activeColor: AppColors.primaryBlue,
             onChanged: (val) => cubit.updateConfig(showProductName: val),
           ),
           SwitchListTile(
-            title: const Text("Show Price"),
+            title: Text("show_price_label".tr()),
             value: cubit.labelConfig.showPrice,
             activeColor: AppColors.primaryBlue,
             onChanged: (val) => cubit.updateConfig(showPrice: val),
           ),
           SwitchListTile(
-            title: const Text("Show Business Name"),
+            title: Text("show_business_name".tr()),
             value: cubit.labelConfig.showBusinessName,
             activeColor: AppColors.primaryBlue,
             onChanged: (val) => cubit.updateConfig(showBusinessName: val),
@@ -164,7 +165,7 @@ class _LabelPreviewContent extends StatelessWidget {
                   ),
                   if (item.variationName != null)
                     Text(
-                      'Attr: ${item.variationName}',
+                      'attribute_label'.tr(namedArgs: {'name': item.variationName!}),
                       style: TextStyle(color: Colors.grey[600], fontSize: ResponsiveUI.fontSize(context, 13)),
                     ),
                   Text(
@@ -253,12 +254,12 @@ class _LabelPreviewContent extends StatelessWidget {
                   child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                 ),
                 SizedBox(width: ResponsiveUI.value(context, 12)),
-                Text("Generating...", style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 18), color: Colors.white)),
+                Text("generating".tr(), style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 18), color: Colors.white)),
               ] else ...[
                 Icon(Icons.print, color: Colors.white),
                 SizedBox(width: ResponsiveUI.value(context, 8)),
                 Text(
-                  'Generate $totalLabels Labels',
+                  'generate_labels_count'.tr(namedArgs: {'count': totalLabels.toString()}),
                   style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 18), color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ],

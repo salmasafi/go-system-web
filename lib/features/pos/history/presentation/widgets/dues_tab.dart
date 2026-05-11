@@ -2,6 +2,7 @@ import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
 import '../../cubit/history_cubit.dart';
 import '../../cubit/history_state.dart';
@@ -31,7 +32,7 @@ class _DuesTabState extends State<DuesTab> {
         if (state is HistoryError) return Center(child: Text(state.message));
         if (state is DuesLoaded) {
           if (state.customers.isEmpty) {
-            return Center(child: Text("No dues found"));
+            return Center(child: Text("no_dues_found".tr()));
           }
           return Column(
             children: [
@@ -40,7 +41,7 @@ class _DuesTabState extends State<DuesTab> {
                 color: Colors.red[50],
                 width: double.infinity,
                 child: Text(
-                  "Total Dues: ${state.totalDueAmount.toStringAsFixed(2)} EGP",
+                  "total_dues_label".tr(namedArgs: {'amount': state.totalDueAmount.toStringAsFixed(2)}),
                   style: TextStyle(
                     color: Colors.red,
                     fontWeight: FontWeight.bold,

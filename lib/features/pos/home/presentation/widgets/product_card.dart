@@ -30,9 +30,6 @@ class _POSProductCardState extends State<POSProductCard>
   late AnimationController _scaleController;
   bool _isPressed = false;
 
-  bool get _hasImage =>
-      widget.product.image != null && widget.product.image!.isNotEmpty;
-
   @override
   void initState() {
     super.initState();
@@ -70,7 +67,7 @@ class _POSProductCardState extends State<POSProductCard>
 
   @override
   Widget build(BuildContext context) {
-    if (widget.compactMode || !_hasImage) {
+    if (widget.compactMode) {
       return _buildCompactCard(context);
     }
     return _buildImageCard(context);
@@ -135,7 +132,7 @@ class _POSProductCardState extends State<POSProductCard>
                           fit: StackFit.expand,
                           children: [
                             CachedNetworkImage(
-                              imageUrl: widget.product.image!,
+                              imageUrl: widget.product.image ?? '',
                               fit: BoxFit.cover,
                               placeholder: (_, __) => const CustomLoadingState(),
                               errorWidget: (_, __, ___) => Center(
@@ -368,11 +365,28 @@ class _POSProductCardState extends State<POSProductCard>
                 ),
                 SizedBox(width: ResponsiveUI.padding(context, 8)),
                 // Stock badge inline
-                _buildStockBadge(context),
+                Flexible(
+                  fit: FlexFit.loose,
+                  child: Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: _buildStockBadge(context),
+                  ),
+                ),
                 SizedBox(width: ResponsiveUI.padding(context, 6)),
                 // Cart quantity or add button
                 if (widget.cartQuantity > 0)
-                  _buildCartQuantityIndicator(context)
+                  Flexible(
+                    fit: FlexFit.loose,
+                    child: Align(
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: ResponsiveUI.value(context, 110),
+                        ),
+                        child: _buildCartQuantityIndicator(context),
+                      ),
+                    ),
+                  )
                 else
                   _addButton(context),
               ],
@@ -518,42 +532,52 @@ class _POSProductCardState extends State<POSProductCard>
   }
 
   Widget _badge(BuildContext context, String label, Color color, IconData icon) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: ResponsiveUI.padding(context, 8),
-        vertical: ResponsiveUI.padding(context, 4),
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: ResponsiveUI.value(context, 120),
       ),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.92),
-        borderRadius: BorderRadius.circular(
-          ResponsiveUI.borderRadius(context, 8),
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: ResponsiveUI.padding(context, 8),
+          vertical: ResponsiveUI.padding(context, 4),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha: 0.3),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.92),
+          borderRadius: BorderRadius.circular(
+            ResponsiveUI.borderRadius(context, 8),
           ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: Colors.white,
-            size: ResponsiveUI.iconSize(context, 10),
-          ),
-          SizedBox(width: ResponsiveUI.value(context, 3)),
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: ResponsiveUI.fontSize(context, 9),
-              fontWeight: FontWeight.bold,
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: 0.3),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
             ),
-          ),
-        ],
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: Colors.white,
+              size: ResponsiveUI.iconSize(context, 10),
+            ),
+            SizedBox(width: ResponsiveUI.value(context, 3)),
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                softWrap: false,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: ResponsiveUI.fontSize(context, 9),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -566,10 +590,10 @@ class _POSProductCardState extends State<POSProductCard>
         widget.product.startQuantity! > 0;
     final wholesaleActive =
         hasWholesale && widget.cartQuantity >= widget.product.startQuantity!;
-    final baseLabel = '${widget.product.price.toStringAsFixed(2)} \$';
+    final baseLabel = '${widget.product.price.toStringAsFixed(2)} ${'currency_symbol'.tr()}';
 
     if (wholesaleActive) {
-      final wholesaleLabel = '${widget.product.wholePrice!.toStringAsFixed(2)} \$';
+      final wholesaleLabel = '${widget.product.wholePrice!.toStringAsFixed(2)} ${'currency_symbol'.tr()}';
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -586,6 +610,9 @@ class _POSProductCardState extends State<POSProductCard>
             ),
             child: Text(
               wholesaleLabel,
+              maxLines: 1,
+              softWrap: false,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: ResponsiveUI.fontSize(context, 12),
                 fontWeight: FontWeight.bold,
@@ -596,6 +623,9 @@ class _POSProductCardState extends State<POSProductCard>
           SizedBox(height: ResponsiveUI.value(context, 2)),
           Text(
             baseLabel,
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: ResponsiveUI.fontSize(context, 10),
               color: AppColors.linkBlue,
@@ -619,6 +649,9 @@ class _POSProductCardState extends State<POSProductCard>
       ),
       child: Text(
         baseLabel,
+        maxLines: 1,
+        softWrap: false,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
           fontSize: ResponsiveUI.fontSize(context, 12),
           fontWeight: FontWeight.bold,

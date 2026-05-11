@@ -110,9 +110,10 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
   // }
 
   double get grandTotal =>
-      widget.recieptData.totalAmount -
-      widget.recieptData.discountAmount +
-      widget.recieptData.taxAmount;
+      widget.recieptData.totalAmount +
+      widget.recieptData.taxAmount -
+      widget.recieptData.discountAmount -
+      widget.recieptData.couponAmount;
   @override
   void initState() {
     // needs to clear cart list
@@ -493,6 +494,20 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
           '\$${widget.recieptData.discountAmount.toStringAsFixed(2)}';
     }
 
+    String couponDisplay = '';
+    if (widget.recieptData.selectedCoupon != null) {
+      if (widget.recieptData.selectedCoupon!.type == 'percentage') {
+        couponDisplay =
+            '${(widget.recieptData.selectedCoupon!.amount * 100).toStringAsFixed(0)}%';
+      } else {
+        couponDisplay =
+            '\$${widget.recieptData.selectedCoupon!.amount.toStringAsFixed(2)}';
+      }
+    } else {
+      couponDisplay =
+          '\$${widget.recieptData.couponAmount.toStringAsFixed(2)}';
+    }
+
     return Container(
       padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
       decoration: BoxDecoration(
@@ -518,6 +533,14 @@ class _POSReceiptDialogState extends State<POSReceiptDialog> {
             _totalRow(
               '${widget.recieptData.selectedDiscount?.name ?? 'Discount'} ($discountDisplay):',
               -widget.recieptData.discountAmount,
+              false,
+            ),
+          ],
+          if (widget.recieptData.couponAmount > 0) ...[
+            SizedBox(height: ResponsiveUI.value(context, 8)),
+            _totalRow(
+              '${widget.recieptData.selectedCoupon?.couponCode ?? 'Coupon'} ($couponDisplay):',
+              -widget.recieptData.couponAmount,
               false,
             ),
           ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/widgets/custom_textfield/build_text_field.dart';
 import 'package:GoSystem/features/pos/customer/cubit/pos_customer_cubit.dart';
 
@@ -55,7 +56,7 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog> {
                   SizedBox(width: ResponsiveUI.value(context, 8)),
                   Expanded(
                     child: Text(
-                      'Customer "${state.newCustomer.name}" created successfully',
+                      'customer_created_success_msg'.tr(namedArgs: {'name': state.newCustomer.name}),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -118,12 +119,12 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog> {
                         buildTextField(
                           context,
                           controller: _nameCtrl,
-                          label: 'Name *',
+                          label: '${'name'.tr()} *',
                           icon: Icons.person_outline,
-                          hint: 'Enter customer name',
+                          hint: 'enter_customer_name'.tr(),
                           validator: (v) {
                             if (v == null || v.trim().isEmpty) {
-                              return 'Name is required';
+                              return 'name_is_required'.tr();
                             }
                             return null;
                           },
@@ -132,13 +133,13 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog> {
                         buildTextField(
                           context,
                           controller: _phoneCtrl,
-                          label: 'Phone Number *',
+                          label: '${'phone_number'.tr()} *',
                           icon: Icons.phone_outlined,
-                          hint: 'Enter phone number',
+                          hint: 'enter_phone_number'.tr(),
                           keyboardType: TextInputType.phone,
                           validator: (v) {
                             if (v == null || v.trim().isEmpty) {
-                              return 'Phone number is required';
+                              return 'phone_number_is_required'.tr();
                             }
                             return null;
                           },
@@ -147,18 +148,18 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog> {
                         buildTextField(
                           context,
                           controller: _emailCtrl,
-                          label: 'Email (optional)',
+                          label: '${'email'.tr()}${'optional_label'.tr()}',
                           icon: Icons.email_outlined,
-                          hint: 'Enter email address',
+                          hint: 'enter_email'.tr(),
                           keyboardType: TextInputType.emailAddress,
                         ),
                         SizedBox(height: ResponsiveUI.spacing(context, 16)),
                         buildTextField(
                           context,
                           controller: _addressCtrl,
-                          label: 'Address (optional)',
+                          label: '${'address'.tr()}${'optional_label'.tr()}',
                           icon: Icons.location_on_outlined,
-                          hint: 'Enter address',
+                          hint: 'enter_address'.tr(),
                         ),
                         if (_errorMessage != null) ...[
                           SizedBox(height: ResponsiveUI.spacing(context, 12)),
@@ -194,7 +195,7 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog> {
           SizedBox(width: ResponsiveUI.spacing(context, 12)),
           Expanded(
             child: Text(
-              'New Customer',
+              'new_customer'.tr(),
               style: TextStyle(
                 color: AppColors.white,
                 fontSize: ResponsiveUI.fontSize(context, 18),
@@ -250,7 +251,7 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog> {
                       vertical: ResponsiveUI.padding(context, 14),
                     ),
                   ),
-                  child: const Text('Cancel'),
+                  child: Text('cancel'.tr()),
                 ),
               ),
               SizedBox(width: ResponsiveUI.spacing(context, 12)),
@@ -268,7 +269,7 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog> {
                           ),
                         )
                       : Icon(Icons.check_circle_outline),
-                  label: Text(isLoading ? 'Creating...' : 'Create Customer'),
+                  label: Text(isLoading ? 'creating'.tr() : 'create_customer'.tr()),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryBlue,
                     foregroundColor: AppColors.white,

@@ -61,7 +61,7 @@ class _WarehouseProductsScreenState extends State<WarehouseProductsScreen> {
       }
     } catch (error) {
       setState(() => _isLoading = false);
-      CustomSnackbar.showError(context, 'Failed to load products');
+      CustomSnackbar.showError(context, 'failed_to_load_products'.tr());
     }
     return;
   }
@@ -166,7 +166,7 @@ class _WarehouseProductsScreenState extends State<WarehouseProductsScreen> {
                     ),
                     SizedBox(height: ResponsiveUI.spacing(context, 4)),
                     Text(
-                      'Warehouse Details',
+                      'warehouse_details'.tr(),
                       style: TextStyle(
                         fontSize: ResponsiveUI.fontSize(context, 14),
                         color: AppColors.darkGray.withValues(alpha: 0.6),
@@ -178,13 +178,13 @@ class _WarehouseProductsScreenState extends State<WarehouseProductsScreen> {
             ],
           ),
           SizedBox(height: ResponsiveUI.spacing(context, 20)),
-          _buildInfoRow(Icons.location_on, 'Address', widget.warehouse.address ?? 'N/A'),
+          _buildInfoRow(Icons.location_on, 'address'.tr(), widget.warehouse.address ?? 'N/A'),
           SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          _buildInfoRow(Icons.phone, 'Phone', widget.warehouse.phone ?? 'N/A'),
+          _buildInfoRow(Icons.phone, 'phone'.tr(), widget.warehouse.phone ?? 'N/A'),
           SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          _buildInfoRow(Icons.email, 'Email', widget.warehouse.email ?? 'N/A'),
+          _buildInfoRow(Icons.email, 'email'.tr(), widget.warehouse.email ?? 'N/A'),
           SizedBox(height: ResponsiveUI.spacing(context, 12)),
-          _buildInfoRow(Icons.inventory, 'Capacity', '${widget.warehouse.stockQuantity ?? 0} Total Items'),
+          _buildInfoRow(Icons.inventory, 'capacity'.tr(), 'total_items'.tr(namedArgs: {'count': (widget.warehouse.stockQuantity ?? 0).toString()})),
         ],
       ),
     );
@@ -233,7 +233,7 @@ class _WarehouseProductsScreenState extends State<WarehouseProductsScreen> {
             runSpacing: ResponsiveUI.spacing(context, 8),
             children: [
               Text(
-                'Inventory Management',
+                'inventory_management'.tr(),
                 style: TextStyle(
                   fontSize: ResponsiveUI.fontSize(context, 18),
                   fontWeight: FontWeight.bold,
@@ -252,7 +252,7 @@ class _WarehouseProductsScreenState extends State<WarehouseProductsScreen> {
                   );
                 },
                 icon: Icon(Icons.add, size: ResponsiveUI.iconSize(context, 18)),
-                label: const Text('Add New Product'),
+                label: Text('add_new_product'.tr()),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.successGreen,
                   foregroundColor: Colors.white,
@@ -269,7 +269,7 @@ class _WarehouseProductsScreenState extends State<WarehouseProductsScreen> {
           ),
           SizedBox(height: ResponsiveUI.spacing(context, 16)),
           SearchBarWidget(
-            text: 'Search products',
+            text: 'search_products_hint'.tr(),
             controller: _searchController,
             onChanged: _filterProducts,
           ),
@@ -288,10 +288,10 @@ class _WarehouseProductsScreenState extends State<WarehouseProductsScreen> {
     if (_allProducts.isEmpty) {
       return CustomEmptyState(
         icon: Icons.inventory_outlined,
-        title: 'No Products Found',
-        message: 'This warehouse has no products yet.',
+        title: 'no_products_found'.tr(),
+        message: 'warehouse_no_products_msg'.tr(),
         onRefresh: _loadWarehouseProducts,
-        actionLabel: 'Refresh',
+        actionLabel: 'retry'.tr(),
         onAction: _loadWarehouseProducts,
       );
     }
@@ -299,13 +299,13 @@ class _WarehouseProductsScreenState extends State<WarehouseProductsScreen> {
     if (_filteredProducts.isEmpty) {
       return CustomEmptyState(
         icon: Icons.search_off,
-        title: 'No Results Found',
-        message: 'Try adjusting your search terms',
+        title: 'no_results_found'.tr(),
+        message: 'try_adjusting_search_terms'.tr(),
         onRefresh: () async {
           _searchController.clear();
           _filterProducts('');
         },
-        actionLabel: 'Clear Search',
+        actionLabel: 'clear_search'.tr(),
         onAction: () async {
           _searchController.clear();
           _filterProducts('');
@@ -355,7 +355,7 @@ class _WarehouseProductsScreenState extends State<WarehouseProductsScreen> {
         ),
       ),
       child: Text(
-        'PRODUCT NAME',
+        'product_name'.tr().toUpperCase(),
         style: TextStyle(
           fontSize: ResponsiveUI.fontSize(context, 14),
           fontWeight: FontWeight.bold,
@@ -431,7 +431,7 @@ class _WarehouseProductsScreenState extends State<WarehouseProductsScreen> {
                         borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 6)),
                       ),
                       child: Text(
-                        'Qty: ${product['quantity'] ?? 0}',
+                        'qty_label'.tr(namedArgs: {'count': (product['quantity'] ?? 0).toString()}),
                         style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 12),
                           color: AppColors.primaryBlue,
@@ -450,7 +450,7 @@ class _WarehouseProductsScreenState extends State<WarehouseProductsScreen> {
                         borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 6)),
                       ),
                       child: Text(
-                        'Price: ${product['price'] ?? 0}',
+                        'price_label'.tr(namedArgs: {'amount': (product['price'] ?? 0).toString()}),
                         style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 12),
                           color: AppColors.linkBlue,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import '../../cubit/attribute_type_cubit/attribute_type_cubit.dart';
 import '../../cubit/attribute_type_cubit/attribute_type_state.dart';
@@ -17,28 +18,28 @@ class DeleteAttributeTypeDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('حذف نوع الخاصية'),
+      title: Text('delete_attribute_type_title'.tr()),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('هل أنت متأكد أنك تريد حذف نوع الخاصية هذا؟'),
+          Text('delete_attribute_type_msg'.tr()),
           const SizedBox(height: 8),
           Text(
-            'الاسم: $attributeTypeName',
+            'name_with_value'.tr(namedArgs: {'name': attributeTypeName}),
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
-          const Text(
-            'تحذير: سيؤدي هذا أيضاً إلى حذف جميع قيم الخصائص المرتبطة وإزالتها من المنتجات.',
-            style: TextStyle(color: AppColors.warningOrange, fontSize: 12),
+          Text(
+            'delete_attribute_type_warning'.tr(),
+            style: const TextStyle(color: AppColors.warningOrange, fontSize: 12),
           ),
         ],
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('إلغاء'),
+          child: Text('cancel'.tr()),
         ),
         BlocBuilder<AttributeTypeCubit, AttributeTypeState>(
           builder: (context, state) {
@@ -55,7 +56,7 @@ class DeleteAttributeTypeDialog extends StatelessWidget {
                         color: Colors.white,
                       ),
                     )
-                  : const Text('حذف'),
+                  : Text('delete'.tr()),
             );
           },
         ),

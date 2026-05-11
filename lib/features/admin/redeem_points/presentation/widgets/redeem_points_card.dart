@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/widgets/animation/animated_element.dart';
 import '../../cubit/redeem_points_cubit.dart';
 import '../../model/redeem_points_model.dart';
@@ -67,7 +68,7 @@ class RedeemPointsCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Amount: \$${redeemPoint.amount.toStringAsFixed(2)}',
+                          'amount_with_value'.tr(namedArgs: {'amount': '${'currency_symbol'.tr()}${redeemPoint.amount.toStringAsFixed(2)}'}),
                           style: TextStyle(
                             fontSize: ResponsiveUI.fontSize(context, 16),
                             fontWeight: FontWeight.bold,
@@ -76,7 +77,7 @@ class RedeemPointsCard extends StatelessWidget {
                         ),
                         SizedBox(height: ResponsiveUI.spacing(context, 4)),
                         Text(
-                          'Points: ${redeemPoint.points}',
+                          'points_with_value'.tr(namedArgs: {'points': redeemPoint.points.toString()}),
                           style: TextStyle(
                             fontSize: ResponsiveUI.fontSize(context, 14),
                             color: AppColors.shadowGray,
@@ -96,7 +97,7 @@ class RedeemPointsCard extends StatelessWidget {
                           color: AppColors.primaryBlue,
                           size: ResponsiveUI.iconSize(context, 20),
                         ),
-                        tooltip: 'Edit',
+                        tooltip: 'edit'.tr(),
                       ),
                       IconButton(
                         onPressed: () => _showDeleteConfirmation(context),
@@ -105,7 +106,7 @@ class RedeemPointsCard extends StatelessWidget {
                           color: AppColors.red,
                           size: ResponsiveUI.iconSize(context, 20),
                         ),
-                        tooltip: 'Delete',
+                        tooltip: 'delete'.tr(),
                       ),
                     ],
                   ),
@@ -132,7 +133,7 @@ class RedeemPointsCard extends StatelessWidget {
                     SizedBox(width: ResponsiveUI.spacing(context, 8)),
                     Expanded(
                       child: Text(
-                        'Exchange Rate: 1 point = \$${(redeemPoint.amount / redeemPoint.points).toStringAsFixed(2)}',
+                        'exchange_rate_preview'.tr(namedArgs: {'amount': '${'currency_symbol'.tr()}${(redeemPoint.amount / redeemPoint.points).toStringAsFixed(2)}'}),
                         style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 12),
                           color: AppColors.darkGray,
@@ -163,19 +164,19 @@ class RedeemPointsCard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete Redeem Points Configuration'),
-        content: Text('Are you sure you want to delete this redeem points configuration?'),
+        title: Text('delete_redeem_points_title'.tr()),
+        content: Text('delete_redeem_points_msg'.tr()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel'),
+            child: Text('cancel'.tr()),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               context.read<RedeemPointsCubit>().deleteRedeemPoints(redeemPoint.id);
             },
-            child: Text('Delete', style: TextStyle(color: AppColors.red)),
+            child: Text('delete'.tr(), style: TextStyle(color: AppColors.red)),
           ),
         ],
       ),

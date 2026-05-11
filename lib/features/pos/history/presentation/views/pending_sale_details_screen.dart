@@ -5,6 +5,7 @@ import 'package:GoSystem/features/pos/history/cubit/history_state.dart';
 import 'package:GoSystem/features/pos/history/model/pending_sale_details_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
@@ -23,7 +24,7 @@ class PendingSaleDetailsScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: const Text("Pending Sale"),
+          title: Text("pending_sale".tr()),
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
           elevation: 0,
@@ -56,12 +57,12 @@ class PendingSaleDetailsScreen extends StatelessWidget {
           color: Colors.orange.withValues(alpha: 0.05),
           child: Column(
             children: [
-              _row("Reference", details.reference, isBold: true),
-              _row("Customer", details.customer.name),
-              _row("Phone", details.customer.phone),
-              _row("Warehouse", details.warehouse.name),
+              _row("reference_number".tr(), details.reference, isBold: true),
+              _row("customer_label".tr().replaceAll(':', ''), details.customer.name),
+              _row("phone".tr(), details.customer.phone),
+              _row("warehouse".tr().replaceAll(':', ''), details.warehouse.name),
               const Divider(),
-              _row("Status", "PENDING", color: Colors.orange, isBold: true),
+              _row("status".tr(), "status_pending".tr().toUpperCase(), color: Colors.orange, isBold: true),
             ],
           ),
         ),
@@ -75,7 +76,7 @@ class PendingSaleDetailsScreen extends StatelessWidget {
             children: [
               Icon(Icons.shopping_cart_outlined, size: ResponsiveUI.iconSize(context, 20), color: Colors.grey),
               SizedBox(width: ResponsiveUI.value(context, 8)),
-              Text("Products", style: TextStyle(fontWeight: FontWeight.bold, fontSize: ResponsiveUI.fontSize(context, 16))),
+              Text("products".tr(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: ResponsiveUI.fontSize(context, 16))),
             ],
           ),
         ),
@@ -131,11 +132,11 @@ class PendingSaleDetailsScreen extends StatelessWidget {
           child: Column(
             children: [
               // Totals
-              _row("Subtotal", "${details.subTotal}"), // Using subtotal from response or calc
-              if(details.taxAmount > 0) _row("Tax", "+${details.taxAmount}"),
-              if(details.discount > 0) _row("Discount", "-${details.discount}", color: Colors.red),
+              _row("subtotal".tr(), "${details.subTotal}"), // Using subtotal from response or calc
+              if(details.taxAmount > 0) _row("tax".tr(), "+${details.taxAmount}"),
+              if(details.discount > 0) _row("discount".tr(), "-${details.discount}", color: Colors.red),
               Divider(height: ResponsiveUI.value(context, 24)),
-              _row("Total to Pay", "${details.grandTotal} EGP", isBold: true, size: ResponsiveUI.iconSize(context, 18), color: AppColors.primaryBlue),
+              _row("total_to_pay".tr(), "${details.grandTotal} EGP", isBold: true, size: ResponsiveUI.iconSize(context, 18), color: AppColors.primaryBlue),
 
               SizedBox(height: ResponsiveUI.value(context, 20)),
 
@@ -147,7 +148,7 @@ class PendingSaleDetailsScreen extends StatelessWidget {
                     _restoreSaleAndCheckout(context, details);
                   },
                   icon: Icon(Icons.restore),
-                  label: const Text("Resume Sale"),
+                  label: Text("resume_sale".tr()),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryBlue,
                     foregroundColor: Colors.white,

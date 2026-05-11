@@ -1,6 +1,7 @@
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
 import 'package:GoSystem/features/pos/checkout/model/reciept_data.dart';
@@ -22,7 +23,7 @@ class SaleDetailsScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: const Text("Sale Details"),
+          title: Text("sale_details".tr()),
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
           elevation: 0,
@@ -52,17 +53,17 @@ class SaleDetailsScreen extends StatelessWidget {
           color: AppColors.lightBlueBackground, // لون فاتح للخلفية
           child: Column(
             children: [
-              _row("Reference", details.reference, isBold: true),
+              _row("reference_number".tr(), details.reference, isBold: true),
               _row(
-                "Customer",
+                "customer_label".tr().replaceAll(':', ''),
                 _parseCustomerName(details),
               ), // دالة مساعدة للاسم
               _row(
-                "Warehouse ID",
+                "warehouse_id".tr(),
                 details.warehouseId,
               ), // يمكنك جلب الاسم لو الموديل يدعمه
               const Divider(),
-              _row("Status", "COMPLETED", color: Colors.green, isBold: true),
+              _row("status".tr(), "status_completed".tr().toUpperCase(), color: Colors.green, isBold: true),
             ],
           ),
         ),
@@ -73,7 +74,7 @@ class SaleDetailsScreen extends StatelessWidget {
           child: Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              "Products",
+              "products".tr(),
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: ResponsiveUI.fontSize(context, 16)),
             ),
           ),
@@ -110,9 +111,9 @@ class SaleDetailsScreen extends StatelessWidget {
                   item.productName,
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                subtitle: Text("${item.quantity} x ${item.price} EGP"),
+                subtitle: Text("${item.quantity} x ${item.price} ${'currency_symbol'.tr()}"),
                 trailing: Text(
-                  "${item.subtotal.toStringAsFixed(2)} EGP",
+                  "${item.subtotal.toStringAsFixed(2)} ${'currency_symbol'.tr()}",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: ResponsiveUI.fontSize(context, 15),
@@ -139,15 +140,15 @@ class SaleDetailsScreen extends StatelessWidget {
           child: Column(
             children: [
               _row(
-                "Subtotal",
+                "subtotal".tr(),
                 "${details.grandTotal - details.taxAmount + details.discount}",
               ), // تقريبي
-              _row("Tax", "+${details.taxAmount}"),
-              _row("Discount", "-${details.discount}", color: Colors.red),
+              _row("tax".tr(), "+${details.taxAmount}"),
+              _row("discount".tr(), "-${details.discount}", color: Colors.red),
               const Divider(),
               _row(
-                "Grand Total",
-                "${details.grandTotal} EGP",
+                "grand_total".tr(),
+                "${details.grandTotal} ${'currency_symbol'.tr()}",
                 isBold: true,
                 size: ResponsiveUI.iconSize(context, 18),
                 color: AppColors.primaryBlue,
@@ -207,7 +208,7 @@ class SaleDetailsScreen extends StatelessWidget {
                     );
                   },
                   icon: Icon(Icons.print),
-                  label: const Text("Print Receipt"),
+                  label: Text("print_receipt".tr()),
 
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.primaryBlue,

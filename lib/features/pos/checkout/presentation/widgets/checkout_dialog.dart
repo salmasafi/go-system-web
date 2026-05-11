@@ -192,6 +192,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   double currentDiscountAmount = 0;
   double currentCouponAmount = 0;
   late PosCubit posCubit;
+  late CheckoutCubit checkOutCubit;
   bool _autoSyncAmountField = true;
   bool _isProgrammaticAmountUpdate = false;
 
@@ -204,6 +205,7 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
   void initState() {
     super.initState();
     posCubit = context.read<PosCubit>();
+    checkOutCubit = context.read<CheckoutCubit>();
     _subTotal = widget.totalAmount;
 
     _taxes = posCubit.taxes;
@@ -240,45 +242,19 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
     setState(() {
       _totalPaying = double.tryParse(_totalPayingCtrl.text) ?? 0.0;
 
-      // 1. Discount
-      double discountVal = 0.0;
-      if (_selectedDiscount != null) {
-        if (_selectedDiscount!.type == 'percentage') {
-          discountVal = _subTotal * _selectedDiscount!.amount;
-        } else {
-          discountVal = _selectedDiscount!.amount;
-        }
-      }
-      currentDiscountAmount = discountVal;
+      final summary = checkOutCubit.calculateSummary(
+        selectedTax: _selectedTax,
+        selectedDiscount: _selectedDiscount,
+        selectedCoupon: _selectedCoupon,
+      );
 
-      // 1b. Coupon
-      double couponVal = 0.0;
-      if (_selectedCoupon != null && _selectedCoupon!.id != 'null') {
-        if (_selectedCoupon!.type == 'percentage') {
-          couponVal = _subTotal * _selectedCoupon!.amount;
-        } else {
-          couponVal = _selectedCoupon!.amount;
-        }
-      }
-      currentCouponAmount = couponVal;
+      _subTotal = summary.subtotal;
+      currentTaxAmount = summary.taxAmount;
+      currentDiscountAmount = summary.discountAmount;
+      currentCouponAmount = summary.couponAmount;
+      _grandTotal = summary.grandTotal;
 
-      // 2. Tax Base
-      double taxableAmount = _subTotal - currentDiscountAmount - currentCouponAmount;
-      if (taxableAmount < 0) taxableAmount = 0;
-
-      // 3. Tax
-      double taxVal = 0.0;
-      if (_selectedTax != null) {
-        if (_selectedTax!.type == 'percentage') {
-          taxVal = taxableAmount * _selectedTax!.amount;
-        } else {
-          taxVal = _selectedTax!.amount;
-        }
-      }
-      currentTaxAmount = taxVal;
-
-      // 4. Grand Total
-      _grandTotal = taxableAmount + currentTaxAmount;
+      if (_grandTotal < 0) _grandTotal = 0;
 
       if (_autoSyncAmountField) {
         final formatted = _grandTotal.toStringAsFixed(2);
@@ -900,6 +876,10 @@ class _POSCheckoutDialogState extends State<POSCheckoutDialog> {
               selectedTax: _selectedTax,
               discountAmount: currentDiscountAmount,
               selectedDiscount: _selectedDiscount,
+              couponAmount: currentCouponAmount,
+              selectedCoupon: (_selectedCoupon != null && _selectedCoupon!.id != 'null')
+                  ? _selectedCoupon
+                  : null,
               paidAmount: _totalPaying,
               change: _change,
               reference: checkOutCubit.reference ?? 'N/A',

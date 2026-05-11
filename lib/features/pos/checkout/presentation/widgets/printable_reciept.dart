@@ -1,5 +1,6 @@
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:intl/intl.dart';
 import 'package:GoSystem/features/pos/checkout/model/reciept_data.dart';
 
@@ -15,8 +16,10 @@ class PrintableReceipt extends StatelessWidget {
   // المعادلة: (Subtotal - Discount) + Tax
   // أو Subtotal + Tax - Discount (حسب ترتيبك المفضل، الكود الحالي يفترض الطرح ثم الجمع)
   double get grandTotal =>
-      (recieptData.totalAmount - recieptData.discountAmount) +
-      recieptData.taxAmount;
+      recieptData.totalAmount +
+      recieptData.taxAmount -
+      recieptData.discountAmount -
+      recieptData.couponAmount;
 
   // --- BIGGER FONTS CONFIGURATION ---
   TextStyle get _headerTitleStyle => TextStyle(
@@ -86,9 +89,9 @@ class PrintableReceipt extends StatelessWidget {
   Widget _header() {
     return Column(
       children: [
-        Text("GoSystem", style: _headerTitleStyle),
+        Text("receipt_header_title".tr(), style: _headerTitleStyle),
         SizedBox(height: 8),
-        Text("Point of Sale System", style: _headerSubStyle),
+        Text("receipt_header_subtitle".tr(), style: _headerSubStyle),
       ],
     );
   }
@@ -109,11 +112,11 @@ class PrintableReceipt extends StatelessWidget {
   Widget _itemsHeader() {
     return Row(
       children: [
-        Expanded(flex: 4, child: Text("Product", style: _columnHeaderStyle)),
+        Expanded(flex: 4, child: Text("product".tr(), style: _columnHeaderStyle)),
         SizedBox(
           width: 45,
           child: Text(
-            "Qty",
+            "qty".tr(),
             style: _columnHeaderStyle,
             textAlign: TextAlign.center,
           ),
@@ -121,7 +124,7 @@ class PrintableReceipt extends StatelessWidget {
         SizedBox(
           width: 80,
           child: Text(
-            "Price",
+            "price".tr(),
             style: _columnHeaderStyle,
             textAlign: TextAlign.right,
           ),
@@ -129,7 +132,7 @@ class PrintableReceipt extends StatelessWidget {
         SizedBox(
           width: 85,
           child: Text(
-            "Total",
+            "total".tr(),
             style: _columnHeaderStyle,
             textAlign: TextAlign.right,
           ),
@@ -194,7 +197,7 @@ class PrintableReceipt extends StatelessWidget {
     return Column(
       children: [
         _row(
-          "Subtotal",
+          "subtotal".tr(),
           recieptData.totalAmount.toStringAsFixed(2),
           bold: true,
         ),
@@ -211,6 +214,15 @@ class PrintableReceipt extends StatelessWidget {
           _row(
             _getDiscountLabel(),
             "-${recieptData.discountAmount.toStringAsFixed(2)}",
+          ),
+        ],
+
+        // --- قسم الكوبون (Coupon) ---
+        if (recieptData.couponAmount > 0) ...[
+          SizedBox(height: 6),
+          _row(
+            _getCouponLabel(),
+            "-${recieptData.couponAmount.toStringAsFixed(2)}",
           ),
         ],
       ],
@@ -231,7 +243,7 @@ class PrintableReceipt extends StatelessWidget {
       }
       return taxName;
     }
-    return "Tax";
+    return "tax".tr();
   }
 
   // دالة مساعدة لتنسيق اسم الخصم
@@ -247,7 +259,23 @@ class PrintableReceipt extends StatelessWidget {
       }
       return discountName;
     }
-    return "Discount";
+    return "discount".tr();
+  }
+
+  // دالة مساعدة لتنسيق اسم الكوبون
+  String _getCouponLabel() {
+    if (recieptData.selectedCoupon != null) {
+      final couponName = recieptData.selectedCoupon!.couponCode;
+      if (recieptData.selectedCoupon!.type == 'percentage') {
+        final rate = recieptData.selectedCoupon!.amount * 100;
+        final rateStr = rate.truncateToDouble() == rate
+            ? rate.toStringAsFixed(0)
+            : rate.toStringAsFixed(1);
+        return "$couponName ($rateStr%)";
+      }
+      return couponName;
+    }
+    return "coupon".tr();
   }
 
   Widget _grandTotal() {
@@ -260,7 +288,7 @@ class PrintableReceipt extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("GRAND TOTAL:  ", style: _totalLabelStyle),
+          Text("grand_total_label".tr().toUpperCase(), style: _totalLabelStyle),
           SizedBox(height: 6),
           Text(
             "${grandTotal.toStringAsFixed(2)} EGP",
@@ -275,13 +303,13 @@ class PrintableReceipt extends StatelessWidget {
     return Column(
       children: [
         _row(
-          "Amount Paid",
+          "paid_amount".tr(),
           recieptData.paidAmount.toStringAsFixed(2),
           bold: true,
         ),
         SizedBox(height: 6),
         if (recieptData.change > 0)
-          _row("Change Due", recieptData.change.toStringAsFixed(2), bold: true),
+          _row("change_label".tr(), recieptData.change.toStringAsFixed(2), bold: true),
       ],
     );
   }
@@ -303,12 +331,12 @@ class PrintableReceipt extends StatelessWidget {
     return Column(
       children: [
         Text(
-          "Thank You!",
+          "thank_you".tr(),
           style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
         ),
         SizedBox(height: 2),
-        Text("Powered by GoSystem POS", style: TextStyle(fontSize: 9)),
-        Text("www.gosystem.com", style: TextStyle(fontSize: 8)),
+        Text("powered_by".tr(), style: TextStyle(fontSize: 9)),
+        Text("website_url".tr(), style: TextStyle(fontSize: 8)),
       ],
     );
   }

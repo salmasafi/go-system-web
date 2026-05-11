@@ -116,3 +116,27 @@ class CartItem {
     );
   }
 }
+
+class CartSummary {
+  final double subtotal;
+  final double taxAmount;
+  final double discountAmount;
+  final double couponAmount;
+  final double grandTotal;
+
+  CartSummary({
+    required this.subtotal,
+    required this.taxAmount,
+    required this.discountAmount,
+    required this.couponAmount,
+    required this.grandTotal,
+  });
+
+  factory CartSummary.empty() => CartSummary(
+        subtotal: 0,
+        taxAmount: 0,
+        discountAmount: 0,
+        couponAmount: 0,
+        grandTotal: 0,
+      );
+}
