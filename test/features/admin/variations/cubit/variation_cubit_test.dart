@@ -11,8 +11,8 @@ class MockVariationRepository extends Mock implements VariationRepository {}
 VariationModel sampleVariation(String id) => VariationModel.fromJson({
       'id': id,
       'name': 'Variation $id',
-      'createdAt': '2024-01-01',
-      'updatedAt': '2024-01-01',
+      'createdAt': '2024-01-01T00:00:00.000Z',
+      'updatedAt': '2024-01-01T00:00:00.000Z',
       '__v': 1,
       'options': [],
     });
@@ -62,12 +62,15 @@ void main() {
       'addVariation emits loading then success',
       build: () {
         when(() => mockRepo.createVariation(any())).thenAnswer((_) async => sampleVariation('new'));
+        when(() => mockRepo.getAllVariations()).thenAnswer((_) async => []);
         return VariationCubit(mockRepo);
       },
       act: (c) => c.addVariation(name: 'New Variation', options: []),
       expect: () => [
         isA<CreateVariationLoading>(),
         isA<CreateVariationSuccess>(),
+        isA<GetVariationsLoading>(),
+        isA<GetVariationsSuccess>(),
       ],
     );
   });

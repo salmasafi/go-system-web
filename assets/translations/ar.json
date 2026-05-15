@@ -1006,6 +1006,7 @@
   "ok": "حسناً",
   "return_sale": "إرجاع مبيعة",
   "reference_number": "رقم المرجع",
+  "reference_copied": "تم نسخ الرقم",
   "search_sale": "بحث عن الفاتورة",
   "submit_return": "إرسال الإرجاع",
   "return_note": "ملاحظة الإرجاع",
@@ -1310,6 +1311,8 @@
   "inventory_management": "إدارة المخزون",
   "search_products_hint": "البحث في المنتجات...",
   "warehouse_no_products_msg": "هذا المخزن لا يحتوي على منتجات بعد.",
+  "no_products": "لا توجد منتجات",
+  "access_denied_message": "ممنوع الوصول — ليس لديك صلاحية لفتح هذا القسم",
   "qty_label": "الكمية: {count}",
   "price_label": "السعر: {amount}",
   "edit_redeem_points": "تعديل نقاط الاسترداد",
@@ -1336,5 +1339,13 @@
   "please_enter_value": "يرجى إدخال القيمة",
   "current_attributes": "الخصائص الحالية",
   "assign_new_attributes": "تعيين خصائص جديدة",
-  "values_selected_count": "القيم: تم اختيار {count}"
+  "values_selected_count": "القيم: تم اختيار {count}",
+  "featured": "مميز",
+  "date": "التاريخ",
+  "status_paid": "مدفوع",
+  "status_later": "آجل",
+  "status_partial": "جزئي",
+  "status_unpaid": "غير مدفوع",
+  "n_products": "{count} منتج",
+  "n_options": "{count} خيارات"
 }

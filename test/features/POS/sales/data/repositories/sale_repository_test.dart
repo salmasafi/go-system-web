@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:GoSystem/core/supabase/supabase_client.dart';
@@ -7,7 +7,7 @@ import 'package:GoSystem/features/pos/sales/data/repositories/sale_repository.da
 class MockSupabaseClient extends Mock implements SupabaseClient {}
 class MockSupabaseQueryBuilder extends Mock implements SupabaseQueryBuilder {}
 class MockPostgrestFilterBuilder extends Mock implements PostgrestFilterBuilder<List<Map<String, dynamic>>> {}
-class MockPostgrestTransformBuilder extends Mock implements PostgrestTransformBuilder<Map<String, dynamic>?> {}
+class MockPostgrestTransformBuilder extends Mock implements PostgrestTransformBuilder<Map<String, dynamic>> {}
 class MockPostgrestFilterBuilderAny extends Mock implements PostgrestFilterBuilder<dynamic> {}
 
 void main() {
@@ -50,10 +50,10 @@ void main() {
         }
       ];
 
-      when(() => mockClient.from('sales')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.order(any(), ascending: any(named: 'ascending'))).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('sales')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.eq(any(), any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.order(any(), ascending: any(named: 'ascending'))).thenAnswer((_) => mockFilterBuilder);
       
       when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(List<Map<String, dynamic>>);
@@ -80,10 +80,10 @@ void main() {
         'items': []
       };
 
-      when(() => mockClient.from('sales')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq('id', 'sale-123')).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.maybeSingle()).thenReturn(mockTransformBuilder);
+      when(() => mockClient.from('sales')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.eq('id', 'sale-123')).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.maybeSingle()).thenAnswer((_) => mockTransformBuilder);
       
       when(() => mockTransformBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(Map<String, dynamic>?);
@@ -103,10 +103,10 @@ void main() {
         'grand_total': 150.0,
       };
 
-      when(() => mockClient.from('sales')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.single()).thenReturn(mockTransformBuilder);
+      when(() => mockClient.from('sales')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.eq(any(), any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.single()).thenAnswer((_) => mockTransformBuilder);
 
       when(() => mockTransformBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(Map<String, dynamic>?);

@@ -18,10 +18,11 @@ void main() {
   CurrencyModel sampleCurrency(String id) => CurrencyModel.fromJson({
         'id': id,
         'name': 'Currency $id',
-        'code': 'CUR$id',
-        'exchange_rate': 1.0,
-        'is_default': false,
-        'created_at': '2024-01-01',
+        'amount': 1.0,
+        'isdefault': false,
+        'createdAt': '2024-01-01T00:00:00.000Z',
+        'updatedAt': '2024-01-01T00:00:00.000Z',
+        '__v': 0,
       });
 
   group('CurrencyCubit', () {

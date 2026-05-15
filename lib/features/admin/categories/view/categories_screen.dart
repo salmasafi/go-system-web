@@ -12,6 +12,10 @@ import 'package:GoSystem/features/admin/categories/view/widgets/category_card_wi
 import 'package:GoSystem/features/admin/categories/view/widgets/delete_category_dialog.dart';
 import 'package:GoSystem/features/admin/categories/view/create_category_screen.dart';
 import 'package:GoSystem/features/admin/categories/view/edit_category_screen.dart';
+import 'package:GoSystem/features/admin/product/cubit/filter_product_cubit/product_filter_cubit.dart';
+import 'package:GoSystem/features/admin/product/cubit/get_products_cubit/product_cubit.dart';
+import 'package:GoSystem/features/admin/product/data/repositories/product_repository.dart';
+import 'package:GoSystem/features/admin/product/presentation/screens/products_screen.dart';
 import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
 import '../../product/presentation/widgets/search_bar_widget.dart';
@@ -100,6 +104,23 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             padding: EdgeInsets.only(bottom: ResponsiveUI.spacing(context, 8)),
             child: AnimatedCategoryCard(
               category: filteredCategories[index],
+              onProductsTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => MultiBlocProvider(
+                      providers: [
+                        BlocProvider(create: (_) => ProductsCubit(ProductRepository())),
+                        BlocProvider(create: (_) => ProductFiltersCubit(ProductRepository())),
+                      ],
+                      child: ProductsScreen(
+                        initialCategoryId: filteredCategories[index].id,
+                        initialCategoryName: filteredCategories[index].name,
+                      ),
+                    ),
+                  ),
+                );
+              },
               onEdit: () {
                 showModalBottomSheet(
                   context: context,

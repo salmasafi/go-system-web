@@ -13,10 +13,12 @@ import 'package:GoSystem/features/admin/bank_account/model/bank_account_model.da
 import 'package:GoSystem/features/admin/expences/cubit/expences_cubit.dart';
 import 'package:GoSystem/features/admin/expences_category/cubit/expences_categories_cubit.dart';
 import 'package:GoSystem/features/admin/expences_category/model/expences_categories_model.dart';
+import 'package:GoSystem/features/admin/expense_admin/model/expense_admin_model.dart';
 import 'package:GoSystem/generated/locale_keys.g.dart';
 
 class ExpenseFormDialog extends StatefulWidget {
-  const ExpenseFormDialog({super.key});
+  final ExpenseAdminModel? expense;
+  const ExpenseFormDialog({super.key, this.expense});
 
   @override
   State<ExpenseFormDialog> createState() => _ExpenseFormDialogState();
@@ -32,6 +34,8 @@ class _ExpenseFormDialogState extends State<ExpenseFormDialog>
   ExpenseCategoryModel? _selectedCategory;
   BankAccountModel? _selectedAccount;
 
+  bool get _isEditMode => widget.expense != null;
+
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
 
@@ -41,6 +45,11 @@ class _ExpenseFormDialogState extends State<ExpenseFormDialog>
   void initState() {
     super.initState();
     _setupAnimation();
+    if (_isEditMode) {
+      _nameController.text = widget.expense!.name;
+      _amountController.text = widget.expense!.amount.toString();
+      _noteController.text = widget.expense!.note;
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ExpenseCategoryCubit>().getExpenseCategories();
       context.read<BankAccountCubit>().getBankAccounts();
@@ -78,13 +87,25 @@ class _ExpenseFormDialogState extends State<ExpenseFormDialog>
       CustomSnackbar.showError(context, LocaleKeys.please_select_financial_account.tr());
       return;
     }
-    context.read<ExpensesCubit>().createExpense(
-          name: _nameController.text.trim(),
-          amount: double.parse(_amountController.text.trim().replaceAll(',', '.')),
-          categoryId: _selectedCategory!.id,
-          financialAccountId: _selectedAccount!.id,
-          note: _noteController.text.trim(),
-        );
+    final cubit = context.read<ExpensesCubit>();
+    if (_isEditMode) {
+      cubit.updateExpense(
+        id: widget.expense!.id,
+        name: _nameController.text.trim(),
+        amount: double.parse(_amountController.text.trim().replaceAll(',', '.')),
+        categoryId: _selectedCategory!.id,
+        financialAccountId: _selectedAccount!.id,
+        note: _noteController.text.trim(),
+      );
+    } else {
+      cubit.createExpense(
+        name: _nameController.text.trim(),
+        amount: double.parse(_amountController.text.trim().replaceAll(',', '.')),
+        categoryId: _selectedCategory!.id,
+        financialAccountId: _selectedAccount!.id,
+        note: _noteController.text.trim(),
+      );
+    }
   }
 
   @override
@@ -100,14 +121,16 @@ class _ExpenseFormDialogState extends State<ExpenseFormDialog>
         elevation: 0,
         child: BlocConsumer<ExpensesCubit, ExpensesState>(
           listener: (context, state) {
-            if (state is CreateExpenseSuccess) {
+            if (state is CreateExpenseSuccess || state is UpdateExpenseSuccess) {
               Navigator.pop(context);
             } else if (state is CreateExpenseError) {
+              CustomSnackbar.showError(context, state.error);
+            } else if (state is UpdateExpenseError) {
               CustomSnackbar.showError(context, state.error);
             }
           },
           builder: (context, state) {
-            final isLoading = state is CreateExpenseLoading;
+            final isLoading = state is CreateExpenseLoading || state is UpdateExpenseLoading;
             return Container(
               constraints: BoxConstraints(
                 maxWidth: maxWidth,
@@ -273,7 +296,7 @@ class _ExpenseFormDialogState extends State<ExpenseFormDialog>
               ),
             ),
             child: Icon(
-              Icons.add_rounded,
+              _isEditMode ? Icons.edit : Icons.add_rounded,
               color: Colors.white,
               size: ResponsiveUI.iconSize(context, 28),
             ),
@@ -284,7 +307,7 @@ class _ExpenseFormDialogState extends State<ExpenseFormDialog>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  LocaleKeys.expenses_title.tr(),
+                  _isEditMode ? LocaleKeys.edit.tr() : LocaleKeys.expenses_title.tr(),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: ResponsiveUI.fontSize(context, 20),
@@ -348,8 +371,11 @@ class _ExpenseFormDialogState extends State<ExpenseFormDialog>
             flex: 2,
             child: ElevatedButton.icon(
               onPressed: isLoading ? null : _submit,
-              icon: Icon(Icons.add_rounded, size: ResponsiveUI.iconSize(context, 20)),
-              label: Text(LocaleKeys.expenses_title.tr()),
+              icon: Icon(
+                _isEditMode ? Icons.check_circle_outline : Icons.add_rounded,
+                size: ResponsiveUI.iconSize(context, 20),
+              ),
+              label: Text(_isEditMode ? LocaleKeys.edit.tr() : LocaleKeys.expenses_title.tr()),
               style: ElevatedButton.styleFrom(
                 backgroundColor: _accent,
                 foregroundColor: Colors.white,

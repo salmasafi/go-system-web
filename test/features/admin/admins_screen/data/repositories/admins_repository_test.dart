@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:GoSystem/core/supabase/supabase_client.dart';
@@ -47,10 +47,10 @@ void main() {
         }
       ];
 
-      when(() => mockClient.from('user_profiles')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select(any())).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('user_profiles')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select(any())).thenAnswer((_) => mockFilterBuilder);
       when(() => mockFilterBuilder.order(any(), ascending: any(named: 'ascending')))
-          .thenReturn(mockFilterBuilder);
+          .thenAnswer((_) => mockFilterBuilder);
 
       when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0]

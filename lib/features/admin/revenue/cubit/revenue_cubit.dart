@@ -94,6 +94,19 @@ class RevenueCubit extends Cubit<RevenueState> {
     }
   }
 
+  // ---------------------- Delete Revenue ----------------------
+  Future<void> deleteRevenue(String revenueId) async {
+    emit(DeleteRevenueLoading());
+    try {
+      await _repository.deleteRevenue(revenueId);
+      allRevenues.removeWhere((r) => r.id == revenueId);
+      emit(DeleteRevenueSuccess(LocaleKeys.revenue_deleted_successfully.tr()));
+      await getRevenues();
+    } catch (e) {
+      emit(DeleteRevenueError(e.toString().replaceAll('Exception: ', '')));
+    }
+  }
+
   // ---------------------- Update Revenue ----------------------
   Future<void> updateRevenue({
     required String revenueId,

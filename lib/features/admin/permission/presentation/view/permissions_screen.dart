@@ -77,10 +77,10 @@ class _PermissionScreenState extends State<PermissionScreen> {
           if (permissions.isEmpty) {
             return CustomEmptyState(
               icon: Icons.policy,
-              title: 'No Permissions',
-              message: 'You have not added any permissions yet.',
+              title: LocaleKeys.permissions.tr(),
+              message: LocaleKeys.adjustments_all_caught_up.tr(),
               onRefresh: _refresh,
-              actionLabel: 'Retry',
+              actionLabel: LocaleKeys.retry.tr(),
               onAction: _refresh,
             );
           }
@@ -94,10 +94,10 @@ class _PermissionScreenState extends State<PermissionScreen> {
 
         return CustomEmptyState(
           icon: Icons.policy,
-          title: 'No Permissions',
-          message: 'Pull to refresh or check your connection',
+          title: LocaleKeys.permissions.tr(),
+          message: LocaleKeys.pull_to_refresh_or_check_connection.tr(),
           onRefresh: _refresh,
-          actionLabel: 'Retry',
+          actionLabel: LocaleKeys.retry.tr(),
           onAction: _refresh,
         );
       },

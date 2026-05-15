@@ -23,7 +23,18 @@ import '../widgets/search_bar_widget.dart';
 import 'barcode_scanner_screen.dart';
 
 class ProductsScreen extends StatefulWidget {
-  const ProductsScreen({super.key});
+  final String? initialCategoryId;
+  final String? initialCategoryName;
+  final String? initialBrandId;
+  final String? initialBrandName;
+
+  const ProductsScreen({
+    super.key,
+    this.initialCategoryId,
+    this.initialCategoryName,
+    this.initialBrandId,
+    this.initialBrandName,
+  });
 
   @override
   State<ProductsScreen> createState() => _ProductsScreenState();
@@ -54,6 +65,20 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialCategoryId != null) {
+      _activeFilters[FilterType.categories.name] = Filter(
+        type: FilterType.categories,
+        id: widget.initialCategoryId!,
+        name: widget.initialCategoryName ?? '',
+      );
+    }
+    if (widget.initialBrandId != null) {
+      _activeFilters[FilterType.brands.name] = Filter(
+        type: FilterType.brands,
+        id: widget.initialBrandId!,
+        name: widget.initialBrandName ?? '',
+      );
+    }
     productsInit();
   }
 

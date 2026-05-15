@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:GoSystem/core/supabase/supabase_client.dart';
@@ -43,8 +43,8 @@ void main() {
         },
       ];
 
-      when(() => mockClient.from('warehouses')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('warehouses')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select()).thenAnswer((_) => mockFilterBuilder);
 
       when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
         final callback =

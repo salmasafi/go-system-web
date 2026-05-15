@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+void main() {}
+
 abstract class BaseCubitTest<C extends Cubit<Object?>> {
   late C cubit;
 

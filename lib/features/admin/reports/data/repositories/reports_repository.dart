@@ -82,15 +82,20 @@ class ReportsRepository implements ReportsRepositoryInterface {
   Future<SalesSummary> getSalesSummary({DateTime? startDate, DateTime? endDate}) async {
     try {
       log('ReportsRepository: Fetching sales summary');
-      
+
       final sales = await getSalesReport(startDate: startDate, endDate: endDate);
-      
-      final totalSales = sales.fold<double>(0, (sum, s) => sum + s.grandTotal);
+      final returns = await _fetchReturnsForPeriod(startDate, endDate);
+
+      final grossSales = sales.fold<double>(0, (sum, s) => sum + s.grandTotal);
+      final totalReturned = returns.fold<double>(
+        0, (sum, r) => sum + ((r['total_amount'] as num?)?.toDouble() ?? 0),
+      );
+      final totalSales = grossSales - totalReturned;
       final totalTax = sales.fold<double>(0, (sum, s) => sum + s.taxAmount);
       final totalDiscounts = sales.fold<double>(0, (sum, s) => sum + s.discountAmount);
       final double avgOrderValue = sales.isEmpty ? 0.0 : (totalSales / sales.length).toDouble();
-      
-      // Group by date for daily data
+
+      // Group sales by date
       final dailyDataMap = <String, DailySalesData>{};
       for (final sale in sales) {
         final dateKey = sale.date.toIso8601String().split('T')[0];
@@ -109,7 +114,21 @@ class ReportsRepository implements ReportsRepositoryInterface {
           );
         }
       }
-      
+
+      // Subtract returns per day
+      for (final ret in returns) {
+        final dateKey = ret['date'] as String? ?? '';
+        final amount = (ret['total_amount'] as num?)?.toDouble() ?? 0.0;
+        if (dailyDataMap.containsKey(dateKey)) {
+          final existing = dailyDataMap[dateKey]!;
+          dailyDataMap[dateKey] = DailySalesData(
+            date: existing.date,
+            amount: existing.amount - amount,
+            orderCount: existing.orderCount,
+          );
+        }
+      }
+
       return SalesSummary(
         totalSales: totalSales,
         totalOrders: sales.length,
@@ -478,8 +497,16 @@ class ReportsRepository implements ReportsRepositoryInterface {
         salesQuery = salesQuery.lte('date', endDate.toIso8601String().split('T')[0]);
       }
       final salesData = await salesQuery;
+
+      // Fetch returns for the same period and subtract from income
+      final returnsData = await _fetchReturnsForPeriod(startDate, endDate);
+      final totalReturnsAmount = returnsData.fold<double>(
+        0, (s, r) => s + ((r['total_amount'] as num?)?.toDouble() ?? 0),
+      );
+
       final totalSalesIncome = (salesData as List)
-          .fold<double>(0, (s, r) => s + ((r['grand_total'] as num?)?.toDouble() ?? 0));
+          .fold<double>(0, (s, r) => s + ((r['grand_total'] as num?)?.toDouble() ?? 0))
+          - totalReturnsAmount;
       final totalTaxCollected = salesData
           .fold<double>(0, (s, r) => s + ((r['tax_amount'] as num?)?.toDouble() ?? 0));
 
@@ -487,12 +514,20 @@ class ReportsRepository implements ReportsRepositoryInterface {
       final monthlyRevMap = <String, double>{};
       final monthlyExpMap = <String, double>{};
 
-      // POS Sales
+      // POS Sales (gross)
       for (final sale in salesData) {
         final dt = DateTime.tryParse(sale['date'] ?? '') ?? DateTime.now();
         final key = '${dt.year}-${dt.month.toString().padLeft(2, '0')}';
         final amount = (sale['grand_total'] as num?)?.toDouble() ?? 0;
         monthlyRevMap[key] = (monthlyRevMap[key] ?? 0) + amount;
+      }
+
+      // Subtract returns per month
+      for (final ret in returnsData) {
+        final dt = DateTime.tryParse(ret['date'] as String? ?? '') ?? DateTime.now();
+        final key = '${dt.year}-${dt.month.toString().padLeft(2, '0')}';
+        final amount = (ret['total_amount'] as num?)?.toDouble() ?? 0;
+        monthlyRevMap[key] = (monthlyRevMap[key] ?? 0) - amount;
       }
       // Manual revenues
       for (final t in revenues) {
@@ -643,6 +678,28 @@ class ReportsRepository implements ReportsRepositoryInterface {
       log('ReportsRepository: Error fetching cashier performance - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
+  }
+
+  /// Fetches completed sale_returns for a given date range.
+  /// Returns raw rows with 'date' and 'total_amount'.
+  Future<List<Map<String, dynamic>>> _fetchReturnsForPeriod(
+    DateTime? startDate,
+    DateTime? endDate,
+  ) async {
+    var query = _client
+        .from('sale_returns')
+        .select('date, total_amount')
+        .eq('status', 'completed');
+
+    if (startDate != null) {
+      query = query.gte('date', startDate.toIso8601String().split('T')[0]);
+    }
+    if (endDate != null) {
+      query = query.lte('date', endDate.toIso8601String().split('T')[0]);
+    }
+
+    final response = await query;
+    return (response as List).cast<Map<String, dynamic>>();
   }
 }
 

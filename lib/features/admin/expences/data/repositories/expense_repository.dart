@@ -88,6 +88,14 @@ abstract class ExpenseRepositoryInterface {
     required String financialAccountId,
     required String note,
   });
+  Future<void> updateExpense({
+    required String id,
+    required String name,
+    required double amount,
+    required String categoryId,
+    required String financialAccountId,
+    required String note,
+  });
   Future<void> deleteExpense(String id);
   Future<List<ExpenseAdminModel>> getExpensesByShift(String shiftId);
 }
@@ -142,6 +150,30 @@ class ExpenseRepository implements ExpenseRepositoryInterface {
       });
     } catch (e) {
       log('ExpenseRepository: Error creating expense - $e');
+      throw Exception(SupabaseErrorHandler.handleError(e));
+    }
+  }
+
+  @override
+  Future<void> updateExpense({
+    required String id,
+    required String name,
+    required double amount,
+    required String categoryId,
+    required String financialAccountId,
+    required String note,
+  }) async {
+    try {
+      log('ExpenseRepository: Updating expense: $id');
+      await _client.from(_table).update({
+        'description': name,
+        'amount': amount,
+        'category_id': categoryId,
+        'bank_account_id': financialAccountId,
+        'note': note,
+      }).eq('id', id);
+    } catch (e) {
+      log('ExpenseRepository: Error updating expense - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
     }
   }

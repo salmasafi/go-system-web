@@ -81,10 +81,10 @@ class _UnitsScreenState extends State<UnitsScreen> {
           if (displayUnits.isEmpty) {
             return CustomEmptyState(
               icon: Icons.straighten_rounded,
-              title: 'No Units',
-              message: 'No units found. Add your first unit to get started.',
+              title: LocaleKeys.units_title.tr(),
+              message: LocaleKeys.empty_message_connection.tr(),
               onRefresh: _refresh,
-              actionLabel: 'Retry',
+              actionLabel: LocaleKeys.retry.tr(),
               onAction: _refresh,
             );
           } else {
@@ -97,10 +97,10 @@ class _UnitsScreenState extends State<UnitsScreen> {
         } else {
           return CustomEmptyState(
             icon: Icons.straighten_rounded,
-            title: 'No Units',
-            message: 'Pull to refresh or check connection',
+            title: LocaleKeys.units_title.tr(),
+            message: LocaleKeys.empty_message_connection.tr(),
             onRefresh: _refresh,
-            actionLabel: 'Retry',
+            actionLabel: LocaleKeys.retry.tr(),
             onAction: _refresh,
           );
         }

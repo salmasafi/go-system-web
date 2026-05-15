@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
 import 'package:GoSystem/core/widgets/custom_error/custom_empty_state.dart';
@@ -51,7 +52,7 @@ class _ProductReportScreenState extends State<ProductReportScreen> {
               icon: Icons.error_outline,
               title: 'Error'.tr(),
               message: state.message,
-              actionLabel: 'Retry'.tr(),
+              actionLabel: LocaleKeys.retry.tr(),
               onAction: _refresh,
               onRefresh: _refresh,
             );

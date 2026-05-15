@@ -17,14 +17,13 @@ void main() {
 
   PopupModel samplePopup(String id) => PopupModel.fromJson({
         'id': id,
-        'title_en': 'Popup $id',
+        'title_En': 'Popup $id',
         'title_ar': 'نافذة $id',
-        'description_en': 'Description',
+        'description_En': 'Description',
         'description_ar': 'وصف',
         'link': 'https://example.com',
         'image': 'popup.jpg',
-        'status': true,
-        'created_at': '2024-01-01',
+        '__v': 0,
       });
 
   group('PopupCubit', () {

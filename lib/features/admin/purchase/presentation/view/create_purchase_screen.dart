@@ -1,9 +1,7 @@
-import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
@@ -39,8 +37,6 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
   String? _paymentType = 'later'; // 'full', 'partial', 'later'
   String? _selectedFinancialAccountId;
   final _partialAmountController = TextEditingController();
-  File? _receiptImage;
-  final _picker = ImagePicker();
 
   // Items list
   final List<_PurchaseItemEntry> _items = [];
@@ -78,11 +74,6 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
       double.tryParse(_shippingController.text.replaceAll(',', '.')) ?? 0;
 
   double get _grandTotal => (_subtotal - _discount + _shipping).clamp(0, double.infinity);
-
-  Future<void> _pickImage() async {
-    final f = await _picker.pickImage(source: ImageSource.gallery);
-    if (f != null && mounted) setState(() => _receiptImage = File(f.path));
-  }
 
   void _addProduct(pm.Product p) {
     setState(() {
@@ -251,7 +242,7 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
           discount: _discount,
           shippingCost: _shipping,
           note: _noteController.text.trim(),
-          receiptImageFile: _receiptImage,
+          receiptImageFile: null,
           payments: payments,
         );
   }
@@ -477,38 +468,6 @@ class _CreatePurchaseScreenState extends State<CreatePurchaseScreen> {
                               icon: Icons.notes_outlined,
                               hint: LocaleKeys.hint_note.tr(),
                               maxLines: 3,
-                            ),
-                            SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                            GestureDetector(
-                              onTap: _pickImage,
-                              child: Container(
-                                width: double.infinity,
-                                height: ResponsiveUI.value(context, 100),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: AppColors.lightGray),
-                                  borderRadius: BorderRadius.circular(
-                                    ResponsiveUI.borderRadius(context, 12),
-                                  ),
-                                  image: _receiptImage != null
-                                      ? DecorationImage(
-                                          image: FileImage(_receiptImage!),
-                                          fit: BoxFit.cover,
-                                        )
-                                      : null,
-                                ),
-                                child: _receiptImage == null
-                                    ? Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Icon(Icons.receipt_outlined,
-                                              color: AppColors.shadowGray),
-                                          Text(LocaleKeys.attach_document.tr(),
-                                              style: TextStyle(
-                                                  color: AppColors.shadowGray)),
-                                        ],
-                                      )
-                                    : null,
-                              ),
                             ),
                           ],
                         ),

@@ -1341,5 +1341,13 @@ abstract class  LocaleKeys {
   static const current_attributes = 'current_attributes';
   static const assign_new_attributes = 'assign_new_attributes';
   static const values_selected_count = 'values_selected_count';
+  static const featured = 'featured';
+  static const date = 'date';
+  static const status_paid = 'status_paid';
+  static const status_later = 'status_later';
+  static const status_partial = 'status_partial';
+  static const status_unpaid = 'status_unpaid';
+  static const n_products = 'n_products';
+  static const n_options = 'n_options';
 
 }

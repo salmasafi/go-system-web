@@ -12,6 +12,7 @@ import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:GoSystem/features/admin/warehouses/cubit/warehouse_cubit.dart';
 import 'package:GoSystem/features/admin/warehouses/model/ware_house_model.dart';
 import 'package:GoSystem/features/admin/product/presentation/widgets/search_bar_widget.dart';
+import 'package:GoSystem/features/admin/product/models/warehouse_product.dart';
 import 'package:GoSystem/features/admin/warehouses/view/add_product_to_warehouse_screen.dart';
 
 class WarehouseProductsScreen extends StatefulWidget {
@@ -28,8 +29,8 @@ class WarehouseProductsScreen extends StatefulWidget {
 
 class _WarehouseProductsScreenState extends State<WarehouseProductsScreen> {
   final TextEditingController _searchController = TextEditingController();
-  List<dynamic> _filteredProducts = [];
-  List<dynamic> _allProducts = [];
+  List<WarehouseProduct> _filteredProducts = [];
+  List<WarehouseProduct> _allProducts = [];
   bool _isLoading = false;
 
   @override
@@ -51,9 +52,10 @@ class _WarehouseProductsScreenState extends State<WarehouseProductsScreen> {
       final productsData = await context.read<WareHouseCubit>().getWarehouseProducts(widget.warehouse.id);
       
       if (productsData != null) {
+        final list = List<WarehouseProduct>.from(productsData['products'] as List);
         setState(() {
-          _allProducts = productsData['products'] ?? [];
-          _filteredProducts = List.from(_allProducts);
+          _allProducts = list;
+          _filteredProducts = List.from(list);
           _isLoading = false;
         });
       } else {
@@ -61,7 +63,7 @@ class _WarehouseProductsScreenState extends State<WarehouseProductsScreen> {
       }
     } catch (error) {
       setState(() => _isLoading = false);
-      CustomSnackbar.showError(context, 'failed_to_load_products'.tr());
+      if (mounted) CustomSnackbar.showError(context, 'failed_to_load_products'.tr());
     }
     return;
   }
@@ -71,12 +73,11 @@ class _WarehouseProductsScreenState extends State<WarehouseProductsScreen> {
       if (query.isEmpty) {
         _filteredProducts = List.from(_allProducts);
       } else {
-        _filteredProducts = _allProducts.where((product) {
-          final nameLower = (product['name'] ?? '').toLowerCase();
-          final codeLower = (product['code'] ?? '').toLowerCase();
-          final searchLower = query.toLowerCase();
-          
-          return nameLower.contains(searchLower) || codeLower.contains(searchLower);
+        final q = query.toLowerCase();
+        _filteredProducts = _allProducts.where((p) {
+          final name = (p.productId?.name ?? '').toLowerCase();
+          final code = (p.productId?.code ?? '').toLowerCase();
+          return name.contains(q) || code.contains(q);
         }).toList();
       }
     });
@@ -365,7 +366,12 @@ class _WarehouseProductsScreenState extends State<WarehouseProductsScreen> {
     );
   }
 
-  Widget _buildProductItem(dynamic product, int index) {
+  Widget _buildProductItem(WarehouseProduct product, int index) {
+    final imageUrl = product.productId?.image;
+    final name = product.productId?.name ?? 'Unknown Product';
+    final price = product.productId?.price ?? 0;
+    final quantity = product.quantity;
+
     return Container(
       margin: EdgeInsets.only(bottom: ResponsiveUI.spacing(context, 12)),
       padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
@@ -384,11 +390,11 @@ class _WarehouseProductsScreenState extends State<WarehouseProductsScreen> {
               ),
               borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
             ),
-            child: product['image'] != null
+            child: imageUrl != null
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
                     child: Image.network(
-                      product['image'],
+                      imageUrl,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Icon(
@@ -411,7 +417,7 @@ class _WarehouseProductsScreenState extends State<WarehouseProductsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  product['name'] ?? 'Unknown Product',
+                  name,
                   style: TextStyle(
                     fontSize: ResponsiveUI.fontSize(context, 16),
                     fontWeight: FontWeight.w600,
@@ -431,7 +437,7 @@ class _WarehouseProductsScreenState extends State<WarehouseProductsScreen> {
                         borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 6)),
                       ),
                       child: Text(
-                        'qty_label'.tr(namedArgs: {'count': (product['quantity'] ?? 0).toString()}),
+                        'qty_label'.tr(namedArgs: {'count': quantity.toString()}),
                         style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 12),
                           color: AppColors.primaryBlue,
@@ -450,7 +456,7 @@ class _WarehouseProductsScreenState extends State<WarehouseProductsScreen> {
                         borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 6)),
                       ),
                       child: Text(
-                        'price_label'.tr(namedArgs: {'amount': (product['price'] ?? 0).toString()}),
+                        'price_label'.tr(namedArgs: {'amount': price.toString()}),
                         style: TextStyle(
                           fontSize: ResponsiveUI.fontSize(context, 12),
                           color: AppColors.linkBlue,

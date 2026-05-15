@@ -11,6 +11,11 @@ class MockLabelRepository extends Mock implements LabelRepository {}
 void main() {
   late MockLabelRepository mockRepo;
 
+  setUpAll(() {
+    registerFallbackValue(<LabelProductItem>[]);
+    registerFallbackValue(LabelConfig());
+  });
+
   setUp(() {
     mockRepo = MockLabelRepository();
   });

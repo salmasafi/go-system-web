@@ -1,16 +1,13 @@
-import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/core/widgets/custom_textfield/custom_text_field_widget.dart';
 import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../../../../core/widgets/custom_loading/custom_loading_state.dart';
 import '../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
-import '../../categories/view/widgets/build_image_placeholder_widget.dart';
 import '../cubit/brand_cubit.dart';
 import '../cubit/brand_states.dart';
 import '../model/get_brand_by_id_model.dart';
@@ -27,8 +24,6 @@ class EditBrandBottomSheet extends StatefulWidget {
 class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
   late TextEditingController _nameController;
 
-  File? _selectedImage;
-  final _picker = ImagePicker();
   bool _isLoading =
       true; // Start with loading true to show loading state immediately
   BrandById? _brand;
@@ -46,13 +41,6 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
     super.dispose();
   }
 
-  Future<void> _pickImage() async {
-    final picked = await _picker.pickImage(source: ImageSource.gallery);
-    if (picked != null && mounted) {
-      setState(() => _selectedImage = File(picked.path));
-    }
-  }
-
   void _submitUpdate() {
     if (_nameController.text.trim().isEmpty) {
       CustomSnackbar.showWarning(context, LocaleKeys.please_enter_brand_name.tr());
@@ -61,7 +49,7 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
     BrandsCubit.get(context).updateBrand(
       brandId: widget.brandId,
       name: _nameController.text.trim(),
-      logoFile: _selectedImage,
+      logoFile: null,
     );
   }
 
@@ -69,15 +57,6 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
   Widget build(BuildContext context) {
     final maxWidth = ResponsiveUI.contentMaxWidth(context);
     final isDesktop = maxWidth > 600;
-    final image = _selectedImage != null
-        ? Image.file(_selectedImage!, fit: BoxFit.cover)
-        : _brand?.logo?.isNotEmpty ?? false
-        ? Image.network(
-            _brand!.logo!,
-            fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const CustomImagePlaceholder(),
-          )
-        : const CustomImagePlaceholder();
     // Scale down for web
     return BlocConsumer<BrandsCubit, BrandsState>(
       listener: (context, state) {
@@ -163,109 +142,6 @@ class _EditBrandBottomSheetState extends State<EditBrandBottomSheet> {
                         hasBorder: true,
                         prefixIconColor: AppColors.darkGray.withValues(alpha: 0.7),
                       ),
-                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            LocaleKeys.brand_logo.tr(),
-                            style: TextStyle(
-                              fontSize: ResponsiveUI.fontSize(context, 14),
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey[700],
-                            ),
-                          ),
-                          SizedBox(width: ResponsiveUI.spacing(context, 6)),
-                          Text(
-                            '(اختياري)',
-                            style: TextStyle(
-                              fontSize: ResponsiveUI.fontSize(context, 12),
-                              color: AppColors.darkGray.withValues(alpha: 0.5),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: ResponsiveUI.spacing(context, 8)),
-                      GestureDetector(
-                        onTap: _isLoading ? null : _pickImage,
-                        child: Container(
-                          height: ResponsiveUI.value(context, 300),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.grey[300]!,
-                              width: ResponsiveUI.value(context, 1),
-                            ),
-                            borderRadius: BorderRadius.circular(
-                              ResponsiveUI.borderRadius(context, 12),
-                            ),
-                            color: Colors.grey[50],
-                          ),
-                          child: Stack(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(
-                                  ResponsiveUI.borderRadius(context, 12),
-                                ),
-                                child: image,
-                              ),
-                              if (_selectedImage != null ||
-                                  (_brand?.logo?.isNotEmpty ?? false))
-                                Positioned(
-                                  top: ResponsiveUI.padding(context, 8),
-                                  right: ResponsiveUI.padding(context, 8),
-                                  child: Container(
-                                    padding: EdgeInsets.all(
-                                      ResponsiveUI.padding(context, 6),
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black54,
-                                      borderRadius: BorderRadius.circular(
-                                        ResponsiveUI.borderRadius(context, 6),
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      Icons.edit,
-                                      color: Colors.white,
-                                      size: ResponsiveUI.iconSize(context, 18),
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: ResponsiveUI.spacing(context, 8)),
-                      if (_selectedImage == null &&
-                          (_brand?.logo?.isEmpty ?? true))
-                        Text(
-                          LocaleKeys.tap_to_select_logo.tr(),
-                          style: TextStyle(
-                            fontSize: ResponsiveUI.fontSize(context, 12),
-                            color: Colors.orange[700],
-                            fontStyle: FontStyle.italic,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      if (_selectedImage != null)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.check_circle,
-                              color: Colors.green,
-                              size: ResponsiveUI.iconSize(context, 16),
-                            ),
-                            SizedBox(width: ResponsiveUI.spacing(context, 4)),
-                            Text(
-                              LocaleKeys.new_logo_selected.tr(),
-                              style: TextStyle(
-                                fontSize: ResponsiveUI.fontSize(context, 12),
-                                color: Colors.green[700],
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
                       SizedBox(height: ResponsiveUI.spacing(context, 16)),
                       ElevatedButton(
                         onPressed: _isLoading ? null : _submitUpdate,

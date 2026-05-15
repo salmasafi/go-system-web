@@ -51,10 +51,10 @@ void main() {
         'prices': []
       };
 
-      when(() => mockClient.from('products')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq('id', 'prod-1')).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.maybeSingle()).thenReturn(mockTransformProduct);
+      when(() => mockClient.from('products')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.eq('id', 'prod-1')).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.maybeSingle()).thenAnswer((_) => mockTransformProduct);
       when(() => mockTransformProduct.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(Map<String, dynamic>?);
         return callback(mockProductData);
@@ -79,10 +79,10 @@ void main() {
         'grand_total': 100.0,
         'items': []
       };
-      when(() => mockClient.from('sales')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq('id', 'sale-1')).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.maybeSingle()).thenReturn(mockTransformSale);
+      when(() => mockClient.from('sales')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.eq('id', 'sale-1')).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.maybeSingle()).thenAnswer((_) => mockTransformSale);
       when(() => mockTransformSale.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(Map<String, dynamic>?);
         return callback(mockSaleDetail);
@@ -108,10 +108,10 @@ void main() {
           'customer': {'name': 'Test Customer'}
         }
       ];
-      when(() => mockClient.from('sales')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq('sale_status', 'completed')).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.order(any(), ascending: any(named: 'ascending'))).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('sales')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.eq('sale_status', 'completed')).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.order(any(), ascending: any(named: 'ascending'))).thenAnswer((_) => mockFilterBuilder);
       when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(List<Map<String, dynamic>>);
         return callback(mockHistoryData);

@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:GoSystem/core/supabase/supabase_client.dart';
@@ -51,9 +51,9 @@ void main() {
         },
       ];
 
-      when(() => mockClient.from('brands')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.order(any(), ascending: any(named: 'ascending'))).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('brands')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.order(any(), ascending: any(named: 'ascending'))).thenAnswer((_) => mockFilterBuilder);
 
       when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(List<Map<String, dynamic>>);
@@ -78,10 +78,10 @@ void main() {
         'version': 1,
       };
 
-      when(() => mockClient.from('brands')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq('id', 'brand-1')).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.maybeSingle()).thenReturn(mockTransformBuilder);
+      when(() => mockClient.from('brands')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.eq('id', 'brand-1')).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.maybeSingle()).thenAnswer((_) => mockTransformBuilder);
 
       when(() => mockTransformBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(Map<String, dynamic>?);
@@ -96,10 +96,10 @@ void main() {
     });
 
     test('getBrandById should return null for non-existent id', () async {
-      when(() => mockClient.from('brands')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq('id', 'non-existent')).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.maybeSingle()).thenReturn(mockTransformBuilder);
+      when(() => mockClient.from('brands')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.eq('id', 'non-existent')).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.maybeSingle()).thenAnswer((_) => mockTransformBuilder);
 
       when(() => mockTransformBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(Map<String, dynamic>?);

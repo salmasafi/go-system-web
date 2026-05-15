@@ -1,9 +1,6 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
@@ -22,7 +19,6 @@ import 'package:GoSystem/features/admin/product/cubit/get_products_cubit/product
 import 'package:GoSystem/features/admin/product/cubit/get_products_cubit/product_state.dart';
 import 'package:GoSystem/features/admin/units/cubit/units_cubit.dart';
 import 'package:GoSystem/features/admin/units/model/unit_model.dart';
-import '../../../../../core/utils/image_handler.dart';
 import '../../models/product_model.dart';
 import '../widgets/add_product_custom_widgets.dart';
 import 'barcode_scanner_screen.dart';
@@ -45,12 +41,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _minQuantityController = TextEditingController();
   final _maxToShowController = TextEditingController();
   final _codeController = TextEditingController();
-
-  // Images
-  File? _mainImage;
-  String? _existingImageUrl;
-  List<File> _galleryImages = [];
-  List<String> _existingGalleryUrls = [];
 
   // Selections
   List<CategoryItem>? _selectedCategories;
@@ -94,8 +84,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
     _hasIMEI = p.productHasImei;
     _showQuantity = p.showQuantity;
     _isFeatured = p.isFeatured ?? false;
-    _existingImageUrl = p.image.isNotEmpty ? p.image : null;
-    _existingGalleryUrls = List<String>.from(p.galleryProduct);
   }
 
   Future<void> _scanBarcode() async {
@@ -105,108 +93,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
     );
     if (result != null && result != '-1' && mounted) {
       setState(() => _codeController.text = result);
-    }
-  }
-
-  Future<void> _pickMainImage(ImageSource source) async {
-    final picked = await ImagePicker().pickImage(source: source);
-    if (picked != null) setState(() => _mainImage = File(picked.path));
-  }
-
-  void _showImageSourceSheet() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => Container(
-        margin: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(
-            ResponsiveUI.borderRadius(context, 20),
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(height: ResponsiveUI.padding(context, 8)),
-              Container(
-                width: ResponsiveUI.value(context, 40),
-                height: ResponsiveUI.value(context, 4),
-                decoration: BoxDecoration(
-                  color: AppColors.shadowGray.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              SizedBox(height: ResponsiveUI.padding(context, 16)),
-              ListTile(
-                leading: Container(
-                  padding: EdgeInsets.all(ResponsiveUI.padding(context, 10)),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryBlue.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(
-                      ResponsiveUI.borderRadius(context, 12),
-                    ),
-                  ),
-                  child: Icon(
-                    Icons.camera_alt_rounded,
-                    color: AppColors.primaryBlue,
-                    size: ResponsiveUI.iconSize(context, 24),
-                  ),
-                ),
-                title: Text(
-                  'take_photo'.tr(),
-                  style: TextStyle(
-                    fontSize: ResponsiveUI.fontSize(context, 15),
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.darkGray,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  _pickMainImage(ImageSource.camera);
-                },
-              ),
-              ListTile(
-                leading: Container(
-                  padding: EdgeInsets.all(ResponsiveUI.padding(context, 10)),
-                  decoration: BoxDecoration(
-                    color: AppColors.successGreen.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(
-                      ResponsiveUI.borderRadius(context, 12),
-                    ),
-                  ),
-                  child: Icon(
-                    Icons.photo_library_rounded,
-                    color: AppColors.successGreen,
-                    size: ResponsiveUI.iconSize(context, 24),
-                  ),
-                ),
-                title: Text(
-                  'pick_from_gallery'.tr(),
-                  style: TextStyle(
-                    fontSize: ResponsiveUI.fontSize(context, 15),
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.darkGray,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  _pickMainImage(ImageSource.gallery);
-                },
-              ),
-              SizedBox(height: ResponsiveUI.padding(context, 8)),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _pickGalleryImages() async {
-    final picked = await ImagePicker().pickMultiImage();
-    if (picked.isNotEmpty) {
-      setState(() => _galleryImages.addAll(picked.map((f) => File(f.path))));
     }
   }
 
@@ -252,22 +138,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
     final int maxToShow =
         _showQuantity ? (int.tryParse(_maxToShowController.text) ?? 100) : 0;
 
-    // Keep existing image URL if no new file selected
-    final String? mainImage = _mainImage != null
-        ? ImageHelper.encodeImageToBase64(_mainImage!)
-        : _existingImageUrl;
-
-    // Merge existing URLs with newly picked files
-    final List<String> gallery = [
-      ..._existingGalleryUrls,
-      ..._galleryImages.map((img) => ImageHelper.encodeImageToBase64(img)),
-    ];
-
     context.read<ProductsCubit>().updateProductWithData(
           id: widget.product.id,
           name: _nameController.text.trim(),
           description: _descriptionController.text.trim(),
-          image: mainImage,
+          image: null,
           code: _codeController.text.trim(),
           categoryIds: _selectedCategories!.map((c) => c.id).toList(),
           brandId: _selectedBrand!.id ?? '',
@@ -286,7 +161,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           showQuantity: _showQuantity,
           isFeatured: _isFeatured,
           maximumToShow: maxToShow,
-          galleryProduct: gallery,
+          galleryProduct: [],
         );
   }
 
@@ -320,7 +195,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   _buildPricingSection(),
                   _buildStockSection(),
                   _buildSettingsSection(),
-                  _buildImagesSection(),
                   SizedBox(
                     width: double.infinity,
                     height: ResponsiveUI.value(context, 56),
@@ -681,282 +555,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
           ),
           SizedBox(height: ResponsiveUI.spacing(context, 8)),
         ],
-      ],
-    );
-  }
-
-  // ── Section 7: Images ─────────────────────────────────────────────────────
-  Widget _buildImagesSection() {
-    return ProductSectionCard(
-      title: 'product_images'.tr(),
-      icon: Icons.photo_library_outlined,
-      children: [
-        // Main image — supports existing URL + new file pick
-        _buildMainImagePicker(),
-        SizedBox(height: ResponsiveUI.spacing(context, 16)),
-        // Gallery — existing URLs + new files
-        _buildGalleryPicker(),
-      ],
-    );
-  }
-
-  Widget _buildMainImagePicker() {
-    final hasNewImage = _mainImage != null;
-    final hasExistingUrl =
-        _existingImageUrl != null && _existingImageUrl!.isNotEmpty;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(children: [
-              Icon(Icons.image,
-                  size: ResponsiveUI.iconSize(context, 20),
-                  color: AppColors.primaryBlue),
-              SizedBox(width: ResponsiveUI.value(context, 8)),
-              Text(
-                'main_image'.tr(),
-                style: TextStyle(
-                  fontSize: ResponsiveUI.fontSize(context, 15),
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.darkGray,
-                ),
-              ),
-            ]),
-            if (hasNewImage || hasExistingUrl)
-              TextButton.icon(
-                onPressed: () => setState(() {
-                  _mainImage = null;
-                  _existingImageUrl = null;
-                }),
-                icon: Icon(Icons.delete_outline,
-                    color: AppColors.red,
-                    size: ResponsiveUI.iconSize(context, 18)),
-                label: Text('remove'.tr(),
-                    style: TextStyle(
-                        color: AppColors.red,
-                        fontSize: ResponsiveUI.fontSize(context, 12))),
-              ),
-          ],
-        ),
-        SizedBox(height: ResponsiveUI.value(context, 12)),
-        GestureDetector(
-          onTap: _showImageSourceSheet,
-          child: Container(
-            width: double.infinity,
-            height: ResponsiveUI.value(context, 220),
-            decoration: BoxDecoration(
-              borderRadius:
-                  BorderRadius.circular(ResponsiveUI.borderRadius(context, 16)),
-              border: Border.all(
-                color: AppColors.primaryBlue.withValues(alpha: 0.4),
-                width: ResponsiveUI.value(context, 2),
-              ),
-            ),
-            child: ClipRRect(
-              borderRadius:
-                  BorderRadius.circular(ResponsiveUI.borderRadius(context, 14)),
-              child: hasNewImage
-                  ? Stack(children: [
-                      Image.file(_mainImage!,
-                          width: double.infinity, fit: BoxFit.cover),
-                      Positioned(
-                        top: 8,
-                        right: 8,
-                        child: _editBadge(),
-                      ),
-                    ])
-                  : hasExistingUrl
-                      ? Stack(children: [
-                          Image.network(_existingImageUrl!,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) =>
-                                  _imagePlaceholder()),
-                          Positioned(
-                            top: 8,
-                            right: 8,
-                            child: _editBadge(),
-                          ),
-                        ])
-                      : _imagePlaceholder(),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _editBadge() {
-    return Container(
-      padding: EdgeInsets.all(ResponsiveUI.padding(context, 8)),
-      decoration: BoxDecoration(
-        color: AppColors.white.withValues(alpha: 0.9),
-        shape: BoxShape.circle,
-      ),
-      child: Icon(Icons.edit,
-          size: ResponsiveUI.iconSize(context, 18),
-          color: AppColors.primaryBlue),
-    );
-  }
-
-  Widget _imagePlaceholder() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
-          decoration: BoxDecoration(
-            color: AppColors.primaryBlue.withValues(alpha: 0.1),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(Icons.add_photo_alternate,
-              size: ResponsiveUI.iconSize(context, 36),
-              color: AppColors.primaryBlue),
-        ),
-        SizedBox(height: ResponsiveUI.value(context, 10)),
-        Text('pick_from_gallery'.tr(),
-            style: TextStyle(
-                color: AppColors.shadowGray,
-                fontSize: ResponsiveUI.fontSize(context, 13))),
-      ],
-    );
-  }
-
-  Widget _buildGalleryPicker() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(children: [
-              Icon(Icons.collections,
-                  size: ResponsiveUI.iconSize(context, 20),
-                  color: AppColors.primaryBlue),
-              SizedBox(width: ResponsiveUI.value(context, 8)),
-              Text(
-                'صور المعرض',
-                style: TextStyle(
-                    fontSize: ResponsiveUI.fontSize(context, 15),
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.darkGray),
-              ),
-            ]),
-            TextButton.icon(
-              onPressed: _pickGalleryImages,
-              icon: Icon(Icons.add_circle,
-                  color: AppColors.primaryBlue,
-                  size: ResponsiveUI.iconSize(context, 20)),
-              label: Text('إضافة',
-                  style: TextStyle(
-                      color: AppColors.primaryBlue,
-                      fontSize: ResponsiveUI.fontSize(context, 13))),
-            ),
-          ],
-        ),
-        SizedBox(height: ResponsiveUI.value(context, 10)),
-        // Existing URL thumbnails
-        if (_existingGalleryUrls.isNotEmpty)
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: List.generate(_existingGalleryUrls.length, (i) {
-              return _networkThumbnail(_existingGalleryUrls[i], () {
-                setState(() => _existingGalleryUrls.removeAt(i));
-              });
-            }),
-          ),
-        if (_existingGalleryUrls.isNotEmpty && _galleryImages.isNotEmpty)
-          SizedBox(height: ResponsiveUI.value(context, 10)),
-        // New file thumbnails
-        if (_galleryImages.isNotEmpty)
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: List.generate(_galleryImages.length, (i) {
-              return _fileThumbnail(_galleryImages[i], () {
-                setState(() => _galleryImages.removeAt(i));
-              });
-            }),
-          ),
-        if (_existingGalleryUrls.isEmpty && _galleryImages.isEmpty)
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.all(ResponsiveUI.padding(context, 24)),
-            decoration: BoxDecoration(
-              color: AppColors.lightBlueBackground,
-              borderRadius:
-                  BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
-              border: Border.all(color: AppColors.shadowGray.withValues(alpha: 0.3)),
-            ),
-            child: Column(children: [
-              Icon(Icons.collections_outlined,
-                  size: ResponsiveUI.iconSize(context, 36),
-                  color: AppColors.shadowGray.withValues(alpha: 0.5)),
-              SizedBox(height: ResponsiveUI.value(context, 6)),
-              Text('لا توجد صور معرض',
-                  style: TextStyle(
-                      color: AppColors.shadowGray,
-                      fontSize: ResponsiveUI.fontSize(context, 13))),
-            ]),
-          ),
-      ],
-    );
-  }
-
-  Widget _networkThumbnail(String url, VoidCallback onRemove) {
-    return _thumbnail(
-      child: Image.network(url,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) =>
-              Icon(Icons.broken_image, color: AppColors.shadowGray)),
-      onRemove: onRemove,
-    );
-  }
-
-  Widget _fileThumbnail(File file, VoidCallback onRemove) {
-    return _thumbnail(
-      child: Image.file(file, fit: BoxFit.cover),
-      onRemove: onRemove,
-    );
-  }
-
-  Widget _thumbnail({required Widget child, required VoidCallback onRemove}) {
-    final size = ResponsiveUI.value(context, 90.0);
-    return Stack(
-      children: [
-        Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            borderRadius:
-                BorderRadius.circular(ResponsiveUI.borderRadius(context, 10)),
-            border: Border.all(color: AppColors.lightGray, width: 1.5),
-          ),
-          child: ClipRRect(
-            borderRadius:
-                BorderRadius.circular(ResponsiveUI.borderRadius(context, 9)),
-            child: child,
-          ),
-        ),
-        Positioned(
-          top: -6,
-          right: -6,
-          child: GestureDetector(
-            onTap: onRemove,
-            child: Container(
-              padding: EdgeInsets.all(ResponsiveUI.padding(context, 5)),
-              decoration: BoxDecoration(
-                  color: AppColors.red, shape: BoxShape.circle),
-              child: Icon(Icons.close,
-                  size: ResponsiveUI.iconSize(context, 14),
-                  color: Colors.white),
-            ),
-          ),
-        ),
       ],
     );
   }

@@ -11,9 +11,10 @@ Map<String, dynamic> _bundleProductJson({
   int quantity = 2,
 }) =>
     {
-      'productId': productId,
+      'product_id': productId,
       'quantity': quantity,
       'product': {
+        'id': productId,
         'name': name,
         'image': image,
         'price': price,

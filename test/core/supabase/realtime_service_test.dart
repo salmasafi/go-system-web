@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:GoSystem/core/supabase/realtime_service.dart';
@@ -11,20 +11,24 @@ void main() {
   late MockSupabaseClient mockClient;
   late MockRealtimeChannel mockChannel;
 
+  setUpAll(() {
+    registerFallbackValue(PostgresChangeEvent.all);
+  });
+
   setUp(() {
     mockClient = MockSupabaseClient();
     mockChannel = MockRealtimeChannel();
 
-    when(() => mockClient.channel(any())).thenReturn(mockChannel);
+    when(() => mockClient.channel(any())).thenAnswer((_) => mockChannel);
     when(() => mockChannel.onPostgresChanges(
           event: any(named: 'event'),
           schema: any(named: 'schema'),
           table: any(named: 'table'),
           filter: any(named: 'filter'),
           callback: any(named: 'callback'),
-        )).thenReturn(mockChannel);
+        )).thenAnswer((_) => mockChannel);
     
-    when(() => mockChannel.subscribe(any())).thenReturn(mockChannel);
+    when(() => mockChannel.subscribe(any())).thenAnswer((_) => mockChannel);
     when(() => mockChannel.unsubscribe()).thenAnswer((_) async => 'ok');
 
     realtimeService = RealtimeService(mockClient);

@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:GoSystem/core/supabase/supabase_client.dart';
@@ -62,7 +62,7 @@ void main() {
 
     test('reverseAdjustment should return true on success', () async {
       when(() => mockClient.rpc(any(), params: any(named: 'params')))
-          .thenReturn(mockRpcBuilder);
+          .thenAnswer((_) => mockRpcBuilder);
 
       final result = await repository.reverseAdjustment('adj-1');
 

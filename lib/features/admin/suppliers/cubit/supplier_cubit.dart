@@ -1,12 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/features/admin/suppliers/cubit/supplier_state.dart';
-import 'dart:developer';
 import '../model/supplier_model.dart' as supplier_list;
 import '../model/supplier_whis_id_model.dart' as supplier_details;
 import '../model/supplier_whis_id_model.dart';
-import 'package:image_picker/image_picker.dart';
-
-import 'dart:io';
 import 'package:GoSystem/features/admin/suppliers/data/repositories/supplier_repository.dart';
 
 class SupplierCubit extends Cubit<SupplierStates> {
@@ -66,7 +62,6 @@ class SupplierCubit extends Cubit<SupplierStates> {
     required String cityId,
     required String countryId,
     required String companyName,
-    XFile? imageFile,
   }) async {
     emit(SupplierLoading());
     try {
@@ -78,7 +73,7 @@ class SupplierCubit extends Cubit<SupplierStates> {
         companyName: companyName,
         countryId: countryId,
         cityId: cityId,
-        imageFile: imageFile != null ? File(imageFile.path) : null,
+        imageFile: null,
       );
       await getSuppliers();
       emit(SupplierSuccess());
@@ -96,7 +91,6 @@ class SupplierCubit extends Cubit<SupplierStates> {
     String? cityId,
     String? countryId,
     String? companyName,
-    XFile? imageFile,
   }) async {
     emit(SupplierLoading());
     try {
@@ -113,7 +107,7 @@ class SupplierCubit extends Cubit<SupplierStates> {
         companyName: companyName ?? current.companyName ?? '',
         countryId: countryId ?? current.countryId?.id,
         cityId: cityId ?? current.cityId?.id,
-        imageFile: imageFile != null ? File(imageFile.path) : null,
+        imageFile: null,
       );
       await getSuppliers();
       emit(SupplierSuccess());

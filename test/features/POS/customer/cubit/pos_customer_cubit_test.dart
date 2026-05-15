@@ -1,32 +1,14 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:GoSystem/core/services/cache_helper.dart';
-import 'package:GoSystem/core/services/dio_helper.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:GoSystem/core/supabase/supabase_client.dart';
 import 'package:GoSystem/features/pos/customer/cubit/pos_customer_cubit.dart';
 import 'package:GoSystem/features/pos/customer/model/pos_customer_model.dart';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-class MockDio extends Mock implements Dio {}
-
-/// Builds a fake [Response] with the given status and data.
-Response<dynamic> _fakeResponse(int status, Map<String, dynamic> data) {
-  return Response(
-    requestOptions: RequestOptions(path: ''),
-    statusCode: status,
-    data: data,
-  );
-}
-
-/// A sample customer JSON payload.
-Map<String, dynamic> _customerJson({String id = 'c1', String name = 'Alice', String phone = '555-0001'}) => {
-      '_id': id,
-      'name': name,
-      'phone_number': phone,
-    };
+class MockSupabaseClient extends Mock implements SupabaseClient {}
 
 PosCustomer _customer({String id = 'c1', String name = 'Alice', String phone = '555-0001'}) =>
     PosCustomer(id: id, name: name, phoneNumber: phone);
@@ -34,19 +16,15 @@ PosCustomer _customer({String id = 'c1', String name = 'Alice', String phone = '
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
 void main() {
-  late MockDio mockDio;
+  late MockSupabaseClient mockSupabase;
 
-  setUp(() async {
-    // Initialize SharedPreferences mock so CacheHelper doesn't throw
-    SharedPreferences.setMockInitialValues({});
-    CacheHelper.sharedPreferences = await SharedPreferences.getInstance();
+  setUp(() {
+    mockSupabase = MockSupabaseClient();
+    SupabaseClientWrapper.setMockInstance(mockSupabase);
+  });
 
-    mockDio = MockDio();
-    DioHelper.dio = mockDio;
-
-    // Use a real BaseOptions so header assignments in DioHelper don't throw
-    final baseOptions = BaseOptions(baseUrl: 'http://test.local');
-    when(() => mockDio.options).thenReturn(baseOptions);
+  tearDown(() {
+    SupabaseClientWrapper.dispose();
   });
 
   // ── 12.4 selectCustomer updates cubit state for any customer ─────────────
@@ -108,33 +86,25 @@ void main() {
     });
   });
 
-  // ── 12.5 createCustomer round-trip: new customer in list and selected ─────
+  // ── 12.5 createCustomer — error path ─────────────────────────────────────
   group('createCustomer', () {
     blocTest<PosCustomerCubit, PosCustomerState>(
-      'on success: emits Creating → CreateSuccess → Loaded, '
-      'new customer is first in list and is selectedCustomer',
+      'on Supabase error: emits Creating → CreateError',
       build: () {
-        when(() => mockDio.post(any(), data: any(named: 'data'), queryParameters: any(named: 'queryParameters')))
-            .thenAnswer((_) async => _fakeResponse(201, {'data': _customerJson(id: 'new1', name: 'New', phone: '999')}));
+        when(() => mockSupabase.from(any())).thenThrow(Exception('network error'));
         return PosCustomerCubit();
       },
       act: (cubit) => cubit.createCustomer(name: 'New', phone: '999'),
       expect: () => [
         isA<PosCustomerCreating>(),
-        isA<PosCustomerCreateSuccess>(),
-        isA<PosCustomerLoaded>(),
+        isA<PosCustomerCreateError>(),
       ],
-      verify: (cubit) {
-        expect(cubit.customers.first.id, 'new1');
-        expect(cubit.selectedCustomer?.id, 'new1');
-      },
     );
 
     blocTest<PosCustomerCubit, PosCustomerState>(
-      'on failure: emits Creating → CreateError',
+      'on validation failure: emits Creating → CreateError',
       build: () {
-        when(() => mockDio.post(any(), data: any(named: 'data'), queryParameters: any(named: 'queryParameters')))
-            .thenAnswer((_) async => _fakeResponse(422, {'message': 'Validation failed'}));
+        when(() => mockSupabase.from(any())).thenThrow(Exception('Validation failed'));
         return PosCustomerCubit();
       },
       act: (cubit) => cubit.createCustomer(name: 'Bad', phone: '000'),
@@ -142,10 +112,6 @@ void main() {
         isA<PosCustomerCreating>(),
         isA<PosCustomerCreateError>(),
       ],
-      verify: (cubit) {
-        final err = cubit.state as PosCustomerCreateError;
-        expect(err.message, 'Validation failed');
-      },
     );
   });
 

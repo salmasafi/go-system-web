@@ -1,4 +1,3 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -269,7 +268,6 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
   late final TextEditingController _usernameCtrl;
   late final TextEditingController _passwordCtrl;
   String _status = 'active';
-  String? _pickedFileName;
   bool _obscurePassword = true;
 
   @override
@@ -285,18 +283,6 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
     _usernameCtrl.dispose();
     _passwordCtrl.dispose();
     super.dispose();
-  }
-
-  Future<void> _pickImage() async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-      allowMultiple: false,
-    );
-    if (result != null && result.files.single.path != null) {
-      setState(() {
-        _pickedFileName = result.files.single.name;
-      });
-    }
   }
 
   @override
@@ -377,12 +363,6 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
                     ),
                     SizedBox(height: ResponsiveUI.value(context, 16)),
 
-                    _FieldLabel('profile_image'.tr()),
-                    SizedBox(height: ResponsiveUI.value(context, 6)),
-                    _ImagePickerField(
-                      fileName: _pickedFileName,
-                      onTap: _pickImage,
-                    ),
                     SizedBox(height: ResponsiveUI.value(context, 20)),
                   ],
                 ),
@@ -533,39 +513,3 @@ class _StatusDropdown extends StatelessWidget {
   }
 }
 
-class _ImagePickerField extends StatelessWidget {
-  final String? fileName;
-  final VoidCallback onTap;
-  const _ImagePickerField({required this.fileName, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: ResponsiveUI.padding(context, 14), vertical: ResponsiveUI.padding(context, 13)),
-        decoration: BoxDecoration(
-          color: Color(0xFFFAFAFA),
-          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
-          border: Border.all(color: Color(0xFFE0E0E0)),
-        ),
-        child: Row(
-          children: [
-            Text(
-              'choose_file'.tr(),
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: ResponsiveUI.fontSize(context, 14), color: AppColors.darkGray),
-            ),
-            SizedBox(width: ResponsiveUI.value(context, 8)),
-            Expanded(
-              child: Text(
-                fileName ?? 'no_file_chosen'.tr(),
-                style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 14), color: Color(0xFFAAAAAA)),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

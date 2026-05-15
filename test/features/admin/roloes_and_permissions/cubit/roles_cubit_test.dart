@@ -11,6 +11,10 @@ class MockRoleRepository extends Mock implements RoleRepository {}
 void main() {
   late MockRoleRepository mockRepo;
 
+  setUpAll(() {
+    registerFallbackValue(<Permission>[]);
+  });
+
   setUp(() {
     mockRepo = MockRoleRepository();
   });
@@ -20,7 +24,8 @@ void main() {
         'name': 'Role $id',
         'status': 'active',
         'permissions': [],
-        'created_at': '2024-01-01',
+        'permissionsCount': 0,
+        'createdAt': '2024-01-01T00:00:00.000Z',
       });
 
   group('RolesCubit', () {

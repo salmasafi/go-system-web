@@ -29,12 +29,14 @@ ReturnItemModel _item({
   int alreadyReturned = 0,
   int availableToReturn = 5,
   int returnQuantity = 0,
+  double price = 0.0,
 }) =>
     ReturnItemModel(
       id: id,
       saleId: 'sale1',
       productName: 'Product',
       productCode: 'P001',
+      price: price,
       quantity: quantity,
       alreadyReturned: alreadyReturned,
       availableToReturn: availableToReturn,
@@ -265,6 +267,7 @@ void main() {
         saleId: 'sale1',
         productName: 'P',
         productCode: 'C',
+        price: 0.0,
         quantity: 5,
         alreadyReturned: 0,
         availableToReturn: 5,

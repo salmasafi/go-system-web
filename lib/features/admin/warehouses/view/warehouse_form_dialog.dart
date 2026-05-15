@@ -1,9 +1,12 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:GoSystem/features/admin/warehouses/view/widgets/widgets_add_edit/warehouse_dialog_buttons.dart';
 import 'package:GoSystem/features/admin/warehouses/view/widgets/widgets_add_edit/warehouse_dialog_form.dart';
 import 'package:GoSystem/features/admin/warehouses/view/widgets/widgets_add_edit/warehouse_dialog_header.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../cubit/warehouse_cubit.dart';
 import '../cubit/warehouse_state.dart';
 import '../model/ware_house_model.dart';
@@ -141,7 +144,11 @@ class _WarehouseFormDialogState extends State<WarehouseFormDialog>
   }
 
   void _handleStateChanges(BuildContext context, WarehousesState state) {
-    if (state is WarehouseCreated || state is WarehouseUpdated) {
+    if (state is WarehouseCreated) {
+      CustomSnackbar.showSuccess(context, LocaleKeys.warehouse_created_success.tr());
+      Navigator.of(context).pop();
+    } else if (state is WarehouseUpdated) {
+      CustomSnackbar.showSuccess(context, LocaleKeys.warehouse_updated_success.tr());
       Navigator.of(context).pop();
     }
 

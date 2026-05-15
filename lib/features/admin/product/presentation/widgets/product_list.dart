@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import 'package:GoSystem/features/admin/product/cubit/get_products_cubit/product_cubit.dart';
 import 'package:GoSystem/features/admin/product/models/product_model.dart';
 import 'package:GoSystem/features/admin/product/presentation/screens/edit_product_screen.dart';
@@ -52,9 +54,8 @@ class ProductsList extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => CustomDeleteDialog(
-        title: 'Delete Product',
-        message:
-            'Are you sure you want to delete "${product.name}"? This action cannot be undone.',
+        title: LocaleKeys.delete.tr(),
+        message: '${'delete_confirmation'.tr()} "${product.name}"? ${'this_action_cannot_be_undone'.tr()}',
         onDelete: () {
           Navigator.pop(dialogContext);
 

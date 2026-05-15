@@ -68,6 +68,7 @@ void main() {
       'createCoupon emits loading then success',
       build: () {
         when(() => mockRepo.createCoupon(any(that: isA<CouponModel>()))).thenAnswer((_) async => sampleCoupon('new'));
+        when(() => mockRepo.getAllCoupons()).thenAnswer((_) async => []);
         return CouponsCubit(mockRepo);
       },
       act: (c) => c.createCoupon(
@@ -82,6 +83,8 @@ void main() {
       expect: () => [
         isA<CreateCouponLoading>(),
         isA<CreateCouponSuccess>(),
+        isA<GetCouponsLoading>(),
+        isA<GetCouponsSuccess>(),
       ],
     );
   });

@@ -352,7 +352,11 @@ class _RevenueFormDialogState extends State<RevenueFormDialog>
   }
 
   void _handleStateChanges(BuildContext context, RevenueState state) {
-    if (state is CreateRevenueSuccess || state is UpdateRevenueSuccess) {
+    if (state is CreateRevenueSuccess) {
+      CustomSnackbar.showSuccess(context, state.message);
+      Navigator.pop(context);
+    } else if (state is UpdateRevenueSuccess) {
+      CustomSnackbar.showSuccess(context, state.message);
       Navigator.pop(context);
     } else if (state is CreateRevenueError) {
       CustomSnackbar.showError(context, state.error);

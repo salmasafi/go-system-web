@@ -62,10 +62,10 @@ class _AttributeValueManagementScreenState extends State<AttributeValueManagemen
     if (state is AttributeValueError) {
       return CustomEmptyState(
         icon: Icons.list_alt,
-        title: 'Error Occurred',
+        title: LocaleKeys.error_occurred.tr(),
         message: state.message,
         onRefresh: _refresh,
-        actionLabel: 'Retry',
+        actionLabel: LocaleKeys.retry.tr(),
         onAction: _refresh,
       );
     }
@@ -84,14 +84,14 @@ class _AttributeValueManagementScreenState extends State<AttributeValueManagemen
           ? 'No Attribute Values Available'
           : 'No Matching Attribute Values';
       String message = attributeValues.isEmpty
-          ? 'Add your first attribute value to get started'
-          : 'Try adjusting your search criteria';
+          ? LocaleKeys.add_first_brand_message.tr()
+          : LocaleKeys.try_adjusting_search_terms.tr();
       return CustomEmptyState(
         icon: Icons.list_alt,
         title: title,
         message: message,
         onRefresh: _refresh,
-        actionLabel: 'Retry',
+        actionLabel: LocaleKeys.retry.tr(),
         onAction: _refresh,
       );
     }
@@ -148,7 +148,7 @@ class _AttributeValueManagementScreenState extends State<AttributeValueManagemen
       backgroundColor: AppColors.lightBlueBackground,
       appBar: appBarWithActions(
         context,
-        title: 'Attribute Values',
+        title: LocaleKeys.attributes_title.tr(),
         showActions: true,
       ),
       body: BlocConsumer<AttributeValueCubit, AttributeValueState>(
@@ -171,11 +171,11 @@ class _AttributeValueManagementScreenState extends State<AttributeValueManagemen
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Error: ${state.message}'),
+                  Text(LocaleKeys.error_with_message.tr(namedArgs: {'message': state.message})),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => _loadAttributeValues(),
-                    child: const Text('Retry'),
+                    child: Text(LocaleKeys.retry.tr()),
                   ),
                 ],
               ),
@@ -183,7 +183,7 @@ class _AttributeValueManagementScreenState extends State<AttributeValueManagemen
           } else if (state is AttributeValueLoaded) {
             return _buildAttributeValueList(state.attributeValues);
           }
-          return const Center(child: Text('No attribute values found'));
+          return Center(child: Text(LocaleKeys.no_attribute_values_found.tr()));
         },
       ),
     );

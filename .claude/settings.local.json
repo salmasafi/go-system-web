@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem -Path \"E:\\\\Wego\\\\SysteGo\\\\lib\\\\features\\\\pos\\\\return\" -Recurse | ForEach-Object { $_.FullName.Replace\\('E:\\\\Wego\\\\SysteGo\\\\', ''\\) } | Sort-Object)"
+    ]
+  }
+}

@@ -89,9 +89,7 @@ class _ZoneSupabaseDataSource implements ZoneRepositoryInterface {
       log('ZoneSupabase: Creating zone: $name');
       await _client.from('zones').insert({
         'name': name,
-        'country_id': countryId,
         'city_id': cityId,
-        'cost': cost.toDouble(),
       });
     } catch (e) {
       log('ZoneSupabase: Error creating zone - $e');
@@ -111,9 +109,7 @@ class _ZoneSupabaseDataSource implements ZoneRepositoryInterface {
       log('ZoneSupabase: Updating zone: $zoneId');
       await _client.from('zones').update({
         'name': name,
-        'country_id': countryId,
         'city_id': cityId,
-        'cost': double.tryParse(cost) ?? 0.0,
       }).eq('id', zoneId);
     } catch (e) {
       log('ZoneSupabase: Error updating zone - $e');

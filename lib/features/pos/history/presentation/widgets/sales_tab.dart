@@ -1,5 +1,6 @@
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:intl/intl.dart';
@@ -335,13 +336,40 @@ class _OrderRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    sale.reference,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: ResponsiveUI.fontSize(context, 13),
-                      color: AppColors.darkGray,
-                    ),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          sale.reference,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: ResponsiveUI.fontSize(context, 13),
+                            color: AppColors.darkGray,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Clipboard.setData(ClipboardData(text: sale.reference));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('reference_copied'.tr()),
+                              duration: const Duration(seconds: 1),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.only(left: ResponsiveUI.value(context, 4)),
+                          child: Icon(
+                            Icons.copy_rounded,
+                            size: ResponsiveUI.iconSize(context, 13),
+                            color: AppColors.shadowGray,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   SizedBox(height: ResponsiveUI.value(context, 2)),
                   Text(

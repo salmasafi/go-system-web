@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -48,9 +48,9 @@ void main() {
         },
       ];
 
-      when(() => mockClient.from('permissions')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.order(any())).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('permissions')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select()).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.order(any())).thenAnswer((_) => mockFilterBuilder);
       when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
         final cb =
             invocation.positionalArguments[0] as dynamic Function(List<Map<String, dynamic>>);
@@ -72,10 +72,10 @@ void main() {
         'version': 1,
       };
 
-      when(() => mockClient.from('permissions')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq('id', 'p1')).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.maybeSingle()).thenReturn(mockTransformBuilder);
+      when(() => mockClient.from('permissions')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select()).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.eq('id', 'p1')).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.maybeSingle()).thenAnswer((_) => mockTransformBuilder);
       when(() => mockTransformBuilder.then(any())).thenAnswer((invocation) async {
         final cb =
             invocation.positionalArguments[0] as dynamic Function(Map<String, dynamic>?);

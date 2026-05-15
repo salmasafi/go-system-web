@@ -1,5 +1,7 @@
 import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
 import 'package:GoSystem/core/widgets/custom_button_widget.dart';
@@ -64,7 +66,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarWithActions(context, title: 'Reciept Preview'),
+      appBar: appBarWithActions(context, title: LocaleKeys.print_receipt.tr()),
       body: Center(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(ResponsiveUI.padding(context, 20)),

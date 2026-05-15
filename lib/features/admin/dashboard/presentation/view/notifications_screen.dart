@@ -67,7 +67,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               title: title,
               message: message,
               onRefresh: _refresh,
-              actionLabel: 'Retry',
+              actionLabel: LocaleKeys.retry.tr(),
               onAction: _refresh,
             );
           } else {
@@ -83,19 +83,19 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         } else if (state is NotificationsError) {
           return CustomEmptyState(
             icon: Icons.notifications_outlined,
-            title: 'Error Occurred',
+            title: LocaleKeys.error_occurred.tr(),
             message: state.message,
             onRefresh: _refresh,
-            actionLabel: 'Retry',
+            actionLabel: LocaleKeys.retry.tr(),
             onAction: _refresh,
           );
         } else {
           return CustomEmptyState(
             icon: Icons.notifications_outlined,
-            title: 'No Notifications',
-            message: 'Pull to refresh or check your connection',
+            title: LocaleKeys.notifications_screen_title.tr(),
+            message: LocaleKeys.empty_message_connection.tr(),
             onRefresh: _refresh,
-            actionLabel: 'Retry',
+            actionLabel: LocaleKeys.retry.tr(),
             onAction: _refresh,
           );
         }

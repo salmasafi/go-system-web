@@ -15,6 +15,7 @@ class AnimatedBrandCard extends StatefulWidget {
   final VoidCallback? onTap;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
+  final VoidCallback? onProductsTap;
   final Duration? animationDuration;
   final Duration? animationDelay;
 
@@ -25,6 +26,7 @@ class AnimatedBrandCard extends StatefulWidget {
     this.onTap,
     this.onEdit,
     this.onDelete,
+    this.onProductsTap,
     this.animationDuration,
     this.animationDelay,
   });
@@ -194,10 +196,13 @@ class _AnimatedBrandCardState extends State<AnimatedBrandCard>
     return Row(
       children: [
         Expanded(
-          child: CustomStatChip(
-            icon: Icons.inventory_2_outlined,
-            label: '${widget.brand.productQuantity ?? 0} ${LocaleKeys.products.tr()}',
-            color: AppColors.successGreen,
+          child: GestureDetector(
+            onTap: widget.onProductsTap,
+            child: CustomStatChip(
+              icon: Icons.inventory_2_outlined,
+              label: '${widget.brand.productQuantity ?? 0} ${LocaleKeys.products.tr()}',
+              color: AppColors.successGreen,
+            ),
           ),
         ),
       ],

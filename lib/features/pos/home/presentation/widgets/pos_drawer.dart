@@ -26,10 +26,10 @@ class POSDrawer extends StatelessWidget {
       context: context,
       builder: (ctx) => CustomDeleteDialog(
         title: featureName,
-        message: 'This feature will be available soon.',
+        message: LocaleKeys.coming_soon_message.tr(),
         icon: Icons.rocket_launch_outlined,
         iconColor: AppColors.primaryBlue,
-        deleteText: 'OK',
+        deleteText: LocaleKeys.ok.tr(),
         cancelText: '',
         onDelete: () => Navigator.pop(ctx),
       ),
@@ -193,14 +193,14 @@ class POSDrawer extends StatelessWidget {
                       );
                     },
                   ),
-                  _DrawerItem(
-                    icon: Icons.translate_rounded,
-                    label: LocaleKeys.switch_to_arabic.tr(),
-                    onTap: () {
-                      Navigator.pop(context);
-                      _showComingSoon(context, 'Language');
-                    },
-                  ),
+                  // _DrawerItem(
+                  //   icon: Icons.translate_rounded,
+                  //   label: LocaleKeys.switch_to_arabic.tr(),
+                  //   onTap: () {
+                  //     Navigator.pop(context);
+                  //     _showComingSoon(context, 'Language');
+                  //   },
+                  // ),
                   _DrawerItem(
                     icon: Icons.format_list_bulleted_rounded,
                     label: LocaleKeys.all_orders.tr(),

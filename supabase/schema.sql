@@ -553,7 +553,6 @@ CREATE TABLE public.products (
   created_by uuid,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
-  name_ar text,
   purchase_unit character varying,
   sale_unit character varying,
   CONSTRAINT products_pkey PRIMARY KEY (id),
@@ -1015,6 +1014,8 @@ CREATE TABLE public.warehouses (
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   currency_id uuid,
+  number_of_products integer DEFAULT 0,
+  stock_quantity integer DEFAULT 0,
   CONSTRAINT warehouses_pkey PRIMARY KEY (id),
   CONSTRAINT warehouses_currency_id_fkey FOREIGN KEY (currency_id) REFERENCES public.currencies(id)
 );

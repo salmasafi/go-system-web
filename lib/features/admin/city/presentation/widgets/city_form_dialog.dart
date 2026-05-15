@@ -224,11 +224,13 @@ class _CityFormDialogState extends State<CityFormDialog>
   }
 
   void _handleStateChanges(BuildContext context, CityState state) {
-    if (state is CreateCitySuccess || state is UpdateCitySuccess) {
+    if (state is CreateCitySuccess) {
+      CustomSnackbar.showSuccess(context, state.message);
       Navigator.of(context).pop();
-    }
-
-    if (state is CreateCityError) {
+    } else if (state is UpdateCitySuccess) {
+      CustomSnackbar.showSuccess(context, state.message);
+      Navigator.of(context).pop();
+    } else if (state is CreateCityError) {
       CustomSnackbar.showError(context, state.error);
     } else if (state is UpdateCityError) {
       CustomSnackbar.showError(context, state.error);

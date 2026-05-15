@@ -43,7 +43,7 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
         iconPath: icon?.path,
       );
       emit(CreatePaymentMethodSuccess(LocaleKeys.payment_method_created_success.tr()));
-      getPaymentMethods();
+      await getPaymentMethods();
     } catch (e) {
       emit(CreatePaymentMethodError(e.toString().replaceAll('Exception: ', '')));
     }
@@ -68,7 +68,7 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
         iconPath: icon?.path,
       );
       emit(UpdatePaymentMethodSuccess(LocaleKeys.payment_method_updated_success.tr()));
-      getPaymentMethods();
+      await getPaymentMethods();
     } catch (e) {
       emit(UpdatePaymentMethodError(e.toString().replaceAll('Exception: ', '')));
     }
@@ -82,6 +82,7 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
         (paymentMethod) => paymentMethod.id == paymentMethodId,
       );
       emit(DeletePaymentMethodSuccess(LocaleKeys.payment_method_deleted_success.tr()));
+      await getPaymentMethods();
     } catch (e) {
       emit(DeletePaymentMethodError(e.toString().replaceAll('Exception: ', '')));
     }

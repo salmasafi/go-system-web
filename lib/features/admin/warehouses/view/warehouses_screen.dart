@@ -84,6 +84,12 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
                 setState(() => _isDeleting = false);
               }
 
+              if (state is WarehousesLoaded) {
+                final warehouses = context.read<WareHouseCubit>().warehouses;
+                _filterWarehouses(_searchController.text, warehouses);
+                setState(() => _isDeleting = false);
+              }
+
               if (state is WarehousesSuccess) {
                 final warehouses = context.read<WareHouseCubit>().warehouses;
                 _filterWarehouses(_searchController.text, warehouses);
@@ -124,6 +130,16 @@ class _WarehousesScreenState extends State<WarehousesScreen> {
               }
 
               final warehouses = context.read<WareHouseCubit>().warehouses;
+
+              if (state is WarehousesLoaded) {
+                _filteredWarehouses = _searchController.text.isEmpty
+                    ? warehouses
+                    : warehouses.where((w) {
+                        final q = _searchController.text.toLowerCase();
+                        return w.name.toLowerCase().contains(q) ||
+                            (w.address ?? '').toLowerCase().contains(q);
+                      }).toList();
+              }
 
               // Initialize filtered list if empty
               if (_filteredWarehouses.isEmpty &&

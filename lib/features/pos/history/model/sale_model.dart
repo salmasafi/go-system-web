@@ -140,8 +140,10 @@ class CustomerDueModel {
 class SaleDetailModel {
   final String id;
   final String reference;
-  final String customerId; // نحتاج الـ ID لإتمام البيع
+  final String customerId;
+  final String customerName;
   final String warehouseId;
+  final String warehouseName;
   final double grandTotal;
   final double taxAmount;
   final double discount;
@@ -151,7 +153,9 @@ class SaleDetailModel {
     required this.id,
     required this.reference,
     required this.customerId,
+    required this.customerName,
     required this.warehouseId,
+    required this.warehouseName,
     required this.grandTotal,
     required this.taxAmount,
     required this.discount,
@@ -159,7 +163,7 @@ class SaleDetailModel {
   });
 
   factory SaleDetailModel.fromJson(Map<String, dynamic> data) {
-    final sale = data['sale'] ?? data; // Support both wrapped and direct JSON
+    final sale = data['sale'] ?? data;
     final itemsList = (data['items'] ?? sale['items']) as List? ?? [];
 
     final customerJson = sale['customer'] ?? sale['customer_id'];
@@ -168,15 +172,17 @@ class SaleDetailModel {
     return SaleDetailModel(
       id: (sale['id'] ?? sale['_id'] ?? '').toString(),
       reference: sale['reference'] ?? '',
-      customerId: (customerJson is Map) 
-          ? (customerJson['id'] ?? customerJson['_id'] ?? '').toString() 
+      customerId: (customerJson is Map)
+          ? (customerJson['id'] ?? customerJson['_id'] ?? '').toString()
           : (customerJson ?? '').toString(),
-      warehouseId: (warehouseJson is Map) 
-          ? (warehouseJson['id'] ?? warehouseJson['_id'] ?? '').toString() 
+      customerName: (customerJson is Map) ? (customerJson['name'] ?? '') : '',
+      warehouseId: (warehouseJson is Map)
+          ? (warehouseJson['id'] ?? warehouseJson['_id'] ?? '').toString()
           : (warehouseJson ?? '').toString(),
+      warehouseName: (warehouseJson is Map) ? (warehouseJson['name'] ?? '') : '',
       grandTotal: (sale['grand_total'] as num?)?.toDouble() ?? 0.0,
       taxAmount: (sale['tax_amount'] as num?)?.toDouble() ?? 0.0,
-      discount: (sale['discount'] as num?)?.toDouble() ?? 0.0,
+      discount: (sale['discount_amount'] as num?)?.toDouble() ?? 0.0,
       items: itemsList.map((e) => SaleDetailItem.fromJson(e)).toList(),
     );
   }

@@ -352,7 +352,11 @@ class _CouponFormDialogState extends State<CouponFormDialog>
   }
 
   void _handleStateChanges(BuildContext context, CouponsState state) {
-    if (state is CreateCouponSuccess || state is UpdateCouponSuccess) {
+    if (state is CreateCouponSuccess) {
+      CustomSnackbar.showSuccess(context, state.message);
+      Navigator.pop(context);
+    } else if (state is UpdateCouponSuccess) {
+      CustomSnackbar.showSuccess(context, state.message);
       Navigator.pop(context);
     } else if (state is CreateCouponError) {
       CustomSnackbar.showError(context, state.error);

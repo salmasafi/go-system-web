@@ -300,9 +300,12 @@ class _DiscountFormDialogState extends State<DiscountFormDialog>
   }
 
   void _handleStateChanges(BuildContext context, DiscountsState state) {
-    if (state is CreateDiscountSuccess || state is UpdateDiscountSuccess) {
+    if (state is CreateDiscountSuccess) {
+      CustomSnackbar.showSuccess(context, state.message);
       Navigator.pop(context);
-      context.read<DiscountsCubit>().getDiscounts();
+    } else if (state is UpdateDiscountSuccess) {
+      CustomSnackbar.showSuccess(context, state.message);
+      Navigator.pop(context);
     } else if (state is CreateDiscountError) {
       CustomSnackbar.showError(context, state.error);
     } else if (state is UpdateDiscountError) {

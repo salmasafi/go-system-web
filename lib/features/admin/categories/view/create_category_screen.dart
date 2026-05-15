@@ -1,9 +1,7 @@
-import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
@@ -26,21 +24,12 @@ class AddCategoryScreen extends StatefulWidget {
 
 class _AddCategoryScreenState extends State<AddCategoryScreen> {
   final _nameController = TextEditingController();
-  File? _selectedImage;
   CategoryItem? _selectedParentCategory;
   bool _makeParentCategory = true;
 
-  Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-    );
-    if (pickedFile != null) {
-      setState(() => _selectedImage = File(pickedFile.path));
-    }
-  }
-
   @override
   void initState() {
+
     super.initState();
     CategoriesCubit.get(context).getCategories();
   }
@@ -369,103 +358,6 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                         ),
                       ),
                   ],
-                  SizedBox(height: ResponsiveUI.spacing(context, 24)),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            LocaleKeys.category_image.tr(),
-                            style: TextStyle(
-                              fontSize: ResponsiveUI.fontSize(context, 14),
-                              color: AppColors.darkGray,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          SizedBox(width: ResponsiveUI.spacing(context, 6)),
-                          Text(
-                            '(اختياري)',
-                            style: TextStyle(
-                              fontSize: ResponsiveUI.fontSize(context, 12),
-                              color: AppColors.darkGray.withValues(alpha: 0.5),
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (_selectedImage != null)
-                        TextButton.icon(
-                          icon: Icon(
-                            Icons.delete,
-                            color: AppColors.red,
-                            size: ResponsiveUI.iconSize(context, 18),
-                          ),
-                          label: Text(
-                            LocaleKeys.remove.tr(),
-                            style: TextStyle(
-                              color: AppColors.red,
-                              fontSize: ResponsiveUI.fontSize(context, 12),
-                            ),
-                          ),
-                          onPressed: () =>
-                              setState(() => _selectedImage = null),
-                        ),
-                    ],
-                  ),
-                  SizedBox(height: ResponsiveUI.spacing(context, 10)),
-                  GestureDetector(
-                    onTap: _pickImage,
-                    child: Container(
-                      width: ResponsiveUI.value(context, 140),
-                      height: ResponsiveUI.value(context, 140),
-                      decoration: BoxDecoration(
-                        color: AppColors.white,
-                        borderRadius: BorderRadius.circular(
-                          ResponsiveUI.borderRadius(context, 12),
-                        ),
-                        border: Border.all(
-                          color: AppColors.lightGray,
-                          width: ResponsiveUI.value(context, 2),
-                        ),
-                      ),
-                      child: _selectedImage != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(
-                                ResponsiveUI.borderRadius(context, 12),
-                              ),
-                              child: Image.file(
-                                _selectedImage!,
-                                fit: BoxFit.cover,
-                                key: ValueKey(_selectedImage!.path),
-                              ),
-                            )
-                          : Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.add_photo_alternate_outlined,
-                                  size: ResponsiveUI.iconSize(context, 45),
-                                  color: AppColors.primaryBlue,
-                                ),
-                                SizedBox(
-                                  height: ResponsiveUI.spacing(context, 8),
-                                ),
-                                Text(
-                                  LocaleKeys.tap_to_upload.tr(),
-                                  style: TextStyle(
-                                    color: AppColors.darkGray,
-                                    fontSize: ResponsiveUI.fontSize(
-                                      context,
-                                      13,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                    ),
-                  ),
-
                   SizedBox(height: ResponsiveUI.spacing(context, 30)),
                   SizedBox(
                     width: double.infinity,
@@ -493,7 +385,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                               }
                               cubit.createCategory(
                                 name: _nameController.text.trim(),
-                                imageFile: _selectedImage, // Made optional
+                                imageFile: null,
                                 parentId: _makeParentCategory
                                     ? null
                                     : _selectedParentCategory?.id,

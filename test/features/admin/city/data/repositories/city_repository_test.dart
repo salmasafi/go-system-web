@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:GoSystem/core/supabase/supabase_client.dart';
@@ -55,18 +55,18 @@ void main() {
         },
       ];
 
-      when(() => mockClient.from('cities')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.order(any())).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('cities')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select()).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.order(any())).thenAnswer((_) => mockFilterBuilder);
 
       when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(List<Map<String, dynamic>>);
         return callback(mockCities);
       });
 
-      when(() => mockClient.from('countries')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.order(any())).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('countries')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select()).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.order(any())).thenAnswer((_) => mockFilterBuilder);
 
       when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(List<Map<String, dynamic>>);
@@ -83,8 +83,8 @@ void main() {
     });
 
     test('createCity should complete successfully', () async {
-      when(() => mockClient.from('cities')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.insert(any())).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('cities')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.insert(any())).thenAnswer((_) => mockFilterBuilder);
 
       when(() => mockFilterBuilder.then(any())).thenAnswer((_) async {});
 
@@ -99,9 +99,9 @@ void main() {
     });
 
     test('updateCity should complete successfully', () async {
-      when(() => mockClient.from('cities')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.update(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('cities')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.update(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.eq(any(), any())).thenAnswer((_) => mockFilterBuilder);
 
       when(() => mockFilterBuilder.then(any())).thenAnswer((_) async {});
 
@@ -117,9 +117,9 @@ void main() {
     });
 
     test('deleteCity should complete successfully', () async {
-      when(() => mockClient.from('cities')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.delete()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('cities')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.delete()).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.eq(any(), any())).thenAnswer((_) => mockFilterBuilder);
 
       when(() => mockFilterBuilder.then(any())).thenAnswer((_) async {});
 

@@ -72,6 +72,18 @@ class _CurrencySupabaseDataSource implements CurrencyRepositoryInterface {
     }
   }
 
+  String _generateCode(String name) {
+    final cleaned = name.trim().replaceAll(RegExp(r'[^a-zA-Z؀-ۿ ]'), '');
+    final words = cleaned.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+    if (words.isEmpty) return 'CUR';
+    final latin = words.map((w) {
+      final ascii = w.replaceAll(RegExp(r'[^\x00-\x7F]'), '');
+      return ascii.isNotEmpty ? ascii[0].toUpperCase() : '';
+    }).where((c) => c.isNotEmpty).join();
+    if (latin.length >= 3) return latin.substring(0, 3).toUpperCase();
+    return '${name.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '').toUpperCase().padRight(3, 'X').substring(0, 3)}_${DateTime.now().millisecondsSinceEpoch % 100}';
+  }
+
   @override
   Future<void> createCurrency({
     required String name,
@@ -80,16 +92,28 @@ class _CurrencySupabaseDataSource implements CurrencyRepositoryInterface {
   }) async {
     try {
       log('CurrencySupabase: Creating currency: $name');
-      
+
       if (isDefault) {
         await _client.from('currencies').update({'is_default': false});
       }
 
-      await _client.from('currencies').insert({
-        'name': name,
-        'exchange_rate': amount,
-        'is_default': isDefault,
-      });
+      final baseCode = _generateCode(name);
+      var code = baseCode;
+      var attempt = 0;
+      while (attempt < 10) {
+        try {
+          await _client.from('currencies').insert({
+            'name': name,
+            'code': code,
+            'is_default': isDefault,
+          });
+          return;
+        } catch (e) {
+          attempt++;
+          code = '$baseCode$attempt';
+        }
+      }
+      throw Exception('Failed to generate unique currency code');
     } catch (e) {
       log('CurrencySupabase: Error creating currency - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
@@ -105,14 +129,13 @@ class _CurrencySupabaseDataSource implements CurrencyRepositoryInterface {
   }) async {
     try {
       log('CurrencySupabase: Updating currency: $currencyId');
-      
+
       if (isDefault) {
         await _client.from('currencies').update({'is_default': false});
       }
 
       await _client.from('currencies').update({
         'name': name,
-        'exchange_rate': amount,
         'is_default': isDefault,
       }).eq('id', currencyId);
     } catch (e) {
@@ -136,9 +159,9 @@ class _CurrencySupabaseDataSource implements CurrencyRepositoryInterface {
     return CurrencyModel(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
-      amount: (json['exchange_rate'] ?? 0).toDouble(),
+      amount: 0.0,
       isDefault: json['is_default'] ?? false,
-      version: json['version'] ?? 1,
+      version: 1,
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'].toString()) : DateTime.now(),
       updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'].toString()) : DateTime.now(),
     );

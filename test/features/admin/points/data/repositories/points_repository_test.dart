@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -36,9 +36,9 @@ void main() {
         {'id': 'pt1', 'amount': 100.0, 'points': 10},
       ];
 
-      when(() => mockClient.from('points')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.order(any())).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('points')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select()).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.order(any())).thenAnswer((_) => mockFilterBuilder);
       when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
         final cb =
             invocation.positionalArguments[0] as dynamic Function(List<Map<String, dynamic>>);

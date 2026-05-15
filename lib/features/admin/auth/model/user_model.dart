@@ -94,6 +94,20 @@ class User {
       role == 'admin' || role == 'owner' || role == 'super_admin' ||
       (warehouseId == null || warehouseId!.isEmpty);
 
+  /// Dashboard access: owner, super_admin, manager, admin
+  bool get canAccessDashboard =>
+      role == 'owner' ||
+      role == 'super_admin' ||
+      role == 'manager' ||
+      role == 'admin';
+
+  /// POS access: owner, super_admin, manager, cashier
+  bool get canAccessPOS =>
+      role == 'owner' ||
+      role == 'super_admin' ||
+      role == 'manager' ||
+      role == 'cashier';
+
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = id;

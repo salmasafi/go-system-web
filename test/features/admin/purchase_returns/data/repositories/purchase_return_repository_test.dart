@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:GoSystem/core/supabase/supabase_client.dart';
@@ -50,9 +50,9 @@ void main() {
         },
       ];
 
-      when(() => mockClient.from('purchase_returns')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.order(any(), ascending: any(named: 'ascending'))).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('purchase_returns')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.order(any(), ascending: any(named: 'ascending'))).thenAnswer((_) => mockFilterBuilder);
 
       when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(List<Map<String, dynamic>>);
@@ -78,10 +78,10 @@ void main() {
         ],
       };
 
-      when(() => mockClient.from('purchases')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.ilike('reference', any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.maybeSingle()).thenReturn(mockTransformBuilder);
+      when(() => mockClient.from('purchases')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.ilike('reference', any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.maybeSingle()).thenAnswer((_) => mockTransformBuilder);
       when(() => mockTransformBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(Map<String, dynamic>?);
         return callback(mockData);
@@ -95,10 +95,10 @@ void main() {
     });
 
     test('getPurchaseByReference should return null when not found', () async {
-      when(() => mockClient.from('purchases')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.ilike('reference', any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.maybeSingle()).thenReturn(mockTransformBuilder);
+      when(() => mockClient.from('purchases')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.ilike('reference', any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.maybeSingle()).thenAnswer((_) => mockTransformBuilder);
       when(() => mockTransformBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(Map<String, dynamic>?);
         return callback(null);
@@ -115,12 +115,12 @@ void main() {
         'reference': 'RET-NEW',
       };
 
-      when(() => mockClient.from('purchase_returns')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.insert(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.single()).thenReturn(mockTransformBuilderSingle);
-      when(() => mockClient.from('purchase_return_items')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.insert(any())).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('purchase_returns')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.insert(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.select()).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.single()).thenAnswer((_) => mockTransformBuilderSingle);
+      when(() => mockClient.from('purchase_return_items')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.insert(any())).thenAnswer((_) => mockFilterBuilder);
       when(() => mockTransformBuilderSingle.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(Map<String, dynamic>);
         return callback(returnResponse);
@@ -152,9 +152,9 @@ void main() {
     });
 
     test('updateReturn should complete successfully', () async {
-      when(() => mockClient.from('purchase_returns')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.update(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq('id', 'ret-1')).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('purchase_returns')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.update(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.eq('id', 'ret-1')).thenAnswer((_) => mockFilterBuilder);
 
       await repository.updateReturn(
         id: 'ret-1',
@@ -166,9 +166,9 @@ void main() {
     });
 
     test('deleteReturn should complete successfully', () async {
-      when(() => mockClient.from('purchase_returns')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.delete()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq('id', 'ret-1')).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('purchase_returns')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.delete()).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.eq('id', 'ret-1')).thenAnswer((_) => mockFilterBuilder);
 
       await repository.deleteReturn('ret-1');
 

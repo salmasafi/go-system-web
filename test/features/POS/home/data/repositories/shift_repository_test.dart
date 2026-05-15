@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:GoSystem/core/supabase/supabase_client.dart';
@@ -46,14 +46,14 @@ void main() {
         'status': 'open',
       };
 
-      when(() => mockClient.from('shifts')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('shifts')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select()).thenAnswer((_) => mockFilterBuilder);
       when(
         () => mockFilterBuilder.eq('status', 'open'),
-      ).thenReturn(mockFilterBuilder);
+      ).thenAnswer((_) => mockFilterBuilder);
       when(
         () => mockFilterBuilder.maybeSingle(),
-      ).thenReturn(mockTransformBuilder);
+      ).thenAnswer((_) => mockTransformBuilder);
 
       when(() => mockTransformBuilder.then(any())).thenAnswer((
         invocation,

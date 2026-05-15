@@ -322,12 +322,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
             label: LocaleKeys.payment_methods_screen_title.tr(),
             id: DashboardItem.payment,
           ),
-          _ModuleItem(
-            icon: Icons.payments_rounded,
-            label: LocaleKeys.payments_title.tr(),
-            id: DashboardItem.payments,
-            comingSoon: true,
-          ),
+          // _ModuleItem(
+          //   icon: Icons.payments_rounded,
+          //   label: LocaleKeys.payments_title.tr(),
+          //   id: DashboardItem.payments,
+          //   comingSoon: true,
+          // ),
         ],
       ),
       _DashboardGroup(

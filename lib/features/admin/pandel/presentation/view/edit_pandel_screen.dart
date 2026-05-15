@@ -1,13 +1,9 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
-import 'package:GoSystem/core/widgets/custom_button_widget.dart';
-import 'package:GoSystem/core/widgets/custom_error/custom_error_state.dart';
 import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:GoSystem/core/widgets/custom_textfield/custom_text_field_widget.dart';
 import 'package:GoSystem/features/admin/discount/cubit/discount_cubit.dart';
@@ -17,7 +13,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/features/admin/product/cubit/get_products_cubit/product_cubit.dart';
 import 'package:GoSystem/features/admin/product/cubit/get_products_cubit/product_state.dart';
 import 'package:GoSystem/features/admin/pandel/model/pandel_model.dart';
-import 'package:GoSystem/features/admin/categories/view/widgets/build_image_placeholder_widget.dart';
 import 'package:GoSystem/generated/locale_keys.g.dart';
 
 class EditPandelScreen extends StatefulWidget {
@@ -34,8 +29,6 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
   late final TextEditingController _priceController;
   late DateTime _startDate;
   late DateTime _endDate;
-  final List<File> _newImages = [];
-  List<String> _existingImages = [];
 
   // Map of productId -> quantity
   final Map<String, int> _selectedProducts = {};
@@ -47,8 +40,6 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
   var _selectedWarehouseIds = <String>[];
 
   DiscountModel? _selectedDiscount;
-
-  final _picker = ImagePicker();
 
   @override
   void initState() {
@@ -64,7 +55,6 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
     );
     _startDate = widget.pandel.startDate;
     _endDate = widget.pandel.endDate;
-    _existingImages = List.from(widget.pandel.images);
     _allWarehouses = widget.pandel.allWarehouses;
     _selectedWarehouseIds = widget.pandel.warehouseIds ?? [];
     for (final p in widget.pandel.products) {
@@ -107,44 +97,6 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
   //     context.read<ProductsCubit>().getProducts();
   //   });
   // }
-
-  Future<void> _pickImages() async {
-    final pickedFiles = await _picker.pickMultiImage(
-      maxWidth: 800,
-      maxHeight: 800,
-      imageQuality: 85,
-    );
-
-    if (pickedFiles.isNotEmpty && mounted) {
-      setState(() {
-        for (final pickedFile in pickedFiles) {
-          if (_newImages.length + _existingImages.length < 10) {
-            _newImages.add(File(pickedFile.path));
-          }
-        }
-      });
-
-      if (pickedFiles.length > 10 ||
-          (_newImages.length + _existingImages.length) > 10) {
-        CustomSnackbar.showWarning(
-          context,
-          LocaleKeys.max_images_warning.tr(namedArgs: {'max': '10'}),
-        );
-      }
-    }
-  }
-
-  void _removeNewImage(int index) {
-    setState(() {
-      _newImages.removeAt(index);
-    });
-  }
-
-  void _removeExistingImage(int index) {
-    setState(() {
-      _existingImages.removeAt(index);
-    });
-  }
 
   Future<void> _selectDate(BuildContext context, bool isStartDate) async {
     final initialDate = isStartDate ? _startDate : _endDate;
@@ -337,202 +289,6 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
                   size: ResponsiveUI.iconSize(context, 20),
                   color: AppColors.primaryBlue,
                 ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildImagesSection() {
-    final allImages = [..._existingImages, ..._newImages];
-    final width = ResponsiveUI.screenWidth(context);
-    final imageSize = width * 0.28;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: ResponsiveUI.spacing(context, 16)),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              LocaleKeys.pandel_images.tr(),
-              style: TextStyle(
-                fontSize: ResponsiveUI.fontSize(context, 14),
-                color: AppColors.darkGray,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            if (allImages.isNotEmpty)
-              TextButton.icon(
-                icon: Icon(
-                  Icons.delete,
-                  color: AppColors.red,
-                  size: ResponsiveUI.iconSize(context, 18),
-                ),
-                label: Text(
-                  LocaleKeys.remove_all.tr(),
-                  style: TextStyle(
-                    color: AppColors.red,
-                    fontSize: ResponsiveUI.fontSize(context, 12),
-                  ),
-                ),
-                onPressed: () {
-                  setState(() {
-                    _existingImages.clear();
-                    _newImages.clear();
-                  });
-                },
-              ),
-          ],
-        ),
-        SizedBox(height: ResponsiveUI.spacing(context, 8)),
-
-        if (allImages.isNotEmpty)
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: ResponsiveUI.spacing(context, 8),
-              mainAxisSpacing: ResponsiveUI.spacing(context, 8),
-              childAspectRatio: 1,
-            ),
-            itemCount: allImages.length,
-            itemBuilder: (context, index) {
-              final isExistingImage = index < _existingImages.length;
-
-              return Stack(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        ResponsiveUI.borderRadius(context, 8),
-                      ),
-                      border: Border.all(color: AppColors.lightGray, width: ResponsiveUI.value(context, 1)),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(
-                        ResponsiveUI.borderRadius(context, 8),
-                      ),
-                      child: isExistingImage
-                          ? Image.network(
-                              _existingImages[index],
-                              fit: BoxFit.cover,
-                              width: imageSize,
-                              height: imageSize,
-                              errorBuilder: (_, __, ___) =>
-                                  const CustomImagePlaceholder(),
-                            )
-                          : Image.file(
-                              _newImages[index - _existingImages.length],
-                              fit: BoxFit.cover,
-                              width: imageSize,
-                              height: imageSize,
-                            ),
-                    ),
-                  ),
-                  Positioned(
-                    top: ResponsiveUI.padding(context, 4),
-                    right: ResponsiveUI.padding(context, 4),
-                    child: GestureDetector(
-                      onTap: () => isExistingImage
-                          ? _removeExistingImage(index)
-                          : _removeNewImage(index - _existingImages.length),
-                      child: Container(
-                        padding: EdgeInsets.all(
-                          ResponsiveUI.padding(context, 4),
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.red.withValues(alpha: 0.9),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.close,
-                          size: ResponsiveUI.iconSize(context, 14),
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (!isExistingImage)
-                    Positioned(
-                      bottom: ResponsiveUI.padding(context, 4),
-                      left: ResponsiveUI.padding(context, 4),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: ResponsiveUI.padding(context, 6),
-                          vertical: ResponsiveUI.padding(context, 2),
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryBlue.withValues(alpha: 0.9),
-                          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 4)),
-                        ),
-                        child: Text(
-                          LocaleKeys.new_label.tr(),
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: ResponsiveUI.fontSize(context, 10),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
-
-        SizedBox(height: ResponsiveUI.spacing(context, 16)),
-        GestureDetector(
-          onTap: _pickImages,
-          child: Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(
-              vertical: ResponsiveUI.padding(context, 20),
-            ),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(
-                ResponsiveUI.borderRadius(context, 12),
-              ),
-              border: Border.all(color: AppColors.lightGray, width: ResponsiveUI.value(context, 1)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.add_photo_alternate_outlined,
-                  size: ResponsiveUI.iconSize(context, 45),
-                  color: AppColors.primaryBlue,
-                ),
-                SizedBox(height: ResponsiveUI.spacing(context, 8)),
-                Text(
-                  allImages.isEmpty
-                      ? LocaleKeys.tap_to_upload_images.tr()
-                      : LocaleKeys.tap_to_add_more_images.tr(),
-                  style: TextStyle(
-                    color: AppColors.darkGray.withValues(alpha: 0.7),
-                    fontSize: ResponsiveUI.fontSize(context, 13),
-                  ),
-                ),
-                if (allImages.isNotEmpty)
-                  Text(
-                    '(${LocaleKeys.selected_images_count.tr(namedArgs: {'count': allImages.length.toString()})})',
-                    style: TextStyle(
-                      color: AppColors.darkGray.withValues(alpha: 0.5),
-                      fontSize: ResponsiveUI.fontSize(context, 12),
-                    ),
-                  ),
               ],
             ),
           ),
@@ -747,8 +503,8 @@ class _EditPandelScreenState extends State<EditPandelScreen> {
       pandelId: widget.pandel.id,
       name: _nameController.text.trim(),
       products: products,
-      newImages: _newImages,
-      existingImages: _existingImages,
+      newImages: [],
+      existingImages: [],
       startDate: _startDate,
       endDate: _endDate,
       price: price,

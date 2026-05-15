@@ -1,8 +1,6 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
@@ -25,37 +23,6 @@ class _CreatePopupScreenState extends State<CreatePopupScreen> {
   final _descriptionEnController = TextEditingController();
   final _descriptionArController = TextEditingController();
   final _linkController = TextEditingController();
-
-  File? _selectedEnImage;
-  File? _selectedArImage;
-
-  final _picker = ImagePicker();
-
-  Future<void> _pickImage(bool isEnglishImage) async {
-    final pickedFile = await _picker.pickImage(
-      source: ImageSource.gallery,
-    );
-    if (pickedFile != null) {
-      setState(() {
-        final pickedFileAsFile = File(pickedFile.path);
-        if (isEnglishImage) {
-          _selectedEnImage = pickedFileAsFile;
-        } else {
-          _selectedArImage = pickedFileAsFile;
-        }
-      });
-    }
-  }
-
-  void _removeImage(bool isEnglishImage) {
-    setState(() {
-      if (isEnglishImage) {
-        _selectedEnImage = null;
-      } else {
-        _selectedArImage = null;
-      }
-    });
-  }
 
   Widget _buildTextField({
     required TextEditingController controller,
@@ -82,107 +49,6 @@ class _CreatePopupScreenState extends State<CreatePopupScreen> {
           hasBoxDecoration: false,
           hasBorder: true,
           prefixIconColor: AppColors.darkGray.withValues(alpha: 0.7),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildImagePicker({
-    required File? selectedImage,
-    required String title,
-    required void Function() onPick,
-    required void Function() onRemove,
-  }) {
-    final width = ResponsiveUI.screenWidth(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: ResponsiveUI.spacing(context, 16)),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: ResponsiveUI.fontSize(context, 14),
-                color: AppColors.darkGray,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            if (selectedImage != null)
-              TextButton.icon(
-                icon: Icon(
-                  Icons.delete,
-                  color: AppColors.red,
-                  size: ResponsiveUI.iconSize(context, 18),
-                ),
-                label: Text(
-                  LocaleKeys.remove.tr(),
-                  style: TextStyle(
-                    color: AppColors.red,
-                    fontSize: ResponsiveUI.fontSize(context, 12),
-                  ),
-                ),
-                onPressed: onRemove,
-              ),
-          ],
-        ),
-        SizedBox(height: ResponsiveUI.spacing(context, 8)),
-        GestureDetector(
-          onTap: onPick,
-          child: Container(
-            width: width * 0.35,
-            height: width * 0.35,
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(
-                ResponsiveUI.borderRadius(context, 12),
-              ),
-              border: Border.all(
-                color: AppColors.lightGray,
-                width: ResponsiveUI.value(context, 1),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: selectedImage != null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(
-                      ResponsiveUI.borderRadius(context, 12),
-                    ),
-                    child: Image.file(
-                      selectedImage,
-                      fit: BoxFit.cover,
-                      key: ValueKey(selectedImage.path),
-                    ),
-                  )
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.add_photo_alternate_outlined,
-                        size: ResponsiveUI.iconSize(context, 45),
-                        color: AppColors.primaryBlue,
-                      ),
-                      SizedBox(
-                        height: ResponsiveUI.spacing(context, 8),
-                      ),
-                      Text(
-                        LocaleKeys.tap_to_upload.tr(),
-                        style: TextStyle(
-                          color: AppColors.darkGray.withValues(alpha: 0.7),
-                          fontSize: ResponsiveUI.fontSize(context, 13),
-                        ),
-                      ),
-                    ],
-                  ),
-          ),
         ),
       ],
     );
@@ -217,8 +83,7 @@ class _CreatePopupScreenState extends State<CreatePopupScreen> {
           descriptionEn: _descriptionEnController.text.trim(),
           descriptionAr: _descriptionArController.text.trim(),
           link: _linkController.text.trim(),
-          image: _selectedEnImage,
-          // imageAr: _selectedArImage,
+          image: null,
         );
   }
 

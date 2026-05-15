@@ -48,10 +48,8 @@ class _DiscountsScreenState extends State<DiscountsScreen> {
           CustomSnackbar.showSuccess(context, state.message);
           discountsInit();
         } else if (state is CreateDiscountSuccess) {
-          CustomSnackbar.showSuccess(context, state.message);
           discountsInit();
         } else if (state is UpdateDiscountSuccess) {
-          CustomSnackbar.showSuccess(context, state.message);
           discountsInit();
         }
       },

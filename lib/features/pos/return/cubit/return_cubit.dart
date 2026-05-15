@@ -86,19 +86,25 @@ class ReturnCubit extends Cubit<ReturnState> {
     emit(ReturnSubmitting(sale: sale, items: items));
 
     try {
-      final itemsPayload = items
-          .where((i) => i.returnQuantity > 0)
+      final returnableItems = items.where((i) => i.returnQuantity > 0).toList();
+
+      final itemsPayload = returnableItems
           .map((i) => {
                 'sale_item_id': i.id,
-                'quantity': i.returnQuantity,
+                'returned_quantity': i.returnQuantity,
                 'reason': i.reason,
               })
           .toList();
 
+      final totalAmount = returnableItems.fold(
+        0.0,
+        (sum, i) => sum + i.returnQuantity * i.price,
+      );
+
       await _repository.createSaleReturn(
         saleId: sale.id,
         items: itemsPayload,
-        totalAmount: itemsPayload.fold(0.0, (sum, item) => sum + (item['quantity'] as int) * 0.0),
+        totalAmount: totalAmount,
         refundMethod: refundAccountId,
         note: note.trim(),
         attachmentFile: attachedFile,

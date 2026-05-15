@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -16,14 +16,18 @@ void main() {
   late MockStorageFileApi mockFileApi;
   late MockFile mockFile;
 
+  setUpAll(() {
+    registerFallbackValue(MockFile());
+  });
+
   setUp(() {
     mockClient = MockSupabaseClient();
     mockStorageClient = MockSupabaseStorageClient();
     mockFileApi = MockStorageFileApi();
     mockFile = MockFile();
 
-    when(() => mockClient.storage).thenReturn(mockStorageClient);
-    when(() => mockStorageClient.from(any())).thenReturn(mockFileApi);
+    when(() => mockClient.storage).thenAnswer((_) => mockStorageClient);
+    when(() => mockStorageClient.from(any())).thenAnswer((_) => mockFileApi);
 
     storageService = StorageService(mockClient);
   });
@@ -34,7 +38,7 @@ void main() {
       final fileName = 'test.jpg';
       final publicUrl = 'https://supabase.com/test.jpg';
 
-      when(() => mockFile.absolute).thenReturn(mockFile);
+      when(() => mockFile.absolute).thenAnswer((_) => mockFile);
       when(() => mockFile.path).thenReturn('/path/to/test.jpg');
       when(() => mockFileApi.upload(any(), any()))
           .thenAnswer((_) async => 'unique_path.jpg');

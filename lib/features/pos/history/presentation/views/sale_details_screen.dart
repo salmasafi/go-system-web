@@ -56,12 +56,12 @@ class SaleDetailsScreen extends StatelessWidget {
               _row("reference_number".tr(), details.reference, isBold: true),
               _row(
                 "customer_label".tr().replaceAll(':', ''),
-                _parseCustomerName(details),
-              ), // دالة مساعدة للاسم
+                details.customerName.isNotEmpty ? details.customerName : details.customerId,
+              ),
               _row(
                 "warehouse_id".tr(),
-                details.warehouseId,
-              ), // يمكنك جلب الاسم لو الموديل يدعمه
+                details.warehouseName.isNotEmpty ? details.warehouseName : details.warehouseId,
+              ),
               const Divider(),
               _row("status".tr(), "status_completed".tr().toUpperCase(), color: Colors.green, isBold: true),
             ],
@@ -82,7 +82,14 @@ class SaleDetailsScreen extends StatelessWidget {
 
         // Items List
         Expanded(
-          child: ListView.separated(
+          child: details.items.isEmpty
+              ? Center(
+                  child: Text(
+                    "no_products".tr(),
+                    style: TextStyle(color: Colors.grey, fontSize: ResponsiveUI.fontSize(context, 14)),
+                  ),
+                )
+              : ListView.separated(
             padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
             itemCount: details.items.length,
             separatorBuilder: (_, __) => const Divider(),
@@ -253,12 +260,5 @@ class SaleDetailsScreen extends StatelessWidget {
     );
   }
 
-  // لأن الـ API يعيد Customer ID كنص فقط في الـ Details أحياناً
-  // إذا كان الـ Model يدعم الاسم، نستخدمه، وإلا نعرض الـ ID
-  String _parseCustomerName(SaleDetailModel details) {
-    // في موديل الـ Details الحالي customerId هو String
-    // لو أردت الاسم، يجب تعديل الموديل ليقبل Map كما فعلنا في الـ Summary
-    return details.customerId;
-  }
 }
 

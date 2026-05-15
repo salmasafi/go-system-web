@@ -101,6 +101,7 @@ abstract class RevenueRepositoryInterface {
     required String description,
     String? receiptNumber,
   });
+  Future<void> deleteRevenue(String id);
   Future<Map<String, dynamic>> getSelectionData();
 }
 
@@ -166,6 +167,9 @@ class RevenueRepository implements RevenueRepositoryInterface {
     description: description,
     receiptNumber: receiptNumber,
   );
+
+  @override
+  Future<void> deleteRevenue(String id) => _dataSource.deleteRevenue(id);
 
   @override
   Future<Map<String, dynamic>> getSelectionData() => _dataSource.getSelectionData();
@@ -288,12 +292,23 @@ class _RevenueSupabaseDataSource implements RevenueRepositoryInterface {
   }
 
   @override
+  Future<void> deleteRevenue(String id) async {
+    try {
+      log('RevenueSupabase: Deleting revenue: $id');
+      await _client.from(_table).delete().eq('id', id);
+    } catch (e) {
+      log('RevenueSupabase: Error deleting revenue - $e');
+      throw Exception(SupabaseErrorHandler.handleError(e));
+    }
+  }
+
+  @override
   Future<Map<String, dynamic>> getSelectionData() async {
     try {
       log('RevenueSupabase: Fetching selection data');
       final categoriesResponse = await _client.from('categories').select('id, name');
       final accountsResponse = await _client.from('bank_accounts').select('id, name');
-      
+
       return {
         'success': true,
         'data': {
@@ -390,6 +405,11 @@ class _RevenueDioDataSource implements RevenueRepositoryInterface {
     } catch (e) {
       throw Exception(ErrorHandler.handleError(e));
     }
+  }
+
+  @override
+  Future<void> deleteRevenue(String id) async {
+    throw UnimplementedError('Not supported in legacy API');
   }
 
   @override

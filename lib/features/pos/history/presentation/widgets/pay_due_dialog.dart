@@ -7,7 +7,9 @@ import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:GoSystem/core/supabase/supabase_client.dart';
 import 'package:GoSystem/features/pos/history/cubit/history_cubit.dart';
 import 'package:GoSystem/features/pos/history/cubit/history_state.dart';
+import 'package:GoSystem/features/pos/history/model/due_payment_receipt_data.dart';
 import 'package:GoSystem/features/pos/history/model/sale_model.dart';
+import 'package:GoSystem/features/pos/history/presentation/views/due_payment_receipt_screen.dart';
 import 'package:GoSystem/features/pos/home/model/pos_models.dart';
 
 // ─── Entry point ─────────────────────────────────────────────────────────────
@@ -101,10 +103,31 @@ class _PayDueDialogState extends State<PayDueDialog> {
   Widget build(BuildContext context) {
     return BlocListener<HistoryCubit, HistoryState>(
       listener: (context, state) {
-        if (state is DuesPaySuccess) {
-          Navigator.pop(context);
-          CustomSnackbar.showSuccess(context, "Payment recorded successfully");
-          context.read<HistoryCubit>().getAllDues();
+        if (state is DuesPaySuccess && state.saleId == widget.due.id) {
+          final receiptData = DuePaymentReceiptData(
+            customerName: widget.due.customerName,
+            phone: widget.due.phone,
+            saleReference: widget.due.reference,
+            grandTotal: widget.due.grandTotal,
+            previouslyPaid: widget.due.paidAmount,
+            paidNow: _paidNow,
+            remainingAfter: (widget.due.remainingAmount - _paidNow)
+                .clamp(0.0, double.infinity),
+            paymentAccount: _selectedAccount?.name ?? '',
+          );
+
+          // Capture navigator + cubit refs before pop (context becomes invalid after)
+          final nav = Navigator.of(context);
+          final cubit = context.read<HistoryCubit>();
+
+          nav.pop(); // close dialog
+          nav.push(
+            MaterialPageRoute(
+              builder: (_) =>
+                  DuePaymentReceiptScreen(receiptData: receiptData),
+            ),
+          );
+          cubit.getAllDues();
         } else if (state is DuesPayError) {
           CustomSnackbar.showError(context, state.message);
         }

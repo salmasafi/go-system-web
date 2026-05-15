@@ -51,11 +51,11 @@ class SupabaseBankAccountModel {
       branch: json['branch'] as String?,
       accountType: json['account_type'] as String? ?? 'checking',
       currency: json['currency'] as String? ?? 'SAR',
-      openingBalance: (json['opening_balance'] as num?)?.toDouble() ?? 0.0,
-      currentBalance: (json['current_balance'] as num?)?.toDouble() ?? 0.0,
-      isActive: json['is_active'] as bool? ?? true,
+      openingBalance: (json['initial_balance'] as num?)?.toDouble() ?? 0.0,
+      currentBalance: (json['balance'] as num?)?.toDouble() ?? 0.0,
+      isActive: json['status'] as bool? ?? true,
       isDefault: json['is_default'] as bool? ?? false,
-      notes: json['notes'] as String?,
+      notes: json['description'] as String?,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String)
           : DateTime.now(),
@@ -69,7 +69,7 @@ class SupabaseBankAccountModel {
     return BankAccountModel(
       id: id,
       name: name,
-      wareHouseId: '', // Bank accounts in new schema might not be tied to warehouse
+      wareHouseId: '',
       image: '',
       status: isActive,
       inPos: accountType == 'cash',
@@ -180,16 +180,19 @@ class BankAccountRepository implements BankAccountRepositoryInterface {
         imageUrl = _client.storage.from('bank_accounts').getPublicUrl(fileName);
       }
 
-      final response = await _client.from(_table).insert({
+      final insertData = <String, dynamic>{
         'name': name,
-        'opening_balance': balance,
-        'current_balance': balance,
-        'is_active': status,
+        'initial_balance': balance,
+        'balance': balance,
+        'status': status,
+        'in_pos': inPos,
         'account_type': inPos ? 'cash' : 'checking',
-        'notes': description,
-        'warehouse_id': wareHouseId,
-        'image_url': imageUrl,
-      }).select().single();
+        'description': description,
+        'warehouse_id': wareHouseId.isNotEmpty ? wareHouseId : null,
+      };
+      if (imageUrl != null) insertData['image'] = imageUrl;
+
+      final response = await _client.from(_table).insert(insertData).select().single();
 
       return SupabaseBankAccountModel.fromJson(response);
     } catch (e) {
@@ -220,17 +223,18 @@ class BankAccountRepository implements BankAccountRepositoryInterface {
         imageUrl = _client.storage.from('bank_accounts').getPublicUrl(fileName);
       }
 
-      final updateData = {
+      final updateData = <String, dynamic>{
         'name': name,
-        'opening_balance': balance,
-        'is_active': status,
+        'initial_balance': balance,
+        'status': status,
+        'in_pos': inPos,
         'account_type': inPos ? 'cash' : 'checking',
-        'notes': description,
-        'warehouse_id': wareHouseId,
+        'description': description,
+        'warehouse_id': wareHouseId.isNotEmpty ? wareHouseId : null,
       };
 
       if (imageUrl != null) {
-        updateData['image_url'] = imageUrl;
+        updateData['image'] = imageUrl;
       }
 
       final response = await _client

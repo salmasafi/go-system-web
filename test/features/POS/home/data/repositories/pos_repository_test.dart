@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:GoSystem/core/supabase/supabase_client.dart';
@@ -46,12 +46,12 @@ void main() {
         },
       ];
 
-      when(() => mockClient.from('products')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.or(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.limit(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.order(any())).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('products')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.or(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.eq(any(), any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.limit(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.order(any())).thenAnswer((_) => mockFilterBuilder);
 
       when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(List<Map<String, dynamic>>);
@@ -73,10 +73,10 @@ void main() {
         'quantity': 50,
       };
 
-      when(() => mockClient.from('products')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq(any(), any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.maybeSingle()).thenReturn(mockTransformBuilder);
+      when(() => mockClient.from('products')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.eq(any(), any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.maybeSingle()).thenAnswer((_) => mockTransformBuilder);
 
       when(() => mockTransformBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(Map<String, dynamic>?);
@@ -90,9 +90,9 @@ void main() {
     });
 
     test('isServerReachable should return true when server is reachable', () async {
-      when(() => mockClient.from('products')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.limit(any())).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('products')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.limit(any())).thenAnswer((_) => mockFilterBuilder);
 
       when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(List<Map<String, dynamic>>);
@@ -106,7 +106,7 @@ void main() {
 
     test('syncOfflineSales should return true on success', () async {
       when(() => mockClient.rpc(any(), params: any(named: 'params')))
-          .thenReturn(mockRpcBuilder);
+          .thenAnswer((_) => mockRpcBuilder);
       when(() => mockRpcBuilder.then(any())).thenAnswer((invocation) async {
         final callback =
             invocation.positionalArguments[0] as dynamic Function(dynamic);

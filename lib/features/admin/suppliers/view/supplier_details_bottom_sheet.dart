@@ -157,7 +157,7 @@ class SupplierDetailsBottomSheet extends StatelessWidget {
               context.read<SupplierCubit>().getSupplierById(supplierId);
             },
             icon: Icon(Icons.refresh),
-            label: const Text('Retry'),
+            label: Text(LocaleKeys.retry.tr()),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryBlue,
               foregroundColor: AppColors.white,

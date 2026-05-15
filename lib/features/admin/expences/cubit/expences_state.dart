@@ -24,6 +24,16 @@ class CreateExpenseError extends ExpensesState {
   CreateExpenseError(this.error);
 }
 
+class UpdateExpenseLoading extends ExpensesState {}
+class UpdateExpenseSuccess extends ExpensesState {
+  final String message;
+  UpdateExpenseSuccess(this.message);
+}
+class UpdateExpenseError extends ExpensesState {
+  final String error;
+  UpdateExpenseError(this.error);
+}
+
 class DeleteExpenseLoading extends ExpensesState {}
 class DeleteExpenseSuccess extends ExpensesState {
   final String message;

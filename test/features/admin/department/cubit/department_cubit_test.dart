@@ -19,8 +19,8 @@ void main() {
         'id': id,
         'name': 'Department $id',
         'description': 'Description',
-        'created_at': '2024-01-01',
-        'updated_at': '2024-01-01',
+        'createdAt': '2024-01-01',
+        'updatedAt': '2024-01-01',
         '__v': 1,
       });
 

@@ -289,11 +289,13 @@ class _ZoneFormDialogState extends State<ZoneFormDialog>
   }
 
   void _handleStateChanges(BuildContext context, ZoneState state) {
-    if (state is CreateZoneSuccess || state is UpdateZoneSuccess) {
+    if (state is CreateZoneSuccess) {
+      CustomSnackbar.showSuccess(context, state.message);
       Navigator.of(context).pop();
-    }
-
-    if (state is CreateZoneError) {
+    } else if (state is UpdateZoneSuccess) {
+      CustomSnackbar.showSuccess(context, state.message);
+      Navigator.of(context).pop();
+    } else if (state is CreateZoneError) {
       CustomSnackbar.showError(context, state.error);
     } else if (state is UpdateZoneError) {
       CustomSnackbar.showError(context, state.error);

@@ -69,19 +69,20 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           CustomSnackbar.showError(context, state.error);
         } else if (state is CreateExpenseSuccess) {
           CustomSnackbar.showSuccess(context, state.message);
-          _init();
         } else if (state is CreateExpenseError) {
+          CustomSnackbar.showError(context, state.error);
+        } else if (state is UpdateExpenseSuccess) {
+          CustomSnackbar.showSuccess(context, state.message);
+        } else if (state is UpdateExpenseError) {
           CustomSnackbar.showError(context, state.error);
         } else if (state is DeleteExpenseSuccess) {
           CustomSnackbar.showSuccess(context, state.message);
-          _init();
         } else if (state is DeleteExpenseError) {
           CustomSnackbar.showError(context, state.error);
-          _init();
         }
       },
       builder: (context, state) {
-        if (state is GetExpensesLoading || state is DeleteExpenseLoading) {
+        if (state is GetExpensesLoading || state is DeleteExpenseLoading || state is UpdateExpenseLoading) {
           return RefreshIndicator(
             onRefresh: _refresh,
             color: const Color(0xFFE53935),
@@ -121,11 +122,25 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                         Positioned(
                           top: 0,
                           right: ResponsiveUI.value(context, 4),
-                          child: IconButton(
-                            icon: Icon(Icons.delete_outline,
-                                color: Colors.red.withValues(alpha: 0.7),
-                                size: ResponsiveUI.iconSize(context, 20)),
-                            onPressed: () => _showDeleteDialog(expense),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.edit_outlined,
+                                    color: Colors.blue.withValues(alpha: 0.7),
+                                    size: ResponsiveUI.iconSize(context, 20)),
+                                onPressed: () => showDialog(
+                                  context: context,
+                                  builder: (_) => ExpenseFormDialog(expense: expense),
+                                ),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.delete_outline,
+                                    color: Colors.red.withValues(alpha: 0.7),
+                                    size: ResponsiveUI.iconSize(context, 20)),
+                                onPressed: () => _showDeleteDialog(expense),
+                              ),
+                            ],
                           ),
                         ),
                       ],

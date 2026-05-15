@@ -1,14 +1,9 @@
-import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
-import 'package:GoSystem/core/widgets/custom_button_widget.dart';
 import 'package:GoSystem/core/widgets/custom_textfield/custom_text_field_widget.dart';
-import 'package:GoSystem/features/admin/categories/view/widgets/build_image_placeholder_widget.dart';
 import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../../../../core/widgets/custom_loading/custom_loading_state.dart';
 import '../../../../core/widgets/custom_snack_bar/custom_snackbar.dart';
@@ -29,8 +24,6 @@ class EditCategoryBottomSheet extends StatefulWidget {
 class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
   late TextEditingController _nameController;
   String? _selectedParentId;
-  File? _selectedImage;
-  final _picker = ImagePicker();
   bool _isLoading = true;
 
   @override
@@ -49,33 +42,24 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
     super.dispose();
   }
 
-  Future<void> _pickImage() async {
-    final picked = await _picker.pickImage(source: ImageSource.gallery);
-    if (picked != null && mounted) {
-      setState(() => _selectedImage = File(picked.path));
-    }
-  }
-
   void _submitUpdate() {
     if (_nameController.text.trim().isEmpty) {
       CustomSnackbar.showWarning(context, LocaleKeys.please_enter_category_name_en_ar.tr());
       return;
     }
 
-    // Only send parentId if it's not null (i.e., user selected a parent category)
     if (_selectedParentId != null) {
       CategoriesCubit.get(context).updateCategory(
         categoryId: widget.category.id,
         name: _nameController.text.trim(),
-        imageFile: _selectedImage,
+        imageFile: null,
         parentId: _selectedParentId,
       );
     } else {
-      // Don't send parentId at all if none selected
       CategoriesCubit.get(context).updateCategory(
         categoryId: widget.category.id,
         name: _nameController.text.trim(),
-        imageFile: _selectedImage,
+        imageFile: null,
       );
     }
   }
@@ -85,16 +69,6 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
     final cubit = CategoriesCubit.get(context);
     final maxWidth = ResponsiveUI.contentMaxWidth(context);
     final isDesktop = maxWidth > 600;
-    final image = _selectedImage != null
-        ? Image.file(_selectedImage!, fit: BoxFit.cover)
-        : widget.category.image.isNotEmpty
-        ? Image.network(
-            widget.category.image,
-            fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const CustomImagePlaceholder(),
-          )
-        : const CustomImagePlaceholder();
-    
     // Scale down for web
     return BlocConsumer<CategoriesCubit, CategoriesState>(
       listener: (context, state) {
@@ -305,114 +279,6 @@ class _EditCategoryBottomSheetState extends State<EditCategoryBottomSheet> {
                                     setState(() => _selectedParentId = val),
                         ),
                       ),
-                      SizedBox(height: ResponsiveUI.spacing(context, 12)),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            LocaleKeys.category_image.tr(),
-                            style: TextStyle(
-                              fontSize: ResponsiveUI.fontSize(context, 14),
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.shadowGray[700],
-                            ),
-                          ),
-                          SizedBox(width: ResponsiveUI.spacing(context, 6)),
-                          Text(
-                            '(اختياري)',
-                            style: TextStyle(
-                              fontSize: ResponsiveUI.fontSize(context, 12),
-                              color: AppColors.darkGray.withValues(alpha: 0.5),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: ResponsiveUI.spacing(context, 8)),
-                      GestureDetector(
-                        onTap: _isLoading ? null : _pickImage,
-                        child: Container(
-                          height: ResponsiveUI.value(context, 300),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: AppColors.shadowGray[300]!,
-                              width: ResponsiveUI.value(context, 1),
-                            ),
-                            borderRadius: BorderRadius.circular(
-                              ResponsiveUI.borderRadius(context, 12),
-                            ),
-                            color: AppColors.shadowGray[50],
-                          ),
-                          child: Stack(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(
-                                  ResponsiveUI.borderRadius(context, 12),
-                                ),
-                                child: image,
-                              ),
-                              if (_selectedImage != null ||
-                                  widget.category.image.isNotEmpty)
-                                Positioned(
-                                  top: ResponsiveUI.padding(context, 8),
-                                  right: ResponsiveUI.padding(context, 8),
-                                  child: Container(
-                                    padding: EdgeInsets.all(
-                                      ResponsiveUI.padding(context, 6),
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black54,
-                                      borderRadius: BorderRadius.circular(
-                                        ResponsiveUI.borderRadius(context, 6),
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      Icons.edit,
-                                      color: AppColors.white,
-                                      size: ResponsiveUI.iconSize(context, 18),
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: ResponsiveUI.spacing(context, 8)),
-                      _selectedImage == null && widget.category.image.isEmpty
-                          ? Text(
-                              LocaleKeys.tap_to_select_image.tr(),
-                              style: TextStyle(
-                                fontSize: ResponsiveUI.fontSize(context, 12),
-                                color: Colors.orange[700],
-                                fontStyle: FontStyle.italic,
-                              ),
-                              textAlign: TextAlign.center,
-                            )
-                          : _selectedImage != null
-                          ? Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.check_circle,
-                                  color: AppColors.successGreen,
-                                  size: ResponsiveUI.iconSize(context, 16),
-                                ),
-                                SizedBox(
-                                  width: ResponsiveUI.spacing(context, 4),
-                                ),
-                                Text(
-                                  LocaleKeys.new_image_selected.tr(),
-                                  style: TextStyle(
-                                    fontSize: ResponsiveUI.fontSize(
-                                      context,
-                                      12,
-                                    ),
-                                    color: Colors.green[700],
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            )
-                          : SizedBox.shrink(),
                       SizedBox(height: ResponsiveUI.spacing(context, 16)),
                       ElevatedButton(
                         onPressed: _isLoading ? null : _submitUpdate,

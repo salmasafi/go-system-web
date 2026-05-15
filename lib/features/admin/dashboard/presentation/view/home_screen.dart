@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/services/cache_helper.dart';
+import 'package:GoSystem/features/admin/auth/cubit/login_cubit.dart';
 import 'package:GoSystem/features/admin/dashboard/cubit/notifications_cubit.dart';
 import 'package:GoSystem/features/admin/dashboard/presentation/view/dashboard_screens.dart';
 import 'package:GoSystem/features/admin/settings/presentation/settings_screen.dart';
@@ -52,10 +53,34 @@ class _HomeScreenState extends State<HomeScreen>
 
   void _switchTab(int index) {
     if (index == currentIndex) return;
+
+    final user = context.read<LoginCubit>().savedUser;
+
+    // index 0 = Dashboard, index 1 = POS, index 2 = Settings
+    if (index == 0 && user?.canAccessDashboard == false) {
+      _showAccessDenied();
+      return;
+    }
+    if (index == 1 && user?.canAccessPOS == false) {
+      _showAccessDenied();
+      return;
+    }
+
     _fadeController.forward(from: 0.0);
     setState(() {
       currentIndex = index;
     });
+  }
+
+  void _showAccessDenied() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('access_denied_message'.tr()),
+        backgroundColor: Colors.red.shade700,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 
   void _showLogoutDialog() {

@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:GoSystem/core/supabase/supabase_client.dart';
@@ -30,7 +30,7 @@ void main() {
 
     SupabaseClientWrapper.setMockInstance(mockClient);
     
-    when(() => mockClient.auth).thenReturn(mockAuth);
+    when(() => mockClient.auth).thenAnswer((_) => mockAuth);
     when(() => mockAuth.currentUser).thenReturn(null);
     
     // AuthRepository needs Supabase enabled
@@ -52,8 +52,8 @@ void main() {
             password: password,
           )).thenAnswer((_) async => mockAuthResponse);
 
-      when(() => mockAuthResponse.user).thenReturn(mockUser);
-      when(() => mockAuthResponse.session).thenReturn(mockSession);
+      when(() => mockAuthResponse.user).thenAnswer((_) => mockUser);
+      when(() => mockAuthResponse.session).thenAnswer((_) => mockSession);
       when(() => mockUser.id).thenReturn('user-123');
       when(() => mockUser.email).thenReturn(email);
       when(() => mockSession.accessToken).thenReturn(accessToken);

@@ -168,7 +168,7 @@ class AnimatedPurchaseCard extends StatelessWidget {
           flex: 2,
           child: _buildInfoItem(
             context,
-            label: "Date", // LocaleKeys.date.tr()
+            label: LocaleKeys.date.tr(),
             value: _formatDate(purchase.date.toString()),
             icon: Icons.calendar_today_outlined,
           ),
@@ -195,7 +195,7 @@ class AnimatedPurchaseCard extends StatelessWidget {
             ),
           ),
           child: Text(
-            purchase.paymentStatus.toUpperCase(),
+            _localizeStatus(purchase.paymentStatus),
             style: TextStyle(
               fontSize: ResponsiveUI.fontSize(context, 11),
               fontWeight: FontWeight.bold,
@@ -209,7 +209,7 @@ class AnimatedPurchaseCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              "Total", // LocaleKeys.total.tr()
+              LocaleKeys.total.tr(),
               style: TextStyle(
                 fontSize: ResponsiveUI.fontSize(context, 11),
                 color: AppColors.darkGray.withValues(alpha: 0.6),
@@ -277,6 +277,23 @@ class AnimatedPurchaseCard extends StatelessWidget {
       return DateFormat('dd MMM yyyy').format(date);
     } catch (e) {
       return dateString;
+    }
+  }
+
+  String _localizeStatus(String status) {
+    switch (status.toLowerCase()) {
+      case 'paid':
+        return LocaleKeys.status_paid.tr();
+      case 'later':
+        return LocaleKeys.status_later.tr();
+      case 'partial':
+        return LocaleKeys.status_partial.tr();
+      case 'unpaid':
+        return LocaleKeys.status_unpaid.tr();
+      case 'pending':
+        return LocaleKeys.status_pending.tr();
+      default:
+        return status.toUpperCase();
     }
   }
 

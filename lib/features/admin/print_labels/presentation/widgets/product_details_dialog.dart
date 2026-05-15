@@ -1,7 +1,8 @@
 import 'package:GoSystem/core/utils/responsive_ui.dart';
-
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:GoSystem/features/admin/product/models/product_model.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../../../../../core/constants/app_colors.dart';
 
 class ProductDetailsDialog extends StatefulWidget {
@@ -169,7 +170,7 @@ class _ProductDetailsDialogState extends State<ProductDetailsDialog> {
                 child: OutlinedButton(
                   onPressed: () => Navigator.pop(context),
                   style: OutlinedButton.styleFrom(padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 16))),
-                  child: const Text('Cancel'),
+                  child: Text(LocaleKeys.cancel.tr()),
                 ),
               ),
               SizedBox(width: ResponsiveUI.value(context, 12)),
@@ -184,7 +185,7 @@ class _ProductDetailsDialogState extends State<ProductDetailsDialog> {
                     backgroundColor: AppColors.primaryBlue,
                     padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 16)),
                   ),
-                  child: const Text('Add to List', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  child: Text(LocaleKeys.add_to_list.tr(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],

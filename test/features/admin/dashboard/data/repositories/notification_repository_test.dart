@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:GoSystem/core/supabase/supabase_client.dart';
@@ -28,8 +28,8 @@ void main() {
 
     SupabaseClientWrapper.setMockInstance(mockClient);
 
-    when(() => mockClient.auth).thenReturn(mockAuth);
-    when(() => mockAuth.currentUser).thenReturn(mockUser);
+    when(() => mockClient.auth).thenAnswer((_) => mockAuth);
+    when(() => mockAuth.currentUser).thenAnswer((_) => mockUser);
     when(() => mockUser.id).thenReturn('user-123');
 
     repository = NotificationRepository();
@@ -53,10 +53,10 @@ void main() {
         }
       ];
 
-      when(() => mockClient.from('notifications')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('notifications')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select()).thenAnswer((_) => mockFilterBuilder);
       when(() => mockFilterBuilder.order('created_at', ascending: false))
-          .thenReturn(mockFilterBuilder);
+          .thenAnswer((_) => mockFilterBuilder);
 
       when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0]
@@ -77,9 +77,9 @@ void main() {
         {'id': '2'},
       ];
 
-      when(() => mockClient.from('notifications')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select('id')).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq('is_read', false)).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('notifications')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select('id')).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.eq('is_read', false)).thenAnswer((_) => mockFilterBuilder);
 
       when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0]
@@ -93,10 +93,10 @@ void main() {
     });
 
     test('markAsRead updates notification', () async {
-      when(() => mockClient.from('notifications')).thenReturn(mockQueryBuilder);
+      when(() => mockClient.from('notifications')).thenAnswer((_) => mockQueryBuilder);
       when(() => mockQueryBuilder.update({'is_read': true}))
-          .thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq('id', '1')).thenReturn(mockFilterBuilder);
+          .thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.eq('id', '1')).thenAnswer((_) => mockFilterBuilder);
 
       when(() => mockFilterBuilder.then(any()))
           .thenAnswer((_) async => <dynamic>[]);

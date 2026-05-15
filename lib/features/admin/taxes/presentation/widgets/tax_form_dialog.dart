@@ -216,11 +216,13 @@ class _TaxFormDialogState extends State<TaxFormDialog>
   }
 
   void _handleStateChanges(BuildContext context, TaxesState state) {
-    if (state is CreateTaxSuccess || state is UpdateTaxSuccess) {
+    if (state is CreateTaxSuccess) {
+      CustomSnackbar.showSuccess(context, state.message);
       Navigator.of(context).pop();
-    }
-
-    if (state is CreateTaxError) {
+    } else if (state is UpdateTaxSuccess) {
+      CustomSnackbar.showSuccess(context, state.message);
+      Navigator.of(context).pop();
+    } else if (state is CreateTaxError) {
       CustomSnackbar.showError(context, state.error);
     } else if (state is UpdateTaxError) {
       CustomSnackbar.showError(context, state.error);

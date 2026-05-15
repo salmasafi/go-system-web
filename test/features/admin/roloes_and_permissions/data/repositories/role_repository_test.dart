@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:GoSystem/core/supabase/supabase_client.dart';
@@ -49,9 +49,9 @@ void main() {
         },
       ];
 
-      when(() => mockClient.from('roles')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.order(any())).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('roles')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select()).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.order(any())).thenAnswer((_) => mockFilterBuilder);
       when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(List<Map<String, dynamic>>);
         return callback(mockData);
@@ -80,9 +80,9 @@ void main() {
         },
       ];
 
-      when(() => mockClient.from('user_roles')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq('user_id', 'user-1')).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('user_roles')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.eq('user_id', 'user-1')).thenAnswer((_) => mockFilterBuilder);
       when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0] as dynamic Function(List<Map<String, dynamic>>);
         return callback(mockData);
@@ -96,8 +96,8 @@ void main() {
     });
 
     test('createRole should complete successfully', () async {
-      when(() => mockClient.from('roles')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.insert(any())).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('roles')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.insert(any())).thenAnswer((_) => mockFilterBuilder);
 
       await repository.createRole(
         name: 'New Role',
@@ -111,9 +111,9 @@ void main() {
     });
 
     test('updateRole should complete successfully', () async {
-      when(() => mockClient.from('roles')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.update(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq('id', 'role-1')).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('roles')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.update(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.eq('id', 'role-1')).thenAnswer((_) => mockFilterBuilder);
 
       await repository.updateRole(
         id: 'role-1',
@@ -126,9 +126,9 @@ void main() {
     });
 
     test('deleteRole should complete successfully', () async {
-      when(() => mockClient.from('roles')).thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.delete()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.eq('id', 'role-1')).thenReturn(mockFilterBuilder);
+      when(() => mockClient.from('roles')).thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.delete()).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.eq('id', 'role-1')).thenAnswer((_) => mockFilterBuilder);
 
       await repository.deleteRole('role-1');
 

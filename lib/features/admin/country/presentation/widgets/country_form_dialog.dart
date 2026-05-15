@@ -156,11 +156,13 @@ class _CountryFormDialogState extends State<CountryFormDialog>
   }
 
   void _handleStateChanges(BuildContext context, CountryState state) {
-    if (state is CreateCountrySuccess || state is UpdateCountrySuccess) {
+    if (state is CreateCountrySuccess) {
+      CustomSnackbar.showSuccess(context, state.message);
       Navigator.of(context).pop();
-    }
-
-    if (state is CreateCountryError) {
+    } else if (state is UpdateCountrySuccess) {
+      CustomSnackbar.showSuccess(context, state.message);
+      Navigator.of(context).pop();
+    } else if (state is CreateCountryError) {
       CustomSnackbar.showError(context, state.error);
     } else if (state is UpdateCountryError) {
       CustomSnackbar.showError(context, state.error);

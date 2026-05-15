@@ -57,10 +57,8 @@ class _TaxesScreenState extends State<TaxesScreen> {
           CustomSnackbar.showSuccess(context, state.message);
           taxesInit();
         } else if (state is CreateTaxSuccess) {
-          CustomSnackbar.showSuccess(context, state.message);
           taxesInit();
         } else if (state is UpdateTaxSuccess) {
-          CustomSnackbar.showSuccess(context, state.message);
           taxesInit();
         }
       },

@@ -16,13 +16,15 @@ void main() {
   });
 
   CashierModel sampleCashier(String id) => CashierModel.fromJson({
-        'id': id,
+        '_id': id,
         'name': 'Cashier $id',
-        'warehouse': {'id': 'w1', 'name': 'Main Warehouse'},
+        'warehouse_id': {'_id': 'w1', 'name': 'Main Warehouse'},
         'status': true,
         'cashier_active': true,
-        'created_at': '2024-01-01',
-        'updated_at': '2024-01-01',
+        'createdAt': '2024-01-01',
+        'updatedAt': '2024-01-01',
+        '__v': 0,
+        'bankAccounts': [],
       });
 
   group('CashierCubit', () {
@@ -109,12 +111,15 @@ void main() {
       'deleteCashier emits loading then success',
       build: () {
         when(() => mockRepo.deleteCashier('c1')).thenAnswer((_) async => {});
+        when(() => mockRepo.getAllCashiers()).thenAnswer((_) async => []);
         return CashierCubit(mockRepo);
       },
       act: (c) => c.deleteCashier('c1'),
       expect: () => [
         isA<DeleteCashierLoading>(),
         isA<DeleteCashierSuccess>(),
+        isA<GetCashiersLoading>(),
+        isA<GetCashiersSuccess>(),
       ],
     );
   });

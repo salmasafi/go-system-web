@@ -204,11 +204,13 @@ class _CurrencyFormDialogState extends State<CurrencyFormDialog>
   }
 
   void _handleStateChanges(BuildContext context, CurrencyState state) {
-    if (state is CreateCurrencySuccess || state is UpdateCurrencySuccess) {
+    if (state is CreateCurrencySuccess) {
+      CustomSnackbar.showSuccess(context, state.message);
       Navigator.of(context).pop();
-    }
-
-    if (state is CreateCurrencyError) {
+    } else if (state is UpdateCurrencySuccess) {
+      CustomSnackbar.showSuccess(context, state.message);
+      Navigator.of(context).pop();
+    } else if (state is CreateCurrencyError) {
       CustomSnackbar.showError(context, state.error);
     } else if (state is UpdateCurrencyError) {
       CustomSnackbar.showError(context, state.error);

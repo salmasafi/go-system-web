@@ -1,7 +1,9 @@
 // lib/features/pos/home/presentation/widgets/pos_app_bar.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import 'package:GoSystem/features/admin/auth/cubit/login_cubit.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/responsive_ui.dart';
@@ -124,7 +126,7 @@ class _POSAppBarState extends State<POSAppBar> {
       ),
       showActions: true,
       showBackButton: false,
-      title: 'POS', 
+      title: LocaleKeys.point_of_sale.tr(),
     );
     // AppBar(
     //       elevation: 0,

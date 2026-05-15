@@ -48,6 +48,32 @@ class ExpensesCubit extends Cubit<ExpensesState> {
     }
   }
 
+  Future<void> updateExpense({
+    required String id,
+    required String name,
+    required double amount,
+    required String categoryId,
+    required String financialAccountId,
+    required String note,
+  }) async {
+    emit(UpdateExpenseLoading());
+    try {
+      await _repository.updateExpense(
+        id: id,
+        name: name,
+        amount: amount,
+        categoryId: categoryId,
+        financialAccountId: financialAccountId,
+        note: note,
+      );
+      emit(UpdateExpenseSuccess('success'.tr()));
+      await getExpenses();
+    } catch (e) {
+      log('ExpensesCubit: updateExpense error - $e');
+      emit(UpdateExpenseError(e.toString().replaceAll('Exception: ', '')));
+    }
+  }
+
   Future<void> deleteExpense(String id) async {
     emit(DeleteExpenseLoading());
     try {

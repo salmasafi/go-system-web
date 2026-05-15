@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:GoSystem/features/admin/suppliers/view/suppplier_add_edit/supplier_dialog_button.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../../cubit/supplier_cubit.dart';
@@ -70,8 +69,6 @@ class _SupplierDialogContentState extends State<_SupplierDialogContent> {
   String? _selectedCountryId;
   String? _selectedCityId;
   bool _isLoading = false;
-  XFile? _selectedImage;
-  final ImagePicker _imagePicker = ImagePicker();
 
   bool get isEditMode => widget.supplier != null;
 
@@ -95,27 +92,6 @@ class _SupplierDialogContentState extends State<_SupplierDialogContent> {
     _addressController.dispose();
     _companyNameController.dispose();
     super.dispose();
-  }
-
-  Future<void> _pickImage() async {
-    try {
-      final XFile? image = await _imagePicker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 85,
-      );
-
-      if (image != null) {
-        setState(() {
-          _selectedImage = image;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        CustomSnackbar.showError(context, LocaleKeys.failed_to_pick_image.tr());
-      }
-    }
   }
 
   Future<void> _handleSubmit() async {
@@ -144,7 +120,6 @@ class _SupplierDialogContentState extends State<_SupplierDialogContent> {
           companyName: _companyNameController.text.trim(),
           countryId: _selectedCountryId,
           cityId: _selectedCityId,
-          imageFile: _selectedImage,
         );
       } else {
         await widget.cubit.createSupplier(
@@ -155,7 +130,6 @@ class _SupplierDialogContentState extends State<_SupplierDialogContent> {
           companyName: _companyNameController.text.trim(),
           countryId: _selectedCountryId!,
           cityId: _selectedCityId!,
-          imageFile: _selectedImage,
         );
       }
 
@@ -235,14 +209,6 @@ class _SupplierDialogContentState extends State<_SupplierDialogContent> {
                 });
               },
               isLoading: _isLoading,
-              selectedImage: _selectedImage,
-              onPickImage: _pickImage,
-              onClearImage: () {
-                setState(() {
-                  _selectedImage = null;
-                });
-              },
-              existingImageUrl: widget.supplier?.image,
             ),
             SupplierDialogButtons(
               isEditMode: isEditMode,

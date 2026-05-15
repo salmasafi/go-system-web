@@ -64,6 +64,7 @@ void main() {
       'createDiscount emits loading then success',
       build: () {
         when(() => mockRepo.createDiscount(any())).thenAnswer((_) async => sampleDiscount('new'));
+        when(() => mockRepo.getAllDiscounts()).thenAnswer((_) async => []);
         return DiscountsCubit(mockRepo);
       },
       act: (c) => c.createDiscount(
@@ -75,6 +76,8 @@ void main() {
       expect: () => [
         isA<CreateDiscountLoading>(),
         isA<CreateDiscountSuccess>(),
+        isA<GetDiscountsLoading>(),
+        isA<GetDiscountsSuccess>(),
       ],
     );
   });

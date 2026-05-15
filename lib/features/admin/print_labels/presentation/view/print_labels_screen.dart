@@ -150,10 +150,10 @@ class _PrintLabelsScreenState extends State<PrintLabelsScreen> {
           if (products.isEmpty) {
             return CustomEmptyState(
               icon: Icons.inventory_2_outlined,
-              title: 'No Products Found',
-              message: 'Add your first product to get started',
+              title: LocaleKeys.no_results_found.tr(),
+              message: LocaleKeys.add_first_brand_message.tr(),
               onRefresh: _refresh,
-              actionLabel: 'Retry',
+              actionLabel: LocaleKeys.retry.tr(),
               onAction: _refresh,
             );
           } else {
@@ -175,10 +175,10 @@ class _PrintLabelsScreenState extends State<PrintLabelsScreen> {
         } else if (state is ProductsError) {
           return CustomEmptyState(
             icon: Icons.error_outline,
-            title: 'Error Occurred',
+            title: LocaleKeys.error_occurred.tr(),
             message: state.message,
             onRefresh: _refresh,
-            actionLabel: 'Retry',
+            actionLabel: LocaleKeys.retry.tr(),
             onAction: _refresh,
           );
         } else {

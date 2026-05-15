@@ -29,6 +29,14 @@ class PrinterCubit extends Cubit<PrinterState> {
     return await mobile.printReceipt(context, receipt: receipt);
   }
 
+  Future<bool> printFromBoundary(
+    BuildContext context,
+    GlobalKey boundaryKey,
+  ) async {
+    if (kIsWeb) return false;
+    return await mobile.printFromBoundary(context, boundaryKey);
+  }
+
   Future<void> disconnect() async {
     if (kIsWeb) return;
     await mobile.disconnectPrinter(_printer);

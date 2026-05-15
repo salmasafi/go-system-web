@@ -206,8 +206,11 @@ class _ExpenseCategoryFormDialogState extends State<ExpenseCategoryFormDialog>
   }
 
   void _handleStateChanges(BuildContext context, ExpenseCategoryState state) {
-    if (state is CreateExpenseCategorySuccess ||
-        state is UpdateExpenseCategorySuccess) {
+    if (state is CreateExpenseCategorySuccess) {
+      CustomSnackbar.showSuccess(context, state.successMessage);
+      Navigator.pop(context);
+    } else if (state is UpdateExpenseCategorySuccess) {
+      CustomSnackbar.showSuccess(context, state.successMessage);
       Navigator.pop(context);
     } else if (state is CreateExpenseCategoryError) {
       CustomSnackbar.showError(context, state.errorMessage);

@@ -20,9 +20,10 @@ void main() {
         'username': 'Admin $id',
         'email': 'admin$id@test.com',
         'phone': '1234567890',
-        'role': {'id': 'r1', 'name': 'Admin'},
+        'role': 'Admin',
+        'role_id': {'id': 'r1', 'name': 'Admin'},
         'company_name': 'Company',
-        'warehouse_id': {'id': 'w1', 'name': 'Warehouse'},
+        'warehouse': {'id': 'w1', 'name': 'Warehouse'},
         'status': 'active',
         'created_at': '2024-01-01',
       });
@@ -95,6 +96,7 @@ void main() {
           roleId: any(named: 'roleId'),
           warehouseId: any(named: 'warehouseId'),
         )).thenAnswer((_) async => sampleAdmin('new'));
+        when(() => mockRepo.getAllAdmins()).thenAnswer((_) async => []);
         return AdminsCubit(mockRepo);
       },
       act: (c) => c.createAdmin(
@@ -107,6 +109,8 @@ void main() {
       expect: () => [
         isA<CreateAdminLoading>(),
         isA<CreateAdminSuccess>(),
+        isA<GetAdminsLoading>(),
+        isA<GetAdminsSuccess>(),
       ],
     );
   });

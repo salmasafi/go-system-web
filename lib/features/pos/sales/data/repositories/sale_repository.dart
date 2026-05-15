@@ -404,14 +404,19 @@ class SaleRepository implements SaleRepositoryInterface {
         .map(SaleDetailItem.fromJson)
         .toList();
 
+    final customerJson = json['customer'];
+    final warehouseJson = json['warehouse'];
+
     return SaleDetailModel(
       id: json['id'] ?? '',
       reference: json['reference'] ?? '',
       customerId: json['customer_id'] ?? '',
+      customerName: (customerJson is Map) ? (customerJson['name'] ?? '') : '',
       warehouseId: json['warehouse_id'] ?? '',
+      warehouseName: (warehouseJson is Map) ? (warehouseJson['name'] ?? '') : '',
       grandTotal: (json['grand_total'] as num?)?.toDouble() ?? 0.0,
       taxAmount: (json['tax_amount'] as num?)?.toDouble() ?? 0.0,
-      discount: (json['discount'] as num?)?.toDouble() ?? 0.0,
+      discount: (json['discount_amount'] as num?)?.toDouble() ?? 0.0,
       items: items,
     );
   }

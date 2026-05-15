@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import 'package:GoSystem/core/widgets/animation/animated_element.dart';
 import 'package:GoSystem/core/widgets/custom_error/custom_empty_state.dart';
 import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
@@ -148,11 +150,10 @@ class _POSProductGridState extends State<POSProductGrid> {
   Widget _buildEmptyState() {
     return Container(
       color: AppColors.lightBlueBackground,
-      child: const CustomEmptyState(
+      child: CustomEmptyState(
         icon: Icons.inventory_2_outlined,
-        title: 'No Products Found',
-        message:
-            'Try adjusting your search or selecting a different category',
+        title: LocaleKeys.no_results_found.tr(),
+        message: LocaleKeys.try_adjusting_search.tr(),
       ),
     );
   }

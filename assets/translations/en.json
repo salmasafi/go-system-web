@@ -1006,6 +1006,7 @@
   "ok": "OK",
   "return_sale": "Return Sale",
   "reference_number": "Reference Number",
+  "reference_copied": "Reference copied",
   "search_sale": "Search Sale",
   "submit_return": "Submit Return",
   "return_note": "Return Note",
@@ -1313,6 +1314,8 @@
   "inventory_management": "Inventory Management",
   "search_products_hint": "Search products...",
   "warehouse_no_products_msg": "This warehouse has no products yet.",
+  "no_products": "No products found",
+  "access_denied_message": "Access denied — you don't have permission to open this section",
   "qty_label": "Qty: {count}",
   "price_label": "Price: {amount}",
   "edit_redeem_points": "Edit Redeem Points",
@@ -1339,5 +1342,13 @@
   "please_enter_value": "Please enter a value",
   "current_attributes": "Current Attributes",
   "assign_new_attributes": "Assign New Attributes",
-  "values_selected_count": "Values: {count} selected"
+  "values_selected_count": "Values: {count} selected",
+  "featured": "Featured",
+  "date": "Date",
+  "status_paid": "Paid",
+  "status_later": "Later",
+  "status_partial": "Partial",
+  "status_unpaid": "Unpaid",
+  "n_products": "{count} products",
+  "n_options": "{count} options"
 }

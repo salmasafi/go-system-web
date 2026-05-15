@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:GoSystem/core/supabase/supabase_client.dart';
@@ -50,10 +50,10 @@ void main() {
       ];
 
       when(() => mockClient.from('financial_transactions'))
-          .thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
+          .thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select()).thenAnswer((_) => mockFilterBuilder);
       when(() => mockFilterBuilder.order('created_at', ascending: false))
-          .thenReturn(mockFilterBuilder);
+          .thenAnswer((_) => mockFilterBuilder);
 
       when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0]
@@ -83,12 +83,12 @@ void main() {
       ];
 
       when(() => mockClient.from('financial_transactions'))
-          .thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.select()).thenReturn(mockFilterBuilder);
+          .thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.select()).thenAnswer((_) => mockFilterBuilder);
       when(() => mockFilterBuilder.eq('bank_account_id', 'acc-1'))
-          .thenReturn(mockFilterBuilder);
+          .thenAnswer((_) => mockFilterBuilder);
       when(() => mockFilterBuilder.order('created_at', ascending: false))
-          .thenReturn(mockFilterBuilder);
+          .thenAnswer((_) => mockFilterBuilder);
 
       when(() => mockFilterBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0]
@@ -116,10 +116,10 @@ void main() {
       };
 
       when(() => mockClient.from('financial_transactions'))
-          .thenReturn(mockQueryBuilder);
-      when(() => mockQueryBuilder.insert(any())).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.select()).thenReturn(mockFilterBuilder);
-      when(() => mockFilterBuilder.single()).thenReturn(mockTransformBuilder);
+          .thenAnswer((_) => mockQueryBuilder);
+      when(() => mockQueryBuilder.insert(any())).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.select()).thenAnswer((_) => mockFilterBuilder);
+      when(() => mockFilterBuilder.single()).thenAnswer((_) => mockTransformBuilder);
 
       when(() => mockTransformBuilder.then(any())).thenAnswer((invocation) async {
         final callback = invocation.positionalArguments[0]

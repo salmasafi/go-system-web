@@ -55,10 +55,10 @@ class _AttributeTypeManagementScreenState extends State<AttributeTypeManagementS
     if (state is AttributeTypeError) {
       return CustomEmptyState(
         icon: Icons.category,
-        title: 'Error Occurred',
+        title: LocaleKeys.error_occurred.tr(),
         message: state.message,
         onRefresh: _refresh,
-        actionLabel: 'Retry',
+        actionLabel: LocaleKeys.retry.tr(),
         onAction: _refresh,
       );
     }
@@ -77,14 +77,14 @@ class _AttributeTypeManagementScreenState extends State<AttributeTypeManagementS
           ? 'No Attribute Types Available'
           : 'No Matching Attribute Types';
       String message = attributeTypes.isEmpty
-          ? 'Add your first attribute type to get started'
-          : 'Try adjusting your search criteria';
+          ? LocaleKeys.add_first_brand_message.tr()
+          : LocaleKeys.try_adjusting_search_terms.tr();
       return CustomEmptyState(
         icon: Icons.category,
         title: title,
         message: message,
         onRefresh: _refresh,
-        actionLabel: 'Retry',
+        actionLabel: LocaleKeys.retry.tr(),
         onAction: _refresh,
       );
     }
@@ -140,7 +140,7 @@ class _AttributeTypeManagementScreenState extends State<AttributeTypeManagementS
       backgroundColor: AppColors.lightBlueBackground,
       appBar: appBarWithActions(
         context,
-        title: 'Attribute Types',
+        title: LocaleKeys.attributes_title.tr(),
         showActions: true,
       ),
       body: BlocConsumer<AttributeTypeCubit, AttributeTypeState>(
@@ -163,11 +163,11 @@ class _AttributeTypeManagementScreenState extends State<AttributeTypeManagementS
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Error: ${state.message}'),
+                  Text(LocaleKeys.error_with_message.tr(namedArgs: {'message': state.message})),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => _loadAttributeTypes(),
-                    child: const Text('Retry'),
+                    child: Text(LocaleKeys.retry.tr()),
                   ),
                 ],
               ),
@@ -175,7 +175,7 @@ class _AttributeTypeManagementScreenState extends State<AttributeTypeManagementS
           } else if (state is AttributeTypeLoaded) {
             return _buildAttributeTypeList(state.attributeTypes);
           }
-          return const Center(child: Text('No attribute types found'));
+          return Center(child: Text(LocaleKeys.no_attribute_types_found.tr()));
         },
       ),
     );

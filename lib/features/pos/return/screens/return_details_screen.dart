@@ -1,7 +1,5 @@
 import 'package:GoSystem/core/utils/responsive_ui.dart';
-import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
@@ -20,9 +18,6 @@ class ReturnDetailsScreen extends StatefulWidget {
 
 class _ReturnDetailsScreenState extends State<ReturnDetailsScreen> {
   final _noteController = TextEditingController();
-  File? _attachedFile;
-  String? _attachedFileName;
-
   @override
   void initState() {
     super.initState();
@@ -34,28 +29,6 @@ class _ReturnDetailsScreenState extends State<ReturnDetailsScreen> {
   void dispose() {
     _noteController.dispose();
     super.dispose();
-  }
-
-  Future<void> _pickFile() async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'],
-      allowMultiple: false,
-    );
-
-    if (result != null && result.files.single.path != null) {
-      setState(() {
-        _attachedFile = File(result.files.single.path!);
-        _attachedFileName = result.files.single.name;
-      });
-    }
-  }
-
-  void _removeFile() {
-    setState(() {
-      _attachedFile = null;
-      _attachedFileName = null;
-    });
   }
 
   @override
@@ -125,16 +98,6 @@ class _ReturnDetailsScreenState extends State<ReturnDetailsScreen> {
                 SizedBox(height: ResponsiveUI.value(context, 8)),
                 ReturnItemsTable(items: items, disabled: isSubmitting),
                 SizedBox(height: ResponsiveUI.value(context, 16)),
-                // ── Attach Document ──
-                _SectionLabel(label: 'attach_document'.tr()),
-                SizedBox(height: ResponsiveUI.value(context, 8)),
-                _AttachFileWidget(
-                  fileName: _attachedFileName,
-                  disabled: isSubmitting,
-                  onPick: _pickFile,
-                  onRemove: _removeFile,
-                ),
-                SizedBox(height: ResponsiveUI.value(context, 16)),
                 _SectionLabel(label: 'return_note'.tr()),
                 SizedBox(height: ResponsiveUI.value(context, 8)),
                 _NoteField(controller: _noteController, enabled: !isSubmitting),
@@ -173,109 +136,7 @@ class _ReturnDetailsScreenState extends State<ReturnDetailsScreen> {
     context.read<ReturnCubit>().submitReturn(
       refundAccountId: accountId,
       note: _noteController.text,
-      attachedFile: _attachedFile,
-    );
-  }
-}
-
-// ─── Attach File Widget ───────────────────────────────────────────────────────
-
-class _AttachFileWidget extends StatelessWidget {
-  final String? fileName;
-  final bool disabled;
-  final VoidCallback onPick;
-  final VoidCallback onRemove;
-
-  const _AttachFileWidget({
-    required this.fileName,
-    required this.disabled,
-    required this.onPick,
-    required this.onRemove,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: ResponsiveUI.padding(context, 14),
-        vertical: ResponsiveUI.padding(context, 12),
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(
-          ResponsiveUI.borderRadius(context, 12),
-        ),
-        border: Border.all(
-          color: fileName != null
-              ? AppColors.categoryPurple.withValues(alpha: 0.4)
-              : const Color(0xFFDDDDDD),
-          style: BorderStyle.solid,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Icon(
-            fileName != null ? Icons.attach_file : Icons.upload_file_outlined,
-            color: fileName != null
-                ? AppColors.categoryPurple
-                : AppColors.shadowGray,
-            size: ResponsiveUI.iconSize(context, 20),
-          ),
-          SizedBox(width: ResponsiveUI.value(context, 10)),
-          Expanded(
-            child: Text(
-              fileName ?? 'attach_document_optional'.tr(),
-              style: TextStyle(
-                fontSize: ResponsiveUI.fontSize(context, 13),
-                color: fileName != null
-                    ? AppColors.darkGray
-                    : AppColors.shadowGray,
-                fontWeight: fileName != null
-                    ? FontWeight.w500
-                    : FontWeight.normal,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          if (fileName != null)
-            GestureDetector(
-              onTap: disabled ? null : onRemove,
-              child: Icon(
-                Icons.close,
-                size: ResponsiveUI.iconSize(context, 18),
-                color: AppColors.red,
-              ),
-            )
-          else
-            TextButton.icon(
-              onPressed: disabled ? null : onPick,
-              icon: Icon(
-                Icons.folder_open_outlined,
-                size: ResponsiveUI.iconSize(context, 16),
-              ),
-              label: Text(
-                'choose_file'.tr(),
-                style: TextStyle(fontSize: ResponsiveUI.fontSize(context, 12)),
-              ),
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.categoryPurple,
-                padding: EdgeInsets.symmetric(
-                  horizontal: ResponsiveUI.padding(context, 10),
-                  vertical: ResponsiveUI.padding(context, 6),
-                ),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-            ),
-        ],
-      ),
+      attachedFile: null,
     );
   }
 }

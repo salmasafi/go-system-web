@@ -275,12 +275,12 @@ class _AddPointsDialogState extends State<AddPointsDialog> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete Points Configuration'),
-        content: Text('Are you sure you want to delete this points configuration?'),
+        title: Text(LocaleKeys.delete_points_config.tr()),
+        content: Text(LocaleKeys.delete_points_config_message.tr()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel'),
+            child: Text(LocaleKeys.cancel.tr()),
           ),
           TextButton(
             onPressed: () {
@@ -289,7 +289,7 @@ class _AddPointsDialogState extends State<AddPointsDialog> {
                 context.read<PointsCubit>().deletePoints(widget.point!.id);
               }
             },
-            child: Text('Delete', style: TextStyle(color: AppColors.red)),
+            child: Text(LocaleKeys.delete.tr(), style: TextStyle(color: AppColors.red)),
           ),
         ],
       ),

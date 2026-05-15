@@ -64,6 +64,7 @@ void main() {
       'createTax emits loading then success',
       build: () {
         when(() => mockRepo.createTax(any())).thenAnswer((_) async => sampleTax('new'));
+        when(() => mockRepo.getAllTaxes()).thenAnswer((_) async => []);
         return TaxesCubit(mockRepo);
       },
       act: (c) => c.createTax(
@@ -74,6 +75,8 @@ void main() {
       expect: () => [
         isA<CreateTaxLoading>(),
         isA<CreateTaxSuccess>(),
+        isA<GetTaxesLoading>(),
+        isA<GetTaxesSuccess>(),
       ],
     );
   });

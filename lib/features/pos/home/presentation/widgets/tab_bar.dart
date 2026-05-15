@@ -22,7 +22,7 @@ class POSTabBar extends StatelessWidget {
           child: Row(
             children: [
               _Tab(
-                label: 'Featured',
+                label: LocaleKeys.featured.tr(),
                 icon: Icons.star_rounded,
                 isSelected: selectedTab == 'featured',
                 onTap: () => cubit.selectTab(tab: 'featured'),

@@ -3,9 +3,11 @@
 
 import 'dart:async';
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 import 'package:esc_pos_utils_plus/esc_pos_utils_plus.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:image/image.dart' as img;
 import 'dart:developer' as developer;
 import 'package:GoSystem/features/pos/checkout/model/reciept_data.dart';
@@ -128,6 +130,51 @@ Future<List<int>> generateEscPosCommands(img.Image cropped) async {
     ),
     ...generator.cut(),
   ];
+}
+
+Future<bool> printFromBoundary(
+  BuildContext context,
+  GlobalKey boundaryKey,
+) async {
+  try {
+    final device = _printer ?? await findPrinter();
+    if (device == null) return false;
+
+    if (!device.isConnected) {
+      await device.connect(timeout: const Duration(seconds: 10));
+      await Future.delayed(const Duration(milliseconds: 600));
+    }
+
+    _char ??= await _getWriteCharacteristic(device);
+    if (_char == null) return false;
+
+    // Capture widget as image via RepaintBoundary
+    final boundary = boundaryKey.currentContext?.findRenderObject()
+        as RenderRepaintBoundary?;
+    if (boundary == null) return false;
+
+    final uiImage = await boundary.toImage(pixelRatio: 3.0);
+    final byteData =
+        await uiImage.toByteData(format: ui.ImageByteFormat.png);
+    if (byteData == null) return false;
+
+    final pngBytes = byteData.buffer.asUint8List();
+    final decoded = img.decodeImage(pngBytes);
+    if (decoded == null) return false;
+
+    // Resize to 58mm printer width (384px at 203dpi) and convert to grayscale
+    final resized = img.copyResize(decoded, width: 384);
+    final grayscale = img.grayscale(resized);
+
+    final bytes = await generateEscPosCommands(grayscale);
+    if (bytes.isEmpty) return false;
+
+    await _sendInChunks(bytes, _char!, device: device);
+    return true;
+  } catch (e) {
+    developer.log('printFromBoundary error: $e');
+    return false;
+  }
 }
 
 Future<void> disconnectPrinter(dynamic printer) async {

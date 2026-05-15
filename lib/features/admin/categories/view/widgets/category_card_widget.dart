@@ -15,6 +15,7 @@ class AnimatedCategoryCard extends StatefulWidget {
   final VoidCallback? onTap;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
+  final VoidCallback? onProductsTap;
   final Duration? animationDuration;
   final Duration? animationDelay;
 
@@ -25,6 +26,7 @@ class AnimatedCategoryCard extends StatefulWidget {
     this.onTap,
     this.onEdit,
     this.onDelete,
+    this.onProductsTap,
     this.animationDuration,
     this.animationDelay,
   });
@@ -190,10 +192,13 @@ class _AnimatedCategoryCardState extends State<AnimatedCategoryCard>
     return Row(
       children: [
         Expanded(
-          child: CustomStatChip(
-            icon: Icons.inventory_2_outlined,
-            label: '${widget.category.productQuantity} ${LocaleKeys.products.tr()}',
-            color: AppColors.successGreen,
+          child: GestureDetector(
+            onTap: widget.onProductsTap,
+            child: CustomStatChip(
+              icon: Icons.inventory_2_outlined,
+              label: '${widget.category.productQuantity} ${LocaleKeys.products.tr()}',
+              color: AppColors.successGreen,
+            ),
           ),
         ),
         SizedBox(width: ResponsiveUI.spacing(context, 10)),

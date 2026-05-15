@@ -116,7 +116,7 @@ class _ReturnSupabaseDataSource implements ReturnRepositoryInterface {
             *,
             customer:customer_id(id, name),
             warehouse:warehouse_id(id, name),
-            items:sale_items(*, product:product_id(id, name, code))
+            items:sale_items(id, quantity, price, product_id, product:product_id(id, name, code))
           ''')
           .eq('reference', reference)
           .eq('sale_status', 'completed')
@@ -124,7 +124,25 @@ class _ReturnSupabaseDataSource implements ReturnRepositoryInterface {
 
       if (response == null) return null;
 
-      return _mapSupabaseToReturnSaleModel(response);
+      // Fetch already-returned quantities for each sale item
+      final saleItems = response['items'] as List? ?? [];
+      final itemIds = saleItems.map((i) => i['id'] as String).toList();
+      final alreadyReturnedMap = <String, int>{};
+
+      if (itemIds.isNotEmpty) {
+        final returnedRows = await _client
+            .from('sale_return_items')
+            .select('sale_item_id, returned_quantity')
+            .inFilter('sale_item_id', itemIds);
+
+        for (final row in returnedRows as List) {
+          final itemId = row['sale_item_id'] as String;
+          final qty = (row['returned_quantity'] as num).toInt();
+          alreadyReturnedMap[itemId] = (alreadyReturnedMap[itemId] ?? 0) + qty;
+        }
+      }
+
+      return _mapSupabaseToReturnSaleModel(response, alreadyReturnedMap);
     } catch (e) {
       log('ReturnSupabase: Error searching sale - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
@@ -155,7 +173,7 @@ class _ReturnSupabaseDataSource implements ReturnRepositoryInterface {
       }
 
       // Use RPC for atomic transaction
-      final response = await _client.rpc('create_sale_return', params: {
+      await _client.rpc('create_sale_return', params: {
         'p_sale_id': saleId,
         'p_items': items,
         'p_total_amount': totalAmount,
@@ -165,7 +183,21 @@ class _ReturnSupabaseDataSource implements ReturnRepositoryInterface {
       });
 
       log('ReturnSupabase: Sale return created successfully');
-      return await searchSaleForReturn(response['reference']) as ReturnSaleModel;
+
+      // Re-fetch the sale to return an updated model
+      final saleResponse = await _client
+          .from('sales')
+          .select('''
+            *,
+            customer:customer_id(id, name),
+            warehouse:warehouse_id(id, name),
+            items:sale_items(id, quantity, price, product_id, product:product_id(id, name, code))
+          ''')
+          .eq('id', saleId)
+          .maybeSingle();
+
+      if (saleResponse == null) throw Exception('Sale not found after return creation');
+      return _mapSupabaseToReturnSaleModel(saleResponse, {});
     } catch (e) {
       log('ReturnSupabase: Error creating sale return - $e');
       throw Exception(SupabaseErrorHandler.handleError(e));
@@ -313,20 +345,26 @@ class _ReturnSupabaseDataSource implements ReturnRepositoryInterface {
   }
 
   /// Map Supabase response to ReturnSaleModel
-  ReturnSaleModel _mapSupabaseToReturnSaleModel(Map<String, dynamic> json) {
+  ReturnSaleModel _mapSupabaseToReturnSaleModel(
+    Map<String, dynamic> json,
+    Map<String, int> alreadyReturnedMap,
+  ) {
     final customer = json['customer'] as Map<String, dynamic>?;
     final warehouse = json['warehouse'] as Map<String, dynamic>?;
     final items = (json['items'] as List? ?? [])
         .map((item) {
           final product = item['product'] as Map<String, dynamic>?;
+          final qty = (item['quantity'] as num?)?.toInt() ?? 0;
+          final alreadyReturned = alreadyReturnedMap[item['id'] as String? ?? ''] ?? 0;
           return ReturnItemModel(
             id: item['id'] ?? '',
             saleId: json['id'] ?? '',
             productName: product?['name'] ?? 'Unknown',
             productCode: product?['code'] ?? '',
-            quantity: (item['quantity'] as num?)?.toInt() ?? 0,
-            alreadyReturned: 0,
-            availableToReturn: (item['quantity'] as num?)?.toInt() ?? 0,
+            price: (item['price'] as num?)?.toDouble() ?? 0.0,
+            quantity: qty,
+            alreadyReturned: alreadyReturned,
+            availableToReturn: qty - alreadyReturned,
             returnQuantity: 0,
             reason: '',
           );

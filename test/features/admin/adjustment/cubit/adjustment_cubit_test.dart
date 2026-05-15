@@ -80,15 +80,14 @@ void main() {
         when(
           () => mockRepo.createAdjustment(
             warehouseId: 'w1',
-            type: 'addition',
+            type: any(named: 'type'),
             reason: 'r1',
-            items: [
-              {'product_id': 'p1', 'quantity': 2},
-            ],
+            items: any(named: 'items'),
             note: 'n',
             attachmentFile: null,
           ),
         ).thenAnswer((_) async => sampleModel());
+        when(() => mockRepo.getAllAdjustments()).thenAnswer((_) async => []);
         return AdjustmentCubit(mockRepo);
       },
       act: (c) => c.createAdjustment(
@@ -102,6 +101,8 @@ void main() {
       expect: () => [
         isA<CreateAdjustmentLoading>(),
         isA<CreateAdjustmentSuccess>(),
+        isA<GetAdjustmentsLoading>(),
+        isA<GetAdjustmentsSuccess>(),
       ],
     );
 
@@ -110,12 +111,15 @@ void main() {
       build: () {
         AdjustmentCubit.adjustments = [sampleModel().toLegacyModel()];
         when(() => mockRepo.reverseAdjustment('a1')).thenAnswer((_) async => true);
+        when(() => mockRepo.getAllAdjustments()).thenAnswer((_) async => []);
         return AdjustmentCubit(mockRepo);
       },
       act: (c) => c.deleteAdjustment('a1'),
       expect: () => [
         isA<DeleteAdjustmentLoading>(),
         isA<DeleteAdjustmentSuccess>(),
+        isA<GetAdjustmentsLoading>(),
+        isA<GetAdjustmentsSuccess>(),
       ],
     );
   });

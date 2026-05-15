@@ -7,6 +7,10 @@ import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/core/widgets/animation/animated_element.dart';
 import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
 import 'package:GoSystem/features/admin/brands/view/create_brand_screen.dart';
+import 'package:GoSystem/features/admin/product/cubit/filter_product_cubit/product_filter_cubit.dart';
+import 'package:GoSystem/features/admin/product/cubit/get_products_cubit/product_cubit.dart';
+import 'package:GoSystem/features/admin/product/data/repositories/product_repository.dart';
+import 'package:GoSystem/features/admin/product/presentation/screens/products_screen.dart';
 import 'package:GoSystem/features/admin/product/presentation/widgets/search_bar_widget.dart';
 import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -56,10 +60,10 @@ class _BrandsScreenState extends State<BrandsScreen> {
     if (state is GetBrandsError) {
       return CustomEmptyState(
         icon: Icons.branding_watermark,
-        title: 'Error Occurred',
+        title: LocaleKeys.error_occurred.tr(),
         message: state.error,
         onRefresh: _refresh,
-        actionLabel: 'Retry',
+        actionLabel: LocaleKeys.retry.tr(),
         onAction: _refresh,
       );
     }
@@ -104,6 +108,23 @@ class _BrandsScreenState extends State<BrandsScreen> {
           return AnimatedBrandCard(
             brand: filteredBrands[index],
             index: index,
+            onProductsTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => MultiBlocProvider(
+                    providers: [
+                      BlocProvider(create: (_) => ProductsCubit(ProductRepository())),
+                      BlocProvider(create: (_) => ProductFiltersCubit(ProductRepository())),
+                    ],
+                    child: ProductsScreen(
+                      initialBrandId: filteredBrands[index].id,
+                      initialBrandName: filteredBrands[index].name,
+                    ),
+                  ),
+                ),
+              );
+            },
             onEdit: () {
               showModalBottomSheet(
                 context: context,

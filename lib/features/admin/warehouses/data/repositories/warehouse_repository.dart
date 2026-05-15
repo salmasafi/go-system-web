@@ -174,7 +174,7 @@ class WarehouseRepository implements WarehouseRepositoryInterface {
           .from('warehouse_products')
           .select('''
             *,
-            product:product_id(id, name, code, image)
+            product:product_id(id, name, code, image, price)
           ''')
           .eq('warehouse_id', warehouseId);
 
@@ -342,6 +342,9 @@ class WarehouseRepository implements WarehouseRepositoryInterface {
           ? ProductId(
               id: productData['id'] ?? '',
               name: productData['name'] ?? '',
+              code: productData['code'] as String?,
+              image: productData['image'] as String?,
+              price: (productData['price'] as num?)?.toDouble(),
             )
           : null,
     );

@@ -1,11 +1,6 @@
-import 'dart:convert';
-import 'dart:developer';
-import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:GoSystem/core/widgets/custom_drop_down_menu.dart';
 import 'package:GoSystem/generated/locale_keys.g.dart';
 import '../../../../../core/constants/app_colors.dart';
@@ -44,8 +39,6 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
 
   bool get isEditMode => widget.paymentMethod != null;
   String? selectedtaxType;
-  File? _selectedImage;
-  final _picker = ImagePicker();
 
   @override
   void initState() {
@@ -55,32 +48,12 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
   }
 
   void _initializeControllers() {
-    // Common setup for both modes
     if (isEditMode) {
       _nameController.text = widget.paymentMethod!.name;
       _typeController.text = widget.paymentMethod!.type;
       _descriptionController.text = widget.paymentMethod!.description;
       selectedtaxType = widget.paymentMethod!.type.toLowerCase();
-
-      log("selected ${_selectedImage}");
     }
-  }
-
-  Future<void> _pickImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null && mounted) {
-      setState(() {
-        final pickedFileAsFile = File(pickedFile.path);
-
-        _selectedImage = pickedFileAsFile;
-      });
-    }
-  }
-
-  void _clearImage() {
-    setState(() {
-      _selectedImage = null;
-    });
   }
 
   void _setupAnimation() {
@@ -147,10 +120,6 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
                             key: _formKey,
                             child: Column(
                               children: [
-                                _buildImagePicker(context),
-                                SizedBox(
-                                  height: ResponsiveUI.spacing(context, 12),
-                                ),
                                 buildTextField(
                                   context,
                                   controller: _nameController,
@@ -240,239 +209,17 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
   }
 
   void _handleStateChanges(BuildContext context, PaymentMethodState state) {
-    if (state is CreatePaymentMethodSuccess ||
-        state is UpdatePaymentMethodSuccess) {
+    if (state is CreatePaymentMethodSuccess) {
+      CustomSnackbar.showSuccess(context, state.message);
       Navigator.of(context).pop();
-    }
-
-    if (state is CreatePaymentMethodError) {
+    } else if (state is UpdatePaymentMethodSuccess) {
+      CustomSnackbar.showSuccess(context, state.message);
+      Navigator.of(context).pop();
+    } else if (state is CreatePaymentMethodError) {
       CustomSnackbar.showError(context, state.error);
     } else if (state is UpdatePaymentMethodError) {
       CustomSnackbar.showError(context, state.error);
     }
-  }
-
-  Widget _buildImagePicker(BuildContext context) {
-    final borderRadius12 = ResponsiveUI.borderRadius(context, 12);
-    final iconSize40 = ResponsiveUI.iconSize(context, 40);
-    final fontSize14 = ResponsiveUI.fontSize(context, 14);
-    final height120 = ResponsiveUI.value(context, 120);
-    final spacing8 = ResponsiveUI.spacing(context, 8);
-    final padding8 = ResponsiveUI.padding(context, 8);
-    final iconSize24 = ResponsiveUI.iconSize(context, 24);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          LocaleKeys.payment_icon.tr(),
-          style: TextStyle(
-            fontSize: fontSize14,
-            fontWeight: FontWeight.w600,
-            color: AppColors.darkGray,
-          ),
-        ),
-        SizedBox(height: spacing8),
-        if (_selectedImage != null)
-          Stack(
-            alignment: Alignment.topRight,
-            children: [
-              Container(
-                width: double.infinity,
-                height: height120,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(borderRadius12),
-                  border: Border.all(color: AppColors.primaryBlue, width: ResponsiveUI.value(context, 2)),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(borderRadius12 - 2),
-                  child: Image.file(
-                    File(_selectedImage!.path),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Positioned(
-                top: ResponsiveUI.padding(context, 8),
-                right: ResponsiveUI.padding(context, 8),
-                child: GestureDetector(
-                  onTap: _clearImage,
-                  child: Container(
-                    padding: EdgeInsets.all(padding8),
-                    decoration: BoxDecoration(
-                      color: AppColors.red,
-                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
-                    ),
-                    child: Icon(
-                      Icons.close,
-                      color: Colors.white,
-                      size: iconSize24,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          )
-        else if (widget.existingImageUrl != null &&
-            widget.existingImageUrl!.isNotEmpty)
-          Builder(
-            builder: (context) {
-              final isBase64 = widget.existingImageUrl!.startsWith('data:');
-
-              Widget imageWidget;
-
-              if (isBase64) {
-                final parts = widget.existingImageUrl!.split(',');
-
-                if (parts.length == 2) {
-                  try {
-                    final bytes = base64Decode(parts[1]);
-
-                    imageWidget = Image.memory(
-                      bytes,
-
-                      fit: BoxFit.cover,
-
-                      errorBuilder: (context, error, stackTrace) =>
-                          _buildErrorPlaceholder(),
-                    );
-                  } catch (_) {
-                    imageWidget = _buildErrorPlaceholder();
-                  }
-                } else {
-                  imageWidget = _buildErrorPlaceholder();
-                }
-              } else {
-                // Handle regular Network URL
-
-                imageWidget = Image.network(
-                  widget.existingImageUrl!,
-
-                  fit: BoxFit.cover,
-
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-
-                    return Center(
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                            : null,
-
-                        color: AppColors.primaryBlue,
-                      ),
-                    );
-                  },
-
-                  errorBuilder: (context, error, stackTrace) {
-                    return _buildErrorPlaceholder();
-                  },
-                );
-              }
-
-              return Stack(
-                alignment: Alignment.topRight,
-
-                children: [
-                  Container(
-                    width: double.infinity,
-
-                    height: height120,
-
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(borderRadius12),
-
-                      border: Border.all(color: AppColors.lightGray, width: ResponsiveUI.value(context, 2)),
-                    ),
-
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(borderRadius12 - 2),
-
-                      child: imageWidget,
-                    ),
-                  ),
-
-                  Positioned(
-                    top: ResponsiveUI.padding(context, 8),
-                    right: ResponsiveUI.padding(context, 8),
-                    child: GestureDetector(
-                      onTap: _pickImage,
-                      child: Container(
-                        padding: EdgeInsets.all(padding8),
-                        decoration: BoxDecoration(
-                          color: AppColors.greyMedium,
-                          borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
-                        ),
-                        child: Icon(
-                          Icons.edit,
-                          color: Colors.white,
-                          size: iconSize24,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          )
-        else
-          GestureDetector(
-            onTap: _pickImage,
-            child: Container(
-              width: double.infinity,
-              height: height120,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(borderRadius12),
-                border: Border.all(color: AppColors.lightGray, width: ResponsiveUI.value(context, 2)),
-                color: AppColors.greyLight,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.image_outlined,
-                    size: iconSize40,
-                    color: AppColors.primaryBlue,
-                  ),
-                  SizedBox(height: spacing8),
-                  Text(
-                    LocaleKeys.tap_to_select_image.tr(),
-                    style: TextStyle(
-                      fontSize: fontSize14,
-                      color: AppColors.greyDark,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildErrorPlaceholder() {
-    final borderRadius12 = ResponsiveUI.borderRadius(context, 12);
-    final height120 = ResponsiveUI.value(context, 120);
-    return Container(
-      width: double.infinity,
-      height: height120,
-      decoration: BoxDecoration(
-        color: AppColors.greyLight,
-        borderRadius: BorderRadius.circular(borderRadius12),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.broken_image_outlined, size: ResponsiveUI.iconSize(context, 40), color: AppColors.greyMedium),
-          SizedBox(height: ResponsiveUI.value(context, 8)),
-          Text(
-            LocaleKeys.failed_to_load_image.tr(),
-            style: TextStyle(color: AppColors.greyMedium, fontSize: ResponsiveUI.fontSize(context, 12)),
-          ),
-        ],
-      ),
-    );
   }
 
   void _handleSubmit() {
@@ -485,7 +232,7 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
           type: selectedtaxType!.toLowerCase(),
           description: _descriptionController.text.trim(),
           isActive: true,
-          icon: _selectedImage,
+          icon: null,
         );
       } else {
         cubit.createPaymentMethod(
@@ -493,7 +240,7 @@ class _PaymentMethodFormDialogState extends State<PaymentMethodFormDialog>
           type: selectedtaxType!.toLowerCase(),
           description: _descriptionController.text.trim(),
           isActive: true,
-          icon: _selectedImage,
+          icon: null,
         );
       }
     }

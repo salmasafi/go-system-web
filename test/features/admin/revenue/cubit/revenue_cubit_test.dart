@@ -61,6 +61,7 @@ void main() {
         when(() => mockRepo.getSelectionData()).thenAnswer((_) async => {
           'success': true,
           'data': {
+            'message': '',
             'categories': [],
             'accounts': [],
           },

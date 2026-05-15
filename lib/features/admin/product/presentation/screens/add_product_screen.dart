@@ -1,9 +1,6 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
@@ -22,7 +19,6 @@ import 'package:GoSystem/features/admin/product/cubit/get_products_cubit/product
 import 'package:GoSystem/features/admin/product/cubit/get_products_cubit/product_state.dart';
 import 'package:GoSystem/features/admin/units/cubit/units_cubit.dart';
 import 'package:GoSystem/features/admin/units/model/unit_model.dart';
-import '../../../../../core/utils/image_handler.dart';
 import '../widgets/add_product_custom_widgets.dart';
 import 'barcode_scanner_screen.dart';
 
@@ -44,9 +40,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final _maxToShowController = TextEditingController();
   final _codeController = TextEditingController();
 
-  File? _mainImage;
-  List<File> _galleryImages = [];
-
   List<CategoryItem>? _selectedCategories;
   Brands? _selectedBrand;
   UnitModel? _selectedSaleUnit;
@@ -57,11 +50,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
   bool _showQuantity = false;
   bool _isFeatured = false;
   DateTime? _expiryDate;
-
-  void _resetSelectedImages() {
-    _mainImage = null;
-    _galleryImages = [];
-  }
 
   @override
   void initState() {
@@ -79,7 +67,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   @override
   void dispose() {
-    _resetSelectedImages();
     _nameController.dispose();
     _descriptionController.dispose();
     _priceController.dispose();
@@ -110,48 +97,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
     } catch (e) {
       debugPrint('Error generating code: $e');
     }
-  }
-
-  Future<void> _pickMainImageFromGallery() async {
-    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (picked != null) setState(() => _mainImage = File(picked.path));
-  }
-
-  Future<void> _pickMainImageFromCamera() async {
-    final picked = await ImagePicker().pickImage(source: ImageSource.camera);
-    if (picked != null) setState(() => _mainImage = File(picked.path));
-  }
-
-  Future<void> _pickGalleryImages() async {
-    final picked = await ImagePicker().pickMultiImage();
-    if (picked.isNotEmpty) {
-      setState(() => _galleryImages.addAll(picked.map((f) => File(f.path))));
-    }
-  }
-
-  bool _validateSelectedImages() {
-    if (_mainImage != null) {
-      if (!ImageHelper.isValidImage(_mainImage!)) {
-        CustomSnackbar.showError(context, 'صيغة الصورة غير مدعومة');
-        return false;
-      }
-      if (!ImageHelper.isFileSizeValid(_mainImage!)) {
-        CustomSnackbar.showError(context, 'حجم الصورة كبير جداً');
-        return false;
-      }
-    }
-
-    for (final img in _galleryImages) {
-      if (!ImageHelper.isValidImage(img)) {
-        CustomSnackbar.showError(context, 'صيغة صورة من صور المعرض غير مدعومة');
-        return false;
-      }
-      if (!ImageHelper.isFileSizeValid(img)) {
-        CustomSnackbar.showError(context, 'حجم صورة من صور المعرض كبير جداً');
-        return false;
-      }
-    }
-    return true;
   }
 
   Future<void> _selectExpiryDate() async {
@@ -188,10 +133,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
       return;
     }
 
-    if (!_validateSelectedImages()) {
-      return;
-    }
-
     final double price = double.tryParse(_priceController.text) ?? 0.0;
     final double wholePrice = double.tryParse(_wholePriceController.text) ?? 0.0;
     final int startQty = int.tryParse(_startQuantityController.text) ?? 0;
@@ -199,11 +140,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
     final int lowStock = int.tryParse(_lowStockController.text) ?? 10;
     final int maxToShow =
         _showQuantity ? (int.tryParse(_maxToShowController.text) ?? 100) : 0;
-
-    final List<File> imagesToUpload = [
-      if (_mainImage != null) _mainImage!,
-      ..._galleryImages,
-    ];
 
     context.read<ProductsCubit>().addProductWithData(
           name: _nameController.text.trim(),
@@ -228,7 +164,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
           isFeatured: _isFeatured,
           maximumToShow: maxToShow,
           galleryProduct: const [],
-          images: imagesToUpload.isEmpty ? null : imagesToUpload,
+          images: null,
         );
   }
 
@@ -238,7 +174,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
       listener: (context, state) {
         if (state is ProductAddSuccess) {
           CustomSnackbar.showSuccess(context, state.message);
-          setState(_resetSelectedImages);
           Navigator.pop(context, true);
         } else if (state is ProductsError) {
           CustomSnackbar.showError(context, state.message);
@@ -263,7 +198,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   _buildPricingSection(),
                   _buildStockSection(),
                   _buildSettingsSection(),
-                  _buildImagesSection(),
                   SizedBox(
                     width: double.infinity,
                     height: ResponsiveUI.value(context, 56),
@@ -569,28 +503,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
           ),
           SizedBox(height: ResponsiveUI.spacing(context, 8)),
         ],
-      ],
-    );
-  }
-
-  // ── Section 7: Images ─────────────────────────────────────────────────────
-  Widget _buildImagesSection() {
-    return ProductSectionCard(
-      title: 'product_images'.tr(),
-      icon: Icons.photo_library_outlined,
-      children: [
-        MainImagePicker(
-          image: _mainImage,
-          onPickFromGallery: _pickMainImageFromGallery,
-          onPickFromCamera: _pickMainImageFromCamera,
-          onRemove: () => setState(() => _mainImage = null),
-        ),
-        SizedBox(height: ResponsiveUI.spacing(context, 16)),
-        GalleryImagesPicker(
-          images: _galleryImages,
-          onAdd: _pickGalleryImages,
-          onRemove: (i) => setState(() => _galleryImages.removeAt(i)),
-        ),
       ],
     );
   }

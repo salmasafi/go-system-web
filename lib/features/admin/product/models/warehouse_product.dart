@@ -38,16 +38,25 @@ class WarehouseProduct {
 class ProductId {
   final String id;
   final String name;
+  final String? code;
+  final String? image;
+  final double? price;
 
   ProductId({
     required this.id,
     required this.name,
+    this.code,
+    this.image,
+    this.price,
   });
 
   factory ProductId.fromJson(Map<String, dynamic> json) {
     return ProductId(
       id: (json['id'] ?? json['_id'])?.toString() ?? '',
       name: json['name'] as String? ?? '',
+      code: json['code'] as String?,
+      image: json['image'] as String?,
+      price: (json['price'] as num?)?.toDouble(),
     );
   }
 
@@ -55,6 +64,9 @@ class ProductId {
     return {
       '_id': id,
       'name': name,
+      'code': code,
+      'image': image,
+      'price': price,
     };
   }
 }

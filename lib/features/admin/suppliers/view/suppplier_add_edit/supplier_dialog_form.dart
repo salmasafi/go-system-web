@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/core/utils/validators.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:GoSystem/generated/locale_keys.g.dart';
-import 'dart:io';
 import '../../model/supplier_model.dart';
 
 class SupplierDialogForm extends StatelessWidget {
@@ -22,10 +20,6 @@ class SupplierDialogForm extends StatelessWidget {
   final ValueChanged<String?> onCountryChanged;
   final ValueChanged<String?> onCityChanged;
   final bool isLoading;
-  final XFile? selectedImage;
-  final VoidCallback onPickImage;
-  final VoidCallback onClearImage;
-  final String? existingImageUrl;
 
   const SupplierDialogForm({
     super.key,
@@ -42,10 +36,6 @@ class SupplierDialogForm extends StatelessWidget {
     required this.onCountryChanged,
     required this.onCityChanged,
     required this.isLoading,
-    required this.selectedImage,
-    required this.onPickImage,
-    required this.onClearImage,
-    this.existingImageUrl,
   });
 
   @override
@@ -71,8 +61,6 @@ class SupplierDialogForm extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _buildImagePicker(context),
-                  SizedBox(height: spacing20),
                   _buildTextField(
                     context,
                     controller: usernameController,
@@ -152,127 +140,6 @@ class SupplierDialogForm extends StatelessWidget {
           if (isLoading) _buildLoadingOverlay(context),
         ],
       ),
-    );
-  }
-
-  Widget _buildImagePicker(BuildContext context) {
-    final borderRadius12 = ResponsiveUI.borderRadius(context, 12);
-    final iconSize40 = ResponsiveUI.iconSize(context, 40);
-    final fontSize14 = ResponsiveUI.fontSize(context, 14);
-    final height120 = ResponsiveUI.value(context, 120);
-    final spacing8 = ResponsiveUI.spacing(context, 8);
-    final padding8 = ResponsiveUI.padding(context, 8);
-    final iconSize24 = ResponsiveUI.iconSize(context, 24);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          LocaleKeys.supplier_image.tr(),
-          style: TextStyle(
-            fontSize: fontSize14,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey[800],
-          ),
-        ),
-        SizedBox(height: spacing8),
-        if (selectedImage != null)
-          Stack(
-            alignment: Alignment.topRight,
-            children: [
-              Container(
-                width: double.infinity,
-                height: height120,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(borderRadius12),
-                  border: Border.all(
-                    color: AppColors.primaryBlue,
-                    width: ResponsiveUI.value(context, 2),
-                  ),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(borderRadius12 - 2),
-                  child: Image.file(
-                    File(selectedImage!.path),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Positioned(
-                top: ResponsiveUI.padding(context, 8),
-                right: ResponsiveUI.padding(context, 8),
-                child: GestureDetector(
-                  onTap: onClearImage,
-                  child: Container(
-                    padding: EdgeInsets.all(padding8),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(ResponsiveUI.borderRadius(context, 20)),
-                    ),
-                    child: Icon(
-                      Icons.close,
-                      color: Colors.white,
-                      size: iconSize24,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          )
-        else if (existingImageUrl != null && existingImageUrl!.isNotEmpty)
-          Container(
-            width: double.infinity,
-            height: height120,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(borderRadius12),
-              border: Border.all(
-                color: Colors.grey[300]!,
-                width: ResponsiveUI.value(context, 2),
-              ),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(borderRadius12 - 2),
-              child: Image.network(
-                existingImageUrl!,
-                fit: BoxFit.cover,
-              ),
-            ),
-          )
-        else
-          GestureDetector(
-            onTap: onPickImage,
-            child: Container(
-              width: double.infinity,
-              height: height120,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(borderRadius12),
-                border: Border.all(
-                  color: Colors.grey[300]!,
-                  width: ResponsiveUI.value(context, 2),
-                ),
-                color: Colors.grey[50],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.image_outlined,
-                    size: iconSize40,
-                    color: AppColors.primaryBlue,
-                  ),
-                  SizedBox(height: spacing8),
-                  Text(
-                    LocaleKeys.tap_to_select_image.tr(),
-                    style: TextStyle(
-                      fontSize: fontSize14,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-      ],
     );
   }
 

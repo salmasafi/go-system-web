@@ -1,13 +1,9 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/core/widgets/app_bar_widgets.dart';
-import 'package:GoSystem/core/widgets/custom_button_widget.dart';
-import 'package:GoSystem/core/widgets/custom_error/custom_error_state.dart';
 import 'package:GoSystem/core/widgets/custom_snack_bar/custom_snackbar.dart';
 import 'package:GoSystem/core/widgets/custom_textfield/custom_text_field_widget.dart';
 import 'package:GoSystem/features/admin/discount/cubit/discount_cubit.dart';
@@ -31,8 +27,6 @@ class _CreatePandelScreenState extends State<CreatePandelScreen> {
   final _priceController = TextEditingController();
   DateTime? _startDate;
   DateTime? _endDate;
-  final List<File> _selectedImages = [];
-  final _picker = ImagePicker();
 
   // Map of productId -> quantity
   final Map<String, int> _selectedProducts = {};
@@ -68,29 +62,6 @@ class _CreatePandelScreenState extends State<CreatePandelScreen> {
     }
     _priceController.text = finalPrice.toStringAsFixed(2);
   }
-
-  Future<void> _pickImages() async {
-    final pickedFiles = await _picker.pickMultiImage(
-      maxWidth: 800,
-      maxHeight: 800,
-      imageQuality: 85,
-    );
-    if (pickedFiles.isNotEmpty) {
-      setState(() {
-        for (final f in pickedFiles) {
-          if (_selectedImages.length < 10) _selectedImages.add(File(f.path));
-        }
-      });
-      if (pickedFiles.length > 10 && mounted) {
-        CustomSnackbar.showWarning(
-          context,
-          LocaleKeys.max_images_warning.tr(namedArgs: {'max': '10'}),
-        );
-      }
-    }
-  }
-
-  void _removeImage(int index) => setState(() => _selectedImages.removeAt(index));
 
   Future<void> _selectDate(BuildContext context, bool isStartDate) async {
     final initial = isStartDate
@@ -301,7 +272,7 @@ class _CreatePandelScreenState extends State<CreatePandelScreen> {
     context.read<PandelCubit>().addPandel(
           name: _nameController.text.trim(),
           products: products,
-          images: _selectedImages,
+          images: [],
           startDate: _startDate!,
           endDate: _endDate!,
           price: price,
@@ -468,149 +439,6 @@ class _CreatePandelScreenState extends State<CreatePandelScreen> {
     );
   }
 
-  Widget _buildImagesPicker() {
-    final imageSize = ResponsiveUI.screenWidth(context) * 0.28;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: ResponsiveUI.spacing(context, 16)),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  LocaleKeys.pandel_images.tr(),
-                  style: TextStyle(
-                    fontSize: ResponsiveUI.fontSize(context, 14),
-                    color: AppColors.darkGray,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(width: ResponsiveUI.spacing(context, 6)),
-                Text(
-                  '(اختياري)',
-                  style: TextStyle(
-                    fontSize: ResponsiveUI.fontSize(context, 12),
-                    color: AppColors.darkGray.withValues(alpha: 0.5),
-                  ),
-                ),
-              ],
-            ),
-            if (_selectedImages.isNotEmpty)
-              TextButton.icon(
-                icon: Icon(Icons.delete,
-                    color: AppColors.red, size: ResponsiveUI.iconSize(context, 18)),
-                label: Text(
-                  LocaleKeys.remove_all.tr(),
-                  style: TextStyle(
-                      color: AppColors.red, fontSize: ResponsiveUI.fontSize(context, 12)),
-                ),
-                onPressed: () => setState(() => _selectedImages.clear()),
-              ),
-          ],
-        ),
-        SizedBox(height: ResponsiveUI.spacing(context, 8)),
-        if (_selectedImages.isNotEmpty)
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: ResponsiveUI.spacing(context, 8),
-              mainAxisSpacing: ResponsiveUI.spacing(context, 8),
-            ),
-            itemCount: _selectedImages.length,
-            itemBuilder: (_, index) => Stack(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius:
-                        BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
-                    border: Border.all(color: AppColors.lightGray, width: ResponsiveUI.value(context, 1)),
-                  ),
-                  child: ClipRRect(
-                    borderRadius:
-                        BorderRadius.circular(ResponsiveUI.borderRadius(context, 8)),
-                    child: Image.file(
-                      _selectedImages[index],
-                      fit: BoxFit.cover,
-                      width: imageSize,
-                      height: imageSize,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: ResponsiveUI.padding(context, 4),
-                  right: ResponsiveUI.padding(context, 4),
-                  child: GestureDetector(
-                    onTap: () => _removeImage(index),
-                    child: Container(
-                      padding: EdgeInsets.all(ResponsiveUI.padding(context, 4)),
-                      decoration: BoxDecoration(
-                        color: AppColors.red.withValues(alpha: 0.9),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(Icons.close,
-                          size: ResponsiveUI.iconSize(context, 14), color: Colors.white),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        SizedBox(height: ResponsiveUI.spacing(context, 16)),
-        GestureDetector(
-          onTap: _pickImages,
-          child: Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(vertical: ResponsiveUI.padding(context, 20)),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius:
-                  BorderRadius.circular(ResponsiveUI.borderRadius(context, 12)),
-              border: Border.all(color: AppColors.lightGray, width: ResponsiveUI.value(context, 1)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.add_photo_alternate_outlined,
-                    size: ResponsiveUI.iconSize(context, 45),
-                    color: AppColors.primaryBlue),
-                SizedBox(height: ResponsiveUI.spacing(context, 8)),
-                Text(
-                  _selectedImages.isEmpty
-                      ? LocaleKeys.tap_to_upload_images.tr()
-                      : LocaleKeys.tap_to_add_more_images.tr(),
-                  style: TextStyle(
-                    color: AppColors.darkGray.withValues(alpha: 0.7),
-                    fontSize: ResponsiveUI.fontSize(context, 13),
-                  ),
-                ),
-                if (_selectedImages.isNotEmpty)
-                  Text(
-                    '(${LocaleKeys.selected_images_count.tr(namedArgs: {'count': _selectedImages.length.toString()})})',
-                    style: TextStyle(
-                      color: AppColors.darkGray.withValues(alpha: 0.5),
-                      fontSize: ResponsiveUI.fontSize(context, 12),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     // Scale down for web
@@ -662,7 +490,6 @@ class _CreatePandelScreenState extends State<CreatePandelScreen> {
                             hint: LocaleKeys.select_end_date.tr(),
                             onTap: () => _selectDate(context, false),
                           ),
-                          _buildImagesPicker(),
                           SizedBox(height: ResponsiveUI.spacing(context, 16)),
                           if (productsState is ProductsSuccess) ...[
                             Text(

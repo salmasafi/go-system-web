@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:GoSystem/core/constants/app_colors.dart';
+import 'package:GoSystem/generated/locale_keys.g.dart';
 import 'package:GoSystem/core/utils/responsive_ui.dart';
 import 'package:GoSystem/core/widgets/animation/animated_element.dart';
 import 'package:GoSystem/core/widgets/custom_loading/custom_loading_state.dart';
@@ -73,7 +75,7 @@ class _FilterButtonsState extends State<FilterButtons> {
                         children: [
                           Expanded(
                             child: FilterButton(
-                              label: 'Categories',
+                              label: LocaleKeys.categories_title.tr(),
                               isActive: _showCategoriesFilter,
                               onTap: () {
                                 setState(() {
@@ -91,7 +93,7 @@ class _FilterButtonsState extends State<FilterButtons> {
                           SizedBox(width: ResponsiveUI.spacing(context, 12)),
                           Expanded(
                             child: FilterButton(
-                              label: 'Brands',
+                              label: LocaleKeys.brands_title.tr(),
                               isActive: _showBrandsFilter,
                               onTap: () {
                                 setState(() {
@@ -113,7 +115,7 @@ class _FilterButtonsState extends State<FilterButtons> {
                         children: [
                           Expanded(
                             child: FilterButton(
-                              label: 'Attributes',
+                              label: LocaleKeys.attributes_title.tr(),
                               isActive: _showVariationsFilter,
                               onTap: () {
                                 setState(() {
@@ -130,7 +132,7 @@ class _FilterButtonsState extends State<FilterButtons> {
                           SizedBox(width: ResponsiveUI.spacing(context, 12)),
                           Expanded(
                             child: FilterButton(
-                              label: 'Warehouses',
+                              label: LocaleKeys.warehouses.tr(),
                               isActive: _showWarehousesFilter,
                               onTap: () {
                                 setState(() {
@@ -292,13 +294,13 @@ class GenericFilterPanel extends StatelessWidget {
   String _getTitle() {
     switch (filterType) {
       case FilterType.categories:
-        return 'Categories';
+        return LocaleKeys.categories_title.tr();
       case FilterType.brands:
-        return 'Brands';
+        return LocaleKeys.brands_title.tr();
       case FilterType.variations:
-        return 'Attributes';
+        return LocaleKeys.attributes_title.tr();
       case FilterType.warehouses:
-        return 'Warehouses';
+        return LocaleKeys.warehouses.tr();
     }
   }
 
@@ -351,7 +353,7 @@ class GenericFilterPanel extends StatelessWidget {
             )
           : Icon(_getIconForType()),
       title: Text(item.name),
-      subtitle: Text('${item.count} products'),
+      subtitle: Text(LocaleKeys.n_products.tr(namedArgs: {'count': item.count.toString()})),
       trailing: isSelected
           ? Icon(Icons.check, color: AppColors.primaryBlue)
           : null,
@@ -391,11 +393,11 @@ class GenericFilterPanel extends StatelessWidget {
             padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
             child: Column(
               children: [
-                Text('Error: ${state.message}'),
+                Text(LocaleKeys.error_with_message.tr(namedArgs: {'message': state.message})),
                 ElevatedButton(
                   onPressed: () =>
                       context.read<ProductFiltersCubit>().getFilters(),
-                  child: Text('Retry'),
+                  child: Text(LocaleKeys.retry.tr()),
                 ),
               ],
             ),
@@ -496,11 +498,11 @@ class VariationsFilterPanel extends StatelessWidget {
             padding: EdgeInsets.all(ResponsiveUI.padding(context, 16)),
             child: Column(
               children: [
-                Text('Error: ${state.message}'),
+                Text(LocaleKeys.error_with_message.tr(namedArgs: {'message': state.message})),
                 ElevatedButton(
                   onPressed: () =>
                       context.read<ProductFiltersCubit>().getFilters(),
-                  child: Text('Retry'),
+                  child: Text(LocaleKeys.retry.tr()),
                 ),
               ],
             ),
@@ -531,7 +533,7 @@ class VariationsFilterPanel extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                FilterPanelHeader(title: 'Attributes', onClose: onClose),
+                FilterPanelHeader(title: LocaleKeys.attributes_title.tr(), onClose: onClose),
                 SizedBox(height: ResponsiveUI.spacing(context, 16)),
                 SizedBox(
                   height: ResponsiveUI.value(context, 300),
@@ -542,7 +544,7 @@ class VariationsFilterPanel extends StatelessWidget {
                       return ExpansionTile(
                         leading: Icon(Icons.tune),
                         title: Text(variation.name),
-                        subtitle: Text('${variation.options.where((opt) => opt.status).length} options'),
+                        subtitle: Text(LocaleKeys.n_options.tr(namedArgs: {'count': variation.options.where((opt) => opt.status).length.toString()})),
                         children: variation.options
                             .where((option) => option.status)
                             .map((option) {
